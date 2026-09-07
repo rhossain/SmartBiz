@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>স্মার্টবিজ বিডি — Brainstorming Keepsake · 06 Sep 2026</title>
+<style>
+/* ============================================================
+   SmartBiz BD — brainstorming keepsake
+   Visual language: a Bangladeshi shop ledger (হিসাবের খাতা) —
+   ruled paper, red margin rule, carbon-copy slips, courier stamps,
+   COD envelopes, taka ink. All CSS/SVG/JS inline. No dependencies.
+   ============================================================ */
+
+:root{
+  --paper:        #f3e9d8;
+  --paper-2:      #efe2cc;
+  --paper-3:      #e7d8bd;
+  --card:         #fbf5e9;
+  --ink:          #1b2422;
+  --ink-soft:     #3c4a45;
+  --ink-faint:    #6d6355;
+  --rule:         #c9b48f;
+  --margin-red:   #b23a30;
+  --stamp:        #a8382e;
+  --taka:         #1c6647;
+  --courier:      #c1701a;
+  --teal:         #0f5259;
+  --violet:       #5a3d72;
+  --shadow:       0 1px 0 rgba(27,36,34,.09), 0 10px 26px -18px rgba(27,36,34,.55);
+  --mono: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, "Times New Roman", serif;
+  --bangla: "Bangla MN", "Bangla Sangam MN", "Noto Sans Bengali", "Nirmala UI", "Shonar Bangla", "Vrinda", "Kalpurush", var(--sans);
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  padding:0;
+  background:
+    radial-gradient(1200px 500px at 12% -8%, #fbf3e4 0%, transparent 60%),
+    radial-gradient(900px 600px at 92% 4%, #f6ecd9 0%, transparent 55%),
+    var(--paper);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:16px;
+  line-height:1.55;
+}
+body::before{
+  /* faint paper grain */
+  content:"";
+  position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.5;
+  background-image:
+    radial-gradient(rgba(120,100,70,.055) 1px, transparent 1px),
+    radial-gradient(rgba(120,100,70,.04) 1px, transparent 1px);
+  background-size:7px 7px, 11px 11px;
+  background-position:0 0, 4px 5px;
+}
+.wrap{position:relative; z-index:1; max-width:1180px; margin:0 auto; padding:0 22px 90px}
+
+.bn{font-family:var(--bangla)}
+h1,h2,h3,h4{line-height:1.15; margin:0}
+p{margin:0 0 .8em}
+a{color:var(--teal)}
+
+/* ---------- masthead : the cover of the ledger ---------- */
+.cover{
+  margin:26px 0 0;
+  border:1.5px solid var(--ink);
+  border-radius:3px;
+  background:
+    linear-gradient(180deg,#fdf8ee 0%, #f7edd9 100%);
+  box-shadow:var(--shadow);
+  position:relative;
+  overflow:hidden;
+}
+.cover::before{ /* red margin rule, like a khata */
+  content:""; position:absolute; top:0; bottom:0; left:54px; width:1.5px;
+  background:var(--margin-red); opacity:.55;
+}
+.cover::after{ /* ruled lines bleed */
+  content:""; position:absolute; inset:0; pointer-events:none; opacity:.5;
+  background:repeating-linear-gradient(180deg, transparent 0 27px, var(--rule) 27px 28px);
+  mask-image:linear-gradient(180deg, transparent 0%, #000 45%, #000 100%);
+  -webkit-mask-image:linear-gradient(180deg, transparent 0%, #000 45%, #000 100%);
+}
+.cover-inner{position:relative; z-index:2; padding:34px 30px 30px 74px}
+.kicker{
+  font-family:var(--mono); font-size:11.5px; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.cover h1{
+  font-family:var(--serif);
+  font-size:clamp(30px, 5.2vw, 56px);
+  letter-spacing:-.015em;
+  margin:.18em 0 .1em;
+}
+.cover h1 .bn{display:block; font-size:.62em; color:var(--stamp); letter-spacing:0; margin-top:.12em}
+.tagline{
+  font-family:var(--serif); font-style:italic; font-size:clamp(16px,2.1vw,21px);
+  color:var(--ink-soft); max-width:60ch; margin:.5em 0 0;
+}
+.meta-grid{
+  display:grid; gap:2px 26px; grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+  margin-top:24px; padding-top:16px; border-top:1px dashed var(--rule);
+  font-size:13.5px;
+}
+.meta-grid dt{font-family:var(--mono); font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-faint)}
+.meta-grid dd{margin:0 0 10px; color:var(--ink)}
+.stamp{
+  position:absolute; right:18px; top:20px; z-index:3;
+  border:2.5px solid var(--stamp); color:var(--stamp);
+  border-radius:6px; padding:7px 12px 8px; transform:rotate(-7deg);
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.14em; text-align:center;
+  opacity:.85; line-height:1.35; background:rgba(255,255,255,.28);
+}
+.stamp b{display:block; font-size:15px; letter-spacing:.06em}
+@media (max-width:640px){ .stamp{position:static; display:inline-block; margin:0 0 12px; transform:rotate(-2deg)} }
+
+/* ---------- authorship legend ---------- */
+.legend{
+  display:flex; flex-wrap:wrap; gap:10px 18px; align-items:center;
+  margin:18px 0 0; padding:12px 16px;
+  border:1px dashed var(--rule); border-radius:3px; background:rgba(255,255,255,.4);
+  font-size:12.5px; color:var(--ink-soft);
+}
+.by{
+  display:inline-flex; align-items:center; gap:6px; flex:none;
+  font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase;
+  padding:3px 8px 3px; border-radius:2px; white-space:nowrap;
+}
+.by-you{background:var(--ink); color:#fdf8ee}
+.by-coach{background:transparent; color:var(--ink-soft); border:1px solid var(--ink-soft)}
+.by-rec{background:transparent; color:var(--ink-faint); border:1px dotted var(--ink-faint)}
+.by::before{content:"✒"; font-size:11px}
+.by-coach::before{content:"◇"}
+.by-rec::before{content:"·"}
+
+/* ---------- generic section chrome ---------- */
+section{margin-top:64px; scroll-margin-top:20px}
+.sec-head{display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; margin-bottom:6px}
+.sec-num{
+  font-family:var(--mono); font-size:11px; letter-spacing:.2em; color:var(--ink-faint);
+  border:1px solid var(--rule); padding:3px 7px; border-radius:2px; background:rgba(255,255,255,.5);
+}
+.sec-head h2{font-family:var(--serif); font-size:clamp(23px,3.4vw,34px); letter-spacing:-.01em}
+.sec-head .bn{font-size:.62em; color:var(--stamp); font-family:var(--bangla)}
+.sec-sub{color:var(--ink-soft); max-width:74ch; font-size:14.5px; margin:.35em 0 26px}
+.hr-thread{
+  height:14px; margin:0 0 4px;
+  background:repeating-linear-gradient(90deg, var(--ink) 0 12px, transparent 12px 20px);
+  opacity:.22; mask-image:linear-gradient(90deg,#000,transparent 82%);
+  -webkit-mask-image:linear-gradient(90deg,#000,transparent 82%);
+}
+
+/* ---------- 1. causal chain ---------- */
+.chain-frame{
+  border:1.5px solid var(--ink); border-radius:3px; background:var(--card);
+  box-shadow:var(--shadow); padding:18px 14px 10px;
+}
+.chain-frame svg{display:block; width:100%; height:auto}
+.chain-caption{
+  display:flex; flex-wrap:wrap; gap:8px 22px; justify-content:space-between;
+  padding:12px 8px 6px; margin-top:6px; border-top:1px dashed var(--rule);
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-faint);
+}
+
+/* ---------- 2. Question Storming : a swarm ---------- */
+.swarm{
+  position:relative; padding:30px 16px 34px;
+  border-radius:3px;
+  background:
+    radial-gradient(closest-side at 22% 30%, rgba(15,82,89,.07), transparent),
+    radial-gradient(closest-side at 78% 70%, rgba(178,58,48,.07), transparent),
+    rgba(255,255,255,.34);
+  border:1px dashed var(--rule);
+  overflow:hidden;
+}
+.swarm::before{
+  content:"?"; position:absolute; right:-2%; top:-28%; font-family:var(--serif);
+  font-size:min(46vw,420px); line-height:1; color:var(--teal); opacity:.055; pointer-events:none;
+}
+.swarm::after{
+  content:"?"; position:absolute; left:2%; bottom:-34%; font-family:var(--serif);
+  font-size:min(30vw,260px); line-height:1; color:var(--stamp); opacity:.05; pointer-events:none;
+}
+.bubbles{position:relative; display:flex; flex-wrap:wrap; gap:16px 18px; justify-content:center}
+.bub{
+  position:relative; flex:1 1 250px; max-width:340px;
+  background:var(--card); border:1px solid var(--rule); border-radius:16px 16px 16px 4px;
+  padding:14px 16px 30px; box-shadow:var(--shadow);
+  font-size:14.5px; color:var(--ink);
+}
+.bub .q{font-family:var(--serif); font-size:16.5px; line-height:1.35; display:block; margin-bottom:7px}
+.bub .ans{color:var(--ink-soft); font-size:13.5px}
+.bub .by{position:absolute; bottom:9px; left:14px}
+.bub:nth-child(1){transform:rotate(-1.2deg)}
+.bub:nth-child(2){transform:rotate(.9deg); margin-top:14px}
+.bub:nth-child(3){transform:rotate(-.5deg); margin-top:-6px}
+.bub:nth-child(4){transform:rotate(1.4deg); margin-top:10px}
+.bub:nth-child(5){transform:rotate(-1deg)}
+.bub:nth-child(6){transform:rotate(.6deg); margin-top:12px}
+.bub:nth-child(7){transform:rotate(-1.6deg); margin-top:-4px}
+.bub.you{border-left:4px solid var(--ink)}
+.bub.coach{border-left:4px dotted var(--ink-soft)}
+.bub.loud{
+  flex-basis:100%; max-width:none; border-radius:18px 18px 18px 5px;
+  background:linear-gradient(180deg,#fffaf0,#f8eeda); border:1.5px solid var(--ink);
+}
+.bub.loud .q{font-size:clamp(18px,2.6vw,25px)}
+.strike-list{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; list-style:none; padding:0}
+.strike-list li{
+  font-family:var(--mono); font-size:11.5px; letter-spacing:.04em;
+  border:1px solid var(--rule); background:rgba(255,255,255,.7); padding:4px 9px; border-radius:2px;
+}
+.strike-list li b{color:var(--stamp)}
+
+/* ---------- 3. Assumption Reversal : literal flips ---------- */
+.flips{display:grid; gap:18px; grid-template-columns:repeat(auto-fit,minmax(255px,1fr))}
+.flip{
+  border:1.5px solid var(--ink); border-radius:3px; background:var(--card);
+  box-shadow:var(--shadow); overflow:hidden; display:flex; flex-direction:column;
+}
+.flip .top{
+  padding:14px 16px 16px; background:var(--paper-3);
+  border-bottom:1.5px dashed var(--ink);
+  color:var(--ink-faint);
+  transform:rotate(180deg);
+  font-family:var(--serif); font-size:15.5px; line-height:1.3;
+  text-decoration:line-through; text-decoration-thickness:1px; text-decoration-color:rgba(178,58,48,.75);
+  min-height:86px; display:flex; align-items:center;
+}
+.flip .axis{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  padding:6px 14px; background:var(--ink); color:#f6ecd9;
+  font-family:var(--mono); font-size:10px; letter-spacing:.18em; text-transform:uppercase;
+}
+.flip .axis .rot{font-size:14px; letter-spacing:0}
+.flip .bottom{padding:16px; flex:1; display:flex; flex-direction:column; gap:9px}
+.flip .bottom h4{font-family:var(--serif); font-size:19px; line-height:1.22}
+.flip .bottom p{font-size:13.5px; color:var(--ink-soft); margin:0}
+.flip .bottom .tick{color:var(--taka); font-weight:700}
+.flip .foot{margin-top:auto; padding-top:10px; border-top:1px dotted var(--rule); font-size:12px; color:var(--ink-faint)}
+.flip .bn{color:var(--stamp)}
+
+.policy{
+  margin-top:20px; display:grid; gap:0; grid-template-columns:1fr auto 1fr; align-items:stretch;
+  border:1.5px solid var(--ink); border-radius:3px; overflow:hidden; background:var(--card); box-shadow:var(--shadow);
+}
+@media (max-width:720px){ .policy{grid-template-columns:1fr} }
+.policy .side{padding:16px 18px}
+.policy .rejected{background:repeating-linear-gradient(135deg, rgba(178,58,48,.07) 0 9px, transparent 9px 18px)}
+.policy .rejected h4, .policy .kept h4{
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; margin-bottom:9px;
+}
+.policy .rejected h4{color:var(--stamp)}
+.policy .kept h4{color:var(--taka)}
+.policy ul{margin:0; padding-left:18px; font-size:14px}
+.policy li{margin-bottom:5px}
+.policy .del{text-decoration:line-through; color:var(--ink-faint)}
+.policy .pivot{
+  display:grid; place-items:center; background:var(--ink); color:#f6ecd9; padding:10px 12px;
+  font-family:var(--mono); font-size:11px; letter-spacing:.16em;
+}
+.flagchip{
+  display:inline-block; margin-top:8px; font-family:var(--mono); font-size:12px;
+  border:1px solid var(--taka); color:var(--taka); border-radius:2px; padding:4px 8px; background:rgba(28,102,71,.06);
+}
+.footnote{font-size:12px; color:var(--ink-faint); margin-top:14px; max-width:88ch}
+
+/* pinned open tension */
+.pin{
+  position:relative; margin-top:24px; padding:18px 20px 18px 26px;
+  background:#fdf6d8; border:1px solid #d8c07a; border-radius:2px;
+  box-shadow:2px 5px 14px -8px rgba(27,36,34,.6);
+  transform:rotate(-.5deg); max-width:720px;
+}
+.pin::before{
+  content:""; position:absolute; left:11px; top:14px; width:9px; height:9px; border-radius:50%;
+  background:var(--stamp); box-shadow:0 0 0 2px rgba(168,56,46,.28);
+}
+.pin h4{font-family:var(--mono); font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--stamp); margin-bottom:6px}
+.pin p{font-size:14.5px; margin:0}
+.pin .resolved{margin-top:9px; font-size:12.5px; color:var(--ink-soft); font-style:italic}
+
+/* ---------- 4. One Feature Only : subtraction & survival ---------- */
+.subtract{display:grid; gap:22px; grid-template-columns:minmax(0,1fr) minmax(0,1.25fr); align-items:start}
+@media (max-width:860px){ .subtract{grid-template-columns:1fr} }
+.cutbox{
+  border:1px dashed var(--rule); border-radius:3px; background:rgba(255,255,255,.32); padding:16px 18px 20px;
+}
+.cutbox h3, .spinebox h3{
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:12px;
+}
+.cutlist{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:7px}
+.cutlist li{
+  font-family:var(--mono); font-size:13px; color:var(--ink-faint);
+  text-decoration:line-through; text-decoration-color:var(--stamp);
+  padding:5px 9px; background:rgba(255,255,255,.5); border:1px solid rgba(201,180,143,.7); border-radius:2px;
+  opacity:.62; display:flex; justify-content:space-between; gap:10px;
+}
+.cutlist li span{text-decoration:none; opacity:.8; font-size:11px}
+.cutlist li.survivor{
+  text-decoration:none; opacity:1; color:#f6ecd9; background:var(--ink); border-color:var(--ink);
+  font-family:var(--serif); font-size:16px; letter-spacing:0; padding:11px 12px;
+  box-shadow:0 8px 22px -14px rgba(27,36,34,.9);
+}
+.cutlist li.survivor span{color:#e7c98f; font-family:var(--mono)}
+.cut-note{margin-top:14px; font-size:12.5px; color:var(--ink-soft)}
+
+.spinebox{
+  border:1.5px solid var(--ink); border-radius:3px; background:var(--card); box-shadow:var(--shadow); padding:18px 18px 20px;
+}
+.reversal-note{
+  font-family:var(--serif); font-size:17px; line-height:1.35; border-left:3px solid var(--taka);
+  padding-left:12px; margin:0 0 18px; color:var(--ink);
+}
+.tier{margin-bottom:16px}
+.tier-hd{display:flex; align-items:center; gap:10px; margin-bottom:8px}
+.tier-hd b{font-family:var(--mono); font-size:11px; letter-spacing:.18em; text-transform:uppercase}
+.tier-hd .depth{flex:1; height:9px; border:1px solid var(--rule); border-radius:1px; background:rgba(255,255,255,.6); overflow:hidden}
+.tier-hd .depth i{display:block; height:100%}
+.t-hero .depth i{width:100%; background:repeating-linear-gradient(90deg,var(--ink) 0 5px, #3f524c 5px 10px)}
+.t-full .depth i{width:66%; background:repeating-linear-gradient(90deg,var(--teal) 0 5px, #2d7078 5px 10px)}
+.t-thin .depth i{width:18%; background:repeating-linear-gradient(90deg,var(--courier) 0 5px, #d9954a 5px 10px)}
+.t-hero b{color:var(--ink)} .t-full b{color:var(--teal)} .t-thin b{color:var(--courier)}
+.chips{display:flex; flex-wrap:wrap; gap:7px; list-style:none; margin:0; padding:0}
+.chips li{
+  font-size:13px; padding:5px 10px; border-radius:2px; background:rgba(255,255,255,.72);
+  border:1px solid var(--rule);
+}
+.t-hero .chips li{background:var(--ink); color:#f6ecd9; border-color:var(--ink); font-weight:600}
+.t-full .chips li{border-color:rgba(15,82,89,.45)}
+.t-thin .chips li{border-style:dashed; color:var(--ink-faint)}
+.sell{
+  margin-top:6px; padding:12px 14px; border-top:1px dashed var(--rule);
+  font-size:13.5px; color:var(--ink-soft);
+}
+.sell b{color:var(--ink)}
+
+/* ---------- 5. Trickster's Gambit ---------- */
+.trick-band{
+  border:1.5px solid var(--violet); border-radius:3px; overflow:hidden; background:rgba(90,61,114,.045);
+}
+.trick-tape{
+  background:repeating-linear-gradient(135deg, var(--violet) 0 14px, #6f4c8c 14px 28px);
+  color:#fdf8ee; padding:8px 14px; font-family:var(--mono); font-size:10.5px; letter-spacing:.22em; text-transform:uppercase;
+}
+.tricks{display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); padding:20px 16px}
+.trick{
+  background:var(--card); border:1px solid rgba(90,61,114,.5); border-radius:2px; padding:16px 16px 14px;
+  box-shadow:var(--shadow); position:relative;
+}
+.trick:nth-child(odd){transform:rotate(-.7deg)}
+.trick:nth-child(even){transform:rotate(.6deg)}
+.trick::before{ /* bit of tape */
+  content:""; position:absolute; top:-9px; left:50%; transform:translateX(-50%) rotate(-2deg);
+  width:66px; height:18px; background:rgba(216,192,122,.55); border:1px solid rgba(180,150,80,.4);
+}
+.trick .broke{
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--violet); margin:6px 0 8px;
+}
+.trick .broke s{color:var(--ink-faint)}
+.trick h4{font-family:var(--serif); font-size:19px; line-height:1.22; margin-bottom:7px}
+.trick p{font-size:13.5px; color:var(--ink-soft); margin:0 0 10px}
+.trick .by{position:relative}
+.trick .bn{color:var(--stamp)}
+
+/* ---------- 6. Synthesis : the climax ---------- */
+.climax{
+  border:2px solid var(--ink); border-radius:4px; background:linear-gradient(180deg,#fffbf2,#f5ead4);
+  box-shadow:0 2px 0 rgba(27,36,34,.12), 0 26px 60px -34px rgba(27,36,34,.8);
+  padding:28px 22px 26px; position:relative; overflow:hidden;
+}
+.climax::before{
+  content:"৳"; position:absolute; left:-3%; bottom:-38%; font-family:var(--serif);
+  font-size:min(40vw,360px); line-height:1; color:var(--taka); opacity:.06; pointer-events:none;
+}
+.climax-hd{text-align:center; max-width:62ch; margin:0 auto 6px}
+.climax-hd .sec-num{display:inline-block; margin-bottom:12px}
+.climax-hd h2{font-family:var(--serif); font-size:clamp(24px,4vw,40px); letter-spacing:-.015em}
+.climax-hd p{color:var(--ink-soft); font-size:14.5px; margin-top:.5em}
+.syn-svg{display:block; width:100%; height:auto; margin:8px auto 0; max-width:940px}
+.syn-quote{
+  max-width:34ch; margin:14px auto 4px; text-align:center;
+  font-family:var(--serif); font-style:italic; font-size:clamp(18px,2.8vw,26px); line-height:1.3;
+}
+.syn-quote small{display:block; font-style:normal; font-family:var(--mono); font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-faint); margin-top:10px}
+
+.syn-rest{display:grid; gap:18px; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); margin-top:30px}
+.syn-card{
+  border:1px solid var(--ink); border-radius:3px; background:rgba(255,255,255,.55); padding:16px 18px;
+}
+.syn-card .n{font-family:var(--mono); font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-faint)}
+.syn-card h4{font-family:var(--serif); font-size:20px; margin:6px 0 8px; line-height:1.25}
+.syn-card p{font-size:13.5px; color:var(--ink-soft); margin:0}
+.loop-svg{display:block; width:100%; height:auto; margin-top:10px}
+
+.direction{
+  margin-top:28px; border:1.5px solid var(--ink); border-radius:3px; background:var(--ink); color:#f7eedb;
+  padding:24px 22px; text-align:center; position:relative;
+}
+.direction .lbl{font-family:var(--mono); font-size:10.5px; letter-spacing:.24em; text-transform:uppercase; color:#e0bd7d}
+.direction h3{font-family:var(--serif); font-size:clamp(20px,3.2vw,31px); line-height:1.25; margin:10px auto 0; max-width:44ch; letter-spacing:-.01em}
+.direction .bn{display:block; margin-top:12px; color:#cfae74; font-size:clamp(15px,2.2vw,20px)}
+.direction .wins{
+  margin-top:16px; padding-top:14px; border-top:1px dashed rgba(247,238,219,.32);
+  font-size:13.5px; color:#e6dcc6;
+}
+.direction .wins b{color:#fff}
+
+/* ---------- 7. MoSCoW ---------- */
+.moscow{display:grid; gap:18px; grid-template-columns:1.5fr 1fr 1fr}
+@media (max-width:900px){ .moscow{grid-template-columns:1fr} }
+.mcol{border:1.5px solid var(--ink); border-radius:3px; background:var(--card); box-shadow:var(--shadow); overflow:hidden}
+.mcol > header{
+  padding:10px 14px; display:flex; align-items:baseline; justify-content:space-between; gap:8px;
+  font-family:var(--mono); font-size:11px; letter-spacing:.2em; text-transform:uppercase;
+}
+.mcol.must > header{background:var(--taka); color:#f4f9f5}
+.mcol.should > header{background:var(--courier); color:#fff8ec}
+.mcol.wont > header{background:#6d6355; color:#f6f0e6}
+.mcol > header em{font-family:var(--sans); font-style:normal; font-size:11px; letter-spacing:.06em; opacity:.85; text-transform:none}
+.ledger{list-style:none; margin:0; padding:4px 0 6px}
+.ledger li{
+  display:flex; gap:10px; align-items:flex-start; padding:8px 14px; font-size:13.8px;
+  background:repeating-linear-gradient(180deg, transparent 0 35px, rgba(201,180,143,.55) 35px 36px);
+}
+.ledger li + li{border-top:1px solid rgba(201,180,143,.55)}
+.ledger .mk{font-family:var(--mono); font-size:12px; flex:none; width:1.1em; text-align:center}
+.must .mk{color:var(--taka)}
+.should .mk{color:var(--courier)}
+.wont .mk{color:var(--stamp)}
+.wont .ledger li{color:var(--ink-faint); text-decoration:line-through; text-decoration-color:rgba(178,58,48,.55)}
+.guardrails{display:grid; gap:14px; grid-template-columns:repeat(auto-fit,minmax(290px,1fr)); margin-top:20px}
+.guard{
+  border-left:4px solid var(--courier); background:rgba(193,112,26,.06); border-radius:0 3px 3px 0;
+  padding:14px 16px; font-size:13.8px;
+}
+.guard h4{font-family:var(--mono); font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--courier); margin-bottom:7px}
+.guard .by{margin-top:9px}
+
+/* ---------- 8. your fingerprints ---------- */
+.finger{border:1.5px solid var(--ink); border-radius:3px; background:var(--card); box-shadow:var(--shadow); overflow:hidden}
+.finger > header{padding:16px 20px; border-bottom:1.5px solid var(--ink); background:var(--paper-3)}
+.finger > header h3{font-family:var(--serif); font-size:22px}
+.finger > header p{margin:.35em 0 0; font-size:13.5px; color:var(--ink-soft)}
+.tally{display:flex; flex-wrap:wrap; gap:0; border-bottom:1.5px solid var(--ink)}
+.tally div{flex:1 1 150px; padding:14px 18px; border-right:1px dashed var(--rule)}
+.tally div:last-child{border-right:0}
+.tally b{display:block; font-family:var(--serif); font-size:30px; line-height:1}
+.tally span{font-family:var(--mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-faint)}
+.tally .bar{margin-top:8px; height:7px; background:rgba(255,255,255,.7); border:1px solid var(--rule)}
+.tally .bar i{display:block; height:100%; background:var(--ink)}
+.tally .c .bar i{background:repeating-linear-gradient(90deg,var(--ink-soft) 0 4px, transparent 4px 8px)}
+.tally .r .bar i{background:var(--rule)}
+.yours{list-style:none; margin:0; padding:6px 0 10px}
+.yours li{display:flex; gap:12px; padding:10px 20px; font-size:14px; align-items:flex-start}
+.yours li + li{border-top:1px dotted var(--rule)}
+.yours .tech{
+  flex:none; font-family:var(--mono); font-size:9.5px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--ink-faint); width:112px; padding-top:2px;
+}
+.yours .txt b{font-family:var(--serif); font-weight:600}
+.yours .kind{font-family:var(--mono); font-size:9.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--taka); margin-left:6px}
+
+/* ---------- footer ---------- */
+footer.colophon{
+  margin-top:60px; padding-top:18px; border-top:1.5px solid var(--ink);
+  display:flex; flex-wrap:wrap; gap:10px 26px; justify-content:space-between;
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-faint);
+}
+footer.colophon .bn{text-transform:none; letter-spacing:0; font-size:12px; color:var(--stamp)}
+
+/* svg text defaults */
+svg text{font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif}
+svg .lbl{font-size:19px; font-weight:600; fill:#1b2422}
+svg .sub{font-size:15px; fill:#3c4a45}
+svg .tag{font-size:12.5px; letter-spacing:.16em; font-family:var(--mono); fill:#6d6355}
+svg .anno{font-size:16px; font-style:italic; fill:#3c4a45; font-family:var(--serif)}
+
+@media print{
+  body{background:#fff}
+  .cover,.chain-frame,.mcol,.finger,.climax{box-shadow:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- =============== COVER =============== -->
+  <header class="cover">
+    <div class="stamp">Brainstorming<b>KEEPSAKE</b>06 · 09 · 2026</div>
+    <div class="cover-inner">
+      <div class="kicker">BMAD · Brainstorming Session · Mode: Partner</div>
+      <h1>The Order-to-Cash Ledger
+        <span class="bn">স্মার্টবিজ বিডি — হিসাব যেখানে টাকায় গিয়ে মেলে</span>
+      </h1>
+      <p class="tagline">One session, four techniques, one spine: a Bangla-first order/inventory/COD platform for Bangladesh's Facebook &amp; WhatsApp sellers — where every order is traceable from the DM to the money actually received.</p>
+
+      <dl class="meta-grid">
+        <div>
+          <dt>Topic</dt>
+          <dd>SmartBiz BD — Bangla-first SME order/inventory/COD platform: differentiation, positioning, local workflow insight</dd>
+        </div>
+        <div>
+          <dt>Goal</dt>
+          <dd>Sharpen differentiation and positioning before the BMAD Product Brief; answer scope.md §12 business-analysis questions</dd>
+        </div>
+        <div>
+          <dt>Techniques run, in order</dt>
+          <dd>Question Storming → Assumption Reversal → One Feature Only → Trickster's Gambit → convergence via MoSCoW</dd>
+        </div>
+        <div>
+          <dt>Stance</dt>
+          <dd>Creative Partner — run as concrete multiple-choice questions, one focused round at a time</dd>
+        </div>
+      </dl>
+    </div>
+  </header>
+
+  <div class="legend">
+    <strong style="font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase">Authorship marks</strong>
+    <span class="by by-you">You</span> <span>your call, your idea — 10 entries</span>
+    <span class="by by-coach">Coach</span> <span>coach-generated or delegated — 13 entries</span>
+    <span class="by by-rec">Record</span> <span>session bookkeeping — 3 entries + 5 technique switches</span>
+  </div>
+
+  <!-- =============== 1. THE CHAIN =============== -->
+  <section id="chain">
+    <div class="hr-thread"></div>
+    <div class="sec-head">
+      <span class="sec-num">§ 01</span>
+      <h2>The chain that reframed everything <span class="bn">শিকল</span></h2>
+    </div>
+    <p class="sec-sub">You refused to pick a single wedge pain — COD reconciliation, DM order chaos, unknown profit and stock accuracy are <em>all</em> the wedge. The coach's reframe: they are not four pains competing for first place. They are one causal chain, and each link is created by the one above it. Close the loop and all four resolve at once.</p>
+
+    <div class="chain-frame">
+      <svg viewBox="0 0 1000 720" role="img" aria-label="Causal chain: a DM order typed wrong leads to stock already gone, then cancellation or return, then COD cash that does not match, then profit becoming unknowable. A return arc shows the order-to-cash spine closing the loop.">
+        <defs>
+          <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="#b23a30"></path>
+          </marker>
+          <marker id="ahg" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="#1c6647"></path>
+          </marker>
+          <linearGradient id="slip" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#fffaf0"></stop>
+            <stop offset="1" stop-color="#f2e6cf"></stop>
+          </linearGradient>
+        </defs>
+
+        <!-- return / spine arc -->
+        <path d="M840 548 C 985 470, 975 250, 800 132 L 372 112"
+              fill="none" stroke="#1c6647" stroke-width="3" stroke-dasharray="9 7" marker-end="url(#ahg)"></path>
+        <text class="anno" text-anchor="end" x="856" y="236">the differentiator is closing this loop —</text>
+        <text class="anno" text-anchor="end" x="856" y="260">DM to cash — not shipping 12 modules</text>
+        <text class="tag" text-anchor="end" x="856" y="292" fill="#1c6647">SPINE · ORDER → MONEY RECEIVED</text>
+
+        <!-- links -->
+        <path d="M195 148 L 232 176" stroke="#b23a30" stroke-width="3" fill="none" marker-end="url(#ah)"></path>
+        <path d="M365 278 L 402 306" stroke="#b23a30" stroke-width="3" fill="none" marker-end="url(#ah)"></path>
+        <path d="M535 408 L 572 436" stroke="#b23a30" stroke-width="3" fill="none" marker-end="url(#ah)"></path>
+        <path d="M705 538 L 742 566" stroke="#b23a30" stroke-width="3" fill="none" marker-end="url(#ah)"></path>
+
+        <!-- 1 -->
+        <g>
+          <rect x="60" y="34" width="310" height="112" rx="4" fill="url(#slip)" stroke="#1b2422" stroke-width="1.6"></rect>
+          <rect x="60" y="34" width="7" height="112" fill="#b23a30"></rect>
+          <text class="tag" x="84" y="58">LINK 01 · CAPTURE</text>
+          <text class="lbl" x="84" y="88">A DM order typed wrong</text>
+          <text class="sub" x="84" y="114">Name, phone, address, item — retyped</text>
+          <text class="sub" x="84" y="134">by hand from a Messenger thread.</text>
+        </g>
+        <!-- 2 -->
+        <g>
+          <rect x="230" y="164" width="310" height="112" rx="4" fill="url(#slip)" stroke="#1b2422" stroke-width="1.6"></rect>
+          <rect x="230" y="164" width="7" height="112" fill="#b23a30"></rect>
+          <text class="tag" x="254" y="188">LINK 02 · STOCK</text>
+          <text class="lbl" x="254" y="218">Stock already gone</text>
+          <text class="sub" x="254" y="244">The item was sold in another thread;</text>
+          <text class="sub" x="254" y="264">nobody's count was ever true.</text>
+        </g>
+        <!-- 3 -->
+        <g>
+          <rect x="400" y="294" width="310" height="112" rx="4" fill="url(#slip)" stroke="#1b2422" stroke-width="1.6"></rect>
+          <rect x="400" y="294" width="7" height="112" fill="#b23a30"></rect>
+          <text class="tag" x="424" y="318">LINK 03 · FULFILMENT</text>
+          <text class="lbl" x="424" y="348">Cancellation or return</text>
+          <text class="sub" x="424" y="374">The courier goes out and comes back.</text>
+          <text class="sub" x="424" y="394">Cost paid, nothing sold.</text>
+        </g>
+        <!-- 4 -->
+        <g>
+          <rect x="570" y="424" width="310" height="112" rx="4" fill="url(#slip)" stroke="#1b2422" stroke-width="1.6"></rect>
+          <rect x="570" y="424" width="7" height="112" fill="#b23a30"></rect>
+          <text class="tag" x="594" y="448">LINK 04 · CASH</text>
+          <text class="lbl" x="594" y="478">COD cash doesn't match</text>
+          <text class="sub" x="594" y="504">The courier settlement never equals</text>
+          <text class="sub" x="594" y="524">the orders the seller thinks shipped.</text>
+        </g>
+        <!-- 5 -->
+        <g>
+          <rect x="680" y="554" width="310" height="126" rx="4" fill="#1b2422" stroke="#1b2422" stroke-width="1.6"></rect>
+          <rect x="680" y="554" width="7" height="126" fill="#b23a30"></rect>
+          <text class="tag" x="704" y="578" fill="#e0bd7d">LINK 05 · CONSEQUENCE</text>
+          <text class="lbl" x="704" y="610" fill="#fdf8ee">Profit becomes unknowable</text>
+          <text class="sub" x="704" y="636" fill="#cfc6b2">Not "hard to calculate" — genuinely</text>
+          <text class="sub" x="704" y="656" fill="#cfc6b2">unknown. So no decision is safe.</text>
+        </g>
+      </svg>
+      <div class="chain-caption">
+        <span>Source: session reframe, logged as coach idea</span>
+        <span>Positioning candidate → "the order-to-cash ledger for BD online sellers"</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- =============== 2. QUESTION STORMING =============== -->
+  <section id="q">
+    <div class="hr-thread"></div>
+    <div class="sec-head">
+      <span class="sec-num">§ 02 · Technique I</span>
+      <h2>Question Storming <span class="bn">প্রশ্নের ঝড়</span></h2>
+    </div>
+    <p class="sec-sub">A swarm of questions put on the table before any answer was allowed to settle. Not all of them closed — the ones that did, closed hard. Each bubble carries the mark of who answered it.</p>
+
+    <div class="swarm">
+      <div class="bubbles">
+
+        <div class="bub loud you">
+          <span class="q">Which single pain is the wedge?</span>
+          <span class="ans"><strong>Rejected the premise.</strong> COD reconciliation, DM order chaos, unknown profit and stock accuracy are <em>all</em> the wedge — you would not trade one away to make the pitch tidier. This refusal is what forced the causal-chain reframe in §01 and the spine in §04.</span>
+          <span class="by by-you">You</span>
+        </div>
+
+        <div class="bub you">
+          <span class="q">Who exactly is v1 for?</span>
+          <span class="ans">The Facebook/WhatsApp seller: 1–3 people, 10–50 orders/day, COD-heavy, no storefront. <span class="bn">দোকান নেই, ইনবক্সেই ব্যবসা।</span></span>
+          <span class="by by-you">You</span>
+        </div>
+
+        <div class="bub you">
+          <span class="q">How does an order get in?</span>
+          <span class="ans">Paste-the-DM auto-parse as the primary path; a fast manual form always available as fallback. Never a dead end.</span>
+          <span class="by by-you">You</span>
+        </div>
+
+        <div class="bub you">
+          <span class="q">Phone or laptop?</span>
+          <span class="ans">Mixed, and honestly so: phone capture during the day, laptop for reconciliation and reports at night. <em>Both layouts must genuinely work.</em></span>
+          <span class="by by-you">You</span>
+        </div>
+
+        <div class="bub coach">
+          <span class="q">If Messenger/WhatsApp APIs are out of scope, what is the integration?</span>
+          <span class="ans">The clipboard. Parsing pasted Bangla/Banglish DM blobs replaces the platform APIs entirely.</span>
+          <span class="by by-coach">Coach</span>
+        </div>
+
+        <div class="bub coach">
+          <span class="q">What is this product, in one line a seller repeats?</span>
+          <span class="ans">"The order-to-cash ledger for BD online sellers" — every order traceable to money actually received.</span>
+          <span class="by by-coach">Coach</span>
+        </div>
+
+        <div class="bub coach">
+          <span class="q">Are these four separate problems?</span>
+          <span class="ans">No — one chain (see §01). The differentiator is closing the loop DM-to-cash, not shipping twelve modules.</span>
+          <span class="by by-coach">Coach</span>
+        </div>
+
+      </div>
+
+      <ul class="strike-list" style="margin-top:22px; justify-content:center">
+        <li><b>Ground rule set here:</b> no free-wheeling generation — concrete multiple-choice, one focused round at a time</li>
+        <li>4 answers by you</li>
+        <li>3 by the coach</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- =============== 3. ASSUMPTION REVERSAL =============== -->
+  <section id="rev">
+    <div class="hr-thread"></div>
+    <div class="sec-head">
+      <span class="sec-num">§ 03 · Technique II</span>
+      <h2>Assumption Reversal <span class="bn">উল্টো করে দেখা</span></h2>
+    </div>
+    <p class="sec-sub">Four defaults were turned upside down — and you approved all four for v1 without softening any of them. Read each card top-down: the greyed, inverted, struck-through half is the default that was flipped; the upright half is what ships.</p>
+
+    <div class="flips">
+      <div class="flip">
+        <div class="top">Settlement is reconciled by hand, order by order</div>
+        <div class="axis"><span>Reversed</span><span class="rot">⤿</span><span>Adopted v1</span></div>
+        <div class="bottom">
+          <h4><span class="tick">✓</span> Courier CSV settlement import</h4>
+          <p>The courier's own settlement file becomes the source of truth for money received, auto-matched against orders.</p>
+          <div class="foot">MoSCoW: <strong>MUST</strong> — with auto-match</div>
+        </div>
+      </div>
+
+      <div class="flip">
+        <div class="top">English-first UI, Bangla as a later translation</div>
+        <div class="axis"><span>Reversed</span><span class="rot">⤿</span><span>Adopted v1</span></div>
+        <div class="bottom">
+          <h4><span class="tick">✓</span> Bangla-first by default</h4>
+          <p>Not localisation bolted on — the default language of the product, matching the language the orders arrive in. <span class="bn">বাংলা-প্রথম</span></p>
+          <div class="foot">MoSCoW: <strong>MUST</strong></div>
+        </div>
+      </div>
+
+      <div class="flip">
+        <div class="top">Cost is figured out later, at reporting time</div>
+        <div class="axis"><span>Reversed</span><span class="rot">⤿</span><span>Adopted v1</span></div>
+        <div class="bottom">
+          <h4><span class="tick">✓</span> Cost captured at stock-in</h4>
+          <p>Profit can only be true if cost enters the system when goods do — at the moment of stock-in, not at month end.</p>
+          <div class="foot">MoSCoW: <strong>MUST</strong></div>
+        </div>
+      </div>
+
+      <div class="flip">
+        <div class="top">Order entry assumes a live connection</div>
+        <div class="axis"><span>Reversed</span><span class="rot">⤿</span><span>Adopted v1</span></div>
+        <div class="bottom">
+          <h4><span class="tick">✓</span> Offline-tolerant order entry</h4>
+          <p>Capture must survive a dropped connection mid-order.</p>
+          <div class="foot">Later narrowed by you at convergence → resilient local drafts, not a sync engine (§07)</div>
+        </div>
+      </div>
+    </div>
+
+    <p class="footnote">Note on the inverted halves: the memlog records the four <em>reversals</em> that were approved, not a verbatim transcript of the original assumption wording. Each greyed half above is the plain inverse of the adopted reversal it sits above — shown to make the flip legible, not as a separate finding.</p>
+
+    <!-- delegated policy decision, rendered as its own flip -->
+    <div class="policy">
+      <div class="side rejected">
+        <h4>Rejected — the cost-gap trap</h4>
+        <ul>
+          <li class="del">Block the reports until every cost is filled in</li>
+          <li class="del">Guess with a default margin and call it profit</li>
+        </ul>
+      </div>
+      <div class="pivot">Delegated to coach ⤿ resolved</div>
+      <div class="side kept">
+        <h4>Adopted — honest incompleteness</h4>
+        <ul>
+          <li>Show profit <strong>with an explicit completeness flag</strong></li>
+          <li>One tap from the flag to fill the missing costs</li>
+        </ul>
+        <span class="flagchip">profit based on 82 / 94 items →</span>
+      </div>
+    </div>
+    <p class="footnote" style="margin-top:10px"><span class="by by-coach" style="vertical-align:middle">Coach</span> Cost-gap policy was explicitly delegated to the coach and decided there.</p>
+
+    <div class="pin">
+      <h4>Left pinned on the board — a tension for the PRD</h4>
+      <p>12 MVP modules + 4 approved reversals, against scope.md §9's "medium-complexity" constraint. <strong>What actually ships in v1?</strong></p>
+      <p class="resolved">Answered two techniques later — not by cutting modules, but by tiering their depth (§04) and by the MoSCoW line (§07).</p>
+    </div>
+  </section>
+
+  <!-- =============== 4. ONE FEATURE ONLY =============== -->
+  <section id="one">
+    <div class="hr-thread"></div>
+    <div class="sec-head">
+      <span class="sec-num">§ 04 · Technique III</span>
+      <h2>One Feature Only <span class="bn">একটাই থাকবে</span></h2>
+    </div>
+    <p class="sec-sub">The exercise: delete everything but one thing. Eleven modules went under the pen — and then came back changed. The deletion did its job anyway: it named the survivor, and everything that returned came back as an <em>input to it</em> rather than a rival for attention.</p>
+
+    <div class="subtract">
+      <div class="cutbox">
+        <h3>The subtraction — 11 struck, 1 standing</h3>
+        <ul class="cutlist">
+          <li>auth &amp; roles <span>cut</span></li>
+          <li>customers <span>cut</span></li>
+          <li>products + variants <span>cut</span></li>
+          <li>inventory <span>cut</span></li>
+          <li>expenses <span>cut</span></li>
+          <li>dues <span>cut</span></li>
+          <li>suppliers <span>cut</span></li>
+          <li>reports (all 9) <span>cut</span></li>
+          <li>dashboard <span>cut</span></li>
+          <li>COD settlement <span>cut</span></li>
+          <li>AI insights <span>cut</span></li>
+          <li class="survivor">Order-to-Cash Ledger <span>SPINE</span></li>
+        </ul>
+        <p class="cut-note">Every order traceable from DM to money actually received. <span class="by by-you">You</span></p>
+      </div>
+
+      <div class="spinebox">
+        <p class="reversal-note">Then you refused the amputation: <strong>no module is cut — depth is tiered.</strong> The modules return, but as strands of the one thread, at three honest depths.</p>
+
+        <div class="tier t-hero">
+          <div class="tier-hd"><b>Hero</b><span class="depth"><i></i></span></div>
+          <ul class="chips">
+            <li>Orders</li><li>COD + CSV settlement</li><li>Dashboard money view</li>
+          </ul>
+        </div>
+
+        <div class="tier t-full">
+          <div class="tier-hd"><b>Full</b><span class="depth"><i></i></span></div>
+          <ul class="chips">
+            <li>Auth &amp; roles</li><li>Customers</li><li>Products + variants</li><li>Inventory</li>
+            <li>Expenses</li><li>Dues</li><li>Suppliers</li><li>All 9 reports</li>
+          </ul>
+        </div>
+
+        <div class="tier t-thin">
+          <div class="tier-hd"><b>Thin</b><span class="depth"><i></i></span></div>
+          <ul class="chips">
+            <li>AI insights only</li>
+          </ul>
+        </div>
+
+        <div class="sell">
+          <b>Sellability became a design criterion.</b> You wanted all realistic features that attract buyers — no hollow modules in the demo. Tiering is how "want everything" and "prioritise" stopped fighting. <span class="by by-you">You</span>
+        </div>
+        <div class="sell" style="border-top-style:dotted">
+          <b>One guard on the tiering:</b> customer risk score is a simple computed ratio (return rate + due history), not ML — scope §7 excludes advanced ML. <span class="by by-coach">Coach</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =============== 5. TRICKSTER'S GAMBIT =============== -->
+  <section id="trick">
+    <div class="hr-thread"></div>
+    <div class="sec-head">
+      <span class="sec-num">§ 05 · Technique IV</span>
+      <h2>Trickster's Gambit <span class="bn">ফাঁকিবাজির চাল</span></h2>
+    </div>
+    <p class="sec-sub">Break the rule the category never questions. Four moves were put up. You adopted all four — and one of them turned out not to be a feature at all.</p>
+
+    <div class="trick-band">
+      <div class="trick-tape">rule broken · rule broken · rule broken · rule broken · rule broken · rule broken · rule broken</div>
+      <div class="tricks">
+
+        <div class="trick">
+          <p class="broke">Rule broken: <s>set up your catalogue before you can sell</s></p>
+          <h4>Zero-setup — the order creates the product</h4>
+          <p>A product that doesn't exist yet gets created inline, mid-order. Day-one onboarding is: take an order.</p>
+          <span class="by by-you">You</span>
+        </div>
+
+        <div class="trick">
+          <p class="broke">Rule broken: <s>audit logs are for compliance people</s></p>
+          <h4>Audit-log-as-undo</h4>
+          <p>The history of what changed becomes the way to take it back. One artefact, two jobs — safety for a seller working fast on a phone.</p>
+          <span class="by by-you">You</span>
+        </div>
+
+        <div class="trick">
+          <p class="broke">Rule broken: <s>reports live inside the app</s></p>
+          <h4>A forwardable Bangla daily summary</h4>
+          <p>The day's numbers, in Bangla, shaped to be forwarded into a chat thread. It leaves the product on purpose. <span class="bn">আজকের হিসাব — ফরওয়ার্ড করে দিন।</span></p>
+          <span class="by by-you">You</span>
+        </div>
+
+        <div class="trick">
+          <p class="broke">Rule broken: <s>the seller is the one who does the data entry</s></p>
+          <h4>DM + courier CSV are the real entry engine</h4>
+          <p>The machine reads; the seller only <em>corrects</em>. Typing becomes the exception, not the workflow.</p>
+          <span class="by by-you">You</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- =============== 6. SYNTHESIS — CLIMAX =============== -->
+  <section id="syn">
+    <div class="hr-thread"></div>
+    <div class="climax">
+      <div class="climax-hd">
+        <span class="sec-num">§ 06 · Synthesis</span>
+        <h2>One principle wearing three hats</h2>
+        <p>Three features that looked independent on the board are the same idea, applied at three different moments. That principle — not any one of the three — is the differentiator.</p>
+      </div>
+
+      <svg class="syn-svg" viewBox="0 0 900 470" role="img" aria-label="Diagram: three features — paste-the-DM parse, courier CSV import, and zero-setup product create — are three hats worn by one principle: the seller should never type what the system could have read.">
+        <defs>
+          <radialGradient id="core" cx="42%" cy="34%" r="72%">
+            <stop offset="0" stop-color="#2c3a36"></stop>
+            <stop offset="1" stop-color="#141c1a"></stop>
+          </radialGradient>
+          <marker id="ah2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="#1b2422"></path>
+          </marker>
+        </defs>
+
+        <!-- connectors -->
+        <path d="M175 196 C 195 268, 300 300, 348 316" fill="none" stroke="#1b2422" stroke-width="2.2" stroke-dasharray="7 6" marker-end="url(#ah2)"></path>
+        <path d="M450 176 L 450 268" fill="none" stroke="#1b2422" stroke-width="2.2" stroke-dasharray="7 6" marker-end="url(#ah2)"></path>
+        <path d="M725 196 C 705 268, 600 300, 552 316" fill="none" stroke="#1b2422" stroke-width="2.2" stroke-dasharray="7 6" marker-end="url(#ah2)"></path>
+
+        <!-- hat 1 -->
+        <g>
+          <ellipse cx="175" cy="150" rx="96" ry="22" fill="#c1701a"></ellipse>
+          <path d="M120 150 L120 92 Q120 74 175 74 Q230 74 230 92 L230 150 Z" fill="#d98a2c" stroke="#a75d12" stroke-width="1.6"></path>
+          <rect x="120" y="128" width="110" height="14" fill="#1b2422" opacity=".78"></rect>
+          <text class="tag" text-anchor="middle" x="175" y="44" fill="#a75d12">HAT ONE</text>
+          <text class="lbl" text-anchor="middle" x="175" y="212">Paste-the-DM parse</text>
+          <text class="sub" text-anchor="middle" x="175" y="236">reads the order</text>
+        </g>
+        <!-- hat 2 -->
+        <g>
+          <ellipse cx="450" cy="130" rx="96" ry="22" fill="#0f5259"></ellipse>
+          <path d="M395 130 L395 72 Q395 54 450 54 Q505 54 505 72 L505 130 Z" fill="#1a6f77" stroke="#0b4247" stroke-width="1.6"></path>
+          <rect x="395" y="108" width="110" height="14" fill="#1b2422" opacity=".78"></rect>
+          <text class="tag" text-anchor="middle" x="450" y="26" fill="#0b4247">HAT TWO</text>
+          <text class="lbl" text-anchor="middle" x="450" y="192">Courier CSV import</text>
+          <text class="sub" text-anchor="middle" x="450" y="216">reads the money</text>
+        </g>
+        <!-- hat 3 -->
+        <g>
+          <ellipse cx="725" cy="150" rx="96" ry="22" fill="#5a3d72"></ellipse>
+          <path d="M670 150 L670 92 Q670 74 725 74 Q780 74 780 92 L780 150 Z" fill="#6f4c8c" stroke="#452e59" stroke-width="1.6"></path>
+          <rect x="670" y="128" width="110" height="14" fill="#1b2422" opacity=".78"></rect>
+          <text class="tag" text-anchor="middle" x="725" y="44" fill="#452e59">HAT THREE</text>
+          <text class="lbl" text-anchor="middle" x="725" y="212">Zero-setup product</text>
+          <text class="sub" text-anchor="middle" x="725" y="236">reads the catalogue</text>
+        </g>
+
+        <!-- core -->
+        <circle cx="450" cy="352" r="104" fill="url(#core)"></circle>
+        <circle cx="450" cy="352" r="112" fill="none" stroke="#1b2422" stroke-width="1.4" stroke-dasharray="4 7" opacity=".55"></circle>
+        <text class="tag" text-anchor="middle" x="450" y="312" fill="#e0bd7d">THE PRINCIPLE</text>
+        <text text-anchor="middle" x="450" y="344" fill="#fdf8ee" style="font-size:19px;font-weight:600">The seller should</text>
+        <text text-anchor="middle" x="450" y="370" fill="#fdf8ee" style="font-size:19px;font-weight:600">never type what the</text>
+        <text text-anchor="middle" x="450" y="396" fill="#fdf8ee" style="font-size:19px;font-weight:600">system could have read</text>
+        <text class="tag" text-anchor="middle" x="450" y="426" fill="#9fb3ab" style="font-size:11px">SYNTHESIS 02</text>
+      </svg>
+
+      <p class="syn-quote">Data-entry avoidance is the product.<br>The three features are just where it shows up.
+        <small>Coach-authored synthesis · the real differentiator, not any single feature</small>
+      </p>
+
+      <div class="syn-rest">
+        <div class="syn-card">
+          <span class="n">Synthesis 01 <span class="by by-coach" style="margin-left:6px">Coach</span></span>
+          <h4>The spine settles the "want everything" fight</h4>
+          <p>The Order-to-Cash spine reconciles wanting everything with prioritising: modules stop competing with each other and become <strong>inputs to one thread</strong>. That is what made tiering (§04) possible instead of cutting.</p>
+        </div>
+
+        <div class="syn-card">
+          <span class="n">Synthesis 03 <span class="by by-coach" style="margin-left:6px">Coach</span></span>
+          <h4>A reporting feature that is secretly a growth loop</h4>
+          <p>The forwardable Bangla daily summary is <strong>organic seller-to-seller distribution</strong> — every forward markets the product to another seller.</p>
+          <svg class="loop-svg" viewBox="0 0 460 250" role="img" aria-label="Loop diagram: the daily Bangla summary is generated, the seller forwards it into a chat, another seller sees it, and adopts SmartBiz, returning to the start.">
+            <defs>
+              <marker id="ah3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M0 0 L10 5 L0 10 z" fill="#1c6647"></path>
+              </marker>
+            </defs>
+            <circle cx="230" cy="125" r="86" fill="none" stroke="#c9b48f" stroke-width="1.2" stroke-dasharray="3 6"></circle>
+            <path d="M230 39 A86 86 0 0 1 316 125" fill="none" stroke="#1c6647" stroke-width="2.6" marker-end="url(#ah3)"></path>
+            <path d="M316 125 A86 86 0 0 1 230 211" fill="none" stroke="#1c6647" stroke-width="2.6" marker-end="url(#ah3)"></path>
+            <path d="M230 211 A86 86 0 0 1 144 125" fill="none" stroke="#1c6647" stroke-width="2.6" marker-end="url(#ah3)"></path>
+            <path d="M144 125 A86 86 0 0 1 230 39" fill="none" stroke="#1c6647" stroke-width="2.6" marker-end="url(#ah3)"></path>
+            <g style="font-size:13px" fill="#1b2422">
+              <rect x="150" y="10" width="160" height="30" rx="3" fill="#fbf5e9" stroke="#1b2422"></rect>
+              <text x="230" y="30" text-anchor="middle">Day closes → summary</text>
+              <rect x="322" y="108" width="132" height="30" rx="3" fill="#fbf5e9" stroke="#1b2422"></rect>
+              <text x="388" y="128" text-anchor="middle">Seller forwards it</text>
+              <rect x="150" y="210" width="160" height="30" rx="3" fill="#fbf5e9" stroke="#1b2422"></rect>
+              <text x="230" y="230" text-anchor="middle">Another seller reads it</text>
+              <rect x="6" y="108" width="132" height="30" rx="3" fill="#fbf5e9" stroke="#1b2422"></rect>
+              <text x="72" y="128" text-anchor="middle">New seller joins</text>
+            </g>
+            <text x="230" y="120" text-anchor="middle" class="bn" style="font-size:15px" fill="#1c6647">আজকের হিসাব</text>
+            <text x="230" y="142" text-anchor="middle" style="font-size:11.5px;letter-spacing:.14em" fill="#6d6355">GROWTH LOOP</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="direction">
+        <span class="lbl">Chosen direction</span>
+        <h3>SmartBiz BD v1 = a Bangla-first order-to-cash operating system for Bangladesh's Facebook &amp; WhatsApp sellers.
+          <span class="bn">অর্ডার থেকে টাকা — পুরো হিসাব এক সুতোয়</span>
+        </h3>
+        <p class="wins">12 modules at tiered depth. Wins on <b>data-entry avoidance</b> and <b>COD money truth</b>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =============== 7. MOSCOW =============== -->
+  <section id="moscow">
+    <div class="hr-thread"></div>
+    <div class="sec-head">
+      <span class="sec-num">§ 07 · Convergence</span>
+      <h2>MoSCoW — the line that ships <span class="bn">কী থাকবে, কী থাকবে না</span></h2>
+    </div>
+    <p class="sec-sub">The pinned tension from §03 gets its answer here. Note there is no COULD column in the record — the session drew the line as MUST, SHOULD and an explicit WON'T.</p>
+
+    <div class="moscow">
+      <div class="mcol must">
+        <header><span>Must</span><em>11 items · the shippable v1</em></header>
+        <ul class="ledger">
+          <li><span class="mk">৳</span><span>Order-to-cash spine</span></li>
+          <li><span class="mk">৳</span><span>Fast manual entry</span></li>
+          <li><span class="mk">৳</span><span>Rule-based paste-DM parse</span></li>
+          <li><span class="mk">৳</span><span>Courier CSV settlement import, with auto-match</span></li>
+          <li><span class="mk">৳</span><span>Bangla-first default</span></li>
+          <li><span class="mk">৳</span><span>Responsive phone + laptop</span></li>
+          <li><span class="mk">৳</span><span>Cost-at-stock-in</span></li>
+          <li><span class="mk">৳</span><span>Profit completeness flag</span></li>
+          <li><span class="mk">৳</span><span>Zero-setup inline product create</span></li>
+          <li><span class="mk">৳</span><span>Audit-log-as-undo</span></li>
+          <li><span class="mk">৳</span><span>All 12 modules at tiered depth</span></li>
+        </ul>
+      </div>
+
+      <div class="mcol should">
+        <header><span>Should</span><em>3 items</em></header>
+        <ul class="ledger">
+          <li><span class="mk">◦</span><span>Forwardable Bangla daily summary <em style="color:var(--ink-faint);font-size:12px">— the growth loop</em></span></li>
+          <li><span class="mk">◦</span><span>Computed customer risk score</span></li>
+          <li><span class="mk">◦</span><span>Thin AI canned Q&amp;A</span></li>
+        </ul>
+      </div>
+
+      <div class="mcol wont">
+        <header><span>Won't</span><em>held back on purpose</em></header>
+        <ul class="ledger">
+          <li><span class="mk">✕</span><span>All scope §7 integrations</span></li>
+          <li><span class="mk">✕</span><span>ML risk models</span></li>
+          <li><span class="mk">✕</span><span>Billing implementation</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="guardrails">
+      <div class="guard">
+        <h4>Scope guardrail — offline, narrowed</h4>
+        Offline scope reduced from full sync to <strong>resilient local drafts</strong>: autosave an in-progress order, restore it after a drop. No sync engine — this protects the §9 medium-complexity constraint.
+        <span class="by by-you">You</span>
+      </div>
+      <div class="guard">
+        <h4>Scope guardrail — the parser stays cheap</h4>
+        The paste-DM parser must be <strong>rule-based</strong> (phone regex + address heuristics), with no paid AI dependency, per the §9 free-tier constraint.
+        <span class="by by-coach">Coach</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- =============== 8. FINGERPRINTS =============== -->
+  <section id="yours">
+    <div class="hr-thread"></div>
+    <div class="sec-head">
+      <span class="sec-num">§ 08 · Provenance</span>
+      <h2>Your fingerprints on this session <span class="bn">আপনার সিদ্ধান্ত</span></h2>
+    </div>
+    <p class="sec-sub">31 entries were logged. Ten of them are yours — and they are the load-bearing ones: who the user is, what the spine is, what does not get cut, and where scope stops.</p>
+
+    <div class="finger">
+      <header>
+        <h3>Ten decisions you made yourself</h3>
+        <p>Every direction below is traceable to a <code>by user</code> entry in the session memlog.</p>
+      </header>
+
+      <div class="tally">
+        <div class="u"><b>10</b><span>By you</span><span class="bar"><i style="width:100%"></i></span></div>
+        <div class="c"><b>13</b><span>By coach</span><span class="bar"><i style="width:100%"></i></span></div>
+        <div class="r"><b>3</b><span>Session record</span><span class="bar"><i style="width:23%"></i></span></div>
+        <div class="r"><b>5</b><span>Technique switches</span><span class="bar"><i style="width:38%"></i></span></div>
+      </div>
+
+      <ul class="yours">
+        <li><span class="tech">Question Storming</span><span class="txt"><b>Primary v1 user</b> — Facebook/WhatsApp seller, 1–3 people, 10–50 orders/day, COD-heavy, no storefront.<span class="kind">decision</span></span></li>
+        <li><span class="tech">Question Storming</span><span class="txt"><b>Refused a single wedge pain</b> — COD reconciliation, DM order chaos, unknown profit and stock accuracy are all the wedge.<span class="kind">insight</span></span></li>
+        <li><span class="tech">Question Storming</span><span class="txt"><b>Order entry</b> — paste-the-DM auto-parse as primary, fast manual form as always-available fallback.<span class="kind">decision</span></span></li>
+        <li><span class="tech">Question Storming</span><span class="txt"><b>Device reality</b> — phone capture by day, laptop for reconciliation and reports at night; both layouts must genuinely work.<span class="kind">decision</span></span></li>
+        <li><span class="tech">Assumption Reversal</span><span class="txt"><b>All four reversals approved for v1</b> — courier CSV settlement import, Bangla-first default, cost captured at stock-in, offline-tolerant order entry.<span class="kind">decision</span></span></li>
+        <li><span class="tech">One Feature Only</span><span class="txt"><b>The spine</b> — Order-to-Cash Ledger: every order traceable from DM to money actually received; all other modules are inputs to this thread.<span class="kind">decision</span></span></li>
+        <li><span class="tech">One Feature Only</span><span class="txt"><b>No module is cut; depth is tiered</b> — Hero: orders, COD + CSV settlement, dashboard money view. Full: auth/roles, customers, products + variants, inventory, expenses, dues, suppliers, all 9 reports. Thin: AI insights only.<span class="kind">decision</span></span></li>
+        <li><span class="tech">One Feature Only</span><span class="txt"><b>Sellability is a design criterion</b> — all realistic features that attract buyers; avoid hollow modules in the demo.<span class="kind">direction</span></span></li>
+        <li><span class="tech">Trickster's Gambit</span><span class="txt"><b>All four trickster moves adopted</b> — zero-setup inline product create, audit-log-as-undo, forwardable Bangla daily summary, and DM + courier CSV as the real data-entry engine with the seller only correcting.<span class="kind">decision</span></span></li>
+        <li><span class="tech">MoSCoW</span><span class="txt"><b>Offline scope narrowed</b> — resilient local drafts instead of full sync; no sync engine, protecting the §9 medium-complexity constraint.<span class="kind">decision</span></span></li>
+      </ul>
+    </div>
+  </section>
+
+  <footer class="colophon">
+    <span>SmartBiz BD · brainstorming keepsake · generated 06 Sep 2026</span>
+    <span>Source of truth: brainstorm-smartbiz-bd-2026-09-06/.memlog.md</span>
+    <span class="bn">অর্ডার থেকে টাকা — সব হিসাব এক জায়গায়</span>
+  </footer>
+</div>
+</body>
+</html>
