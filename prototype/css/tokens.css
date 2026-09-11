@@ -1,0 +1,139 @@
+/* SmartBiz BD — design tokens.
+   Money-truth product: the palette is built so that a figure's *status*
+   (earned vs realized, complete vs incomplete) is legible before the number is read. */
+
+:root {
+  /* ---- Ink & canvas -------------------------------------------------- */
+  --ink-900: #0B1014;
+  --ink-800: #131A20;
+  --ink-700: #1C242B;
+  --ink-600: #2A343C;
+
+  --canvas: #F6F5F1;        /* warm paper, not blue-grey — reads as ledger, not dashboard */
+  --canvas-sunk: #EFEDE7;
+  --surface: #FFFFFF;
+  --surface-raised: #FFFFFF;
+
+  /* line and line-strong are ruled ledger lines — decoration, so no contrast
+     floor applies. A border that *bounds a control* is a different job and needs
+     3:1 (WCAG 1.4.11), which neither of them meets: hence line-control. */
+  --line: #E4E0D8;
+  --line-strong: #D2CDC2;
+  --line-control: #8C8272;
+  --line-ink: #263038;
+
+  /* ---- Text ----------------------------------------------------------
+     All three tones clear 4.5:1 on canvas, canvas-sunk and surface. The ramp
+     is darker than it looks like it needs to be because the canvas is warm and
+     light: 4.5 against #EFEDE7 is a stricter bar than against white. */
+  --text: #0B1014;
+  --text-2: #414A52;
+  --text-3: #656C74;
+  --text-on-ink: #F3F1EC;
+  --text-on-ink-2: #A8B2BA;
+  --text-on-ink-3: #7F8B94;
+
+  /* ---- Money green (primary) ----------------------------------------
+     Jewel green: locally resonant, and the colour of cash confirmed. */
+  --green-900: #06382A;
+  --green-700: #0A5B44;
+  --green-600: #0C6E52;
+  --green-500: #128766;
+  --green-100: #DEEFE8;
+  --green-050: #EFF7F3;
+
+  /* ---- Brass (premium accent, used sparingly) ------------------------ */
+  --brass-700: #896532;
+  --brass-600: #A97F42;
+  --brass-500: #C09755;
+  --brass-100: #F3E9D9;
+  --brass-050: #FAF5EC;
+
+  /* ---- Amber = pending, in custody, not yet yours -------------------- */
+  --amber-700: #8F5C11;
+  --amber-600: #B4761A;
+  --amber-500: #D9932A;
+  --amber-100: #F8EBD3;
+  --amber-050: #FCF6EA;
+
+  /* ---- Red = loss, variance, negative -------------------------------- */
+  --red-700: #8C2A2A;
+  --red-600: #A83232;
+  --red-500: #C24444;
+  --red-100: #F6E0E0;
+  --red-050: #FBEFEF;
+
+  /* ---- Teal = informational, system, simulated ----------------------- */
+  --teal-700: #0F5C5A;
+  --teal-600: #12706E;
+  --teal-100: #DCEDED;
+  --teal-050: #EEF6F6;
+
+  /* ---- Violet = AI / assisted, never used for a figure --------------- */
+  --violet-700: #4A3A7A;
+  --violet-600: #5C4A96;
+  --violet-100: #E8E3F4;
+  --violet-050: #F4F1FA;
+
+  /* ---- Semantic ------------------------------------------------------ */
+  --realized: var(--green-600);   /* money in hand */
+  --earned: var(--amber-600);     /* money earned, not yet collected */
+  --incomplete: var(--brass-600); /* figure with a completeness caveat */
+
+  /* ---- Type ---------------------------------------------------------- */
+  --font-ui: 'Hind Siliguri', 'Noto Sans Bengali', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-display: 'Noto Serif Bengali', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+  --font-mono: 'SF Mono', ui-monospace, 'JetBrains Mono', Menlo, Consolas, monospace;
+
+  --fs-display: 2.125rem;   /* 34 */
+  --fs-h1: 1.5rem;          /* 24 */
+  --fs-h2: 1.1875rem;       /* 19 */
+  --fs-h3: 1.0625rem;       /* 17 */
+  --fs-body: 0.9375rem;     /* 15 */
+  --fs-sm: 0.8125rem;       /* 13 */
+  --fs-xs: 0.75rem;         /* 12 */
+  --fs-micro: 0.6875rem;    /* 11 — labels, eyebrows only */
+
+  --lh-tight: 1.15;
+  --lh-snug: 1.35;
+  --lh-body: 1.55;
+
+  --tracking-eyebrow: 0.09em;
+  --tracking-tight: -0.015em;
+
+  /* ---- Space (4px base) ---------------------------------------------- */
+  --s1: 4px;   --s2: 8px;   --s3: 12px;  --s4: 16px;
+  --s5: 20px;  --s6: 24px;  --s7: 32px;  --s8: 40px;
+  --s9: 56px;  --s10: 72px;
+
+  /* ---- Radius -------------------------------------------------------- */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-xl: 20px;
+  --r-full: 999px;
+
+  /* ---- Elevation — layered and quiet ---------------------------------- */
+  --e1: 0 1px 2px rgba(11, 16, 20, 0.05);
+  --e2: 0 1px 2px rgba(11, 16, 20, 0.05), 0 6px 16px -8px rgba(11, 16, 20, 0.10);
+  --e3: 0 1px 3px rgba(11, 16, 20, 0.06), 0 14px 32px -12px rgba(11, 16, 20, 0.16);
+  --e4: 0 2px 6px rgba(11, 16, 20, 0.08), 0 28px 60px -20px rgba(11, 16, 20, 0.28);
+
+  /* ---- Motion --------------------------------------------------------- */
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --t-fast: 130ms;
+  --t: 200ms;
+  --t-slow: 320ms;
+
+  /* ---- Frame ---------------------------------------------------------- */
+  --phone-w: 390px;
+  --phone-h: 812px;
+  --sidebar-w: 244px;
+  --z-sheet: 60;
+  --z-toast: 80;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --t-fast: 1ms; --t: 1ms; --t-slow: 1ms; }
+}

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SmartBiz BD — Interactive UX Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Noto+Serif+Bengali:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/app.css">
+<link rel="stylesheet" href="css/screens.css">
+</head>
+<body data-device="phone" data-lang="bn" data-role="owner">
+
+<!-- ============ presentation chrome (not part of the product) ============ -->
+<header id="chrome">
+  <div class="chrome-mark">
+    <span class="glyph">স</span>
+    <span class="wordmark">Smart<em>Biz</em> BD</span>
+    <span class="tag">UX Prototype · v1</span>
+  </div>
+
+  <div class="chrome-field">
+    <label for="c-screen">Screen</label>
+    <select class="chrome-select" id="c-screen" style="max-width:230px"></select>
+  </div>
+
+  <div class="chrome-field">
+    <label>Role</label>
+    <select class="chrome-select" id="c-role">
+      <option value="owner">Owner</option>
+      <option value="manager">Manager</option>
+      <option value="staff">Staff</option>
+      <option value="packer">Packer</option>
+      <option value="accountant">Accountant</option>
+    </select>
+  </div>
+
+  <div class="seg brass" id="c-lang" role="group" aria-label="Language">
+    <button data-lang="bn" aria-pressed="true">বাংলা</button>
+    <button data-lang="en" aria-pressed="false">EN</button>
+  </div>
+
+  <div class="seg" id="c-device" role="group" aria-label="Device">
+    <button data-device="phone" aria-pressed="true">Phone</button>
+    <button data-device="desktop" aria-pressed="false">Desktop</button>
+  </div>
+
+  <button class="chrome-btn" id="c-flows">Flows</button>
+  <button class="chrome-btn on" id="c-ai">AI on</button>
+</header>
+
+<!-- ============ stage ============ -->
+<main id="stage">
+  <div id="viewport">
+    <div id="app"></div>
+  </div>
+</main>
+
+<!-- load order matters: tokens → helpers → data → components → screens → router -->
+<script src="js/i18n.js"></script>
+<script src="js/data.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/screens-core.js"></script>
+<script src="js/screens-orders.js"></script>
+<script src="js/screens-catalog.js"></script>
+<script src="js/screens-money.js"></script>
+<script src="js/screens-system.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

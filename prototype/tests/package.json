@@ -1,0 +1,19 @@
+{
+  "name": "smartbiz-prototype-tests",
+  "private": true,
+  "description": "Verification harnesses for the SmartBiz BD UX prototype. Seven harnesses, each with a different blind spot.",
+  "scripts": {
+    "test": "node smoke.js && node truth.js && node flows.js && node classes.js && node contrast.js",
+    "smoke": "node smoke.js",
+    "truth": "node truth.js",
+    "flows": "node flows.js",
+    "classes": "node classes.js",
+    "contrast": "node contrast.js",
+    "shots": "node shot.js",
+    "measure": "node measure.js"
+  },
+  "dependencies": {
+    "jsdom": "^29.1.1",
+    "ws": "^8.21.3"
+  }
+}

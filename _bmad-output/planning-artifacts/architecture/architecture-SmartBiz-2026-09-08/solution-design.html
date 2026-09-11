@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SmartBiz BD — Solution Design</title>
+<style>
+:root{
+  --ink-900:#0B1014; --ink-800:#131A20; --ink-700:#1C242B; --ink-600:#2A343C;
+  --canvas:#F6F5F1; --canvas-sunk:#EFEDE7; --surface:#FFFFFF;
+  --line:#E4E0D8; --line-strong:#D2CDC2; --line-control:#8C8272;
+  --text:#0B1014; --text-2:#414A52; --text-3:#656C74;
+  --text-on-ink:#F3F1EC; --text-on-ink-2:#A8B2BA;
+  --green-700:#0A5B44; --green-600:#0C6E52; --green-100:#DEEFE8; --green-050:#EFF7F3;
+  --brass-700:#896532; --brass-600:#A97F42; --brass-100:#F3E9D9; --brass-050:#FAF5EC;
+  --amber-700:#8F5C11; --amber-600:#B4761A; --amber-100:#F8EBD3; --amber-050:#FCF6EA;
+  --red-700:#8C2A2A; --red-600:#A83232; --red-100:#F6E0E0; --red-050:#FBEFEF;
+  --teal-700:#0F5C5A; --teal-600:#12706E; --teal-100:#DCEDED; --teal-050:#EEF6F6;
+  --violet-700:#4A3A7A; --violet-600:#5C4A96; --violet-100:#E8E3F4; --violet-050:#F4F1FA;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--canvas); color:var(--text);
+  font:16px/1.65 ui-sans-serif,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{display:grid; grid-template-columns:260px minmax(0,1fr); gap:0; max-width:1320px; margin:0 auto}
+nav{
+  position:sticky; top:0; align-self:start; height:100vh; overflow-y:auto;
+  background:var(--ink-900); color:var(--text-on-ink); padding:28px 20px 40px;
+}
+nav .brand{font-weight:700; letter-spacing:.02em; font-size:15px; margin-bottom:2px}
+nav .sub{color:var(--text-on-ink-2); font-size:12.5px; margin-bottom:22px; line-height:1.5}
+nav a{
+  display:block; color:var(--text-on-ink-2); text-decoration:none; font-size:13.5px;
+  padding:5px 8px; border-radius:4px; border-left:2px solid transparent;
+}
+nav a:hover{color:var(--text-on-ink); background:var(--ink-700); border-left-color:var(--brass-500,#C09755)}
+nav .grp{color:#7F8B94; font-size:11px; text-transform:uppercase; letter-spacing:.09em; margin:20px 0 6px 8px}
+main{background:var(--canvas); padding:44px 52px 90px; min-width:0}
+header.doc{border-bottom:2px solid var(--ink-900); padding-bottom:22px; margin-bottom:34px}
+header.doc h1{font-size:30px; line-height:1.2; margin:0 0 8px; letter-spacing:-.01em}
+header.doc .tag{color:var(--text-2); font-size:14.5px; margin:0}
+.meta{display:flex; flex-wrap:wrap; gap:8px; margin-top:16px}
+.meta span{
+  background:var(--surface); border:1px solid var(--line-strong); color:var(--text-2);
+  font-size:12px; padding:3px 9px; border-radius:3px;
+}
+h2{
+  font-size:21px; margin:52px 0 14px; padding-bottom:7px;
+  border-bottom:1px solid var(--line-strong); letter-spacing:-.01em;
+}
+h3{font-size:16.5px; margin:30px 0 9px}
+p{margin:0 0 13px; max-width:76ch}
+ul,ol{margin:0 0 13px; padding-left:22px; max-width:74ch}
+li{margin-bottom:6px}
+code{
+  font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  background:var(--canvas-sunk); border:1px solid var(--line); border-radius:3px; padding:1px 5px;
+}
+pre{
+  background:var(--ink-900); color:var(--text-on-ink); padding:16px 18px; border-radius:5px;
+  overflow-x:auto; font:12.5px/1.62 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+pre code{background:none; border:0; padding:0; color:inherit; font-size:inherit}
+table{border-collapse:collapse; width:100%; margin:0 0 18px; background:var(--surface); font-size:14px}
+caption{caption-side:top; text-align:left; color:var(--text-3); font-size:12.5px; padding-bottom:7px}
+th,td{border:1px solid var(--line); padding:8px 11px; text-align:left; vertical-align:top}
+th{background:var(--canvas-sunk); font-weight:650; font-size:13px}
+tbody tr:nth-child(even){background:var(--canvas)}
+.note{border-left:3px solid var(--teal-600); background:var(--teal-050); padding:13px 17px; margin:0 0 18px; border-radius:0 4px 4px 0}
+.warn{border-left:3px solid var(--amber-600); background:var(--amber-050); padding:13px 17px; margin:0 0 18px; border-radius:0 4px 4px 0}
+.bad{border-left:3px solid var(--red-600); background:var(--red-050); padding:13px 17px; margin:0 0 18px; border-radius:0 4px 4px 0}
+.good{border-left:3px solid var(--green-600); background:var(--green-050); padding:13px 17px; margin:0 0 18px; border-radius:0 4px 4px 0}
+.note p:last-child,.warn p:last-child,.bad p:last-child,.good p:last-child{margin-bottom:0}
+.k{font-weight:650}
+figure{margin:0 0 20px; background:var(--surface); border:1px solid var(--line-strong); border-radius:5px; padding:20px}
+figure svg{display:block; width:100%; height:auto}
+figcaption{color:var(--text-3); font-size:12.5px; margin-top:12px; border-top:1px solid var(--line); padding-top:9px}
+.ad{background:var(--surface); border:1px solid var(--line-strong); border-left:3px solid var(--ink-600); border-radius:0 4px 4px 0; padding:14px 18px; margin:0 0 12px}
+.ad h4{margin:0 0 7px; font-size:14.5px}
+.ad h4 .id{
+  display:inline-block; background:var(--ink-900); color:var(--text-on-ink);
+  font:11.5px/1 ui-monospace,monospace; padding:4px 6px; border-radius:3px; margin-right:8px; vertical-align:2px;
+}
+.ad p{margin:0 0 5px; font-size:14px; max-width:none}
+.ad .lbl{color:var(--brass-700); font-weight:650; font-size:12px; text-transform:uppercase; letter-spacing:.05em}
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+.pill{display:inline-block; font-size:11.5px; padding:2px 7px; border-radius:10px; border:1px solid; margin-right:5px}
+.pill.ok{color:var(--green-700); border-color:var(--green-600); background:var(--green-100)}
+.pill.no{color:var(--red-700); border-color:var(--red-600); background:var(--red-100)}
+.pill.mid{color:var(--amber-700); border-color:var(--amber-600); background:var(--amber-100)}
+footer{margin-top:64px; padding-top:20px; border-top:1px solid var(--line-strong); color:var(--text-3); font-size:13px}
+@media (max-width:900px){
+  .wrap{grid-template-columns:1fr}
+  nav{position:static; height:auto}
+  main{padding:28px 20px 60px}
+  .grid2{grid-template-columns:1fr}
+}
+@media print{
+  nav{display:none} .wrap{display:block} main{padding:0}
+  body{background:#fff} figure,table,.ad{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav>
+  <div class="brand">SmartBiz BD</div>
+  <div class="sub">Solution Design<br>Architecture, Step 5 of the BMAD chain</div>
+  <div class="grp">Orientation</div>
+  <a href="#problem">1 · The problem</a>
+  <a href="#reading">2 · Upstream artifacts</a>
+  <a href="#paradigm">3 · The paradigm</a>
+  <div class="grp">Structure</div>
+  <a href="#modules">4 · Module structure</a>
+  <a href="#data">5 · The data model</a>
+  <div class="grp">The hard parts</div>
+  <a href="#ledger">6 · Stock, cost and locking</a>
+  <a href="#settlement">7 · Settlement</a>
+  <a href="#gate">8 · The money gate</a>
+  <a href="#bangla">9 · Bangla rendering</a>
+  <a href="#insight">10 · The assistant</a>
+  <div class="grp">Delivery</div>
+  <a href="#envelope">11 · Operational envelope</a>
+  <a href="#testing">12 · Testing strategy</a>
+  <a href="#plan">13 · Delivery and the floor</a>
+  <div class="grp">Evidence</div>
+  <a href="#validation">14 · How this was reviewed</a>
+  <a href="#conflicts">15 · Conflicts resolved</a>
+  <a href="#register">16 · Decision register</a>
+  <a href="#deferred">17 · Not decided</a>
+</nav>
+
+<main>
+<header class="doc">
+  <h1>SmartBiz BD — Solution Design</h1>
+  <p class="tag">A Bangla-first order-to-cash system for Bangladeshi SME sellers, and the architecture that makes its money figures trustworthy.</p>
+  <div class="meta">
+    <span>Step 5 of 11 · Architecture</span>
+    <span>8 September 2026</span>
+    <span>24 architecture decisions</span>
+    <span>82 FR · 28 NFR · 15 metrics</span>
+    <span>Solo build, free-tier deployment</span>
+  </div>
+</header>
+
+<p>This document explains the architecture to a reader who has not seen the code. The authoritative artifact is
+<code>ARCHITECTURE-SPINE.md</code> beside this file — call it the architecture spine; it is terse by design and states rules without arguing for
+them. This document carries the argument — what each decision prevents, and what would have gone wrong without it.</p>
+
+<h2 id="problem">1 · The problem the architecture has to solve</h2>
+
+<p>A small Bangladeshi seller ships cash-on-delivery (COD) through third-party couriers. They hand a parcel to a courier and
+are paid days or weeks later, minus fees, sometimes minus a shortfall nobody explains. The money exists in three
+states at once: <span class="k">earned</span> (delivered, not yet paid out), <span class="k">realized</span> (actually
+received), and <span class="k">lost</span> (never reconciled). Their entire question is
+<em>which of this money is actually mine?</em></p>
+
+<p>That question makes this a harder engineering problem than building a CRUD order tracker, and it does so in one specific way:
+<span class="k">almost every number on the screen is derived, and several of them can be derived more than one way.</span>
+Profit depends on which cost flowed, which basis revenue is recognized on, and how much of the data is even present.
+A system where two screens answer the same question differently is worse than no system, because the seller trusts it
+before discovering it lied.</p>
+
+<div class="note">
+<p><span class="k">So the architecture's job is narrow and specific:</span> make divergence structurally impossible.
+Not discouraged by convention, not caught in review — impossible, or at least loud. Almost every decision below is
+that job in a different costume.</p>
+</div>
+
+<h3>What the requirements add on top</h3>
+<table>
+<caption>Constraints that shaped the design more than any preference did</caption>
+<thead><tr><th>Constraint</th><th>Source</th><th>Architectural consequence</th></tr></thead>
+<tbody>
+<tr><td>Multi-tenant: many businesses, one deployment</td><td>NFR-1</td><td>Tenant scoping must be a default, not a filter someone remembers (<a href="#register">AD-2</a>)</td></tr>
+<tr><td>Five roles, 31 capabilities, cost and margin hidden from helpers</td><td>PRD §6.2</td><td>A per-cell gate on every egress surface, not just on pages (<a href="#gate">§8</a>)</td></tr>
+<tr><td>Seven operations must be reversible without destroying history</td><td>FR-64, NFR-23</td><td>Compensating entries over an immutable ledger (<a href="#ledger">§6</a>)</td></tr>
+<tr><td>Bangla is the default language, not a translation layer</td><td>FR-66, NFR-18</td><td>One text-shaping stack for screen, PDF and image (<a href="#bangla">§9</a>)</td></tr>
+<tr><td>Free-tier hosting, no billing account anywhere</td><td>PRD §8, NFR-20</td><td>512 MB, one process, no scheduler, no durable disk (<a href="#envelope">§11</a>)</td></tr>
+<tr><td>Every AI feature must be fully optional</td><td>PRD §4.3, FR-79</td><td>Ports whose fallback is always built and always tested (<a href="#insight">§10</a>)</td></tr>
+<tr><td>Solo developer, weeks not months</td><td>Project constraint</td><td>One deployable, no service boundaries, a declared floor (<a href="#plan">§13</a>)</td></tr>
+</tbody>
+</table>
+
+<h2 id="reading">2 · How this fits the other artifacts</h2>
+
+<p>Five artifacts precede this one, and this architecture treats all of them as settled input. It chooses
+<em>mechanism</em>; it never reopens <em>scope</em>. Where it found a genuine contradiction it raised it rather than
+silently overriding — see <a href="#conflicts">§15</a>.</p>
+
+<table>
+<thead><tr><th>Artifact</th><th>What it fixed</th><th>How this document treats it</th></tr></thead>
+<tbody>
+<tr><td>Brainstorm + Product Brief</td><td>Positioning, the differentiating insight</td><td>Inherited silently</td></tr>
+<tr><td>PRD</td><td>82 functional and 28 non-functional requirements, module depth caps, the §6.2 Role matrix, the retreat order</td><td>Binding. Requirement numbers are cited throughout</td></tr>
+<tr><td><code>DESIGN.md</code> — the design spine</td><td>Color tokens, contrast floors, component inventory, the amber/brass redundancy rule</td><td>Binding. The presentation layer implements these values and does not choose them</td></tr>
+<tr><td><code>EXPERIENCE.md</code> — the experience spine</td><td>58 routes over 56 screens, state patterns, named reversible operations, accessibility floors</td><td>Binding, and amended in two places by this step's findings</td></tr>
+<tr><td><code>prototype/</code></td><td>A navigable reference implementation of all 58 routes in both languages</td><td>Evidence of feasibility, and the source of a test harness worth keeping (<a href="#testing">§12</a>)</td></tr>
+</tbody>
+</table>
+
+<h2 id="paradigm">3 · The paradigm, and the three things it buys</h2>
+
+<p>A <span class="k">layered modular monolith with a derived-state ledger core and ports-and-adapters at every optional
+transport</span>. One Django project, one process, one database. Every capped capability is a Django app owning its own
+tables; the seams between them are enforced by dependency rules rather than by network boundaries. Concretely: Django
+6.1 with Gunicorn, PostgreSQL 17, React 19 over Inertia, and WeasyPrint for documents — full versions and the
+deployment topology are in <a href="#envelope">§11</a>.</p>
+
+<h3>Why a monolith is the right answer here, not the lazy one</h3>
+<p>Microservices would cost the thing this product cannot lose. Confirming an order writes an inventory movement,
+updates a stock projection, snapshots a cost and writes an audit entry — and either all four happen or none do
+(NFR-6). Across a service boundary that becomes a distributed transaction, or a saga, or a silent inconsistency.
+At the stated volume of around 50 orders a day, a service boundary buys nothing and costs atomicity. On a 512 MB
+instance it is not even available.</p>
+
+<h3>Why the ledger core is the load-bearing choice</h3>
+<p>Stock and weighted-average cost are <span class="k">not stored values that code updates</span>. They are folds over
+an immutable, insert-only table of typed movements — event sourcing applied to one aggregate, in two dimensions at
+once. This single decision hands the design four things for free: reversal without deletion (FR-64), a complete
+audit trail (FR-63), reproducibility of any historical figure, and a reconciliation test that can prove the
+projections are correct rather than merely plausible.</p>
+
+<h3>Why ports at the optional seams</h3>
+<p>The PRD marks the AI assistant, courier integration, OCR and email as optional — the product must be whole without
+any of them. Treated as ordinary dependencies, "optional" decays into "required" the moment a concrete client is
+imported into a core flow. Treated as ports, the fallback adapter is always present, always built, and covered by a
+full test pass with every provider absent.</p>
+
+<h2 id="modules">4 · Module structure</h2>
+
+<p>Sixteen Django apps in five strictly-ordered tiers. A module may call only modules <em>strictly below</em> itself. The rule
+that makes this workable is a distinction most layering rules omit:</p>
+
+<div class="grid2">
+<div class="good"><p><span class="k">A schema reference is legal in any direction.</span> A <code>ForeignKey</code>
+declared as a lazy string — <code>"orders.Order"</code> — is how the entity diagram is built. Forbidding these would
+mean rebuilding referential integrity by hand.</p></div>
+<div class="bad"><p><span class="k">A behavioral dependency is forbidden upward.</span> Importing another module's
+models, managers or querysets to read or write through them is out. Cross-module behavior goes through that module's
+<code>services</code> and <code>selectors</code>, and nothing else.</p></div>
+</div>
+
+<figure>
+<svg viewBox="0 0 900 400" role="img" aria-label="Five-tier module dependency graph, dependencies pointing downward only">
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#8C8272"/>
+    </marker>
+  </defs>
+  <g font-family="ui-sans-serif,Arial" font-size="13">
+    <rect x="150" y="14" width="600" height="54" rx="5" fill="#F4F1FA" stroke="#5C4A96"/>
+    <text x="166" y="36" font-size="11.5" font-weight="700" fill="#4A3A7A">L5 · PRESENTERS</text>
+    <text x="166" y="55" fill="#0B1014">reports · documents · insights</text>
+    <text x="735" y="55" text-anchor="end" font-size="11.5" fill="#656C74">may call anything below</text>
+
+    <rect x="150" y="92" width="600" height="54" rx="5" fill="#EFF7F3" stroke="#0C6E52"/>
+    <text x="166" y="114" font-size="11.5" font-weight="700" fill="#0A5B44">L4 · DERIVATION</text>
+    <text x="166" y="133" fill="#0B1014">money — every figure derived from more than one module</text>
+
+    <rect x="150" y="170" width="600" height="54" rx="5" fill="#FCF6EA" stroke="#B4761A"/>
+    <text x="166" y="192" font-size="11.5" font-weight="700" fill="#8F5C11">L3 · TRANSACTIONAL</text>
+    <text x="166" y="211" fill="#0B1014">orders · settlement</text>
+
+    <rect x="150" y="248" width="600" height="54" rx="5" fill="#EEF6F6" stroke="#12706E"/>
+    <text x="166" y="270" font-size="11.5" font-weight="700" fill="#0F5C5A">L2 · RECORDS</text>
+    <text x="166" y="289" fill="#0B1014">catalog · inventory · customers · suppliers · expenses · couriers</text>
+
+    <rect x="150" y="326" width="600" height="54" rx="5" fill="#EFEDE7" stroke="#2A343C"/>
+    <text x="166" y="348" font-size="11.5" font-weight="700" fill="#1C242B">L1 · FOUNDATION</text>
+    <text x="166" y="367" fill="#0B1014">tenancy · accounts · audit · localization — depend on nothing</text>
+
+    <path d="M120,68 L120,326" stroke="#8C8272" stroke-width="1.5" marker-end="url(#ar)" fill="none"/>
+    <text x="112" y="200" text-anchor="end" font-size="11.5" fill="#656C74" transform="rotate(-90 112 200)">calls downward only</text>
+    <path d="M780,146 L780,248" stroke="#8C8272" stroke-width="1.2" marker-end="url(#ar)" fill="none"/>
+    <path d="M810,146 L810,326" stroke="#8C8272" stroke-width="1.2" marker-end="url(#ar)" fill="none"/>
+    <path d="M840,224 L840,326" stroke="#8C8272" stroke-width="1.2" marker-end="url(#ar)" fill="none"/>
+  </g>
+</svg>
+<figcaption>Dependencies point down. A schema reference is legal in any direction; a behavioral call is legal only
+downward. The graph is acyclic by construction, so no pair of modules can import each other.</figcaption>
+</figure>
+
+<h3>The decision inside this diagram that took the longest to get right</h3>
+
+<p>The first draft put derived balances where they intuitively belong: Customer Due in <code>customers</code>, Supplier
+Balance in <code>suppliers</code>. Both immediately needed to read <em>upward</em> — a customer's due depends on their
+orders, which sit a tier above. Every fix that preserved the intuition also punched a hole in the dependency graph.</p>
+
+<div class="good">
+<p><span class="k">The resolution:</span> <code>money</code> owns <em>every</em> figure derived from more than one
+module, and identity modules hold records only — never a balance about themselves. Customer Due, Supplier Balance,
+Money With Couriers, Unsettled Profit, Collection Status, Customer Risk Ratio and Aging Buckets all live in
+one module.</p>
+<p>That one relocation closed four separate findings at once: the missing upward edge, the tier violation, the
+<em>seven derived balances that had no declared owner and could each have been computed in two places</em>, and an
+original business rule about customer dues that had no home anywhere in the design.</p>
+</div>
+
+<h3>Sixteen apps, fifteen capped capabilities</h3>
+<p>The counts deliberately do not match, and saying so is cheaper than an artificial merge:
+<code>tenancy</code> and <code>accounts</code> together serve one capability row, and <code>money</code> serves the
+dashboard row plus every derivation named above. The capability map in the spine is authoritative over the directory
+listing.</p>
+
+<h2 id="data">5 · The data model</h2>
+
+<p>Twenty-four entities. Two properties of the shape matter more than the entity list:</p>
+
+<ol>
+<li><span class="k">No entity stores a derived balance.</span> There is no <code>DUE</code> table, no supplier-balance
+column, no profit column. Every one of those is computed. A stored balance is a second source of truth, and a second
+source of truth is the defect this whole system exists to avoid.</li>
+<li><span class="k">The movement table carries two signed dimensions</span> — quantity <em>and</em> cost — which is what
+makes §6 work.</li>
+</ol>
+
+<h3>Integrity is declared in the database, not only in services</h3>
+<div class="bad">
+<p>The most efficient way to void the entire ledger paradigm is one line: <code>on_delete=CASCADE</code>. A Django
+cascading delete <span class="k">never calls</span> <code>Model.delete()</code>, so no amount of service-layer
+discipline can stop it. The insert-only guarantee dies silently, and every reconciliation test still passes because
+the rows are simply gone.</p>
+</div>
+<p>So integrity that must hold <em>regardless of code path</em> is declared where no code path can bypass it:
+<code>PROTECT</code> on anything a ledger or audit row points at; named unique constraints on
+<code>SettlementMatch(order)</code>, <code>CompensatingEntry(original)</code>, customer phone per business, variant
+combination, and settlement-import content hash; check constraints for movement sign and non-negative projections.
+A data migration touching money or stock writes audit entries exactly as a service would.</p>
+
+<h2 id="ledger">6 · Stock, cost and locking — the ledger, and the bug that nearly shipped</h2>
+
+<p>The first draft of this architecture had an asymmetry that looked harmless and was not. Quantity was an immutable
+fold over movements. Cost was a stored, mutable weighted average. Both descriptions sounded correct.</p>
+
+<div class="bad">
+<p><span class="k">The failure, concretely.</span> Buy 10 units at ৳100, then 10 more at ৳120. Sell 8 at the blended
+৳110. Now reverse the <em>first</em> purchase — a normal correction, one of the seven reversible operations.</p>
+<ul>
+<li>The quantity check passes: 12 remaining ≥ 10 being removed. Nothing objects.</li>
+<li>The stored average, asked to un-mix a blend it no longer has the inputs for, becomes <span class="k">৳160</span>.</li>
+<li>The truth is ৳120. Every subsequent order line is now costed wrong, and every profit figure with it.</li>
+</ul>
+<p>The requirement (FR-64) claims the cost contribution "backs out cleanly." That claim is
+<span class="k">arithmetically false</span> unless cost is a fold too. No test in the suite would have caught it,
+because every individual assertion still held.</p>
+</div>
+
+<figure>
+<svg viewBox="0 0 900 300" role="img" aria-label="Inventory movements folding into quantity and cost projections">
+  <defs>
+    <marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#8C8272"/>
+    </marker>
+  </defs>
+
+  <g font-family="ui-sans-serif,Arial" font-size="12.5">
+    <text x="14" y="20" font-size="11.5" font-weight="700" fill="#4A3A7A">IMMUTABLE · INSERT-ONLY</text>
+    <rect x="14" y="30" width="330" height="180" rx="5" fill="#FFFFFF" stroke="#D2CDC2"/>
+    <text x="30" y="52" font-weight="700" fill="#0B1014">INVENTORY_MOVEMENT</text>
+    <line x1="30" y1="60" x2="328" y2="60" stroke="#E4E0D8"/>
+    <text x="30" y="80" fill="#414A52">STOCK_IN</text><text x="200" y="80" fill="#0C6E52">+10</text><text x="262" y="80" fill="#0C6E52">+1000.00</text>
+    <text x="30" y="102" fill="#414A52">STOCK_IN</text><text x="200" y="102" fill="#0C6E52">+10</text><text x="262" y="102" fill="#0C6E52">+1200.00</text>
+    <text x="30" y="124" fill="#414A52">ORDER_ALLOC</text><text x="200" y="124" fill="#A83232">−8</text><text x="262" y="124" fill="#A83232">−880.00</text>
+    <text x="30" y="146" fill="#414A52">REVERSAL</text><text x="200" y="146" fill="#A83232">−10</text><text x="262" y="146" fill="#A83232">−1000.00</text>
+    <line x1="30" y1="160" x2="328" y2="160" stroke="#D2CDC2"/>
+    <text x="30" y="180" font-weight="700" fill="#0B1014">Σ</text><text x="200" y="180" font-weight="700" fill="#0B1014">2</text><text x="262" y="180" font-weight="700" fill="#0B1014">320.00</text>
+    <text x="30" y="199" font-size="11" fill="#656C74">nothing above this line is ever updated or deleted</text>
+
+    <path d="M352,120 L432,120" stroke="#8C8272" stroke-width="1.5" marker-end="url(#ar2)" fill="none"/>
+    <text x="392" y="112" text-anchor="middle" font-size="11" fill="#656C74">fold</text>
+
+    <text x="440" y="20" font-size="11.5" font-weight="700" fill="#0A5B44">PROJECTION · REBUILDABLE</text>
+    <rect x="440" y="30" width="446" height="180" rx="5" fill="#EFF7F3" stroke="#0C6E52"/>
+    <text x="458" y="52" font-weight="700" fill="#0B1014">STOCK_LEVEL</text>
+    <line x1="458" y1="60" x2="868" y2="60" stroke="#DEEFE8"/>
+    <text x="458" y="82" fill="#414A52">quantity</text><text x="640" y="82" font-weight="700" fill="#0B1014">2</text>
+    <text x="700" y="82" font-size="11" fill="#656C74">= Σ quantity</text>
+    <text x="458" y="106" fill="#414A52">cost pool</text><text x="640" y="106" font-weight="700" fill="#0B1014">৳320.00</text>
+    <text x="700" y="106" font-size="11" fill="#656C74">= Σ cost_total</text>
+    <text x="458" y="130" fill="#414A52">unit cost</text><text x="640" y="130" font-weight="700" fill="#0C6E52">৳160.0000</text>
+    <text x="700" y="130" font-size="11" fill="#656C74">= 320 ÷ 2</text>
+    <line x1="458" y1="146" x2="868" y2="146" stroke="#DEEFE8"/>
+    <text x="458" y="167" font-size="11.5" fill="#414A52">Exact, because the reversal removed the ৳1,000 it</text>
+    <text x="458" y="184" font-size="11.5" fill="#414A52">itself contributed — not a share of a blended average.</text>
+    <text x="458" y="201" font-size="11" fill="#656C74">Reconciliation asserts both dimensions against the ledger.</text>
+
+    <rect x="14" y="234" width="872" height="52" rx="4" fill="#FCF6EA" stroke="#B4761A"/>
+    <text x="30" y="256" font-size="12.5" font-weight="700" fill="#8F5C11">The ৳160 above is correct here and was a bug before.</text>
+    <text x="30" y="275" font-size="12.5" fill="#414A52">Two remaining units, ৳320 of purchase cost genuinely still in the pool — the 8 sold took their ৳880 with them. A stored average could not reach this number.</text>
+  </g>
+</svg>
+<figcaption>Weighted-average cost as a fold.</figcaption>
+</figure>
+
+<p>Two smaller consequences follow, and both were gaps until this was fixed. Derived unit costs need
+<span class="k">four decimal places</span>, not two — ৳1,073.85 over 10 units is ৳107.3850, and rounding that to two
+leaves five poisha permanently unreconciled. And purchase cost is <span class="k">nullable with no default</span>: a
+<code>0.00</code> default would silently void the completeness indicator in the one direction that flatters the seller
+falsely.</p>
+
+<h3>Concurrency across shared balances</h3>
+<p>Two orders confirmed simultaneously must not both allocate the last unit. Every read-then-write over a shared
+balance takes <code>select_for_update()</code>, with the comparison inside the lock and inside the same transaction as
+the write. Four lock classes are named — stock projections, Customer Due, Supplier Balance, and settlement batch close
+— under <span class="k">one global ordering</span> (declared table order, then primary key) so that no two code paths
+can acquire them in opposite sequence and deadlock.</p>
+
+<h2 id="settlement">7 · Settlement — where a passing test suite hides a double count</h2>
+
+<p>A courier remits a lump sum against many parcels. The module that reconciles it is the one the product exists for,
+and it has two failure modes that are invisible to ordinary testing.</p>
+
+<div class="bad">
+<p><span class="k">One:</span> a matcher that spreads one ৳4,500 remittance across several orders to make the
+arithmetic close. Every total balances. The discrepancy the module exists to surface has been absorbed instead.</p>
+<p><span class="k">Two, subtler:</span> a grouped row raises an accepted ৳3,000 variance, which gets added to realized
+profit — and then added <em>again</em> when the sibling orders settle. Both additions are individually correct. The
+figure is wrong.</p>
+</div>
+
+<div class="good">
+<p>So: a match links <span class="k">exactly one</span> settlement row to <span class="k">exactly one</span> order, and
+is unique on the order at the database level. Cash is recognized <span class="k">once, at the match</span>. A variance
+is a reconciliation record and never a second cash input — its disposition adjusts the receivable, not revenue.
+Partial and grouped remittances resolve into one-to-one matches plus variances, never a fractional allocation.</p>
+<p>Import is idempotent on a content hash unique per business, so re-uploading the same payout file is recognized
+rather than re-applied. And a batch cannot close while holding an undispositioned variance — checked inside the batch
+lock, because otherwise a close racing a match strands the batch in exactly the state this rule forbids, with no route
+out through the interface.</p>
+</div>
+
+<h3>Derived figures carry their own provenance</h3>
+<p>Profit is not one number. It has a <span class="k">recognition basis</span> (earned or realized), a
+<span class="k">period key</span>, and a <span class="k">completeness</span> qualifier. Every derivation returns all
+four — value, basis, period key and completeness — as one inseparable result — a caller <em>cannot</em> obtain the bare value. Fixing only the return shape is not
+enough: two conforming callers still diverge if one buckets by order creation and the other by delivery. So the period
+key is fixed per basis (earned buckets by delivery, realized by settlement date) and the basis per surface is fixed by
+the PRD, not chosen at the call site.</p>
+
+<h2 id="gate">8 · The money gate</h2>
+
+<p>Cost and margin are exactly what a seller does not want a helper to see. PRD §6.2 is a 31-row capability matrix
+across five roles — and it is emphatically <em>not</em> a ladder: the manager sees every figure but no audit trail,
+and inventory staff see purchase cost while being denied margin. Neither fits above or below the other.</p>
+
+<p>One capability function, a per-cell lookup against the matrix, is the single gate — call it the capability gate.
+Two things about its <em>reach</em> had to be found rather than assumed:</p>
+
+<div class="warn">
+<p><span class="k">Reach one — every egress surface, not just pages.</span> This stack renders React components from
+JSON props. Hiding a cost column in a component leaves the cost sitting in the props, one devtools panel away. So the
+gate filters the payload: Inertia props, CSV exports, all three PDFs, the daily summary image and text, and assistant
+answers. A test asserts, per role and per surface, that no denied cell appears in rendered output.</p>
+</div>
+
+<div class="warn">
+<p><span class="k">Reach two — derivable quantities, not just named fields.</span> The requirements produce a live
+instance of this: §6.2 grants inventory staff purchase cost and withholds margin. Margin <em>is</em> the relationship
+between cost and selling price — so any surface showing that role a selling price beside a cost hands them the
+withheld figure by subtraction, while each field individually is compliant. The denied figure therefore constrains
+what the permitted ones may sit beside.</p>
+</div>
+
+<p>That second point resolved a conflict rather than merely adding a rule: it is what preserves the pack slip as a
+genuine, deliberate exception — the one place inventory staff legitimately see an amount to collect, because they are
+otherwise denied the COD figure and cannot hand over the parcel without it.</p>
+
+<h3>What the client may remember</h3>
+<p>A shop phone is shared. If role-filtered props or computed figures persisted client-side, a helper opening the app
+after the owner would see the owner's numbers — inverting the gate entirely, with no server involved. So the client
+persists exactly one thing: <span class="k">the seller's own unsent input</span> — a client-held draft — per device,
+keyed to the member and cleared on logout, role change and member switch. No figure, aggregate or report is ever cached. A cold open shows a
+loading state and fetches; it does not show a remembered number.</p>
+
+<h2 id="bangla">9 · Bangla rendering — one pipeline, and why</h2>
+
+<p>Bangla is a complex script: it needs conjunct formation and vowel-sign repositioning. A browser does this natively.
+<span class="k">Most PDF and image libraries do not.</span></p>
+
+<div class="bad">
+<p>Two renderers mean two font stacks and two shaping paths — and conjuncts come out correct in the invoice and
+broken in the summary card. The breakage is discovered late, because the person testing usually cannot read the script
+closely enough to notice a malformed conjunct in a thumbnail.</p>
+</div>
+
+<p>So one HTML and CSS template set is rendered by WeasyPrint to PDF, and the daily summary image is
+<span class="k">that same PDF rasterized</span> by pypdfium2. One font file, one shaping stack — Pango with HarfBuzz.
+No second renderer, no client-side canvas text, no Chromium in the production image. Playwright is a test-only
+dependency.</p>
+
+<p>This requirement is also the reason the deployment looks the way it does: Pango is a system library, so the
+application needs a container host. That single dependency chain — FR-68 → Pango → Docker → a container platform —
+determined the entire operational envelope in <a href="#envelope">§11</a>.</p>
+
+<h3>Formatting has one owner, with one exemption</h3>
+<p>Digit, currency and date formatting live in <code>localization</code>, and every surface calls it — the React
+formatter is a thin binding over the same contract, never a parallel implementation. The exemption is
+<span class="k">human identifiers</span>: <code>ORD-1042</code> stays in Latin digits, because a seller reads it aloud
+to a courier. And text the seller <em>types</em> — product names, categories, notes — is bilingual <em>data</em> stored
+in paired columns, not translations in a message catalog.</p>
+
+<h2 id="insight">10 · The assistant, and the two things it may not do</h2>
+
+<p>The assistant answers ten fixed questions in Bangla. The architecture inverts the usual arrangement.</p>
+
+<div class="grid2">
+<div class="bad"><p><span class="k">Not this:</span> a model that queries the database and writes prose about what it
+found. Such a model can leak another business's rows, and can route around the capability gate — because it is the thing
+doing the reading.</p></div>
+<div class="good"><p><span class="k">This:</span> the application computes every figure and hands the model
+pre-formatted strings to phrase. A model that cannot see the data cannot misreport it, and there is no gate for it to
+route around.</p></div>
+</div>
+
+<h3>Two hard rules</h3>
+<ul>
+<li><span class="k">The model never originates a number.</span> Returned text is validated before display: every
+numeral in it must appear in the supplied figure set, or templated phrasing is used instead. The failure it prevents
+comes free with a language model — a confident figure nobody computed.</li>
+<li><span class="k">The outbound payload is allow-listed by construction.</span> The builder's parameters are exactly
+question text, query name, and already-computed aggregates. It accepts no object, no queryset, no field dictionary and
+no keyword passthrough — a payload containing a customer field <em>cannot be built</em>, and a test asserts that.
+Free-tier model terms generally permit the provider to retain and learn from submissions, which is why this is enforced
+structurally rather than by a review checklist.</li>
+</ul>
+
+<h3>Three states, three outcomes, three deadlines</h3>
+<table>
+<thead><tr><th>Dimension</th><th>The distinction that had to be made explicit</th></tr></thead>
+<tbody>
+<tr><td>Provider state</td><td><span class="pill mid">absent</span> no key — the fallback <em>is</em> the feature, no notice · <span class="pill no">failing</span> unreachable — fallback plus a transient notice · <span class="pill no">exhausted</span> quota — fallback plus a notice that wording is unassisted. Collapsing these means the same condition is silent in one module and an error in another.</td></tr>
+<tr><td>Routing outcome</td><td><span class="pill ok">routed</span> · <span class="pill mid">withheld</span> understood but not answerable for this role or completeness state · <span class="pill no">unroutable</span> outside the 10. A withheld answer is <em>not</em> a refusal; flattening the two tells the seller the product is broken when it is being careful.</td></tr>
+<tr><td>Deadlines</td><td>Routing ≤ 3s and phrasing ≤ 3s in the provider adapter; compute ≤ 3s as a statement timeout on the <code>money</code> selector — because that stage is the application's own work and has no adapter to hold a deadline. A question always resolves within 9 seconds to an answer or the button list.</td></tr>
+</tbody>
+</table>
+
+<h2 id="envelope">11 · Operational envelope</h2>
+
+<p>Every figure and platform claim here was verified against a live vendor source on 8 September 2026, not recalled.
+Two changed the design.</p>
+
+<figure>
+<svg viewBox="0 0 900 250" role="img" aria-label="Deployment topology: browser, Render container, Neon Postgres and optional Gemini">
+  <defs>
+    <marker id="ar3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#8C8272"/>
+    </marker>
+  </defs>
+
+  <g font-family="ui-sans-serif,Arial" font-size="12.5">
+    <rect x="10" y="70" width="150" height="100" rx="5" fill="#FFFFFF" stroke="#D2CDC2"/>
+    <text x="26" y="94" font-weight="700" fill="#0B1014">Browser</text>
+    <text x="26" y="116" font-size="11.5" fill="#414A52">Mid-range Android</text>
+    <text x="26" y="134" font-size="11.5" fill="#414A52">360px, or laptop</text>
+    <text x="26" y="156" font-size="11.5" fill="#5C4A96">React 19 · Inertia</text>
+
+    <rect x="215" y="24" width="330" height="196" rx="5" fill="#EFEDE7" stroke="#2A343C"/>
+    <text x="231" y="46" font-weight="700" fill="#0B1014">Render free web service · Docker</text>
+    <text x="231" y="64" font-size="11.5" fill="#8C2A2A">0.1 CPU · 512 MB · 1 instance</text>
+    <rect x="231" y="76" width="298" height="30" rx="4" fill="#FFFFFF" stroke="#D2CDC2"/>
+    <text x="245" y="96" font-size="11.5" fill="#0B1014">Gunicorn — a single worker</text>
+    <rect x="231" y="112" width="298" height="30" rx="4" fill="#FFFFFF" stroke="#D2CDC2"/>
+    <text x="245" y="132" font-size="11.5" fill="#0B1014">Django 6.1 — apps/*</text>
+    <rect x="231" y="148" width="298" height="30" rx="4" fill="#F4F1FA" stroke="#5C4A96"/>
+    <text x="245" y="168" font-size="11.5" fill="#0B1014">WeasyPrint + Pango + HarfBuzz → pypdfium2</text>
+    <text x="231" y="198" font-size="11" fill="#8C2A2A">ephemeral filesystem · spins down after 15 min idle · ~1 min cold start</text>
+
+    <rect x="600" y="34" width="290" height="76" rx="5" fill="#EFF7F3" stroke="#0C6E52"/>
+    <text x="616" y="56" font-weight="700" fill="#0B1014">Neon PostgreSQL 17 — free</text>
+    <text x="616" y="76" font-size="11.5" fill="#414A52">persists indefinitely · scale-to-zero at 5 min</text>
+    <text x="616" y="94" font-size="11.5" fill="#8F5C11">instant restore only within a 6-hour window</text>
+
+    <rect x="600" y="140" width="290" height="76" rx="5" fill="#FCF6EA" stroke="#B4761A"/>
+    <text x="616" y="162" font-weight="700" fill="#0B1014">Gemini 3.5 Flash Lite — optional</text>
+    <text x="616" y="182" font-size="11.5" fill="#414A52">allow-listed payload only</text>
+    <text x="616" y="200" font-size="11.5" fill="#414A52">absent, failing and exhausted all degrade</text>
+
+    <path d="M162,120 L213,120" stroke="#8C8272" stroke-width="1.5" marker-end="url(#ar3)" fill="none"/>
+    <text x="187" y="112" text-anchor="middle" font-size="10.5" fill="#656C74">HTTPS</text>
+    <path d="M547,90 L598,72" stroke="#8C8272" stroke-width="1.5" marker-end="url(#ar3)" fill="none"/>
+    <path d="M547,160 L598,178" stroke="#8C8272" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#ar3)" fill="none"/>
+  </g>
+</svg>
+<figcaption>Two environments only — local, and one deployed instance that is both the demonstration and the assessed
+artifact. A second free instance would draw on the same monthly allowance.</figcaption>
+</figure>
+
+<h3>The two verified facts that changed decisions</h3>
+<div class="warn">
+<p><span class="k">512 MB and 0.1 CPU.</span> An earlier draft of this architecture recorded this figure as
+unpublished, having failed to find it. It is published — Render renamed "instance types" to "compute plans," and the
+old URL 404s. The correction matters because 512 MB is now a hard design constraint rather than an unknown: one
+Gunicorn worker, and every operation whose memory use grows with its input — PDF rendering, spreadsheet import — must declare its bound.</p>
+</div>
+<div class="warn">
+<p><span class="k">Render's own free PostgreSQL expires 30 days after creation.</span> This is why the database is
+deliberately not Render's. Neon's free tier persists indefinitely, which for an artifact that must remain
+demonstrable is the difference between working and a dead link.</p>
+</div>
+
+<h3>What the free tier costs the design</h3>
+<table>
+<thead><tr><th>Platform reality</th><th>Absorbed by</th></tr></thead>
+<tbody>
+<tr><td>One process, no cron, no second worker</td><td>All work happens in the request that asked for it. No task queue, no scheduled job. The daily summary is produced on request; the backup is a documented manual procedure with a named destination and cadence.</td></tr>
+<tr><td>Ephemeral filesystem</td><td>No upload is ever written to disk. Generated PDFs stream in the response. Multi-step imports stage their <em>rows</em> in an expiring database entity — which is also what makes the specified <em>import → map → preview → commit</em> wizard buildable at all, since that is three round trips.</td></tr>
+<tr><td>Spin-down and ~1 min cold start</td><td>A first-class UI state, already anticipated by NFR-21 — not an error, and not papered over with a cached figure.</td></tr>
+<tr><td>Neon restore covers 6 hours, capped at 1 GB, not extendable</td><td>Beyond 6 hours the manual logical dump is the only recovery mechanism, and the recovery point is whenever it was last run. This resolves an open PRD assumption in exactly the direction its own note predicted.</td></tr>
+<tr><td>SMTP ports 25, 465 and 587 blocked</td><td>See Credential recovery below — this is what makes the recovery-code design necessary rather than a preference.</td></tr>
+<tr><td>Free services may be suspended for high self-initiated outbound traffic — the documentation names external database access and external API calls as examples</td><td>Recorded rather than discovered later. Both are load-bearing edges here; at 50 orders a day the volume sits far below any plausible threshold.</td></tr>
+</tbody>
+</table>
+
+<h3>Credential recovery</h3>
+<p>Registration issues a single-use recovery code, shown exactly once and stored only as a salted hash. Reset requires
+the code plus a new password. The consequence is stated plainly in delivery documentation rather than hidden:
+<span class="k">a lost code makes the account unrecoverable</span> without direct database access. On a platform that
+blocks outbound mail, the alternative is not a better reset flow — it is no reset flow.</p>
+
+<h2 id="testing">12 · Testing strategy</h2>
+
+<p>Every architectural rule phrased "a test asserts" has a named test under <code>tests/invariants/</code>. Five of
+those suites deserve mention because they test things ordinary testing cannot reach.</p>
+
+<table>
+<thead><tr><th>Suite</th><th>What it proves, and why nothing else can</th></tr></thead>
+<tbody>
+<tr><td>Ledger reconciliation</td><td>Replays the movement table and asserts <em>both</em> projections — quantity and cost pool — match the fold. A single-dimension version of this test passes despite the stored-average error in §6.</td></tr>
+<tr><td>Role × surface matrix</td><td>Iterates all five roles against every egress surface and asserts no denied cell appears in the output bytes. Manual checking cannot cover 5 roles × 31 capabilities × 6 surface types, and the leak is an omission rather than a mistake — exactly the failure mode manual review is worst at.</td></tr>
+<tr><td>No-adapter pass</td><td>The full suite runs green with every optional provider absent. This is the only test that proves an absent provider degrades rather than breaks.</td></tr>
+<tr><td>Payload construction</td><td>Asserts an outbound model payload containing a customer field <em>cannot be constructed</em>. A negative test about an API shape, not about behavior.</td></tr>
+<tr><td>Contrast and control boundaries</td><td>Ported from the prototype. Asserts WCAG floors arithmetically off the design tokens, and that no interactive control draws its boundary in a decorative rule color.</td></tr>
+</tbody>
+</table>
+
+<div class="note">
+<p><span class="k">The contrast suite is what chose the styling stack.</span> Contrast is fully determined by the tokens and
+invisible to every other harness — a caption at 2.9:1 reads as <em>quiet</em>, not broken, so screenshots and human
+review both forgive it. The prototype's harness is the only enforcement that exists.</p>
+<p>Under a CSS-in-JS or utility-class stack, 2,254 lines of already-validated CSS would be rewritten and every floor
+re-derived by hand. So styling is <span class="k">plain CSS with custom properties</span>, the tokens live in one file
+tested against the design spine for drift, and class names stay string-literal so the static scan still resolves them.
+That is a testing requirement choosing a stack, which is the right way round.</p>
+</div>
+
+<h2 id="plan">13 · Delivery, and the floor that does not move</h2>
+
+<p>Independent review put this build at 8–12 weeks for one developer, against a 2–4 week window. The interesting part
+is not the number — it is <em>where</em> the overrun sits.</p>
+
+<div class="warn">
+<p>The PRD's retreat path cuts <span class="k">feature depth</span>: drop capture paths, drop report ranges. But the
+likely overruns are in things that <span class="k">cannot retreat</span> — the ledger, the settlement matcher, the
+capability gate, Bangla shaping. Retreating depth does not relieve pressure on any of them.</p>
+<p>Without a declared floor, two epics under time pressure each decide independently what may be dropped, and the
+first casualty is always a test, because dropping one breaks nothing visible today. The result is a broad system that
+is quietly wrong — a worse artifact than a narrow system that is right.</p>
+</div>
+
+<div class="good">
+<p><span class="k">So the floor is declared and does not retreat:</span> one hero flow end to end — capture, confirm,
+ship, settle — carrying the two-dimensional ledger, the settlement matcher, the gate over every egress surface, one
+Bangla PDF through the single pipeline, and the invariant test suite. No scope reduction may be funded from it.
+Everything above it retreats in the PRD's declared order, and a dropped capability moves to the v2 list rather than
+being half-built.</p>
+</div>
+
+<h2 id="validation">14 · How this architecture was reviewed</h2>
+
+<p>The spine was put through a review gate before being called done: a deterministic structural lint, then seven
+independent lenses run in parallel — three of them one per load-bearing input document, plus a rubric walker, a
+version-verification lens, an adversarial lens, and a data-integrity lens. The adversarial lens was instructed to
+construct two implementations that obey every rule to the letter and still build incompatibly.</p>
+
+<p>The gate returned <span class="k">revise</span>, and the findings clustered into one repeated shape rather than
+scattering:</p>
+
+<div class="note">
+<p><span class="k">The spine fixed what each rule <em>was</em> and left its arity, its ownership and its period key
+unstated.</span> Six of the twenty decisions the gate reviewed failed that way — four more were added afterward, closing exactly
+the gaps this pass found, which is how the total reached twenty-four. Two compliant implementations could each
+satisfy every word written and still disagree about <em>how many</em>, <em>whose</em>, or <em>over what window</em>.</p>
+<p>Most fixes were therefore one clause added to an existing decision, not a new decision — which is a useful signal
+about where architectural rules tend to be underspecified.</p>
+</div>
+
+<p>Findings that changed the design rather than clarifying it:</p>
+<ul>
+<li>The cost ledger (<a href="#ledger">§6</a>) — found independently by two lenses.</li>
+<li>The absence of any database-level integrity policy (<a href="#data">§5</a>) — also found twice.</li>
+<li>Seven derived balances with no declared owner (<a href="#modules">§4</a>).</li>
+<li>The gate reaching only page props (<a href="#gate">§8</a>).</li>
+<li>The presentation dimension being largely silent — no styling technology, no home or test for inherited design
+tokens, no owner for client drafts (<a href="#testing">§12</a>).</li>
+<li>A published platform figure this architecture had recorded as unpublished (<a href="#envelope">§11</a>).</li>
+</ul>
+
+<p>Not every finding was accepted. One lens flagged the pinned model identifier as unverified; the verification lens
+had confirmed that exact identifier against live vendor documentation the same day, so the objection was rejected on
+evidence rather than split down the middle. Recording that is part of the point: a review gate that accepts everything is not a gate.</p>
+
+<h2 id="conflicts">15 · Conflicts resolved</h2>
+
+<p>Five places where this architecture contradicted a finalized upstream document. Each was raised rather than
+silently overridden — an architecture that quietly reverts an approved design decision is worse than one that argues
+with it.</p>
+
+<table>
+<thead><tr><th>Conflict</th><th>Resolution</th></tr></thead>
+<tbody>
+<tr><td>The PRD names five roles including inventory staff; the experience spine had substituted a "packer" with coarser money visibility</td><td><span class="k">The PRD wins</span>, and the experience spine was amended. Its underlying diagnosis was correct, though — the matrix is not a ladder, which is why the gate treats it as a per-cell lookup.</td></tr>
+<tr><td>The experience spine promised offline capture; the architecture puts all work in the request</td><td><span class="k">Reduced to draft resilience.</span> An in-progress order survives a dropped connection, reload and backgrounded tab. A service worker with an outbox and a sync path is real unfunded scope, and the most schedule-hostile item on the board.</td></tr>
+<tr><td>8–12 weeks estimated against a 2–4 week window</td><td><span class="k">A minimum invariant floor is declared</span> and does not retreat; depth above it does. See <a href="#plan">§13</a>.</td></tr>
+<tr><td>The experience spine states 44px tap targets; the design spine's stepper is 32 and 26px</td><td><span class="k">Both hold</span> — they measure different things. 44px is the hit area, extended by padding; the smaller figures are the visual box. The test measures the hit area.</td></tr>
+<tr><td>Two requirements imply opposite signs for a damage write-off</td><td><span class="k">Sign follows physical effect.</span> A movement removing units is negative, so the write-off is negative and the other requirement is describing its positive reversal.</td></tr>
+</tbody>
+</table>
+
+<p>Resolving the first conflict surfaced a consequence that came from the requirements rather than from any reviewer:
+the derivable-figures rule in <a href="#gate">§8</a>. It also closed a contradiction internal to the experience spine
+that neither of its own reviews had caught: the insight destination group was labeled as requiring full money
+visibility, while another row in the same table correctly stated that every role reaches that screen.</p>
+
+<h2 id="register">16 · Decision register</h2>
+
+<p>Twenty-four decisions. Identifiers are stable and are cited by downstream epics and stories; a decision is amended
+in place and never renumbered. Full text with binds-and-prevents for each is in <code>ARCHITECTURE-SPINE.md</code>.</p>
+
+<table>
+<caption>The <span class="k">Prevents</span> column is the reason each decision exists — the divergence two
+independently-built modules would otherwise reach.</caption>
+<thead><tr><th style="width:66px">ID</th><th>Rule</th><th>Prevents</th></tr></thead>
+<tbody>
+<tr><td>AD-1</td><td>Modules depend downward only; a schema reference is not a behavioral dependency</td><td>Mutual imports, and one figure growing three read paths</td></tr>
+<tr><td>AD-2</td><td>Tenant scoping lives in the manager; each exception has exactly one named door</td><td>The endpoint that forgets its tenant filter</td></tr>
+<tr><td>AD-3</td><td>Capability filters every egress surface, and derivable figures too</td><td>A denied figure sitting in JSON props, or reassembled by subtraction</td></tr>
+<tr><td>AD-4</td><td>Money is decimal, 2 places reported and 4 derived, and crosses JSON as a string</td><td>Binary-float drift on the client; five poisha unreconciled per average</td></tr>
+<tr><td>AD-5</td><td>Stock <em>and cost</em> are folds over one immutable movement ledger</td><td>Reversal corrupting cost while every test passes</td></tr>
+<tr><td>AD-6</td><td>Every read-then-write over a shared balance locks, in one global order</td><td>Double allocation; deadlock; a batch closing mid-match</td></tr>
+<tr><td>AD-7</td><td>Cost flow is weighted average, snapshotted onto the order line at allocation</td><td>One module averaging while another consumes layers</td></tr>
+<tr><td>AD-8</td><td><code>money</code> owns every derived figure; each carries basis, period key and completeness</td><td>Two screens answering one question differently</td></tr>
+<tr><td>AD-9</td><td>One business operation is one transaction and one audit entry</td><td>Partial state; a money change with no audit row</td></tr>
+<tr><td>AD-10</td><td>Reversal is a compensating write; modules register their own reverse</td><td>Reversal by update or delete; a registry inverting the tier graph</td></tr>
+<tr><td>AD-11</td><td>Settlement is one-to-one, cash is recognized once, imports are idempotent</td><td>A spread remittance hiding a discrepancy; a double-counted variance</td></tr>
+<tr><td>AD-12</td><td>Optional transports are ports; absent, failing and exhausted are three states</td><td>"Optional" decaying into required; one condition handled two ways</td></tr>
+<tr><td>AD-13</td><td>The outbound model payload is built from allow-listed parameters only</td><td>Customer identity or database rows reaching a third party</td></tr>
+<tr><td>AD-14</td><td>The model never originates a number; routing has three outcomes</td><td>An unverifiable number in the reply; a withheld answer misread as a refusal</td></tr>
+<tr><td>AD-15</td><td>Each stage of the assistant path carries its own deadline, held by its own owner</td><td>A slow provider becoming a hung page</td></tr>
+<tr><td>AD-16</td><td>One rendering pipeline serves every generated artifact</td><td>Two font stacks producing two different renderings of the same script</td></tr>
+<tr><td>AD-17</td><td>Formatting is centralized; human identifiers are exempt from digit localization</td><td>One amount rendered three ways; <code>ORD-1042</code> in Bangla numerals</td></tr>
+<tr><td>AD-18</td><td>No durable local filesystem; multi-step work stages in the database</td><td>Features that work locally and vanish on deploy; an unbuildable wizard</td></tr>
+<tr><td>AD-19</td><td>Credential recovery is a single-use code, and nothing else</td><td>A reset flow depending on a blocked mail transport</td></tr>
+<tr><td>AD-20</td><td>One 512 MB web process, no scheduler, no warm state</td><td>An architecture assuming what the free tier does not sell</td></tr>
+<tr><td>AD-21</td><td>Integrity is declared in the database, not only in services</td><td>One <code>CASCADE</code> silently voiding the immutable ledger</td></tr>
+<tr><td>AD-22</td><td>Plain CSS with custom properties; the contrast floors are tested</td><td>A rewritten stylesheet with every accessibility floor re-derived by hand</td></tr>
+<tr><td>AD-23</td><td>Client-held drafts are per-device and carry no figures</td><td>A shared shop phone showing the owner's numbers to a helper</td></tr>
+<tr><td>AD-24</td><td>A minimum invariant floor exists; retreat cuts depth above it only</td><td>Two epics independently dropping the tests first</td></tr>
+</tbody>
+</table>
+
+<h2 id="deferred">17 · What this architecture deliberately does not decide</h2>
+
+<p>A spine that decides everything is a spine that will be wrong about most of it. The inclusion test throughout was:
+<em>could two modules built independently choose incompatibly here, is the call non-obvious, and is it a real
+trade-off?</em> Where the answer to any of the three was no, the decision is named and left open.</p>
+
+<ul>
+<li><span class="k">Per-story internals</span> — form objects, parser rule organization, report query shapes. Owned by
+the epics and then by the code.</li>
+<li><span class="k">The variant stock-key representation</span> — composite axis string or normalized rows. Bounded
+rather than open: whichever table exists must take a declared position in the global lock order.</li>
+<li><span class="k">Caching</span> — nothing is cached beyond unsent input. At this volume a query plan is cheaper
+than a stale figure. Revisit only if a measured report breaches its budget <em>after</em> the statement timeout is in
+place.</li>
+<li><span class="k">An OCR provider</span> — the no-provider path is already a complete feature, so this cannot block delivery.</li>
+<li><span class="k">Quota reporting</span> — the <em>behaviour</em> is fixed; only whether exhaustion is surfaced to
+the owner remains open.</li>
+<li><span class="k">Rate limiting, log aggregation, error monitoring, CI topology</span> — none motivated by one
+business and five members on a capped free tier. The <em>content</em> of the test floor is not deferred, only where it
+runs.</li>
+<li><span class="k">Per-business provider keys and model selection</span> — v2. The port is shaped so this is
+configuration, not redesign.</li>
+</ul>
+
+<p>One assumption remains open, with a stated confirmation condition: Docker build support on the free instance
+specifically is established by omission from an exclusion list rather than by an affirmative statement. It is
+confirmed at first deploy.</p>
+
+<p>That is the last open thread in an architecture built to close them. Everywhere else, the answer to
+<em>which of this money is actually mine</em> is now structural rather than a matter of trust. What remains is
+building it.</p>
+
+<footer>
+<p><span class="k">SmartBiz BD — Solution Design.</span> Companion to <code>ARCHITECTURE-SPINE.md</code>, which is the
+authoritative build substrate. Decision rationale and the full run history are in <code>.memlog.md</code>; reviewer
+findings in <code>reviews/</code>. Step 5 of 11 in the BMAD chain — next is epic and story breakdown, which cites
+these decision identifiers.</p>
+</footer>
+</main>
+</div>
+</body>
+</html>
