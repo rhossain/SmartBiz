@@ -2,7 +2,7 @@
    cannot: desktop mode, English, a money-gated Role, an open sheet, the live
    mic. Structural harnesses cannot see type rendering, spacing or animation —
    this is the only pass that looks at what the user will actually look at. */
-const { spawn, execSync } = require('child_process');
+const { spawn } = require('child_process');
 const http = require('http');
 const fs = require('fs');
 const WebSocket = require('ws');
@@ -23,10 +23,11 @@ function getJSON(path) {
 
 (async () => {
   fs.mkdirSync(OUT, { recursive: true });
+  const profile = fs.mkdtempSync('/tmp/sbchrome-');
   const chrome = spawn(CHROME, [
-    '--headless=new', '--disable-gpu', '--no-sandbox', '--hide-scrollbars',
+    '--headless=new', '--disable-gpu', '--no-sandbox', '--hide-scrollbars', '--allow-file-access-from-files',
     '--remote-debugging-port=' + PORT, '--window-size=1440,1000',
-    '--user-data-dir=/tmp/sbchrome', '--no-first-run', '--no-default-browser-check',
+    '--user-data-dir=' + profile, '--no-first-run', '--no-default-browser-check',
     URL,
   ], { stdio: 'ignore' });
 
@@ -80,9 +81,19 @@ function getJSON(path) {
     console.log('  · ' + name + '.png');
   }
 
-  await sleep(1200);
-  const ok = await evaluate('!!(window.App && App.screens && Object.keys(App.screens).length)');
-  if (!ok) { console.log('!! App did not boot in the real browser'); ws.close(); chrome.kill(); process.exit(1); }
+  var ok = false;
+  for (var bootTry = 0; bootTry < 80 && !ok; bootTry++) {
+    await sleep(250);
+    ok = await evaluate('!!(window.App && App.screens && Object.keys(App.screens).length)');
+  }
+  if (!ok) {
+    console.log('!! App did not boot in the real browser');
+    console.log('  page: ' + await evaluate('location.href'));
+    console.log('  body: ' + await evaluate('document.body.innerText.slice(0, 240)'));
+    console.log('  app: ' + await evaluate('JSON.stringify({type:typeof window.App, keys:window.App?Object.keys(window.App):[], ready:document.readyState, map:typeof window.SMARTBIZ_SCREEN_MAP})'));
+    console.log('  errors: ' + (consoleErrs.join(' | ') || 'none captured'));
+    ws.close(); chrome.kill(); process.exit(1);
+  }
   console.log('booted in Chrome · screens: ' + (await evaluate('Object.keys(App.screens).length')));
 
   /* flip the chrome controls the way a user would, rather than poking App */
@@ -98,6 +109,9 @@ function getJSON(path) {
   );
 
   const shots = [
+    ['desktop-journeys', 'desktop', 'en', 'owner',  'journeys'],
+    ['desktop-story-5-10', 'desktop', 'en', 'owner', 'journeys/5.10'],
+    ['phone-story-4-12', 'phone', 'en', 'owner', 'journeys/4.12'],
     ['desktop-home',   'desktop', 'bn', 'owner',  'home'],
     ['desktop-orders', 'desktop', 'bn', 'owner',  'orders'],
     ['desktop-settle', 'desktop', 'bn', 'owner',  'settlement/STL-0831'],
@@ -173,6 +187,7 @@ function getJSON(path) {
 
   ws.close();
   chrome.kill();
-  try { execSync('rm -rf /tmp/sbchrome'); } catch (e) {}
+  await sleep(750);
+  try { fs.rmSync(profile, { recursive: true, force: true, maxRetries: 4, retryDelay: 100 }); } catch (e) {}
   process.exit(0);
 })();

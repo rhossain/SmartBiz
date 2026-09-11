@@ -1,11 +1,11 @@
 # Prototype verification harnesses
 
     npm install
-    npm test          # smoke + truth + flows + classes + contrast — the five that gate
+    npm test          # smoke + truth + flows + classes + contrast + story coverage
     npm run shots     # real-browser screenshots into ./shots (needs Chrome)
     npm run measure   # computed boxes and padding from a real browser
 
-Seven harnesses, kept separate because **each one is blind to what the others catch**. That is the whole design; collapsing them into one runner would lose the property.
+Eight harnesses, kept separate because **each one is blind to what the others catch**. That is the whole design; collapsing them into one runner would lose the property.
 
 | Harness | Catches | Blind to |
 | --- | --- | --- |
@@ -14,6 +14,7 @@ Seven harnesses, kept separate because **each one is blind to what the others ca
 | `flows.js` | Multi-step behaviour: that a settlement file's declared total equals the sum of its rows, that a timeline runs forwards, that a parsed item takes its own colour | Anything not scripted as a flow — and every figure it does not itself total |
 | `classes.js` | Elements carrying a class no CSS rule reaches, including a **state modifier** joined to no base class | Async states, which never render in a synchronous pass |
 | `contrast.js` | Contrast floors computed off `tokens.css`, drift between those tokens and `DESIGN.md`, and any control whose resting boundary resolves through the cascade to a ruled-line token | Colour applied at runtime — it reads the source, so an inline style or a value set in JS is invisible to it |
+| `story-coverage.js` | Exact `epics.md` ID/title parity and a rendered, addressable prototype frame with the designed state, three proof points, and primary action for all 76 stories | Visual composition and browser layout |
 | `shot.js` | What the others cannot see at all: specificity collisions, overflow, type, and copy that is correct but does not fit | Arithmetic — never read a figure off a screenshot |
 | `measure.js` | Real box geometry and computed padding | Meaning |
 

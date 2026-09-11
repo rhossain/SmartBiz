@@ -312,7 +312,7 @@ AD-4: Epic 2/3 · AD-5, AD-7: Epic 3 · AD-6: Epic 3 + Epic 4 + Epic 5 + Epic 7 
 11. Audit Trail & Reversal
 12. AI-Assisted Insights
 
-**Mockup links.** Each epic below links to its screen(s) in the interactive prototype (`prototype/index.html#/route`) — the authoritative mock set per `mockups/README.md` ("the mock set is the interactive prototype, not this folder"), covering all 24 screens and 58 routes. A `#/route` link opens that screen directly; navigate from there for the full flow, since a direct hash link can land without the surrounding app state a click-through would carry. Where one exists, a still from `ux-designs/ux-SmartBiz-2026-09-07/mockups/` is added as a secondary reference.
+**Story-to-screen links.** Every story below has two direct references: the authoritative mockup frame in `all-screens.html#story/{story-id}` and its presentation-ready static prototype route in `prototype/index.html#/journeys/{story-id}`. Together they cover all 76 stories across 12 epics in the exact sequence defined here. Use the epic-level links to begin an epic, or the links beneath an individual story to open that screen directly.
 
 ## Epic 1: Foundation — Accounts, Business & Tenancy
 
@@ -320,9 +320,11 @@ A person can register, create a Business and become its Owner, onboard staff int
 
 **FRs covered:** FR-41, FR-42, FR-43, FR-44, FR-45, FR-46, FR-71, FR-72
 **Also establishes (cross-cutting for all later epics):** NFR-1, NFR-2, NFR-3, NFR-4, NFR-15–19, NFR-20, NFR-21, NFR-22, NFR-24, NFR-26 · UX-DR1, UX-DR2, UX-DR4 (foundation), UX-DR5 (foundation), UX-DR6 (mechanism), UX-DR8, UX-DR10, UX-DR13 · AD-1, AD-2, AD-3 (mechanism), AD-9, AD-17, AD-19, AD-20, AD-21 (initial constraints), AD-22.
-**Mockup:** [`#/splash`](../../prototype/index.html#/splash) · [`#/signin`](../../prototype/index.html#/signin) · [`#/verify`](../../prototype/index.html#/verify) · [`#/setup`](../../prototype/index.html#/setup) · [`#/settings`](../../prototype/index.html#/settings) — still: `ux-designs/ux-SmartBiz-2026-09-07/mockups/phone-splash.png`
+**Epic journey:** [Mockup — Story 1.1](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/1.1) · [Prototype — Story 1.1](../../prototype/index.html#/journeys/1.1)
 
 ### Story 1.1: Application skeleton deployed on free-tier infrastructure
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/1.1) · [Prototype](../../prototype/index.html#/journeys/1.1)
 
 As a developer,
 I want the Django + Inertia + React skeleton running in a Docker container on free-tier hosting with a free-tier Postgres database from the first commit,
@@ -338,6 +340,8 @@ So that every later story has a real, demonstrable target instead of a local-onl
 **And** a documented, on-demand logical backup procedure exists and has been exercised at least once (NFR-22, NFR-26)
 
 ### Story 1.2: User registration, login, and single-use recovery code
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/1.2) · [Prototype](../../prototype/index.html#/journeys/1.2)
 
 As a person without an account,
 I want to register, log in, and recover access with a one-time code if I forget my password,
@@ -356,6 +360,8 @@ So that I can use SmartBiz without depending on an email service the free tier c
 
 ### Story 1.3: Business creation and Owner assignment
 
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/1.3) · [Prototype](../../prototype/index.html#/journeys/1.3)
+
 As a newly registered User,
 I want to create a Business and automatically become its Owner,
 So that I have a scoped space to operate in with full permissions from the start.
@@ -368,6 +374,8 @@ So that I have a scoped space to operate in with full permissions from the start
 **And** every subsequent request they make is scoped to that Business
 
 ### Story 1.4: Invitation Code Member onboarding across five Roles
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/1.4) · [Prototype](../../prototype/index.html#/journeys/1.4)
 
 As an Owner or Manager,
 I want to invite staff into the Business at a specific Role using a single-use code,
@@ -382,6 +390,8 @@ So that I can onboard a team without any external service.
 
 ### Story 1.5: Server-side tenant isolation
 
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/1.5) · [Prototype](../../prototype/index.html#/journeys/1.5)
+
 As a Business owner,
 I want my Business's data to be completely invisible to every other Business,
 So that I can trust the product with sensitive financial information.
@@ -394,6 +404,8 @@ So that I can trust the product with sensitive financial information.
 **And** a test exercising the unfiltered manager confirms it is reachable only from inside its own module, with the single named FR-46 exception
 
 ### Story 1.6: Server-side Role enforcement — the capability gate
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/1.6) · [Prototype](../../prototype/index.html#/journeys/1.6)
 
 As a Business owner,
 I want a Sales Staff Member to never see cost or profit figures, on any surface, no matter how they navigate,
@@ -409,6 +421,8 @@ So that sensitive money data stays restricted regardless of what the interface h
 
 ### Story 1.7: Member list, Role change, and deactivation
 
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/1.7) · [Prototype](../../prototype/index.html#/journeys/1.7)
+
 As an Owner,
 I want to see who has access to my Business, change their Role, or deactivate them,
 So that I can keep the team current as people join or leave.
@@ -421,6 +435,8 @@ So that I can keep the team current as people join or leave.
 **And** deactivating a Member removes their access but destroys none of their historical records, preserving Audit Entry attribution (NFR-24)
 
 ### Story 1.8: User account self-service settings
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/1.8) · [Prototype](../../prototype/index.html#/journeys/1.8)
 
 As any Member,
 I want to manage my own account details and see which Businesses I have access to,
@@ -435,6 +451,8 @@ So that I control my own identity independently of any Role.
 
 ### Story 1.9: Platform Administrator read-only view
 
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/1.9) · [Prototype](../../prototype/index.html#/journeys/1.9)
+
 As a platform operator,
 I want to confirm that Businesses and Users exist without seeing any of their business data,
 So that I can provide basic platform-level support without a tenancy breach.
@@ -447,6 +465,8 @@ So that I can provide basic platform-level support without a tenancy breach.
 **And** this view is served by the single named exception to Story 1.5's tenant isolation, reachable from no module above the foundation tier (AD-2)
 
 ### Story 1.10: Design tokens, contrast test suite, and Bangla-first shell
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/1.10) · [Prototype](../../prototype/index.html#/journeys/1.10)
 
 As a developer,
 I want the DESIGN.md color tokens, the ported contrast test suite, and a Bangla-first app shell in place before any feature screen is built,
@@ -466,9 +486,11 @@ A seller can define what the Business sells — Products, categories, and up to 
 
 **FRs covered:** FR-49, FR-51, FR-52
 **Also touches:** AD-4 (money fields on Product).
-**Mockup:** [`#/products`](../../prototype/index.html#/products) · [`#/product`](../../prototype/index.html#/product) — still: `ux-designs/ux-SmartBiz-2026-09-07/mockups/phone-grid.png` (variant matrix)
+**Epic journey:** [Mockup — Story 2.1](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/2.1) · [Prototype — Story 2.1](../../prototype/index.html#/journeys/2.1)
 
 ### Story 2.1: Product and category definition
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/2.1) · [Prototype](../../prototype/index.html#/journeys/2.1)
 
 As a seller,
 I want to define the Products my Business sells, with a category, SKU, selling price, and Supplier association,
@@ -483,6 +505,8 @@ So that I have a catalogue to sell against.
 
 ### Story 2.2: Variant Dimensions definition
 
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/2.2) · [Prototype](../../prototype/index.html#/journeys/2.2)
+
 As a seller with a clothing-style catalogue,
 I want to define up to three axes of variation (like size and color) for a Product,
 So that I can describe products that come in multiple forms before any specific combination exists.
@@ -495,6 +519,8 @@ So that I can describe products that come in multiple forms before any specific 
 **And** this story defines the axes only — no combinations are generated yet
 
 ### Story 2.3: Variant matrix generation
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/2.3) · [Prototype](../../prototype/index.html#/journeys/2.3)
 
 As a seller,
 I want SmartBiz to generate every combination of my Variant Dimensions automatically,
@@ -514,9 +540,11 @@ A seller can receive goods with mandatory Purchase Cost, adjust stock with a rea
 **FRs covered:** FR-50, FR-53, FR-54, FR-55, FR-56
 **🔒 Minimum invariant floor (AD-24):** the two-dimensional ledger (signed quantity + signed `cost_total`) is built here and does not retreat.
 **Also covers:** NFR-7, NFR-9 · AD-5, AD-6 (stock lock), AD-7, AD-21 (movement/stock constraints).
-**Mockup:** [`#/inventory`](../../prototype/index.html#/inventory) — no dedicated still; the prototype route is the reference.
+**Epic journey:** [Mockup — Story 3.1](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/3.1) · [Prototype — Story 3.1](../../prototype/index.html#/journeys/3.1)
 
 ### Story 3.1: Stock-In with mandatory Purchase Cost
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/3.1) · [Prototype](../../prototype/index.html#/journeys/3.1)
 
 As a seller,
 I want to record goods received with the quantity and what I paid for them,
@@ -531,6 +559,8 @@ So that I always know my true cost of goods.
 
 ### Story 3.2: Adjustment with reason
 
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/3.2) · [Prototype](../../prototype/index.html#/journeys/3.2)
+
 As a seller,
 I want to correct stock to match physical reality with a stated reason,
 So that discrepancies from counting errors or shrinkage are recorded honestly rather than hidden.
@@ -542,6 +572,8 @@ So that discrepancies from counting errors or shrinkage are recorded honestly ra
 **Then** a new movement row is written reflecting the correction, and the Stock Level fold reflects it immediately (FR-54)
 
 ### Story 3.3: Damage Write-Off
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/3.3) · [Prototype](../../prototype/index.html#/journeys/3.3)
 
 As a seller,
 I want to remove unsellable goods from sellable stock without losing the record that they existed,
@@ -556,6 +588,8 @@ So that my Stock Level stays accurate and the loss is traceable.
 
 ### Story 3.4: Inventory Movement history and reconciliation
 
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/3.4) · [Prototype](../../prototype/index.html#/journeys/3.4)
+
 As a seller,
 I want to see the complete history of every stock change for a Product or Variant,
 So that I can trust the current Stock Level and cost figure and audit how they got there.
@@ -568,6 +602,8 @@ So that I can trust the current Stock Level and cost figure and audit how they g
 **And** an automated reconciliation test asserts that both the Stock Level and the weighted-average unit cost equal their respective folds over the ledger after every mutation (NFR-7, AD-5)
 
 ### Story 3.5: Low-stock surfacing
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/3.5) · [Prototype](../../prototype/index.html#/journeys/3.5)
 
 As a seller,
 I want a Product or Variant at or below its minimum stock level to be surfaced to me automatically,
@@ -587,9 +623,11 @@ A seller can capture an order through paste-and-parse or five additional capture
 **FRs covered:** FR-1–FR-18, FR-69, FR-73, FR-74, FR-75, FR-76, FR-77 (FR-78 excluded — deferred to v2)
 **🔒 Minimum invariant floor (AD-24):** one Hero flow's capture-through-ship segment does not retreat; the five additional capture paths (FR-73–77) retreat first, in that order, under PRD §4.4 step 1.
 **Also covers:** NFR-5, NFR-11, NFR-12 · UX-DR7 (pack slip), UX-DR9 · AD-6 (allocation lock), AD-12 (OCR port for FR-75), AD-18 (import staging), AD-23.
-**Mockup:** [`#/orders`](../../prototype/index.html#/orders) · [`#/capture`](../../prototype/index.html#/capture) · [`#/order`](../../prototype/index.html#/order) — stills: `ux-designs/ux-SmartBiz-2026-09-07/mockups/desktop-orders.png` (list), `phone-paste-parsed.png` (paste result), `phone-voice-live.png` (voice capture), `phone-slip.png` (pack slip)
+**Epic journey:** [Mockup — Story 4.1](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/4.1) · [Prototype — Story 4.1](../../prototype/index.html#/journeys/4.1)
 
 ### Story 4.1: Fast manual order entry
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/4.1) · [Prototype](../../prototype/index.html#/journeys/4.1)
 
 As a seller,
 I want to create a complete Order through a direct form with only four required fields,
@@ -603,6 +641,8 @@ So that I always have a guaranteed way to capture an order even when nothing can
 **And** the form is fully operable at 360px with no horizontal scroll and reaches interactive state within the NFR-11 budget on a simulated mid-range 3G connection
 
 ### Story 4.2: Customer identity hardening — normalization and tenant isolation
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/4.2) · [Prototype](../../prototype/index.html#/journeys/4.2)
 
 As a seller,
 I want phone-based Customer matching to be exact and never leak across Businesses,
@@ -618,6 +658,8 @@ So that the basic get-or-create from Story 4.1 can't silently create duplicates 
 
 ### Story 4.3: Order pricing, discount, and delivery charge
 
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/4.3) · [Prototype](../../prototype/index.html#/journeys/4.3)
+
 As a seller,
 I want the Order to compute its own total from its lines, a discount, and a delivery charge,
 So that I never have to calculate the COD amount by hand.
@@ -630,6 +672,8 @@ So that I never have to calculate the COD amount by hand.
 
 ### Story 4.4: Order identity and source tracking
 
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/4.4) · [Prototype](../../prototype/index.html#/journeys/4.4)
+
 As a seller,
 I want every Order to carry a stable, human-readable identifier and a record of where it came from,
 So that I can refer to it in conversation and understand my order sources.
@@ -641,6 +685,8 @@ So that I can refer to it in conversation and understand my order sources.
 **Then** it receives a Business-unique, sequential, never-reused identifier in Latin digits regardless of interface language (FR-10, AD-17), and an Order Source from an enumerated list, auto-set to the path used
 
 ### Story 4.5: Paste-and-parse order capture
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/4.5) · [Prototype](../../prototype/index.html#/journeys/4.5)
 
 As a seller,
 I want to paste a customer's raw Messenger or WhatsApp message and get a pre-filled order form,
@@ -657,6 +703,8 @@ So that I never have to retype what the customer already sent me.
 
 ### Story 4.6: Inline Product creation from the order screen
 
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/4.6) · [Prototype](../../prototype/index.html#/journeys/4.6)
+
 As a seller,
 I want to create a new Product without leaving the Order I'm capturing,
 So that a first-time item doesn't interrupt the sale.
@@ -669,6 +717,8 @@ So that a first-time item doesn't interrupt the sale.
 **And** a Product created this way with no Stock-In has a zero Stock Level and no Purchase Cost, counting against the Completeness Indicator (FR-4, FR-38)
 
 ### Story 4.7: Resilient order drafts
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/4.7) · [Prototype](../../prototype/index.html#/journeys/4.7)
 
 As a seller,
 I want an in-progress Order to survive a dropped connection, a reload, or a backgrounded tab,
@@ -683,6 +733,8 @@ So that I never lose what I was typing on an unreliable connection.
 **And** saving or explicitly discarding the Order clears the draft, and the draft is never cached as a figure or a Role-filtered payload — only the seller's own unsent input (AD-23)
 
 ### Story 4.8: Stock allocation and Purchase Cost snapshot on confirmation
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/4.8) · [Prototype](../../prototype/index.html#/journeys/4.8)
 
 As a seller,
 I want stock committed and each Order Line's Purchase Cost locked in at the same moment I confirm an Order,
@@ -699,6 +751,8 @@ So that an abandoned draft never ties up inventory, and a later change to a Prod
 
 ### Story 4.9: Order Status transitions
 
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/4.9) · [Prototype](../../prototype/index.html#/journeys/4.9)
+
 As a seller,
 I want Order Status to follow the product's defined lifecycle rather than any status being reachable from any other,
 So that the state of every Order stays meaningful and auditable.
@@ -713,6 +767,8 @@ So that the state of every Order stays meaningful and auditable.
 
 ### Story 4.10: Cancellation
 
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/4.10) · [Prototype](../../prototype/index.html#/journeys/4.10)
+
 As a seller,
 I want cancelling an Order to release any committed stock and remove it from every money figure,
 So that a mistaken or abandoned Order never distorts my profit.
@@ -725,6 +781,8 @@ So that a mistaken or abandoned Order never distorts my profit.
 **And** the Cancelled Order appears in no Sales Report and contributes to neither profit basis, while remaining visible in the Order Report and Customer history and counting toward the Customer Risk Ratio
 
 ### Story 4.11: Returned status and return-to-stock receipt
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/4.11) · [Prototype](../../prototype/index.html#/journeys/4.11)
 
 As a seller,
 I want a customer's return to be recorded as a commercial fact first, and stock restored only when goods physically arrive back,
@@ -739,6 +797,8 @@ So that inventory is never assumed to exist before I've actually received it.
 
 ### Story 4.12: Failed delivery
 
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/4.12) · [Prototype](../../prototype/index.html#/journeys/4.12)
+
 As a seller,
 I want a courier's failed delivery attempt distinguished from a customer's return,
 So that my reporting reflects what actually happened.
@@ -751,6 +811,8 @@ So that my reporting reflects what actually happened.
 **And** it can proceed either to return-to-stock (Story 4.11) or back to Shipped for a further attempt, and any incurred Courier Charge remains recorded
 
 ### Story 4.13: Order editing constraints
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/4.13) · [Prototype](../../prototype/index.html#/journeys/4.13)
 
 As a seller,
 I want what I can change on an Order to narrow as it progresses,
@@ -765,6 +827,8 @@ So that finished money is never silently rewritten beneath me.
 
 ### Story 4.14: Order list, search, and filtering
 
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/4.14) · [Prototype](../../prototype/index.html#/journeys/4.14)
+
 As a seller,
 I want to find any Order quickly and see at a glance which ones need attention,
 So that I can triage my day without hunting through every record.
@@ -778,6 +842,8 @@ So that I can triage my day without hunting through every record.
 
 ### Story 4.15: Per-Order unit economics
 
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/4.15) · [Prototype](../../prototype/index.html#/journeys/4.15)
+
 As a seller,
 I want any single Order to show me its own complete unit economics,
 So that I can see whether that specific sale was profitable, not just the Business as a whole.
@@ -789,6 +855,8 @@ So that I can see whether that specific sale was profitable, not just the Busine
 **Then** revenue, cost, Courier Charge if any, and resulting margin are shown for that Order alone, gated by the same capability rule as every other money surface (FR-18, AD-3)
 
 ### Story 4.16: Completing a missing Purchase Cost
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/4.16) · [Prototype](../../prototype/index.html#/journeys/4.16)
 
 As a seller with cost visibility,
 I want to supply a missing Purchase Cost for an Order Line at any time,
@@ -803,6 +871,8 @@ So that I can raise my profit figures from incomplete to complete once I know th
 
 ### Story 4.17: Repeat a past Order
 
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/4.17) · [Prototype](../../prototype/index.html#/journeys/4.17)
+
 As a returning-customer seller,
 I want to start a new Order pre-filled from a Customer's previous Order,
 So that I don't retype the same order for a repeat customer.
@@ -815,6 +885,8 @@ So that I don't retype the same order for a repeat customer.
 **And** nothing settlement- or lifecycle-related is copied, the Purchase Cost is stamped fresh at save, and a source line whose Variant was since deactivated is shown unavailable and excluded from the total
 
 ### Story 4.18: Quick-add Product grid
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/4.18) · [Prototype](../../prototype/index.html#/journeys/4.18)
 
 As a counter-queue seller,
 I want to tap frequently-ordered Products from a grid instead of searching,
@@ -829,6 +901,8 @@ So that fast-moving items don't require typing at all.
 
 ### Story 4.19: Message image beside the capture form
 
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/4.19) · [Prototype](../../prototype/index.html#/journeys/4.19)
+
 As a seller working from a screenshot,
 I want to see the customer's message image beside the order form,
 So that I can type into the form without switching applications.
@@ -842,6 +916,8 @@ So that I can type into the form without switching applications.
 
 ### Story 4.20: Spreadsheet Order import
 
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/4.20) · [Prototype](../../prototype/index.html#/journeys/4.20)
+
 As a seller who keeps orders in a spreadsheet,
 I want to import many Orders at once using a saved column mapping,
 So that I don't have to re-enter a file I already have.
@@ -854,6 +930,8 @@ So that I don't have to re-enter a file I already have.
 **And** the file's rows are staged in an expiring database entity, never written to disk (AD-18), Customers are matched by normalized phone exactly as Story 4.6, and the import writes an Audit Entry recording file name, row count, and committed count
 
 ### Story 4.21: Voice dictation into the capture field
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/4.21) · [Prototype](../../prototype/index.html#/journeys/4.21)
 
 As a seller with hands busy packing,
 I want to dictate order details where my browser supports it,
@@ -873,9 +951,11 @@ A seller can maintain Courier records, import a settlement file, have rows match
 **FRs covered:** FR-19–FR-34
 **🔒 Minimum invariant floor (AD-24):** the settlement matcher (one-to-one Match, cash recognized once, idempotent import) does not retreat.
 **Also covers:** NFR-5, NFR-13 · UX-DR7 (pack-slip handoff) · AD-6 (settlement batch lock), AD-11, AD-12 (courier port), AD-18 (settlement import staging).
-**Mockup:** [`#/cod`](../../prototype/index.html#/cod) · [`#/settlement`](../../prototype/index.html#/settlement) — stills: `ux-designs/ux-SmartBiz-2026-09-07/mockups/phone-custody.png` (COD in custody), `desktop-settle.png` (settlement run)
+**Epic journey:** [Mockup — Story 5.1](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/5.1) · [Prototype — Story 5.1](../../prototype/index.html#/journeys/5.1)
 
 ### Story 5.1: Courier records
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/5.1) · [Prototype](../../prototype/index.html#/journeys/5.1)
 
 As an Owner or Manager,
 I want to maintain the set of Couriers my Business uses,
@@ -889,6 +969,8 @@ So that I can assign Orders to them and reconcile against their settlement files
 
 ### Story 5.2: Order-to-Courier assignment and simulated adapter
 
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/5.2) · [Prototype](../../prototype/index.html#/journeys/5.2)
+
 As a seller,
 I want to assign an Order to a Courier with a tracking reference, including a simulated Courier for demonstration,
 So that the full delivery lifecycle is exercisable without a real courier integration.
@@ -900,6 +982,8 @@ So that the full delivery lifecycle is exercisable without a real courier integr
 **Then** the assignment is recorded (FR-20), and a labelled Simulated Courier is available behind the same adapter interface a real courier would use, so no code path distinguishes them (FR-22, AD-12)
 
 ### Story 5.3: Delivered vs cash-collected as two distinct facts
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/5.3) · [Prototype](../../prototype/index.html#/journeys/5.3)
 
 As a seller,
 I want the system to track separately whether a courier delivered a parcel and whether it collected the cash,
@@ -913,6 +997,8 @@ So that I never assume payment happened just because delivery did.
 
 ### Story 5.4: Courier Charge as a cost
 
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/5.4) · [Prototype](../../prototype/index.html#/journeys/5.4)
+
 As a seller,
 I want the fee a courier deducts to be recorded as a cost of the Order,
 So that my profit figures reflect what I actually kept, not what the customer paid.
@@ -925,6 +1011,8 @@ So that my profit figures reflect what I actually kept, not what the customer pa
 
 ### Story 5.5: Money With Couriers visibility
 
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/5.5) · [Prototype](../../prototype/index.html#/journeys/5.5)
+
 As a seller,
 I want to see, at any moment, how much of my money is currently sitting with couriers,
 So that I always know what's mine but not yet in hand.
@@ -936,6 +1024,8 @@ So that I always know what's mine but not yet in hand.
 **Then** it shows the current custody total, derived live from Order and Settlement state rather than a stored figure (FR-23, AD-8)
 
 ### Story 5.6: Settlement file upload and Column Mapping
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/5.6) · [Prototype](../../prototype/index.html#/journeys/5.6)
 
 As a seller,
 I want to upload a courier's settlement file and map its columns once per Courier,
@@ -950,6 +1040,8 @@ So that future files from the same courier import without remapping.
 
 ### Story 5.7: Automatic Settlement Row matching
 
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/5.7) · [Prototype](../../prototype/index.html#/journeys/5.7)
+
 As a seller,
 I want Settlement Rows matched to my Orders automatically wherever possible,
 So that I don't have to manually reconcile every line of a payout file.
@@ -961,6 +1053,8 @@ So that I don't have to manually reconcile every line of a payout file.
 **Then** each row matches to exactly one Order via their shared consignment identifier, and a match is unique on the Order at the database level — never a second match against an already-matched Order (FR-28, AD-11)
 
 ### Story 5.8: Unmatched-row resolution and Disposition
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/5.8) · [Prototype](../../prototype/index.html#/journeys/5.8)
 
 As a seller,
 I want every row that didn't match automatically to have an explicit path to resolution,
@@ -975,6 +1069,8 @@ So that no money is ever silently absorbed or lost.
 
 ### Story 5.9: Settlement Match realizes cash
 
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/5.9) · [Prototype](../../prototype/index.html#/journeys/5.9)
+
 As a seller,
 I want a confirmed match to be the single moment an Order's money becomes realized,
 So that Earned and Realized profit never disagree about when cash actually arrived.
@@ -986,6 +1082,8 @@ So that Earned and Realized profit never disagree about when cash actually arriv
 **Then** that Order's money moves from pending to realized exactly once, at the match, and this is the only place cash recognition happens for that Order (FR-30, AD-11, AD-8)
 
 ### Story 5.10: Batch review and close
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/5.10) · [Prototype](../../prototype/index.html#/journeys/5.10)
 
 As a seller,
 I want to review an entire settlement batch before its effects are considered final,
@@ -1000,6 +1098,8 @@ So that I catch mistakes before they're locked in.
 
 ### Story 5.11: Past Batches remain inspectable
 
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/5.11) · [Prototype](../../prototype/index.html#/journeys/5.11)
+
 As a seller,
 I want to look back at any previously closed settlement batch,
 So that I can answer a later question about a specific payout.
@@ -1011,6 +1111,8 @@ So that I can answer a later question about a specific payout.
 **Then** every past Batch remains fully inspectable — its rows, matches, and Dispositions — with none of it editable after close (FR-33)
 
 ### Story 5.12: Partial and grouped settlement handling
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/5.12) · [Prototype](../../prototype/index.html#/journeys/5.12)
 
 As a seller receiving a lump-sum payout covering several Orders,
 I want the reconciliation to resolve into clean one-to-one matches and variances rather than a fractional split,
@@ -1030,9 +1132,11 @@ A seller opens one screen and sees Money With Couriers, realized vs. pending cas
 **FRs covered:** FR-35, FR-36, FR-37, FR-38, FR-39
 **🔒 Minimum invariant floor (AD-24):** the capability gate (AD-3) over every egress surface is exercised end to end here and does not retreat.
 **Also covers:** UX-DR3 (amber/brass redundancy), UX-DR6 (exercised) · AD-3 (exercised), AD-8 (established).
-**Mockup:** [`#/home`](../../prototype/index.html#/home) — stills: `ux-designs/ux-SmartBiz-2026-09-07/mockups/desktop-home.png`, `phone-home-en.png`, `phone-sheet.png` (completeness explanation), `phone-gated.png` (gated for a Role)
+**Epic journey:** [Mockup — Story 6.1](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/6.1) · [Prototype — Story 6.1](../../prototype/index.html#/journeys/6.1)
 
 ### Story 6.1: Dashboard money panel
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/6.1) · [Prototype](../../prototype/index.html#/journeys/6.1)
 
 As a seller,
 I want one screen showing Money With Couriers, realized versus pending cash, and profit,
@@ -1046,6 +1150,8 @@ So that I can answer "which of this money is actually mine" without opening five
 
 ### Story 6.2: Dashboard operational counts
 
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/6.2) · [Prototype](../../prototype/index.html#/journeys/6.2)
+
 As a seller,
 I want the dashboard to show the operational counts the original scope requires — order counts, low stock, unresolved variances,
 So that I see what needs my attention today, not just money.
@@ -1057,6 +1163,8 @@ So that I see what needs my attention today, not just money.
 **Then** the attention list shows low-stock Variants, unreceived returns, unacknowledged shortfalls, and unsettled Delivered Orders as one filtered list, never authored as two separate copies of the same counts (FR-36, EXPERIENCE.md)
 
 ### Story 6.3: Recognition Basis on every profit figure
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/6.3) · [Prototype](../../prototype/index.html#/journeys/6.3)
 
 As a seller,
 I want every profit figure to state whether it's Earned or Realized,
@@ -1070,6 +1178,8 @@ So that I never mistake pending money for cash already in hand.
 
 ### Story 6.4: Completeness Indicator on every profit figure
 
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/6.4) · [Prototype](../../prototype/index.html#/journeys/6.4)
+
 As a seller,
 I want every profit figure to declare how complete its underlying data is,
 So that I know when a number is trustworthy and when it's still missing information.
@@ -1081,6 +1191,8 @@ So that I know when a number is trustworthy and when it's still missing informat
 **Then** it carries a Completeness Indicator stating "based on N of M items", where the gap is exactly the shippable-order count still missing cost, and the indicator is never smoothed away for a cleaner-looking screen (FR-38)
 
 ### Story 6.5: Role-composed dashboard
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/6.5) · [Prototype](../../prototype/index.html#/journeys/6.5)
 
 As a Business owner,
 I want each Member's dashboard to show only what their Role may see,
@@ -1099,9 +1211,11 @@ A seller can see a Customer's full history — orders, payments, dues, returns �
 
 **FRs covered:** FR-47, FR-48, FR-59
 **Also covers:** AD-6 (Customer Due lock), AD-8 (extended).
-**Mockup:** [`#/customers`](../../prototype/index.html#/customers) · [`#/customer`](../../prototype/index.html#/customer) · [`#/dues`](../../prototype/index.html#/dues) — no dedicated still; the prototype routes are the reference.
+**Epic journey:** [Mockup — Story 7.1](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/7.1) · [Prototype — Story 7.1](../../prototype/index.html#/journeys/7.1)
 
 ### Story 7.1: Customer profile and full history
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/7.1) · [Prototype](../../prototype/index.html#/journeys/7.1)
 
 As a seller,
 I want to see a Customer's profile and their complete order/payment/return history in one place,
@@ -1115,6 +1229,8 @@ So that I understand who I'm dealing with before I take their next order.
 
 ### Story 7.2: Customer Risk Ratio
 
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/7.2) · [Prototype](../../prototype/index.html#/journeys/7.2)
+
 As a seller,
 I want a computed, explainable reliability figure per Customer,
 So that I can judge risk on evidence rather than memory, without a predictive black box.
@@ -1126,6 +1242,8 @@ So that I can judge risk on evidence rather than memory, without a predictive bl
 **Then** it is derived transparently from those records with its formula visible on request — never a model-based or predictive score (FR-48)
 
 ### Story 7.3: Customer Due and Customer Payment
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/7.3) · [Prototype](../../prototype/index.html#/journeys/7.3)
 
 As a seller,
 I want to record partial payments from a Customer and always see what remains owed,
@@ -1144,9 +1262,11 @@ A seller can track what is owed to each Supplier — purchase history from Stock
 
 **FRs covered:** FR-60, FR-70
 **Also covers:** AD-8 (extended).
-**Mockup:** [`#/suppliers`](../../prototype/index.html#/suppliers) · [`#/supplier`](../../prototype/index.html#/supplier) — no dedicated still; the prototype routes are the reference.
+**Epic journey:** [Mockup — Story 8.1](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/8.1) · [Prototype — Story 8.1](../../prototype/index.html#/journeys/8.1)
 
 ### Story 8.1: Supplier profile and purchase history
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/8.1) · [Prototype](../../prototype/index.html#/journeys/8.1)
 
 As a seller,
 I want to maintain Supplier records and see the trading relationship, including a computed outstanding balance,
@@ -1159,6 +1279,8 @@ So that I know what I owe each Supplier without doing the math myself.
 **Then** it shows profile, contact, associated Products, purchase history derived from Stock-In, and an outstanding balance computed as a fold over Stock-In and Supplier Payment records — never a stored column (FR-60, AD-8)
 
 ### Story 8.2: Stock-In payment state and Supplier Payment
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/8.2) · [Prototype](../../prototype/index.html#/journeys/8.2)
 
 As a seller,
 I want to track whether a Stock-In was paid and record ad-hoc payments against a Supplier,
@@ -1175,9 +1297,11 @@ So that partial or delayed payment to suppliers is never lost track of.
 A seller can log an Expense against one of eight scope categories or a user-defined one, with every Expense included in profit computation on both Recognition Bases.
 
 **FRs covered:** FR-57, FR-58
-**Mockup:** [`#/expenses`](../../prototype/index.html#/expenses) — no dedicated still; the prototype route is the reference.
+**Epic journey:** [Mockup — Story 9.1](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/9.1) · [Prototype — Story 9.1](../../prototype/index.html#/journeys/9.1)
 
 ### Story 9.1: Expense entry
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/9.1) · [Prototype](../../prototype/index.html#/journeys/9.1)
 
 As a seller,
 I want to log what the Business spent, categorized and dated,
@@ -1190,6 +1314,8 @@ So that I have a real record of costs beyond goods purchased.
 **Then** it saves and appears in filterable Expense history (FR-57)
 
 ### Story 9.2: Expenses reduce profit on both bases
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/9.2) · [Prototype](../../prototype/index.html#/journeys/9.2)
 
 As a seller,
 I want every recorded Expense to reduce my profit figures,
@@ -1208,9 +1334,11 @@ A seller can run all nine reports with date filtering, export CSV for all nine a
 **FRs covered:** FR-40, FR-61, FR-62, FR-68
 **🔒 Minimum invariant floor (AD-24):** one Bangla PDF through the single pipeline does not retreat.
 **Also covers:** NFR-14, NFR-25 · UX-DR3 (exercised) · AD-16.
-**Mockup:** [`#/reports`](../../prototype/index.html#/reports) — no dedicated still; the Daily Summary card is reached from [`#/home`](../../prototype/index.html#/home) (Epic 6's mockup).
+**Epic journey:** [Mockup — Story 10.1](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/10.1) · [Prototype — Story 10.1](../../prototype/index.html#/journeys/10.1)
 
 ### Story 10.1: Shared Bangla rendering pipeline
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/10.1) · [Prototype](../../prototype/index.html#/journeys/10.1)
 
 As a developer,
 I want one HTML/CSS template set rendered by WeasyPrint to PDF, with the Daily Summary image produced by rasterizing that same PDF,
@@ -1225,6 +1353,8 @@ So that Bangla conjuncts render identically everywhere instead of drifting betwe
 
 ### Story 10.2: Nine reports with date filtering
 
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/10.2) · [Prototype](../../prototype/index.html#/journeys/10.2)
+
 As a seller,
 I want to run each of the nine defined reports over a date range,
 So that I can review performance for a period I choose.
@@ -1238,6 +1368,8 @@ So that I can review performance for a period I choose.
 
 ### Story 10.3: CSV export for all nine reports
 
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/10.3) · [Prototype](../../prototype/index.html#/journeys/10.3)
+
 As a seller,
 I want to export any report as CSV,
 So that I can keep or forward the data outside SmartBiz.
@@ -1250,6 +1382,8 @@ So that I can keep or forward the data outside SmartBiz.
 
 ### Story 10.4: Bangla PDF export for three reports
 
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/10.4) · [Prototype](../../prototype/index.html#/journeys/10.4)
+
 As a seller,
 I want Sales, Profit Summary, and COD Settlement available as a Bangla PDF,
 So that I can share a formatted document rather than a spreadsheet.
@@ -1261,6 +1395,8 @@ So that I can share a formatted document rather than a spreadsheet.
 **Then** it renders through that same pipeline with correct Bangla shaping and the same capability-gated figures as the on-screen report (FR-62, AD-16, AD-3)
 
 ### Story 10.5: Daily Summary digest
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/10.5) · [Prototype](../../prototype/index.html#/journeys/10.5)
 
 As a seller,
 I want to produce, on demand, a closing digest of the day's Orders, COD position, and profit,
@@ -1278,9 +1414,11 @@ Every financial and inventory change is recorded as an Audit Entry with before-a
 
 **FRs covered:** FR-63, FR-64
 **Also covers:** NFR-23 · UX-DR11 · AD-10.
-**Mockup:** [`#/audit`](../../prototype/index.html#/audit) — still: `ux-designs/ux-SmartBiz-2026-09-07/mockups/phone-audit.png`
+**Epic journey:** [Mockup — Story 11.1](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/11.1) · [Prototype — Story 11.1](../../prototype/index.html#/journeys/11.1)
 
 ### Story 11.1: Audit Entry on every financial and inventory change
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/11.1) · [Prototype](../../prototype/index.html#/journeys/11.1)
 
 As a Business owner,
 I want every financial or inventory change recorded with before-and-after values,
@@ -1295,6 +1433,8 @@ So that any figure's history can be explained after the fact.
 
 ### Story 11.2: Audit trail view and filtering
 
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/11.2) · [Prototype](../../prototype/index.html#/journeys/11.2)
+
 As an Owner or Accountant,
 I want to browse and filter the Audit Entry history,
 So that I can investigate a specific change without scanning everything.
@@ -1306,6 +1446,8 @@ So that I can investigate a specific change without scanning everything.
 **Then** they can filter by date, Member, entity type, and operation, and a Manager cannot access this screen despite holding reversal rights (FR-63, PRD §6.2)
 
 ### Story 11.3: Reversal via Compensating Entry for the seven operations
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/11.3) · [Prototype](../../prototype/index.html#/journeys/11.3)
 
 As a Member who made a mistake,
 I want to reverse one of the seven enumerated operations without destroying the original record,
@@ -1325,9 +1467,11 @@ A seller can ask a free-text question in Bangla, Banglish, or English and receiv
 
 **FRs covered:** FR-65, FR-79, FR-80, FR-81, FR-82
 **Also covers:** NFR-27, NFR-28 · UX-DR12 · AD-12 (AI port), AD-13, AD-14, AD-15.
-**Mockup:** [`#/insights`](../../prototype/index.html#/insights) — still: `ux-designs/ux-SmartBiz-2026-09-07/mockups/phone-ai-answer.png`
+**Epic journey:** [Mockup — Story 12.1](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/12.1) · [Prototype — Story 12.1](../../prototype/index.html#/journeys/12.1)
 
 ### Story 12.1: Insight Provider configuration and degradation
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/12.1) · [Prototype](../../prototype/index.html#/journeys/12.1)
 
 As a developer,
 I want the assistant to work identically well with or without a hosted model configured,
@@ -1342,6 +1486,8 @@ So that the feature is genuinely optional rather than a dependency the free tier
 
 ### Story 12.2: Question Routing to ten Insight Queries
 
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/12.2) · [Prototype](../../prototype/index.html#/journeys/12.2)
+
 As a seller,
 I want my free-text question routed to one of exactly ten computable queries, or honestly told it's outside them,
 So that I get a real answer or a clear boundary, never a guess.
@@ -1354,6 +1500,8 @@ So that I get a real answer or a clear boundary, never a guess.
 **And** routing resolves within 3 seconds, and the whole question resolves within 9 seconds total across its three separately bounded stages (NFR-14, AD-15)
 
 ### Story 12.3: Insight Query answers from Business data
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/12.3) · [Prototype](../../prototype/index.html#/journeys/12.3)
 
 As a seller,
 I want my question answered from my own Business's data only, computed the same way the rest of the product computes it,
@@ -1368,6 +1516,8 @@ So that I can trust the assistant's numbers as much as the dashboard's.
 
 ### Story 12.4: No-invented-number answer composition
 
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/12.4) · [Prototype](../../prototype/index.html#/journeys/12.4)
+
 As a seller,
 I want the assistant's phrasing to never contain a number the application didn't compute,
 So that a model's fluency never becomes a way to slip in a wrong figure.
@@ -1380,6 +1530,8 @@ So that a model's fluency never becomes a way to slip in a wrong figure.
 **And** a test asserts a model response with altered or missing placeholders falls back to the template
 
 ### Story 12.5: Profit change decomposition
+
+**Design links:** [Mockup](ux-designs/ux-SmartBiz-2026-09-07/mockups/all-screens.html#story/12.5) · [Prototype](../../prototype/index.html#/journeys/12.5)
 
 As a seller,
 I want to ask why profit moved between two periods and get an arithmetic breakdown, not an opinion,

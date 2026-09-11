@@ -104,6 +104,8 @@ window.App = window.App || {};
   /* Every screen the prototype can reach, in walkthrough order. This doubles
      as the review checklist for the UX phase. */
   App.SCREEN_INDEX = [
+    ['— Presentation —', ''],
+    ['Story journey hub · 76/76', 'journeys'],
     ['— Onboarding —', ''],
     ['Splash / language', 'splash'],
     ['Sign in', 'signin'],

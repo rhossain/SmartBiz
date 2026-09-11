@@ -11,8 +11,10 @@ const path = require('path');
 const { JSDOM, VirtualConsole } = require('jsdom');
 
 const ROOT = path.resolve(__dirname, '..');
-const FILES = ['i18n.js', 'data.js', 'ui.js', 'screens-core.js', 'screens-orders.js',
-               'screens-catalog.js', 'screens-money.js', 'screens-system.js', 'app.js'];
+const FILES = ['i18n.js', 'data.js', 'ui.js',
+               '../../_bmad-output/planning-artifacts/ux-designs/ux-SmartBiz-2026-09-07/mockups/screen-map.js',
+               'screens-core.js', 'screens-orders.js', 'screens-catalog.js', 'screens-money.js',
+               'screens-system.js', 'screens-journeys.js', 'app.js'];
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 

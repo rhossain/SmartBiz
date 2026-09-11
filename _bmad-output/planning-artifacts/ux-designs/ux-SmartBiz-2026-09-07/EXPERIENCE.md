@@ -3,7 +3,7 @@ name: SmartBiz BD
 description: Behaviour, information architecture, states, and journeys for the Bangla-first order-to-cash surface — how a seller learns which money is actually theirs.
 status: final
 created: 2026-09-07
-updated: 2026-09-08
+updated: 2026-09-11
 sources:
   - ../../prds/prd-SmartBiz-2026-09-07/prd.md
   - ../../../../docs/scope.md
@@ -13,7 +13,15 @@ sources:
 
 This spine owns how SmartBiz BD behaves. [DESIGN.md](DESIGN.md) owns how it looks and is the visual identity reference throughout; token references below use `{path.to.token}` against its frontmatter. Both spines win on conflict with any mock, screenshot, or import — including the prototype they were distilled from.
 
-→ Interactive reference implementation: [prototype/index.html](../../../../prototype/index.html) — all 58 routes, both languages, both surfaces, all five Roles, navigable end to end. See [mockups/](mockups/).
+→ Authoritative story-to-screen design: [mockups/all-screens.html](mockups/all-screens.html) — all 76 stories across 12 epics, addressable and presentable before prototype implementation. The prototype is a downstream implementation of this catalog.
+
+## Story-to-screen completeness
+
+The presentation catalog is a formal design gate, not a screenshot appendix. Every `### Story` heading in `epics.md` must have exactly one entry in `mockups/screen-map.js`, preserving its ID and title. Each entry must state a target surface, device mode, intentional state, primary action, and three visible proof points. `mockups/verify-coverage.js` enforces that contract.
+
+The design sequence is **epic story → authoritative mockup → prototype route**. Prototype work may add interaction and realistic transitions, but it must not invent a missing surface or silently reinterpret a story. If implementation exposes a design problem, revise the mockup contract first and rerun the 76/76 gate.
+
+Not every story is conventional interface work. Tenant isolation, Role enforcement, shared rendering, recognition-basis coverage, completeness coverage, and safe-answer validation use explicit proof surfaces. This keeps technically essential journeys demonstrable without misrepresenting them as ordinary end-user forms.
 
 ## Foundation
 

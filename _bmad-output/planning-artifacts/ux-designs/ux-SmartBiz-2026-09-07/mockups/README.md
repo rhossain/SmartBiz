@@ -1,37 +1,40 @@
 ---
 name: SmartBiz BD mockups
-description: Index of the captured mock set, and the pointer to the interactive prototype that is the actual mock coverage.
+description: Authoritative story-to-screen design catalog for every story in epics.md.
 status: final
 created: 2026-09-08
-updated: 2026-09-08
+updated: 2026-09-11
 ---
 
 # Mockups
 
-**The mock set is the interactive prototype, not this folder.** Open [prototype/index.html](../../../../../prototype/index.html) directly in a browser — no build step, no server. It carries **58 navigable routes** across **24 screens**, and every screen can be reached from another by navigation, in either language, on either device width, under any of the five Roles.
+This folder is the design authority for story-to-screen work. Open [all-screens.html](all-screens.html) directly in a browser. It provides a presentation hub and one addressable design frame for each of the **76 stories across 12 epics**.
 
-The images here are stills captured from that prototype at the states worth arguing about. They exist so a reviewer can see the design without opening it, and so a later change has something to be compared against. They are generated, not drawn: if a still and the prototype disagree, the prototype is right, and if either disagrees with [DESIGN.md](../DESIGN.md) or [EXPERIENCE.md](../EXPERIENCE.md), the spines are right.
+The sequence is deliberate:
 
-## Coverage
+1. Define or revise the screen in `screen-map.js` and the mockup catalog.
+2. Run `node verify-coverage.js`; the result must be 76/76 with exact `epics.md` title parity.
+3. Only after that gate passes may the corresponding route be implemented in `prototype/`.
 
-The prototype's own screen index groups its routes into eight sections — Onboarding, Daily, Orders, Customers, Catalogue, Money, Insight, System — matching the Information Architecture in [EXPERIENCE.md](../EXPERIENCE.md). Every group is reachable from the chrome's screen picker, and the stills below sample each one.
+`screen-map.js` is the source of truth for each story's target surface, viewport, presentation state, primary action, and three visible proof points. Hash routes such as `all-screens.html#story/4.12` make every frame directly presentable. The generated [journey hub concept](journey-hub-concept.png) records the approved visual direction; the browsable catalog carries the exact copy and complete coverage.
 
-| Still | Surface | What it is there to show |
-| --- | --- | --- |
-| `phone-splash.png` | Onboarding · language choice | Bangla offered first, and the chosen card carrying the only tick |
-| `desktop-home.png` | Daily · Dashboard (desktop) | The cash strip and the attention list beside the sidebar rail |
-| `phone-home-en.png` | Daily · Dashboard (phone, English) | The same layout holding in the shorter script |
-| `phone-sheet.png` | Daily · completeness explanation | "Based on N of M" opened up: the gap named as courier custody |
-| `desktop-orders.png` | Orders · list | Status chips as a legible state machine across a long list |
-| `phone-paste-parsed.png` | Orders · paste & parse result | What was found, counted openly — and each item's own colour, not its neighbour's |
-| `phone-voice-live.png` | Orders · voice capture, listening | A progressive enhancement mid-flight, with the manual field still present |
-| `phone-slip.png` | Orders · pack slip | The deliberate money exception: a Packer sees the COD amount |
-| `phone-grid.png` | Catalogue · variant matrix | Stock across two axes without a horizontal scroll trap |
-| `phone-custody.png` | Money · COD in custody | Amber doing the work: earned, not collected |
-| `desktop-settle.png` | Money · settlement run | Declared against matched, with the unresolved rows waiting |
-| `phone-gated.png` | Money · gated for a Packer | Absence, not a disabled control — and who to ask |
-| `phone-ai-answer.png` | Insight · answered question | Two figures, two bases, separated; violet nowhere near a number |
-| `phone-audit.png` | System · audit entry | Who, what, when, in the seller's own numerals |
-| `desktop-flows.png` | System · flow diagrams | The three process diagrams the PRD references |
+## Coverage artifacts
 
-Four things the stills cannot show, and which need the prototype: navigation between screens, the Role and language switches, the bottom sheets opening, and the async assisted-routing and refusal states.
+| Artifact | Purpose |
+| --- | --- |
+| `all-screens.html` | Browsable presentation hub and all 76 story frames |
+| `screen-map.js` | Authoritative story-to-screen contract |
+| `mockups.css` / `mockups.js` | Warm Ledger responsive presentation rendering |
+| `verify-coverage.js` | Exact comparison of the design map with `epics.md` |
+| `journey-hub-concept.png` | Visual exploration used to set the catalog direction |
+
+The older PNG captures remain useful records of individual product states, but they are no longer the coverage index. When a still, prototype route, or implementation disagrees with this catalog, [DESIGN.md](../DESIGN.md), or [EXPERIENCE.md](../EXPERIENCE.md), update the downstream artifact rather than silently changing the design contract.
+
+## Presentation paths
+
+- Start at the hub and select any epic or search a story.
+- Use “Present from start” to walk Story 1.1 through Story 12.5 in order.
+- Use the previous/next controls to keep the presentation linear.
+- Each frame states its planned prototype route and shows synthetic data explicitly.
+
+System stories are not hidden. They use a visible **proof surface** showing the testable assurance—tenant isolation, capability enforcement, rendering, recognition basis, completeness, and safe-answer validation—so every story has something concrete to present.

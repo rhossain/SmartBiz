@@ -3,7 +3,7 @@ name: SmartBiz BD
 description: Bangla-first order-to-cash surface for Bangladeshi SME sellers — a paper ledger's calm, where a figure's status is legible before the number is read.
 status: final
 created: 2026-09-07
-updated: 2026-09-08
+updated: 2026-09-11
 sources:
   - ../../prds/prd-SmartBiz-2026-09-07/prd.md
   - ../../../../docs/scope.md
@@ -285,6 +285,9 @@ Corners soften as elements grow, so scale reads through shape alone: `{rounded.s
 The logic: a fully rounded pill signals *label, not control* — a thing you read. A `{rounded.md}` rectangle signals *control* — a thing you press. Confusing the two makes a status chip look tappable, and in a money product a mistaken tap is expensive.
 
 ## Components
+
+- **Presentation journey hub** — the design-first index in `mockups/all-screens.html`. It combines the Warm Ledger ink rail, editorial serif heading, ruled epic groups, and a green completeness meter. Every story row carries the exact story ID and title plus its target surface and viewport. The hub is not an app dashboard; it is a review and presentation instrument, and it is the only place where “76 of 76” is a valid primary figure.
+- **Story frame** — a phone or desktop target nested inside the presentation stage. The frame shows one intentional state, one primary action, and three visible proof points. Operational stories use the nearest product pattern—form, list, detail, flow, state, table, or report. Infrastructure and policy stories use the `proof` pattern so their acceptance evidence remains visible rather than pretending they have a conventional CRUD screen.
 
 - **Card** — the default container. `{colors.surface}` on `{colors.line}` at `{rounded.lg}` with `{components.elevation.e1}`. A `flush` variant drops padding so a list can run edge-to-edge inside it.
 - **List row** — a lead icon, a body (title plus one truncating sub-line), an optional trailing figure, and a chevron when it navigates. The sub-line frequently carries a status chip, so the row's typography rules must target **direct children only**; a descendant rule forces the nested chip to `display: block`, and the chip then stretches the full width of the row.
