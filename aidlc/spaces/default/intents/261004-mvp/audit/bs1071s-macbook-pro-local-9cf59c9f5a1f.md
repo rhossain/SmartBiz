@@ -1021,3 +1021,220 @@
 **Agent**: aidlc-architect-agent
 
 ---
+
+## Decision Recorded
+**Timestamp**: 2026-10-04T11:42:56Z
+**Event**: DECISION_RECORDED
+**Stage**: feasibility
+**Decision**: Brownfield reuse vs replace, AWS account posture, BD regulatory constraints, developer-team shape, pilot timeline, AI provider constraint, organisational blockers
+**Options**: A,B,C,D,E,X
+
+---
+
+## Question Answered
+**Timestamp**: 2026-10-04T11:46:37Z
+**Event**: QUESTION_ANSWERED
+**Stage**: feasibility
+**Details**: Q1=B (reuse selectively); Q2=A (no AWS commitment yet); Q3=C (BD NBR VAT retention in scope); Q4=A (solo owner-developer); Q5=B (90 days: 30 onboarding + 60 orders); Q6=C (free-tier-only, no premium fallback); Q7=A (no organisational blockers); assumption confirmation = None.
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-04T11:47:29Z
+**Event**: SENSOR_FIRED
+**Fire id**: de02591c
+**Sensor ID**: required-sections
+**Stage slug**: feasibility
+**Output path**: aidlc/spaces/default/intents/261004-mvp/ideation/feasibility/feasibility-assessment.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-04T11:47:29Z
+**Event**: SENSOR_PASSED
+**Fire id**: de02591c
+**Sensor ID**: required-sections
+**Stage slug**: feasibility
+**Output path**: aidlc/spaces/default/intents/261004-mvp/ideation/feasibility/feasibility-assessment.md
+**Duration ms**: 60
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-04T11:47:29Z
+**Event**: SENSOR_FIRED
+**Fire id**: a9d6bdae
+**Sensor ID**: required-sections
+**Stage slug**: feasibility
+**Output path**: aidlc/spaces/default/intents/261004-mvp/ideation/feasibility/constraint-register.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-04T11:47:29Z
+**Event**: SENSOR_PASSED
+**Fire id**: a9d6bdae
+**Sensor ID**: required-sections
+**Stage slug**: feasibility
+**Output path**: aidlc/spaces/default/intents/261004-mvp/ideation/feasibility/constraint-register.md
+**Duration ms**: 54
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-04T11:47:29Z
+**Event**: SENSOR_FIRED
+**Fire id**: 913939f7
+**Sensor ID**: required-sections
+**Stage slug**: feasibility
+**Output path**: aidlc/spaces/default/intents/261004-mvp/ideation/feasibility/raid-log.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-04T11:47:29Z
+**Event**: SENSOR_PASSED
+**Fire id**: 913939f7
+**Sensor ID**: required-sections
+**Stage slug**: feasibility
+**Output path**: aidlc/spaces/default/intents/261004-mvp/ideation/feasibility/raid-log.md
+**Duration ms**: 56
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-04T11:47:29Z
+**Event**: SENSOR_FIRED
+**Fire id**: cd0a72f7
+**Sensor ID**: required-sections
+**Stage slug**: feasibility
+**Output path**: aidlc/spaces/default/intents/261004-mvp/ideation/feasibility/feasibility-questions.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-04T11:47:29Z
+**Event**: SENSOR_PASSED
+**Fire id**: cd0a72f7
+**Sensor ID**: required-sections
+**Stage slug**: feasibility
+**Output path**: aidlc/spaces/default/intents/261004-mvp/ideation/feasibility/feasibility-questions.md
+**Duration ms**: 56
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-04T11:47:29Z
+**Event**: SENSOR_FIRED
+**Fire id**: a7bc7862
+**Sensor ID**: upstream-coverage
+**Stage slug**: feasibility
+**Output path**: aidlc/spaces/default/intents/261004-mvp/ideation/feasibility/feasibility-assessment.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-04T11:47:29Z
+**Event**: SENSOR_PASSED
+**Fire id**: a7bc7862
+**Sensor ID**: upstream-coverage
+**Stage slug**: feasibility
+**Output path**: aidlc/spaces/default/intents/261004-mvp/ideation/feasibility/feasibility-assessment.md
+**Duration ms**: 57
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-04T11:47:29Z
+**Event**: SENSOR_FIRED
+**Fire id**: b29e97b7
+**Sensor ID**: upstream-coverage
+**Stage slug**: feasibility
+**Output path**: aidlc/spaces/default/intents/261004-mvp/ideation/feasibility/constraint-register.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-04T11:47:29Z
+**Event**: SENSOR_PASSED
+**Fire id**: b29e97b7
+**Sensor ID**: upstream-coverage
+**Stage slug**: feasibility
+**Output path**: aidlc/spaces/default/intents/261004-mvp/ideation/feasibility/constraint-register.md
+**Duration ms**: 55
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-04T11:47:29Z
+**Event**: SENSOR_FIRED
+**Fire id**: 84c6959d
+**Sensor ID**: upstream-coverage
+**Stage slug**: feasibility
+**Output path**: aidlc/spaces/default/intents/261004-mvp/ideation/feasibility/raid-log.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-04T11:47:29Z
+**Event**: SENSOR_PASSED
+**Fire id**: 84c6959d
+**Sensor ID**: upstream-coverage
+**Stage slug**: feasibility
+**Output path**: aidlc/spaces/default/intents/261004-mvp/ideation/feasibility/raid-log.md
+**Duration ms**: 56
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-04T11:47:30Z
+**Event**: SENSOR_FIRED
+**Fire id**: 3c02070c
+**Sensor ID**: upstream-coverage
+**Stage slug**: feasibility
+**Output path**: aidlc/spaces/default/intents/261004-mvp/ideation/feasibility/feasibility-questions.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-04T11:47:30Z
+**Event**: SENSOR_PASSED
+**Fire id**: 3c02070c
+**Sensor ID**: upstream-coverage
+**Stage slug**: feasibility
+**Output path**: aidlc/spaces/default/intents/261004-mvp/ideation/feasibility/feasibility-questions.md
+**Duration ms**: 56
+
+---
+
+## Stage Awaiting Approval
+**Timestamp**: 2026-10-04T11:47:30Z
+**Event**: STAGE_AWAITING_APPROVAL
+**Stage**: feasibility
+
+---
+
+## Gate Approved
+**Timestamp**: 2026-10-04T11:47:59Z
+**Event**: GATE_APPROVED
+**Stage**: feasibility
+**User Input**: Approve
+
+---
+
+## Stage Completion
+**Timestamp**: 2026-10-04T11:47:59Z
+**Event**: STAGE_COMPLETED
+**Stage**: feasibility
+**Validation Basis**: {"graphContract":"sha256:543912e848784f58af817ec322275022445da586f78256c281d1c37d967b15aa","inputs":[{"artifact":"build-vs-buy","contentHash":"sha256:88e028e176d6e418931c9cd2437e0a6bea2f4bc7d6736e2bb8b40eac8614df62","instanceCount":1,"presentCount":1,"producer":"market-research","required":false,"structureHash":"sha256:4c055c621be73948e3830ab7a847eeafebe47f4a6e007a16007c69bc028bdb07"},{"artifact":"competitive-analysis","contentHash":"sha256:33880fa6fd17284b6cb2d17e62468bb25c4c8b86f9609eb1fccdb2e816d7898d","instanceCount":1,"presentCount":1,"producer":"market-research","required":false,"structureHash":"sha256:f37c662e11ee911306fc2ea10a3752b9dd76085c11cd890360235cd0559b627d"},{"artifact":"intent-statement","contentHash":"sha256:e37fcee94ad5a3cc6df19e54965a282b207597bcf0f846d60d712513dbdba7db","instanceCount":1,"presentCount":1,"producer":"intent-capture","required":true,"structureHash":"sha256:9a78b9791b1313ec38e4e2f4b41684722b88e369577b0bd9b2ebbab5e999b911"},{"artifact":"market-trends","contentHash":"sha256:eec3efa39424a625a903b011b468877bcb4b3bc30d3e5c7a0be045c444c57cf0","instanceCount":1,"presentCount":1,"producer":"market-research","required":false,"structureHash":"sha256:31cd378fd6a4dac99f837fb6e5a72c7b7aa26f92cb37f37b5f5f08b72d4a1020"}],"outputs":[{"artifact":"constraint-register","contentHash":"sha256:77ded4a98cc0533559b4f3aaff1c94a8ed5ed4ec11da173dfec37b362df43489","instanceCount":1,"presentCount":1,"producer":"feasibility","required":true,"structureHash":"sha256:76d7b018c73140889b852a768889f2c487a26d5aa64c57614101c85faef5cba4"},{"artifact":"feasibility-assessment","contentHash":"sha256:0b66a973fd79629393d4668015123ffe48be4495734291dabecafb4ae0de3857","instanceCount":1,"presentCount":1,"producer":"feasibility","required":true,"structureHash":"sha256:5669f888e24b9419061035a53aaa91db10f03a8fa3bc4cc585e5c1947b79c9af"},{"artifact":"feasibility-questions","contentHash":"sha256:a8ac1f916d8e7a368bef8145f29a6acf489f849546f47fedec2807bae05ebbda","instanceCount":1,"presentCount":1,"producer":"feasibility","required":true,"structureHash":"sha256:3b6f03463a867a49369bac5d2cbc9452c54e1d7cc4080b4c3e207a458f713cb3"},{"artifact":"raid-log","contentHash":"sha256:4f896f41717c9bb9aed126bfc78bf4886dd9cb7d1313937a20117b8d7978032e","instanceCount":1,"presentCount":1,"producer":"feasibility","required":true,"structureHash":"sha256:78dbbd791780d638d6954b0f8b567e01993ed849dee6c1d523f5380f506dcfe1"}],"projectType":"brownfield","schema":3}
+**Details**: Stage Feasibility & Constraints approved by gate
+
+---
+
+## Stage Start
+**Timestamp**: 2026-10-04T11:47:59Z
+**Event**: STAGE_STARTED
+**Stage**: scope-definition
+**Agent**: aidlc-product-agent
+
+---
