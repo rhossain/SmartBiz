@@ -199,9 +199,9 @@
 
       var GROUPS = [
         { bn: 'ব্যবসা', en: 'Business', items: [
-          { go: 'settings/business', ic: 'shop', bn: 'ব্যবসার তথ্য', en: 'Business profile',
+          { go: 'settings/business', ic: 'shop', bn: 'ব্যবসার তথ্য', en: 'Business profile', roles: ['owner'],
             sub: App.business.name, subEn: App.business.nameEn },
-          { go: 'settings/members', ic: 'people', bn: 'সদস্য ও দায়িত্ব', en: 'Members & roles',
+          { go: 'settings/members', ic: 'people', bn: 'সদস্য ও দায়িত্ব', en: 'Members & roles', roles: ['owner', 'manager'],
             sub: '৫ জন', subEn: '5 people' },
           { go: 'suppliers', ic: 'truck', bn: 'সরবরাহকারী', en: 'Suppliers', sub: '৩ জন', subEn: '3 suppliers' }
         ] },
@@ -226,7 +226,7 @@
           /* gate by absence, not by a row that refuses when pressed */
           GROUPS.map(function (g) {
             return '<div class="card flush"><div class="card-head"><h3>' + L(g.bn, g.en) + '</h3></div>' +
-              g.items.filter(function (it) { return App.canReach(it.go); }).map(function (it) {
+              g.items.filter(function (it) { return (!it.roles || it.roles.indexOf(App.role) >= 0) && App.canReach(it.go); }).map(function (it) {
                 return '<button class="list-item" data-go="' + it.go + '">' +
                   '<span class="lead ' + (it.tone || '') + '">' + I[it.ic](17) + '</span>' +
                   '<span class="body"><b>' + L(it.bn, it.en) + '</b>' +
@@ -254,32 +254,39 @@
   /* -------------------------------------------------- MEMBERS & ROLES ---- */
 
   var PERMS = [
-    { bn: 'অর্ডার নেওয়া',        en: 'Take orders',           has: ['owner', 'manager', 'staff'] },
-    { bn: 'প্যাক করা',            en: 'Pack orders',            has: ['owner', 'manager', 'staff', 'packer'] },
-    { bn: 'বিক্রয়মূল্য দেখা',    en: 'See selling prices',     has: ['owner', 'manager', 'accountant', 'staff'] },
-    { bn: 'ক্রয়মূল্য দেখা',      en: 'See cost prices',        has: ['owner', 'manager', 'accountant'] },
+    { bn: 'অর্ডার নেওয়া',        en: 'Take orders',            has: ['owner', 'manager', 'sales'] },
+    { bn: 'অর্ডার এগিয়ে নেওয়া', en: 'Advance orders',         has: ['owner', 'manager', 'sales'] },
+    { bn: 'বিক্রয়মূল্য দেখা',    en: 'See selling prices',     has: ['owner', 'manager', 'accountant', 'sales'] },
+    { bn: 'ক্রয়মূল্য দেখা',      en: 'See Purchase Cost',      has: ['owner', 'manager', 'accountant', 'inventory'] },
     { bn: 'লাভ দেখা',             en: 'See profit',             has: ['owner', 'manager', 'accountant'] },
     { bn: 'খরচ লেখা',             en: 'Record expenses',        has: ['owner', 'manager', 'accountant'] },
-    { bn: 'নিষ্পত্তি মেলানো',     en: 'Reconcile settlements',  has: ['owner', 'accountant'] },
+    { bn: 'নিষ্পত্তি মেলানো',     en: 'Reconcile settlements',  has: ['owner', 'manager', 'accountant'] },
     { bn: 'দাম বদলানো',           en: 'Override a price',       has: ['owner', 'manager'] },
-    { bn: 'এন্ট্রি ফিরিয়ে নেওয়া', en: 'Reverse an entry',       has: ['owner'] },
-    { bn: 'সদস্য যোগ করা',        en: 'Invite members',         has: ['owner'] }
+    { bn: 'স্টক এন্ট্রি ফিরিয়ে নেওয়া', en: 'Reverse a stock entry', has: ['owner', 'manager', 'inventory'] },
+    { bn: 'সদস্য যোগ করা',        en: 'Invite members',         has: ['owner', 'manager'] }
   ];
 
   function members() {
-    var order = ['owner', 'manager', 'accountant', 'staff', 'packer'];
+    if (['owner', 'manager'].indexOf(App.role) < 0) {
+      return { route: 'settings', nav: 'settings', title: L('সদস্য ও দায়িত্ব', 'Members & roles'),
+        body: U.emptyState({ icon: I.lock(24), title: L('এই তালিকা আপনার Role-এ নেই', 'This list is not available to your Role'),
+          body: L('শুধু Owner ও Manager সদস্য এবং বাকি আমন্ত্রণ দেখতে পারেন।',
+            'Only an Owner or Manager can view Members and outstanding invitations.'),
+          action: '<button class="btn ghost" data-go="settings">' + L('সেটিংসে ফিরুন', 'Back to settings') + '</button>' }) };
+    }
+    var order = ['owner', 'manager', 'accountant', 'inventory', 'sales'];
     var MONEY = {
       full:  { bn: 'সব টাকার তথ্য', en: 'All money', tone: 'green' },
       price: { bn: 'শুধু বিক্রয়মূল্য', en: 'Selling prices only', tone: 'amber' },
-      none:  { bn: 'কোনো টাকা নয়', en: 'No money at all', tone: 'brass' }
+      cost:  { bn: 'শুধু ক্রয়মূল্য', en: 'Purchase Cost only', tone: 'teal' }
     };
 
     return { route: 'settings', nav: 'settings', title: L('সদস্য ও দায়িত্ব', 'Members & roles'),
       eyebrow: L('কে কী দেখতে পাবে', 'Who can see what'),
-      acts: '<button class="btn sm primary" data-act="invite-member">' + I.plus(15) + L('যোগ করুন', 'Invite') + '</button>',
+      acts: ['owner', 'manager'].indexOf(App.role) >= 0 ? '<button class="btn sm primary" data-go="invitations/generate">' + I.plus(15) + L('যোগ করুন', 'Invite') + '</button>' : '',
       body: '<div class="stack g4">' +
         U.provenance(L('দায়িত্ব ঠিক করে দিলে টাকার তথ্য আপনা থেকেই লুকিয়ে যায়। কর্মী দাম দেখবে, কিন্তু ক্রয়মূল্য বা লাভ নয় — আর তাকে খালি পর্দা দেখানো হবে না, কারণটা লেখা থাকবে।',
-          'Choosing a Role hides money on its own. Staff see selling prices but never cost or profit — and they are shown the reason rather than a blank screen.'), 'teal', I.lock(15)) +
+          'Choosing a Role composes the interface. Sales Staff see selling prices; Inventory Staff see Purchase Cost; neither sees profit or settlement.'), 'teal', I.lock(15)) +
 
         '<div class="card flush">' + order.map(function (k) {
           var r = App.ROLES[k];
@@ -311,7 +318,7 @@
         '<div class="steps vert" style="margin-top:var(--s3)">' +
         [['কোড তৈরি হয়', 'A code is generated'],
          ['কোডটি যেভাবে খুশি পাঠান — হোয়াটসঅ্যাপ, খাতায় লিখে, মুখে বলে', 'Send it however you like — WhatsApp, on paper, spoken aloud'],
-         ['সে কোড দিয়ে ঢোকে, আপনি দায়িত্ব ঠিক করে দেন', 'They enter it and you set the Role']].map(function (s, i) {
+         ['Role-বাঁধা কোডটি একবার ব্যবহার করেই সে যোগ দেয়', 'They redeem the Role-bound code once to join']].map(function (s, i) {
           return '<div class="vstep"><span class="n">' + App.bnDigits(String(i + 1)) + '</span>' +
             '<span>' + L(s[0], s[1]) + '</span></div>';
         }).join('') + '</div>' +
@@ -329,10 +336,11 @@
       body: '<div class="stack g3">' +
         U.field({ label: L('নাম', 'Name'), placeholder: L('যেমন: রুমা বেগম', 'e.g. Ruma Begum') }) +
         U.field({ label: L('দায়িত্ব', 'Role'), type: 'select', options: [
-          { label: L('কর্মী — অর্ডার নেবে, দাম দেখবে', 'Staff — takes orders, sees prices'), selected: true },
-          { label: L('প্যাকার — শুধু প্যাক করবে, টাকা দেখবে না', 'Packer — packs only, sees no money') },
-          { label: L('ম্যানেজার — লাভ দেখবে', 'Manager — sees profit') },
-          { label: L('হিসাবরক্ষক — টাকার হিসাব করবে', 'Accountant — reconciles money') }
+          { label: L('Owner', 'Owner') },
+          { label: L('Manager', 'Manager') },
+          { label: L('Accountant', 'Accountant') },
+          { label: L('Inventory Staff', 'Inventory Staff') },
+          { label: L('Sales Staff', 'Sales Staff'), selected: true }
         ] }) +
         '<div class="code-box"><span class="eyebrow">' + L('যোগ দেওয়ার কোড', 'Join code') + '</span>' +
         '<b class="join-code">SB-4K92-7T</b>' +
@@ -548,13 +556,13 @@
       '<div class="flow-diagram">' +
         fnode({ bn: 'মেসেঞ্জারে মেসেজ আসে', en: 'A message arrives', sub: 'ক্রেতা', subEn: 'Customer', ic: 'new', tone: 'teal' }) +
         fdown('পেস্ট, ছবি, ভয়েস বা হাতে', 'pasted, photographed, spoken or typed') +
-        fnode({ bn: 'অর্ডার লেখা হয়', en: 'Order captured', sub: 'কর্মী · খসড়া', subEn: 'Staff · Draft',
+        fnode({ bn: 'অর্ডার লেখা হয়', en: 'Order captured', sub: 'বিক্রয় কর্মী · খসড়া', subEn: 'Sales Staff · Draft',
           ic: 'orders', go: 'capture', tone: '' }) +
         fdown('ক্রেতা রাজি', 'Customer agrees') +
         fnode({ bn: 'নিশ্চিত', en: 'Confirmed', ic: 'confirmed', tone: 'green',
           mark: 'স্টক আটকে যায়', markEn: 'stock is held' }) +
         fdown() +
-        fnode({ bn: 'প্যাক করা হয়', en: 'Packed', sub: 'প্যাকার', subEn: 'Packer', ic: 'packed', tone: 'teal',
+        fnode({ bn: 'প্যাক করা হয়', en: 'Packed', sub: 'ইনভেন্টরি কর্মী', subEn: 'Inventory Staff', ic: 'packed', tone: 'teal',
           mark: 'স্লিপ ছাপা হয়', markEn: 'a slip is printed' }) +
         fdown() +
         fnode({ bn: 'কুরিয়ারে দেওয়া হয়', en: 'Shipped', ic: 'truck', tone: 'amber', go: 'cod',

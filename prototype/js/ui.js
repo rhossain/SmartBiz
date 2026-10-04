@@ -78,11 +78,14 @@ window.App = window.App || {};
   /* FR-45 / §6.2: a Role that may not see money must not see the column at all */
   function moneyLevel() { return App.ROLES[App.role].money; }
   function seesProfit() { return moneyLevel() === 'full'; }
-  function seesPrice() { return moneyLevel() !== 'none'; }
+  function seesPrice() { return moneyLevel() === 'full' || moneyLevel() === 'price'; }
+  function seesCost() { return moneyLevel() === 'full' || moneyLevel() === 'cost'; }
+  function canCreateOrders() { return ['owner', 'manager', 'sales'].indexOf(App.role) >= 0; }
 
   /* One predicate, so every surface that offers a destination agrees with the router
      that refuses it. Two levels because the matrix has two: `money` needs profit,
-     `price` needs only a selling price — which Sales Staff may see and a Packer may not.
+     `price` needs selling price and `cost` needs Purchase Cost. These capabilities are
+     deliberately independent for Sales Staff and Inventory Staff.
 
      `roles` is the third form, and it exists because PRD §6.2 is a capability matrix
      rather than a money ladder. The audit trail is Owner and Accountant; the Manager is
@@ -94,11 +97,14 @@ window.App = window.App || {};
     if (s.roles && s.roles.indexOf(App.role) < 0) return false;
     if (s.money && !seesProfit()) return false;
     if (s.price && !seesPrice()) return false;
+    if (s.cost && !seesCost()) return false;
     return true;
   }
   App.moneyLevel = moneyLevel;
   App.seesProfit = seesProfit;
   App.seesPrice = seesPrice;
+  App.seesCost = seesCost;
+  App.canCreateOrders = canCreateOrders;
   App.canReach = canReach;
 
   /* ---------------------------------------------------- status vocabulary */
@@ -223,12 +229,13 @@ window.App = window.App || {};
     var tabs = [
       { route: 'home',   icon: 'home',   bn: 'হোম',   en: 'Home' },
       { route: 'orders', icon: 'orders', bn: 'অর্ডার', en: 'Orders' },
-      /* a Role that may not see a selling price may not capture an order, so the
-         raised action is absent rather than present-and-refusing */
-      { route: 'capture', fab: true, hide: !App.seesPrice() },
+      /* Order capture belongs to Owner, Manager, and Sales Staff. */
+      { route: 'capture', fab: true, hide: !App.canCreateOrders() },
       { route: 'inventory', icon: 'box', bn: 'স্টক', en: 'Stock' },
-      { route: App.seesProfit() ? 'cod' : 'customers', icon: App.seesProfit() ? 'truck' : 'people',
-        bn: App.seesProfit() ? 'COD' : 'ক্রেতা', en: App.seesProfit() ? 'COD' : 'People' }
+      { route: App.seesProfit() ? 'cod' : (App.role === 'sales' ? 'customers' : 'products'),
+        icon: App.seesProfit() ? 'truck' : (App.role === 'sales' ? 'people' : 'tag'),
+        bn: App.seesProfit() ? 'COD' : (App.role === 'sales' ? 'ক্রেতা' : 'পণ্য'),
+        en: App.seesProfit() ? 'COD' : (App.role === 'sales' ? 'People' : 'Products') }
     ];
     return '<nav class="tabbar">' + tabs.filter(function (t) { return !t.hide; }).map(function (t) {
       if (t.fab) return '<button class="tab" data-go="capture" aria-label="' + L('নতুন অর্ডার', 'New order') + '">' +
@@ -347,7 +354,8 @@ window.App = window.App || {};
     } else {
       input = '<input class="input' + (cfg.money ? ' money-input' : '') + '" type="' + (cfg.type || 'text') + '"' +
         ' value="' + esc(cfg.value === undefined ? '' : cfg.value) + '" placeholder="' + esc(cfg.placeholder || '') + '"' +
-        (cfg.id ? ' id="' + cfg.id + '"' : '') + (cfg.readonly ? ' readonly' : '') + '>';
+        (cfg.id ? ' id="' + cfg.id + '"' : '') + (cfg.autocomplete ? ' autocomplete="' + esc(cfg.autocomplete) + '"' : '') +
+        (cfg.required ? ' required' : '') + (cfg.readonly ? ' readonly' : '') + '>';
       if (cfg.addon) input = '<div class="input-group">' + input + '<span class="addon">' + cfg.addon + '</span></div>';
       if (cfg.prefix) input = '<div class="input-group"><span class="addon pre">' + cfg.prefix + '</span>' + input + '</div>';
     }

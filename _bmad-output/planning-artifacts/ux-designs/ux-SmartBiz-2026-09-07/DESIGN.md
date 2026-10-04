@@ -3,9 +3,10 @@ name: SmartBiz BD
 description: Bangla-first order-to-cash surface for Bangladeshi SME sellers — a paper ledger's calm, where a figure's status is legible before the number is read.
 status: final
 created: 2026-09-07
-updated: 2026-09-11
+updated: 2026-09-12
 sources:
   - ../../prds/prd-SmartBiz-2026-09-07/prd.md
+  - ../../architecture/architecture-SmartBiz-2026-09-08/ARCHITECTURE-SPINE.md
   - ../../../../docs/scope.md
 colors:
   ink-900: '#0B1014'
@@ -54,9 +55,9 @@ colors:
   violet-600: '#5C4A96'
   violet-100: '#E8E3F4'
   violet-050: '#F4F1FA'
-  realized: '{colors.green-600}'
-  earned: '{colors.amber-600}'
-  incomplete: '{colors.brass-600}'
+  realized: '#0C6E52'
+  earned: '#B4761A'
+  incomplete: '#A97F42'
 typography:
   display:
     fontFamily: Noto Serif Bengali
@@ -125,6 +126,10 @@ spacing:
   '9': 56px
   '10': 72px
   phone-width: 390px
+  phone-height: 844px
+  phone-min-width: 360px
+  desktop-width: 1440px
+  desktop-height: 900px
   sidebar-width: 244px
 components:
   elevation:
@@ -199,13 +204,26 @@ components:
     focus-border: '{colors.green-600}'
     focus-outline: 2px solid {colors.green-500}
     focus-outline-offset: 1px
+  interactive-hit-area:
+    min-size: 44px
+  empty-state:
+    icon-size: 52px
+    copy-max-width: 34ch
+  quantity-stepper:
+    control-size: 32px
+    control-size-sm: 26px
+  exclusive-tile-pair:
+    border-width: 1.5px
+  icon:
+    size: 24px
+    stroke-width: 1.7px
 ---
 
 # SmartBiz BD — Design Spine
 
-This spine owns how SmartBiz BD looks. [EXPERIENCE.md](EXPERIENCE.md) owns how it behaves. Both win on conflict with any mock, screenshot, or import — including the prototype they were distilled from.
+This spine owns how SmartBiz BD looks. Resolve contradictions in this order: approved PRD Acceptance Criteria, adopted Architecture Decisions, [EXPERIENCE.md](EXPERIENCE.md), this visual spine, current story frames, and then `prototype/`.
 
-→ Interactive reference implementation: [prototype/index.html](../../../../prototype/index.html) (open directly; no build step). Every token above ships in [prototype/css/tokens.css](../../../../prototype/css/tokens.css).
+→ Authoritative story frames: [mockups/all-screens.html](mockups/all-screens.html). The [mockup catalog README](mockups/README.md) defines the catalog mechanics and authority classification for retained support files and archived visuals. Interactive downstream reference: [prototype/index.html](../../../../prototype/index.html) (open directly; no build step). Every token above ships in [prototype/css/tokens.css](../../../../prototype/css/tokens.css). Standalone PNGs, prior journey-hub concepts, and anything explicitly marked archived are historical records, not implementation authority.
 
 ## Brand & Style
 
@@ -223,6 +241,8 @@ Three commitments follow from the product's thesis and constrain everything belo
 
 ## Colors
 
+### Palette and semantic meanings
+
 The palette is functional before it is decorative: two neutrals and six hues, each hue owning exactly one meaning, so that a colour never has to be explained twice.
 
 - **Canvas `{colors.canvas}`** — warm paper, deliberately not blue-grey. A blue-grey background reads as *dashboard*; this reads as *ledger*. `{colors.canvas-sunk}` recesses a region beneath it; `{colors.surface}` is the white a card lifts to.
@@ -235,6 +255,8 @@ The palette is functional before it is decorative: two neutrals and six hues, ea
 - **Violet `{colors.violet-600}`** — AI and assisted output. Violet **never touches a figure**. The model routes questions and phrases sentences; the moment a number appears it belongs to the application, and it wears green, amber, brass, or red instead. This boundary is a visual rule because it is a trust rule.
 
 Semantic aliases exist so the meaning survives a palette change: `{colors.realized}`, `{colors.earned}`, `{colors.incomplete}`.
+
+### Contrast and non-colour redundancy
 
 **Contrast floors, measured against the warm canvas rather than white.** A figure can sit on any of three backgrounds — `{colors.surface}`, `{colors.canvas}`, and `{colors.canvas-sunk}` — and `{colors.canvas-sunk}` is the least forgiving of the three, so every floor below is checked against it:
 
@@ -263,7 +285,7 @@ Bangla text sets on a taller line-height than a Latin equivalent would need — 
 
 A **4px base** scale, `{spacing.1}` through `{spacing.10}`. Steps are named by level, never by pixel value, at every call site.
 
-The product is two surfaces from one layout model. On the phone (`{spacing.phone-width}` reference width) content is a single column with a bottom tab bar and a sticky action footer where a screen commits something. On desktop the same column sits beside a fixed `{spacing.sidebar-width}` navigation rail; content grows to a comfortable measure rather than filling the monitor, because a ledger line that runs 1600px wide cannot be read across.
+The presentation canvases are `{spacing.phone-width}` × `{spacing.phone-height}` for phone and `{spacing.desktop-width}` × `{spacing.desktop-height}` for desktop; `{spacing.phone-min-width}` is the phone acceptance floor. Desktop content sits beside a fixed `{spacing.sidebar-width}` navigation rail and grows to a comfortable measure rather than filling the monitor, because a ledger line that runs 1600px wide cannot be read across. Responsive behavior and shell composition live in [EXPERIENCE.md § Responsive and Platform](EXPERIENCE.md#responsive-and-platform); commit-surface policy lives in its [Component Patterns](EXPERIENCE.md#component-patterns).
 
 Density is tuned for the real job: a seller triaging thirty orders needs rows that scan, so list rows hold their height and truncate rather than wrap. **A row's sub-line truncates on one line; it never becomes two.** Cards separate concerns; within a card, spacing steps of `{spacing.3}`–`{spacing.4}` group, and `{spacing.6}`–`{spacing.7}` separate sections that are genuinely different subjects.
 
@@ -286,30 +308,41 @@ The logic: a fully rounded pill signals *label, not control* — a thing you rea
 
 ## Components
 
-- **Presentation journey hub** — the design-first index in `mockups/all-screens.html`. It combines the Warm Ledger ink rail, editorial serif heading, ruled epic groups, and a green completeness meter. Every story row carries the exact story ID and title plus its target surface and viewport. The hub is not an app dashboard; it is a review and presentation instrument, and it is the only place where “76 of 76” is a valid primary figure.
-- **Story frame** — a phone or desktop target nested inside the presentation stage. The frame shows one intentional state, one primary action, and three visible proof points. Operational stories use the nearest product pattern—form, list, detail, flow, state, table, or report. Infrastructure and policy stories use the `proof` pattern so their acceptance evidence remains visible rather than pretending they have a conventional CRUD screen.
+For runtime components, canonical identity is the human-readable name in bold below and must be repeated unchanged in `EXPERIENCE.md`'s Component Patterns. Frontmatter keys are implementation token groups or variants, not competing component names: **Button** maps to `{components.button-primary}` and `{components.button-ghost}`; **Status chip**, **COD Custody Status treatment**, and **Collection Status treatment** share the `{components.chip}` visual primitive; **Completeness indicator** maps to `{components.completeness}`; **Provenance note** to `{components.provenance}`; **Bottom sheet** to `{components.sheet}`; **Sidebar (desktop)** to `{components.sidebar}`; and **Icons** to `{components.icon}`. `{components.elevation}` and `{components.motion}` are shared primitives rather than components.
+
+### Presentation catalog constructs
+
+- **Presentation journey hub** *(presentation-only)* — the design-first index in `mockups/all-screens.html`. It combines the Warm Ledger ink rail, editorial serif heading, ruled epic groups, and a green completeness meter. The hub is not an app dashboard or runtime component; it may show “76 of 76” only when the generated verification manifest passes. Archived stills and prior hub concepts never contribute to that count. Its schema, proof rules, and retained-file inventory are delegated to the [mockup catalog README](mockups/README.md).
+- **Story frame** *(presentation-only)* — a phone or desktop device canvas within the presentation stage. It applies the screen's story-specific state to the Warm Ledger visual system and keeps the intentional state label visible. It is a catalog construct, not a runtime component; responsive parity, variants, and in-frame proof requirements are delegated to the [mockup catalog README](mockups/README.md).
+
+### Runtime components
+
+- **Interactive hit area** — every button, link, input, chip, tile, and stepper segment provides at least a `{components.interactive-hit-area.min-size}` × `{components.interactive-hit-area.min-size}` hit area. The visual box may be smaller when density requires it; padding or a pseudo-element extends the target without weakening the visible boundary. Every interactive state retains the visible focus outline, and every motion duration collapses per `{components.motion.note}`.
 
 - **Card** — the default container. `{colors.surface}` on `{colors.line}` at `{rounded.lg}` with `{components.elevation.e1}`. A `flush` variant drops padding so a list can run edge-to-edge inside it.
 - **List row** — a lead icon, a body (title plus one truncating sub-line), an optional trailing figure, and a chevron when it navigates. The sub-line frequently carries a status chip, so the row's typography rules must target **direct children only**; a descendant rule forces the nested chip to `display: block`, and the chip then stretches the full width of the row.
-- **Empty state** — centred: a 52px `{rounded.lg}` `{colors.canvas-sunk}` icon tile, a cause at `{typography.h3.fontSize}`, an explanation at `{typography.sm.fontSize}` held to `34ch` so it stays one readable measure, then the action that resolves it. This is also the surface a gated Role sees, which is why it must never look like an error.
-- **Status chip** — `{rounded.full}`, `display: inline-flex`, a tinted dot plus a label. One tone per order status, drawn from the palette's meanings: teal `new`, brass `confirmed`/`packed`, amber `shipped`, green `delivered`/`settled`, red `returned`/`partial`, neutral `cancelled`.
+- **Empty state** — centred: a `{components.empty-state.icon-size}` `{rounded.lg}` `{colors.canvas-sunk}` icon tile, a cause at `{typography.h3.fontSize}`, an explanation at `{typography.sm.fontSize}` held to `{components.empty-state.copy-max-width}` so it stays one readable measure, then the action that resolves it. This is also the surface a gated Role sees, which is why it must never look like an error.
+- **Status chip** — the Order Status treatment only: `{rounded.full}`, `display: inline-flex`, a tinted glyph plus the exact state label. The eight legal values and tones are teal **New**; brass **Confirmed** and **Packed**; amber **Shipped**; green **Delivered**; neutral **Cancelled**; and red **Returned** and **Failed Delivery**. No Collection Status, COD Custody Status, or return receipt may use this component as though it were an Order Status.
+- **COD Custody Status treatment** — a labelled custody chip whose words carry the physical location of COD cash: neutral **not collected**, amber **collected by Courier**, and green **settled to Business**. It is visually distinct from Order Status through a cash/courier glyph and always includes the full custody label; colour alone never carries the state.
+- **Collection Status treatment** — a labelled payment-position chip for the Customer relationship: red **Unpaid**, brass **Partially Paid**, and green **Paid**. It uses a payment glyph and never substitutes for COD Custody Status, even when the two happen to move together.
+- **Partial return receipt** — a reversal receipt beside the unchanged original Order lines, using a `{colors.red-050}` wash, `{colors.red-500}` leading rule, returned quantity, condition, stock effect, and the explicit label **Part return**. It is an event/receipt treatment, not an Order Status chip and not a ninth Order Status.
 - **Basis pill** — the product's thesis compressed into one element. Accompanies every figure and states its Recognition Basis: `{components.basis-pill.realized-color}` for *হাতে পাওয়া / realized*, `{components.basis-pill.earned-color}` for *অর্জিত / earned*. A figure's label must never straddle two bases.
 - **Completeness indicator** — a thin bar plus "based on N of M items". Fill is `{components.completeness.bar-fill}` (brass — a caveat) while incomplete, and `{components.completeness.bar-fill-full}` (green) once N equals M. The whole indicator is a button: the gap is always explainable.
 - **Money element** — tabular figure with the currency mark de-emphasised. Tone is set by meaning, and negative values take red plus an explicit minus sign, never parentheses, which do not read as negative to this audience.
 - **Provenance note** — teal block with an info mark, stating where a figure or behaviour came from. Present wherever the seller might otherwise assume the app knows something it does not.
 - **Button** — `primary` is solid `{colors.green-600}`; `ghost` is a `{colors.line-control}` outline; `danger` is red-outlined, never red-filled, because a filled red button gets pressed by accident.
 - **Input** — `{colors.line-control}` border, focus per `{components.input.focus-outline}`. Money inputs are tabular and aligned to the inline end.
-- **Quantity stepper** — an `{rounded.full}` `display: inline-flex` group on `{colors.line-control}`: a 32px minus button, a value at `{typography.body.fontSize}` with inline rules either side, a 32px plus button. An `sm` variant drops both buttons to 26px for dense rows. The value is tabular so it does not jitter as digits change, in either script.
-- **Exclusive tile pair** — two tiles at `{rounded.md}` on a **1.5px** `{colors.line-control}` border (heavier than a Card, so a selectable object reads as selectable), each holding a bold label over a `{typography.xs.fontSize}` consequence line. The chosen tile takes a `{colors.green-600}` border with a `{colors.green-050}` wash; a destructive option takes `{colors.red-500}` with `{colors.red-050}`. Exactly one is marked — a pair with both marked or neither is a defect, not a state.
+- **Quantity stepper** — an `{rounded.full}` `display: inline-flex` group on `{colors.line-control}`: a `{components.quantity-stepper.control-size}` minus visual box, a value at `{typography.body.fontSize}` with inline rules either side, and a `{components.quantity-stepper.control-size}` plus visual box. An `sm` variant drops both visual boxes to `{components.quantity-stepper.control-size-sm}` for dense rows; both variants retain the hit area defined by **Interactive hit area**. The value is tabular so it does not jitter as digits change, in either script.
+- **Exclusive tile pair** — two tiles at `{rounded.md}` on a **`{components.exclusive-tile-pair.border-width}`** `{colors.line-control}` border (heavier than a Card, so a selectable object reads as selectable), each holding a bold label over a `{typography.xs.fontSize}` consequence line. The chosen tile takes a `{colors.green-600}` border with a `{colors.green-050}` wash; a destructive option takes `{colors.red-500}` with `{colors.red-050}`. Exactly one is marked — a pair with both marked or neither is a defect, not a state.
 - **Filter chips** — a horizontal `{rounded.full}` row that scrolls without a visible scrollbar and bleeds to both edges, so a chip cut off at the edge signals that more follow. The active chip is filled; the rest are `{colors.line-control}` outlines. Always exactly one active.
-- **Cash strip** — the dashboard's first element, and the product's answer in four cells. A `{colors.surface}` panel on `{colors.line}` at `{rounded.lg}`. Cells sit on a column grid with a `9.75rem` minimum, so a strip too wide for the screen scrolls horizontally rather than compressing a figure. Each cell is a button holding an `{rounded.full}` basis pill above a `{typography.h3.fontSize}` figure, and `{colors.line}` divides one cell from the next on the inline end, the last excluded. Never five cells; a fifth means one of them is not load-bearing.
+- **Cash strip** — the dashboard's first element, and the product's answer in four cells. A `{colors.surface}` panel on `{colors.line}` at `{rounded.lg}`. The four cells form a 2×2 grid at the `{spacing.phone-min-width}` floor and one row when width permits; the page never requires horizontal scrolling to read them. Each cell is a button holding an `{rounded.full}` basis pill above a `{typography.h3.fontSize}` figure, and `{colors.line}` divides the cells. Never five cells; a fifth means one of them is not load-bearing.
 - **Attention list** — rows inside a Card, each a full-width button padded `{spacing.3} {spacing.4}`, with a tinted lead icon, the named record, and a chevron. A row needing money attention washes from `{colors.red-050}` into transparent across the leading 60% of its width — a tint, not a fill, so the row still reads as a list row. The card is **absent** when there is nothing to decide, never present and empty.
-- **Sticky footer** — `position: sticky; bottom: 0`, negative inline margins so it spans the full surface width, a `{colors.line}` top rule and a `{colors.surface}` background. The committing button stretches to the full width; a `rich` variant puts a figure at the leading edge and holds the button to its intrinsic width.
+- **Sticky footer** — reserved for a mutating commit. It uses `position: sticky; bottom: 0`, negative inline margins so it spans the full surface width, a `{colors.line}` top rule and a `{colors.surface}` background. The committing button stretches to the full width; a `rich` variant puts a figure at the leading edge and holds the button to its intrinsic width. Read-only, navigation, filter, export-preview, and proof screens do not use this component.
 - **Bottom sheet** — `{rounded.xl}` top corners, `{components.elevation.e4}`, a grabber, a titled head with a close control, a scrolling body, an optional footer holding cancel plus commit. One level deep; never two.
 - **Toast** — inverted `{colors.ink-800}` pill, `{components.elevation.e3}`, with room for one trailing action.
 - **Sidebar (desktop)** — `{colors.ink-900}` rail, grouped nav (Work · Catalogue · Money · Insight · System), counts and warning badges inline, the current Member and Role pinned to the foot.
-- **Tab bar (phone)** — five slots with a raised centre action for capture. Its fifth slot is **Courier & COD** for a Role that sees money and **Customers** for one that does not, so a gated Member sees no money destination at all, rather than one that refuses. The raised capture action is likewise **absent** for a Role that may not see a selling price, since an order cannot be captured without one: four slots and no centre action is a legitimate tab bar here.
-- **Icons** — a single 24px stroked set at 1.7px weight, geometric and unfilled. Each order status carries its own glyph so the state machine reads as a sequence rather than as nine coloured dots.
+- **Tab bar (phone)** — Role-composed from an exact map. **Owner and Manager:** Home · Orders · raised Capture · Stock · Courier & COD. **Accountant:** Home · Orders · Stock · Courier & COD, with no raised Capture slot. **Sales Staff:** Home · Orders · raised Capture · Stock · Customers. **Inventory Staff:** Home · Orders · Stock · Products, with no raised Capture slot. Capture is present only for Roles permitted to create an Order and see its selling price; its absence leaves a legitimate four-slot bar rather than a blank centre. No Role receives a disabled or refusing money destination.
+- **Icons** — a single `{components.icon.size}` stroked set at `{components.icon.stroke-width}` weight, geometric and unfilled. Each of the eight Order Status values carries its own glyph so the state machine reads as a sequence rather than as coloured dots.
 
 ## Do's and Don'ts
 
@@ -320,12 +353,13 @@ The logic: a fully rounded pill signals *label, not control* — a thing you rea
 - Let borders carry structure and keep shadow almost absent at rest — but use `{colors.line-control}` the moment a border bounds a control rather than separates two rows.
 - Truncate a list row's sub-line on one line; hold row height so a long list scans.
 - Set both scripts from the same tokens, and check every screen in Bangla *and* English before calling it done.
+- Keep Bangla as the default story-frame locale and provide an English parity variant with the same state, actions, proof, hierarchy, and responsive behavior.
 
 **Don't**
 
 - Never colour a figure violet, and never let the model's output stand where a computed number belongs.
 - Never use green for a figure that has not been collected — green is realized money, not good news.
-- Never render Latin digits in a Bangla view, including inside a timestamp. A localised date with a Latin clock is a half-translated product.
+- Never render Latin digits in a Bangla view for generated quantities, money, dates, times, or percentages. Human-facing identifiers such as `ORD-1042` are the AD-17 exception and always remain in Latin digits; source data on import preview surfaces remains exactly as received. A localised date with a Latin clock is still a half-translated product.
 - Never fill a destructive button; outline it.
 - Never introduce a colour for a new meaning. Six hues carry six meanings; a seventh meaning must reuse one or displace it.
 - Never let a colour be the only thing distinguishing two meanings: amber never appears without a Recognition Basis label beside it, and brass never without a Completeness Indicator. And never assume a pale tint reads as a ring. Check the ratio — amber against brass is 1.05:1, and a `{colors.green-050}` halo against the canvas is 1.00:1.

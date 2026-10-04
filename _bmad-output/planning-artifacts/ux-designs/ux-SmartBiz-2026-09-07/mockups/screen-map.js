@@ -1,7 +1,7 @@
 /* SmartBiz BD — authoritative story-to-screen design map.
    This file belongs to the UX mockup set. The prototype consumes a copy only
    after mockup coverage passes; edits begin here, never in prototype/. */
-window.SMARTBIZ_SCREEN_MAP = [
+const RAW_SCREENS = [
   { id:'1.1', epic:1, kind:'proof', mode:'desktop', route:'proof/foundation-runtime', surface:'Deployment readiness', title:'Application skeleton deployed on free-tier infrastructure', state:'Cold-start and runtime proof', action:'Open health evidence', evidence:['Render web service and Neon database connected','Designed cold-start loading state','Backup and restore evidence recorded'] },
   { id:'1.2', epic:1, kind:'auth', mode:'phone', route:'account/register', surface:'Register and recover access', title:'User registration, login, and single-use recovery code', state:'Recovery code shown once', action:'Save recovery code', evidence:['Password registration and sign-in','Single-use recovery code reveal','Reset issues a replacement code'] },
   { id:'1.3', epic:1, kind:'form', mode:'phone', route:'onboarding/business', surface:'Create business', title:'Business creation and Owner assignment', state:'First business setup', action:'Create my business', evidence:['Business name and type','Owner assignment confirmed','Business-scoped workspace opens'] },
@@ -13,7 +13,7 @@ window.SMARTBIZ_SCREEN_MAP = [
   { id:'1.9', epic:1, kind:'table', mode:'desktop', route:'admin/platform', surface:'Platform overview', title:'Platform Administrator read-only view', state:'Names and counts only', action:'Return to platform list', evidence:['Business names and member counts','User names and access counts','No orders, customers or money'] },
   { id:'1.10', epic:1, kind:'proof', mode:'desktop', route:'proof/design-system', surface:'Design system evidence', title:'Design tokens, contrast test suite, and Bangla-first shell', state:'Accessibility floor passing', action:'Inspect token evidence', evidence:['DESIGN.md token parity','AA contrast and control boundaries','Bangla default with localized numerals'] },
 
-  { id:'2.1', epic:2, kind:'form', mode:'phone', route:'products/new', surface:'New product', title:'Product and category definition', state:'Name and selling price required', action:'Save product', evidence:['Category, SKU and Supplier optional','Product appears in capture immediately','Money fields use two decimals'] },
+  { id:'2.1', epic:2, kind:'form', mode:'phone', route:'products/new', surface:'New product', title:'Product and category definition', state:'Name and selling price required', action:'Save product', evidence:['Category, SKU, Supplier and minimum stock optional','Product appears in capture immediately','Referenced Products deactivate, never delete'] },
   { id:'2.2', epic:2, kind:'form', mode:'desktop', route:'product/dimensions', surface:'Variant dimensions', title:'Variant Dimensions definition', state:'Three axes configured', action:'Save dimensions', evidence:['Colour, Size and Fabric axes','Values editable before generation','Fourth axis visibly refused'] },
   { id:'2.3', epic:2, kind:'table', mode:'desktop', route:'product/matrix-3d', surface:'Generated variant matrix', title:'Variant matrix generation', state:'All combinations ready', action:'Create variants', evidence:['Every three-axis combination','SKU, zero stock and missing cost','Parent balance migration explained'] },
 
@@ -36,7 +36,7 @@ window.SMARTBIZ_SCREEN_MAP = [
   { id:'4.11', epic:4, kind:'form', mode:'phone', route:'order/return-receipt', surface:'Return receipt', title:'Returned status and return-to-stock receipt', state:'Goods physically received', action:'Record receipt', evidence:['Commercial return separate from receipt','Per-line partial quantity','Resalable or damaged condition'] },
   { id:'4.12', epic:4, kind:'state', mode:'phone', route:'order/failed-delivery', surface:'Failed delivery', title:'Failed delivery', state:'Courier could not deliver', action:'Record failed delivery', evidence:['Removed from courier custody','Retry shipment or receive return','Courier charge remains'] },
   { id:'4.13', epic:4, kind:'detail', mode:'desktop', route:'order/edit-constraints', surface:'Edit order', title:'Order editing constraints', state:'Packed order is restricted', action:'Review allowed changes', evidence:['Commercial fields locked after Packed','Courier and status remain editable','Missing cost is the sole exception'] },
-  { id:'4.14', epic:4, kind:'list', mode:'desktop', route:'orders/filter', surface:'Order list and filters', title:'Order list, search, and filtering', state:'Attention filters applied', action:'Open selected order', evidence:['Status, date, courier, custody, collection, source','Search ID, phone or name','Returns, shortfalls and unsettled orders flagged'] },
+  { id:'4.14', epic:4, kind:'list', mode:'phone', route:'orders/filter', surface:'Order list and filters', title:'Order list, search, and filtering', state:'Attention filters applied', action:'Open selected order', evidence:['Status, date, courier, custody, collection, source','Search ID, phone or name','Returns, shortfalls and unsettled orders flagged'] },
   { id:'4.15', epic:4, kind:'report', mode:'phone', route:'order/economics', surface:'Order economics', title:'Per-Order unit economics', state:'Earned unit economics', action:'Explain this margin', evidence:['Revenue, historical cost and courier charge','Resulting margin','Capability-gated cost visibility'] },
   { id:'4.16', epic:4, kind:'form', mode:'phone', route:'order/missing-cost', surface:'Complete missing Purchase Cost', title:'Completing a missing Purchase Cost', state:'One line incomplete', action:'Save Purchase Cost', evidence:['Available at every status','Existing cost cannot be overwritten','Profit completeness recomputes'] },
   { id:'4.17', epic:4, kind:'detail', mode:'phone', route:'capture/repeat', surface:'Repeat past order', title:'Repeat a past Order', state:'Current prices compared', action:'Create repeated order', evidence:['New status and fresh identity','Changed-price marker','Inactive Variant excluded'] },
@@ -61,11 +61,11 @@ window.SMARTBIZ_SCREEN_MAP = [
   { id:'6.1', epic:6, kind:'report', mode:'desktop', route:'home/money', surface:'Dashboard money panel', title:'Dashboard money panel', state:'Earned and realized position', action:'Open money detail', evidence:['Money With Couriers','Pending versus realized cash','Live profit derivation'] },
   { id:'6.2', epic:6, kind:'list', mode:'phone', route:'home/attention', surface:'Dashboard attention', title:'Dashboard operational counts', state:'Four decisions need attention', action:'Start first decision', evidence:['Low stock','Unreceived returns and shortfalls','Unsettled delivered Orders'] },
   { id:'6.3', epic:6, kind:'proof', mode:'desktop', route:'proof/recognition', surface:'Recognition Basis coverage', title:'Recognition Basis on every profit figure', state:'All profit surfaces labelled', action:'Inspect surface audit', evidence:['Earned buckets by delivery date','Realized buckets by settlement date','No bare Profit label'] },
-  { id:'6.4', epic:6, kind:'proof', mode:'desktop', route:'proof/completeness', surface:'Completeness coverage', title:'Completeness Indicator on every profit figure', state:'Exact gap explained', action:'Inspect missing records', evidence:['Based on N of M','Missing-cost Orders named','Expenses completeness disclosed'] },
+  { id:'6.4', epic:6, kind:'proof', mode:'desktop', route:'proof/completeness', surface:'Completeness coverage', title:'Completeness Indicator on every profit figure', state:'Exact gap explained', action:'Inspect missing records', evidence:['Based on N of M','Missing-cost Orders named','Recorded Expense total shown'] },
   { id:'6.5', epic:6, kind:'state', mode:'desktop', route:'home/role', surface:'Role-composed dashboard', title:'Role-composed dashboard', state:'Sales Staff view', action:'Compare with Owner', evidence:['Denied money items absent','Shared components, filtered payload','Labels reinforce amber and brass'] },
 
   { id:'7.1', epic:7, kind:'detail', mode:'desktop', route:'customer/history', surface:'Customer profile', title:'Customer profile and full history', state:'Complete relationship history', action:'Repeat a previous order', evidence:['Profile and contact details','Orders, payments and dues','Return and cancellation history'] },
-  { id:'7.2', epic:7, kind:'report', mode:'phone', route:'customer/risk', surface:'Customer Risk Ratio', title:'Customer Risk Ratio', state:'High risk, formula visible', action:'Explain this ratio', evidence:['Returned ÷ completed Orders','Small-sample caveat','No predictive model language'] },
+  { id:'7.2', epic:7, kind:'report', mode:'phone', route:'customer/risk', surface:'Customer Risk Ratio', title:'Customer Risk Ratio', state:'Return rate plus Due history', action:'Explain this ratio', evidence:['Return rate and Due history formula','Input counts make arithmetic verifiable','Insufficient history shows no score'] },
   { id:'7.3', epic:7, kind:'form', mode:'phone', route:'dues/payment', surface:'Record Customer payment', title:'Customer Due and Customer Payment', state:'Part payment entered', action:'Record payment', evidence:['Remaining Due preview','Ageing bucket updates','Payment remains its own event'] },
 
   { id:'8.1', epic:8, kind:'detail', mode:'desktop', route:'supplier/history', surface:'Supplier profile', title:'Supplier profile and purchase history', state:'Trading relationship overview', action:'Open purchase record', evidence:['Contact and associated Products','Stock-In purchase history','Computed outstanding balance'] },
@@ -78,7 +78,7 @@ window.SMARTBIZ_SCREEN_MAP = [
   { id:'10.2', epic:10, kind:'list', mode:'desktop', route:'reports/all', surface:'All reports', title:'Nine reports with date filtering', state:'Nine report destinations', action:'Run selected report', evidence:['All nine reports named','Custom date range','Role-gated columns'] },
   { id:'10.3', epic:10, kind:'state', mode:'desktop', route:'reports/export-csv', surface:'CSV export', title:'CSV export for all nine reports', state:'Export contents previewed', action:'Download CSV', evidence:['Same columns as screen','Current date range','Capability-gated fields omitted'] },
   { id:'10.4', epic:10, kind:'state', mode:'desktop', route:'reports/export-pdf', surface:'Bangla PDF preview', title:'Bangla PDF export for three reports', state:'Profit Summary ready', action:'Download Bangla PDF', evidence:['Sales, Profit and COD Settlement','Shared rendering pipeline','Basis and completeness retained'] },
-  { id:'10.5', epic:10, kind:'report', mode:'phone', route:'home/summary', surface:'Daily Summary digest', title:'Daily Summary digest', state:'Text and image ready', action:'Share daily summary', evidence:['Copyable Bangla text','Saveable rendered image','Orders, COD, basis and completeness'] },
+  { id:'10.5', epic:10, kind:'report', mode:'phone', route:'home/summary', surface:'Daily Summary digest', title:'Daily Summary digest', state:'Text and image ready', action:'Copy summary text', evidence:['Copyable Bangla text','Saveable rendered image','Orders, COD, basis and completeness'] },
 
   { id:'11.1', epic:11, kind:'detail', mode:'desktop', route:'audit/change', surface:'Audit entry', title:'Audit Entry on every financial and inventory change', state:'Before and after values', action:'Open affected record', evidence:['Exactly one entry per service call','Actor and timestamp','Before and after money or stock'] },
   { id:'11.2', epic:11, kind:'table', mode:'desktop', route:'audit/filters', surface:'Audit trail filters', title:'Audit trail view and filtering', state:'Member and operation applied', action:'Inspect selected entry', evidence:['Date range','Member and entity type','Operation with Role access'] },
@@ -91,3 +91,75 @@ window.SMARTBIZ_SCREEN_MAP = [
   { id:'12.5', epic:12, kind:'report', mode:'desktop', route:'ai/decomposition', surface:'Profit change decomposition', title:'Profit change decomposition', state:'Arithmetic drivers add exactly', action:'Open underlying report', evidence:['Revenue and cost movement','Expenses, courier charges and variances','Signed components equal total change'] }
 ];
 
+const ONBOARDING = new Set(['1.2', '1.3', '1.4']);
+const COMMIT = new Set([
+  '1.2','1.3','1.4','1.7','1.8','2.1','2.2','2.3','3.1','3.2','3.3',
+  '4.1','4.3','4.5','4.6','4.7','4.8','4.9','4.10','4.11','4.12','4.13',
+  '4.16','4.17','4.18','4.19','4.20','4.21','5.1','5.2','5.3','5.4','5.6',
+  '5.7','5.8','5.10','5.12','7.3','8.2','9.1','11.3'
+]);
+const EXPORT = new Set(['3.4', '10.3', '10.4', '10.5']);
+
+const RESPONSIVE = {
+  phone: '360px floor: one readable column, persistent state label, Role-composed bottom tabs, and a sticky footer only when the action commits.',
+  desktop: 'Same application route and data model: a width-capped working column beside the 244px grouped rail; keyboard-friendly density without changing behavior.'
+};
+
+const VARIANTS = {
+  '1.2': ['register','recovery-reveal','login','reset','replacement-code'],
+  '1.4': ['generate-code','join','used-code'],
+  '1.9': ['names-and-counts','forbidden-fields-absent'],
+  '2.1': ['new-product','minimum-stock-unset','deactivated-history'],
+  '5.2': ['courier-assignment','inventory-handoff-pack-slip'],
+  '4.5': ['parsed','ambiguous-product','unparseable'],
+  '4.8': ['allocation-preview','missing-cost','shortfall','already-confirmed'],
+  '4.9': ['legal-next','illegal-transition','restricted-role'],
+  '4.10': ['eligible','ineligible','cancelled-result'],
+  '4.11': ['commercial-return','partial-receipt','resalable','damaged'],
+  '4.14': ['phone-triage','filtered-results','empty-results'],
+  '5.8': ['paid-short','manual-match','disposition-selected','confirm-effect'],
+  '5.10': ['blocked','ready-to-close','closed'],
+  '6.3': ['surface-audit','earned','realized'],
+  '6.4': ['incomplete','gap-detail','complete'],
+  '6.5': ['owner','sales-staff','inventory-staff'],
+  '7.2': ['ratio','formula','insufficient-history'],
+  '10.2': ['report-index','date-filter','role-filtered'],
+  '10.5': ['summary','copy-text','save-image'],
+  '11.3': ['eligible-seven','record-entry','audit-entry','toast-undo','already-reversed','ineligible'],
+  '12.1': ['configured','absent','failing','exhausted'],
+  '12.2': ['query-list','routing','routed','withheld','unroutable']
+};
+
+window.SMARTBIZ_SCREEN_MAP = RAW_SCREENS.map(raw => {
+  const { mode, route, action, evidence, ...story } = raw;
+  const proofs = evidence.map((label, index) => ({
+    id: `${raw.id}-proof-${index + 1}`,
+    label,
+    locator: `[data-proof-id="${raw.id}-proof-${index + 1}"]`
+  }));
+  const names = VARIANTS[raw.id] || ['primary'];
+  return {
+    ...story,
+    primaryMode: mode,
+    secondaryMode: mode === 'phone' ? 'desktop' : 'phone',
+    responsive: RESPONSIVE[mode],
+    shell: raw.kind === 'proof' ? 'proof' : ONBOARDING.has(raw.id) ? 'onboarding' : 'app',
+    appRoute: `/${route}`,
+    mockupHash: `#story/${raw.id}`,
+    prototypeJourneyUrl: `../../../../../prototype/index.html#/journeys/${raw.id}`,
+    actionModel: {
+      kind: COMMIT.has(raw.id) ? 'commit' : EXPORT.has(raw.id) ? 'export' : raw.kind === 'proof' ? 'inspect' : 'navigate',
+      label: action,
+      sticky: COMMIT.has(raw.id)
+    },
+    proofs,
+    variants: names.map((name, index) => ({
+      id: `${raw.id}-${name}`,
+      label: name.replaceAll('-', ' '),
+      state: index === 0 ? raw.state : name.replaceAll('-', ' '),
+      proofIds: (names.length <= 3
+        ? proofs.filter((_, proofIndex) => proofIndex % names.length === index)
+        : [proofs[index % 3]]).map(proof => proof.id)
+    }))
+  };
+});

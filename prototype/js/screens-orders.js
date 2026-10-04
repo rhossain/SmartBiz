@@ -96,6 +96,7 @@
 
   App.screens.capture = {
     /* every capture path shows a selling price and a delivery charge */
+    roles: ['owner', 'manager', 'sales'],
     price: true,
     view: function (args) {
       var path = args[0];
@@ -943,6 +944,12 @@
           '<span class="spacer"></span><span class="money big">' + tk(e.collect) + '</span></div>' +
           '<div style="margin-top:var(--s3)">' + U.provenance(L('ক্রয়মূল্য ও লাভ আপনার ভূমিকায় দেখানো হয় না।',
             'Cost and profit are not shown to your Role.'), 'brass', I.lock(15)) + '</div></div>';
+      } else if (App.seesCost()) {
+        body += '<div class="card pad"><div class="row"><b style="font-size:var(--fs-sm)">' +
+          L('এই অর্ডারের ক্রয়মূল্য', 'Purchase Cost for this Order') + '</b><span class="spacer"></span>' +
+          '<span class="money mid">' + tk(e.cogs) + '</span></div><div style="margin-top:var(--s3)">' +
+          U.provenance(L('বিক্রয়মূল্য, মার্জিন, লাভ ও নিষ্পত্তি আপনার Role-এ নেই।',
+            'Selling price, margin, profit, and settlement are absent for your Role.'), 'teal', I.lock(15)) + '</div></div>';
       }
 
       /* --- courier --- */
@@ -1109,7 +1116,7 @@
     var c = App.get.customer(o.cust);
     var events = [
       { at: o.placed, bn: 'অর্ডার নেওয়া হয়েছে', en: 'Order captured',
-        sub: L(SOURCE[o.source].bn, SOURCE[o.source].en) + ' · ' + L(App.ROLES.staff.name, App.ROLES.staff.nameEn), state: 'done' }
+        sub: L(SOURCE[o.source].bn, SOURCE[o.source].en) + ' · ' + L(App.ROLES.sales.name, App.ROLES.sales.nameEn), state: 'done' }
     ];
     var idx = FLOW.indexOf(o.status);
     ['confirmed', 'packed', 'shipped', 'delivered', 'settled'].forEach(function (s) {

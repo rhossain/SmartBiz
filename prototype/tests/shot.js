@@ -117,7 +117,7 @@ function getJSON(path) {
     ['desktop-settle', 'desktop', 'bn', 'owner',  'settlement/STL-0831'],
     ['desktop-flows',  'desktop', 'bn', 'owner',  'flows'],
     ['phone-home-en',  'phone',   'en', 'owner',  'home'],
-    ['phone-gated',    'phone',   'bn', 'packer', 'reports/profit'],
+    ['phone-gated',    'phone',   'bn', 'inventory', 'reports/profit'],
     ['phone-splash',   'phone',   'bn', 'owner',  'splash'],
     ['phone-slip',     'phone',   'bn', 'owner',  'order/ORD-1037/slip'],
     ['phone-audit',    'phone',   'bn', 'owner',  'audit/A-84'],
@@ -163,7 +163,7 @@ function getJSON(path) {
   /* The parse result, in English, because this is the screen that has to prove
      it did not guess: the count of what it found, the recognised number, and —
      after the misattribution fix — a pink dupatta beside a black kurti. */
-  await evaluate('__set("phone","en","staff"); __nav("capture/paste");');
+  await evaluate('__set("phone","en","sales"); __nav("capture/paste");');
   await sleep(2900);
   await evaluate('App.state.paste = null; App.state.parsed = null; App.render();' +
     'document.querySelector(\'[data-act="paste-demo"]\').click();' +

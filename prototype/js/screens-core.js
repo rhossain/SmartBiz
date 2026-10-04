@@ -45,92 +45,177 @@
     App.render();
   };
 
-  /* ==================================================== 2. SIGN IN ===== */
+  /* =========================================== 2. PASSWORD AUTHENTICATION */
   App.screens.signin = {
     view: function () {
       return { chromeless: true, body:
         '<div class="auth">' +
           '<button class="auth-back" data-act="back">' + I.back(19) + '</button>' +
           '<div class="auth-body">' +
-            '<span class="auth-glyph">' + I.people(22) + '</span>' +
-            '<h1>' + L('আপনার মোবাইল নম্বর', 'Your mobile number') + '</h1>' +
-            '<p>' + L('আমরা একটি কোড পাঠাব। পাসওয়ার্ড মনে রাখতে হবে না।',
-                      'We will send a code. No password to remember.') + '</p>' +
-            U.field({ prefix: '+৮৮০', value: '1712-448190', type: 'tel',
-              hint: L('এই নম্বরটিই আপনার পরিচয় — ব্যবসার নম্বর দিন।',
-                      'This number is your identity — use the business number.') }) +
-            '<div class="auth-alt">' +
-              U.toggleRow({ title: L('ইমেইলও যোগ করি?', 'Add an email too?'),
-                sub: L('ঐচ্ছিক। রিপোর্ট ইমেইলে পাঠানো যাবে — না দিলেও সব কাজ চলবে।',
-                       'Optional. Lets us email reports — everything works without it.'), on: false }) +
-            '</div>' +
+            '<span class="auth-glyph">' + I.lock(22) + '</span>' +
+            '<h1>' + L('অ্যাকাউন্টে ঢুকুন', 'Sign in to your account') + '</h1>' +
+            '<p>' + L('মোবাইল নম্বর বা ইমেইল এবং আপনার পাসওয়ার্ড লিখুন।',
+                      'Enter your phone number or email and password.') + '</p>' +
+            U.field({ label: L('মোবাইল নম্বর বা ইমেইল', 'Phone number or email'),
+              value: '01712-448190', autocomplete: 'username' }) +
+            U.field({ label: L('পাসওয়ার্ড', 'Password'), type: 'password',
+              value: 'smartbiz-demo', autocomplete: 'current-password' }) +
+            '<button class="btn quiet block" data-go="recovery/reset">' +
+              L('পাসওয়ার্ড ভুলে গেছেন?', 'Forgot your password?') + '</button>' +
           '</div>' +
           '<div class="auth-foot">' +
-            '<button class="btn primary lg block" data-go="verify">' + L('কোড পাঠান', 'Send code') + '</button>' +
-            '<p class="fineprint">' + L('চালিয়ে গেলে আপনি শর্তাবলীতে সম্মত হচ্ছেন।', 'By continuing you accept the terms.') + '</p>' +
+            '<button class="btn primary lg block" data-go="home">' + L('ঢুকুন', 'Sign in') + '</button>' +
+            '<button class="btn ghost block" data-go="register">' + L('নতুন অ্যাকাউন্ট করুন', 'Create an account') + '</button>' +
+            '<button class="btn quiet block" data-go="invite/redeem">' + L('আমন্ত্রণ কোড আছে', 'I have an invitation code') + '</button>' +
           '</div>' +
         '</div>' };
     }
   };
 
-  /* ==================================================== 3. VERIFY ====== */
-  App.screens.verify = {
+  App.screens.register = {
     view: function () {
       return { chromeless: true, body:
         '<div class="auth">' +
           '<button class="auth-back" data-act="back">' + I.back(19) + '</button>' +
           '<div class="auth-body">' +
-            '<span class="auth-glyph">' + I.lock(22) + '</span>' +
-            '<h1>' + L('কোড লিখুন', 'Enter the code') + '</h1>' +
-            '<p>' + L('+৮৮০ ১৭১২-৪৪৮১৯০ নম্বরে ৪ সংখ্যার কোড পাঠানো হয়েছে।',
-                      'A 4-digit code was sent to +880 1712-448190.') + '</p>' +
-            '<div class="otp">' +
-              [['৪', '4'], ['৯', '9'], ['১', '1'], ['', '']].map(function (d, i) {
-                return '<span class="otp-box' + (i === 3 ? ' is-live' : (d[0] ? ' is-filled' : '')) + '">' +
-                  L(d[0], d[1]) + '</span>';
-              }).join('') +
-            '</div>' +
-            U.provenance(L('ডেমো: যেকোনো কোড কাজ করবে।', 'Demo: any code works.'), 'teal') +
-            '<button class="btn quiet block" style="margin-top:var(--s4)">' +
-              L('কোড আসেনি? আবার পাঠান (০:২৮)', 'Did not get it? Resend (0:28)') + '</button>' +
+            '<span class="auth-glyph">' + I.people(22) + '</span>' +
+            '<h1>' + L('অ্যাকাউন্ট তৈরি করুন', 'Create your account') + '</h1>' +
+            '<p>' + L('একটি পরিচয় এবং শক্ত পাসওয়ার্ডই যথেষ্ট। ইমেইল পাঠানোর ওপর কিছু নির্ভর করে না।',
+                      'An identifier and a strong password are enough. Nothing depends on email delivery.') + '</p>' +
+            U.field({ label: L('মোবাইল নম্বর বা ইমেইল', 'Phone number or email'),
+              value: '01712-448190', autocomplete: 'username', required: true }) +
+            U.field({ label: L('পাসওয়ার্ড', 'Password'), type: 'password',
+              value: 'smartbiz-demo', autocomplete: 'new-password', required: true,
+              hint: L('কমপক্ষে ৮ অক্ষর ব্যবহার করুন।', 'Use at least 8 characters.') }) +
+            U.field({ label: L('পাসওয়ার্ড আবার লিখুন', 'Confirm password'), type: 'password',
+              value: 'smartbiz-demo', autocomplete: 'new-password', required: true }) +
           '</div>' +
           '<div class="auth-foot">' +
-            '<button class="btn primary lg block" data-go="setup">' + L('যাচাই করুন', 'Verify') + '</button>' +
+            '<button class="btn primary lg block" data-go="recovery/reveal">' + L('অ্যাকাউন্ট তৈরি করুন', 'Create account') + '</button>' +
+            '<button class="btn quiet block" data-go="signin">' + L('আগেই অ্যাকাউন্ট আছে', 'I already have an account') + '</button>' +
           '</div>' +
         '</div>' };
     }
   };
 
-  /* ==================================================== 4. SETUP ======= */
-  var SETUP_STEPS = [
-    { key: '',          bn: 'ব্যবসা',   en: 'Business' },
-    { key: 'catalogue', bn: 'পণ্য',     en: 'Products' },
-    { key: 'team',      bn: 'সদস্য',    en: 'Team' },
-    { key: 'done',      bn: 'শেষ',      en: 'Done' }
-  ];
+  /* AD-19: the recovery code is shown once, stored only as a hash in the product,
+     consumed by reset, and replaced immediately. These are presentation states. */
+  App.screens.recovery = {
+    view: function (args) {
+      var state = args[0] || 'reset';
+      var reveal = state === 'reveal' || state === 'replaced';
+      var title = state === 'replaced'
+        ? L('নতুন পুনরুদ্ধার কোড', 'Your replacement recovery code')
+        : L('পুনরুদ্ধার কোডটি রেখে দিন', 'Save your recovery code');
+      if (reveal) return { chromeless: true, body:
+        '<div class="auth"><button class="auth-back" data-act="back">' + I.back(19) + '</button>' +
+        '<div class="auth-body"><span class="auth-glyph">' + I.shield(22) + '</span><h1>' + title + '</h1>' +
+        '<p>' + L('এই কোডটি শুধু এখনই দেখা যাবে। নিরাপদ জায়গায় লিখে রাখুন।',
+          'This code is shown only now. Store it somewhere safe.') + '</p>' +
+        '<div class="code-box recovery-code"><span class="eyebrow">' + L('একবারের কোড', 'Single-use code') + '</span>' +
+        '<b class="join-code">RCV-8M4K-2Q7P</b><span class="cell-sub">' +
+        L('ব্যবহারের পর এই কোড আর চলবে না।', 'After use, this code will no longer work.') + '</span></div>' +
+        U.provenance(L('SmartBiz এই কোডের আসল লেখা রাখে না—শুধু নিরাপদ হ্যাশ রাখে।',
+          'SmartBiz stores only a secure hash, never the readable code.'), 'teal', I.lock(15)) + '</div>' +
+        '<div class="auth-foot"><button class="btn primary lg block" data-go="' +
+        (state === 'replaced' ? 'signin' : 'setup') + '">' +
+        L(state === 'replaced' ? 'ঢোকার পাতায় যান' : 'কোড রেখেছি, ব্যবসা তৈরি করি',
+          state === 'replaced' ? 'Return to sign in' : 'I saved it, create my business') + '</button></div></div>' };
 
-  function setupSteps(current) {
-    return '<div class="steps">' + SETUP_STEPS.map(function (s, i) {
-      var cls = i < current ? 'done' : (i === current ? 'now' : '');
-      return (i ? '<span class="sep"></span>' : '') +
-        '<span class="st ' + cls + '"><span class="n">' + (i < current ? '✓' : n(i + 1)) + '</span>' +
-        (App.device === 'desktop' || i === current ? L(s.bn, s.en) : '') + '</span>';
-    }).join('') + '</div>';
-  }
+      return { chromeless: true, body:
+        '<div class="auth"><button class="auth-back" data-act="back">' + I.back(19) + '</button>' +
+        '<div class="auth-body"><span class="auth-glyph">' + I.lock(22) + '</span>' +
+        '<h1>' + L('পাসওয়ার্ড বদলান', 'Reset your password') + '</h1>' +
+        '<p>' + L('আগের একবারের পুনরুদ্ধার কোড এবং নতুন পাসওয়ার্ড লিখুন।',
+          'Enter your current single-use recovery code and a new password.') + '</p>' +
+        U.field({ label: L('পুনরুদ্ধার কোড', 'Recovery code'), value: 'RCV-••••-••••', required: true }) +
+        U.field({ label: L('নতুন পাসওয়ার্ড', 'New password'), type: 'password', value: 'new-password', required: true }) +
+        U.field({ label: L('নতুন পাসওয়ার্ড আবার লিখুন', 'Confirm new password'), type: 'password', value: 'new-password', required: true }) +
+        U.provenance(L('কোডটি ব্যবহার হলেই বাতিল হবে এবং নতুন কোড দেওয়া হবে।',
+          'Using this code invalidates it and issues a replacement.'), 'teal') + '</div>' +
+        '<div class="auth-foot"><button class="btn primary lg block" data-go="recovery/replaced">' +
+        L('পাসওয়ার্ড বদলান', 'Reset password') + '</button></div></div>' };
+    }
+  };
+
+  /* Invitation onboarding is independent of first-run Business creation. */
+  App.screens.invite = {
+    view: function (args) {
+      var state = args[0] || 'redeem';
+      if (state !== 'redeem') {
+        var messages = {
+          used: [L('কোডটি আগেই ব্যবহার হয়েছে', 'This code was already used'), L('একটি আমন্ত্রণ কোড দিয়ে শুধু একজন যোগ দিতে পারেন।', 'An invitation code can add only one person.')],
+          expired: [L('কোডটির সময় শেষ', 'This code has expired'), L('Owner বা Manager-কে নতুন কোড দিতে বলুন।', 'Ask an Owner or Manager for a new code.')],
+          revoked: [L('কোডটি বাতিল করা হয়েছে', 'This code was revoked'), L('এই কোড দিয়ে আর ব্যবসায় যোগ দেওয়া যাবে না।', 'This code can no longer join the Business.')]
+        };
+        var copy = messages[state] || messages.used;
+        return { chromeless: true, body: '<div class="auth"><div class="auth-body">' +
+          U.emptyState({ icon: I.lock(24), title: copy[0], body: copy[1],
+            action: '<button class="btn primary" data-go="invite/redeem">' + L('অন্য কোড লিখুন', 'Enter another code') + '</button>' }) +
+          '</div></div>' };
+      }
+      return { chromeless: true, body:
+        '<div class="auth"><button class="auth-back" data-act="back">' + I.back(19) + '</button>' +
+        '<div class="auth-body"><span class="auth-glyph">' + I.people(22) + '</span>' +
+        '<h1>' + L('ব্যবসায় যোগ দিন', 'Join a Business') + '</h1>' +
+        '<p>' + L('Owner বা Manager যে একবারের কোড দিয়েছেন সেটি লিখুন। Role কোডের সাথেই ঠিক করা আছে।',
+          'Enter the single-use code from an Owner or Manager. Its Role is already assigned.') + '</p>' +
+        U.field({ label: L('আমন্ত্রণ কোড', 'Invitation code'), value: 'SB-4K92-7T', required: true }) +
+        '<div class="card pad"><span class="eyebrow">' + L('যে ব্যবসায় যোগ দেবেন', 'You will join') + '</span>' +
+        '<h2>' + esc(L(App.business.name, App.business.nameEn)) + '</h2><span class="chip green">' +
+        L('Sales Staff', 'Sales Staff') + '</span></div></div>' +
+        '<div class="auth-foot"><button class="btn primary lg block" data-go="home">' + L('ব্যবসায় যোগ দিন', 'Join Business') + '</button>' +
+        '<div class="row g2"><button class="btn quiet" data-go="invite/used">' + L('ব্যবহৃত', 'Used') + '</button>' +
+        '<button class="btn quiet" data-go="invite/expired">' + L('মেয়াদ শেষ', 'Expired') + '</button>' +
+        '<button class="btn quiet" data-go="invite/revoked">' + L('বাতিল', 'Revoked') + '</button></div></div></div>' };
+    }
+  };
+
+  App.screens.invitations = {
+    roles: ['owner', 'manager'],
+    title: function () { return L('আমন্ত্রণ তৈরি', 'Generate invitation'); },
+    view: function () {
+      var roleOptions = [
+        L('Owner', 'Owner'), L('Manager', 'Manager'), L('Accountant', 'Accountant'),
+        L('Inventory Staff', 'Inventory Staff'), L('Sales Staff', 'Sales Staff')
+      ];
+      return { route: 'settings', nav: 'settings',
+        eyebrow: L('আলাদা সদস্য-যোগ প্রবাহ', 'Separate member onboarding'),
+        title: L('Role-বাঁধা আমন্ত্রণ', 'Role-bound invitation'),
+        body: '<div class="stack g4 invitation-generator">' +
+          U.provenance(L('Owner বা Manager কোড তৈরির আগেই Role ঠিক করেন। আমন্ত্রিত ব্যক্তি সেটি বদলাতে পারবেন না।',
+            'An Owner or Manager chooses the Role before generating the code. The invitee cannot change it.'), 'teal', I.lock(15)) +
+          '<div class="card pad stack g3">' +
+            U.field({ label: L('যে Role-এ যোগ দেবেন', 'Role assigned on redemption'), type: 'select',
+              options: roleOptions.map(function (label, index) { return { label: label, selected: index === 4 }; }) }) +
+            '<button class="btn primary block" data-act="generate-invite">' + I.plus(15) +
+              L('একবারের কোড তৈরি করুন', 'Generate single-use code') + '</button>' +
+          '</div>' +
+          '<div class="code-box"><span class="eyebrow">' + L('Sales Staff · ৪৮ ঘণ্টা', 'Sales Staff · 48 hours') + '</span>' +
+            '<b class="join-code">SB-4K92-7T</b><span class="cell-sub">' +
+            L('একবার ব্যবহার, মেয়াদ শেষ বা বাতিল হলে আর চলবে না।', 'Stops working after redemption, expiry, or revocation.') + '</span></div>' +
+          '<div class="row g2"><button class="btn ghost" data-act="copy-code">' + I.share(15) +
+            L('কোড কপি করুন', 'Copy code') + '</button><button class="btn danger" data-act="revoke-invite">' +
+            L('কোড বাতিল করুন', 'Revoke code') + '</button></div>' +
+        '</div>' };
+    }
+  };
+
+  App.actions['generate-invite'] = function () {
+    U.toast(L('Role-বাঁধা কোড তৈরি হয়েছে', 'Role-bound code generated'));
+  };
+  App.actions['revoke-invite'] = function () {
+    U.toast(L('আমন্ত্রণ কোড বাতিল হয়েছে', 'Invitation code revoked'));
+  };
+
+  /* ============================================== 3. ZERO-SETUP BUSINESS */
 
   App.screens.setup = {
     view: function (args) {
-      var step = args[0] || '';
-      var idx = SETUP_STEPS.map(function (s) { return s.key; }).indexOf(step);
-      if (idx < 0) idx = 0;
-
-      var body, foot, title, sub;
-
-      if (idx === 0) {
-        title = L('আপনার ব্যবসার নাম কী?', 'What is your business called?');
-        sub = L('এই নামটি রসিদ, পার্সেল স্লিপ আর ক্রেতার মেসেজে দেখা যাবে।',
-                'This name appears on receipts, pack slips and Customer messages.');
-        body = '<div class="stack g4">' +
+      var title = L('আপনার ব্যবসার নাম কী?', 'What is your business called?');
+      var sub = L('নাম আর ধরন দিলেই ড্যাশবোর্ড খুলবে—আগে পণ্য বা সদস্য যোগ করতে হবে না।',
+                  'Name it and the Dashboard opens—no catalogue or team setup first.');
+      var body = '<div class="stack g4">' +
           U.field({ label: L('ব্যবসার নাম', 'Business name'), required: true, value: App.business.name,
                     placeholder: L('যেমন: রূপকথা শাড়ি ঘর', 'e.g. Rupkotha Shari Ghar') }) +
           U.field({ label: L('আপনি কী বিক্রি করেন?', 'What do you sell?'), type: 'select', options: [
@@ -141,88 +226,20 @@
             { label: L('অন্যান্য', 'Other') }
           ], hint: L('শুধু ডিফল্ট সেটিং ঠিক করতে — পরে বদলানো যাবে।',
                      'Only used to pick sensible defaults — changeable later.') }) +
-          U.field({ label: L('ফেসবুক পেজ (ঐচ্ছিক)', 'Facebook page (optional)'), value: App.business.page }) +
-          U.field({ label: L('প্যাকেজিং খরচ প্রতি পার্সেল', 'Packaging cost per parcel'), prefix: '৳',
-                    value: '25', money: true,
-                    hint: L('প্রতিটি অর্ডারের লাভ হিসাবে এই খরচ বাদ যাবে। শূন্য দিলে ধরা হবে না।',
-                            'Deducted from every order\'s profit. Enter zero to ignore it.') }) +
           '</div>';
-        foot = '<button class="btn primary lg block" data-go="setup/catalogue">' + L('পরের ধাপ', 'Next') + '</button>';
-      }
-
-      else if (idx === 1) {
-        title = L('প্রথম পণ্যগুলো যোগ করুন', 'Add your first products');
-        sub = L('তিনটি দিয়ে শুরু করলেই যথেষ্ট। বাকিগুলো অর্ডার নেওয়ার সময়েই যোগ করা যাবে।',
-                'Three is enough to start. The rest can be added while taking an order.');
-        body = '<div class="stack g4">' +
-          U.provenance(L('এক্সেল বা ছবি থেকেও আনা যায় — কিন্তু এখন দরকার নেই।',
-                         'You can import from a spreadsheet or a photo later — not needed now.'), 'teal') +
-          '<div class="card flush">' + App.products.slice(0, 3).map(function (p, i) {
-            return '<div class="list-item"><span class="lead ' + ['green', 'brass', 'teal'][i] + '">' + I.tag(17) + '</span>' +
-              '<span class="body"><b>' + esc(L(p.name, p.nameEn)) + '</b>' +
-              '<span>' + L('বিক্রয় মূল্য', 'Sells for') + ' ' + App.tkPlain(p.price) + ' · ' +
-              (p.variantAxes.length ? L('ভ্যারিয়েন্ট আছে', 'has variants') : L('একটাই ধরন', 'single variant')) + '</span></span>' +
-              '<span class="chip green sm">' + I.check(12) + '</span></div>';
-          }).join('') + '</div>' +
-          '<button class="btn ghost block" data-go="products/new">' + I.plus(16) + L('আরেকটি পণ্য', 'Add another') + '</button>' +
-          '</div>';
-        foot = '<button class="btn ghost" data-go="setup/team">' + L('এড়িয়ে যান', 'Skip') + '</button>' +
-               '<button class="btn primary" data-go="setup/team">' + L('পরের ধাপ', 'Next') + '</button>';
-      }
-
-      else if (idx === 2) {
-        title = L('কাউকে সাথে নেবেন?', 'Anyone working with you?');
-        sub = L('প্রত্যেকের ভূমিকা ঠিক করে দিলে তারা শুধু নিজের কাজটাই দেখবে — টাকার হিসাব সবাই দেখবে না।',
-                'Give each person a Role and they see only their own work — not everyone sees money.');
-        body = '<div class="stack g4">' +
-          '<div class="card flush">' +
-          ['manager', 'staff', 'packer'].map(function (k) {
-            var r = App.ROLES[k];
-            var moneyLbl = r.money === 'full' ? L('টাকা দেখবে', 'sees money')
-              : r.money === 'price' ? L('দাম দেখবে, লাভ নয়', 'sees prices, not profit')
-              : L('টাকা দেখবে না', 'sees no money');
-            return '<div class="list-item"><span class="lead">' + App.initials(r) + '</span>' +
-              '<span class="body"><b>' + esc(L(r.name, r.nameEn)) + '</b><span>' + L(r.label, r.labelEn) + ' · ' + moneyLbl + '</span></span>' +
-              '<span class="chip ' + (r.money === 'none' ? 'outline' : r.money === 'price' ? 'brass' : 'green') + ' sm">' +
-              (r.money === 'none' ? I.lock(12) : I.money(12)) + '</span></div>';
-          }).join('') + '</div>' +
-          U.provenance(L('আমন্ত্রণ কোড দিয়েই সদস্য যোগ হয়। ইমেইল থাকলে কোডটি ইমেইলেও যাবে — না থাকলে কোডটি নিজে পাঠিয়ে দিন।',
-                         'Members join with an invite code. If email is configured the code is also emailed — otherwise share the code yourself.'), 'brass') +
-          '<button class="btn ghost block" data-go="settings/members">' + I.plus(16) + L('সদস্য যোগ করুন', 'Invite a member') + '</button>' +
-          '</div>';
-        foot = '<button class="btn ghost" data-go="setup/done">' + L('একা কাজ করব', 'Working alone') + '</button>' +
-               '<button class="btn primary" data-go="setup/done">' + L('পরের ধাপ', 'Next') + '</button>';
-      }
-
-      else {
-        title = L('তৈরি!', 'You are set up');
-        sub = '';
-        body = '<div class="setup-done">' +
-          '<span class="big-tick">' + I.check(34) + '</span>' +
-          '<h2>' + esc(L(App.business.name, App.business.nameEn)) + '</h2>' +
-          '<p>' + L('এখন প্রথম অর্ডারটি নিন। মেসেঞ্জারের মেসেজ কপি করে পেস্ট করলেই হবে — লিখতে হবে না।',
-                    'Take your first order. Copy a message from Messenger and paste it — no typing needed.') + '</p>' +
-          '<div class="done-cards">' +
-            '<button class="done-card" data-go="capture/paste">' + I.orders(20) +
-              '<b>' + L('মেসেজ পেস্ট করুন', 'Paste a message') + '</b>' +
-              '<span>' + L('সবচেয়ে দ্রুত', 'Fastest') + '</span></button>' +
-            '<button class="done-card" data-go="capture/manual">' + I.plus(20) +
-              '<b>' + L('নিজে লিখুন', 'Type it in') + '</b>' +
-              '<span>' + L('ফোনে অর্ডার এলে', 'For phone orders') + '</span></button>' +
-          '</div></div>';
-        foot = '<button class="btn primary lg block" data-go="home">' + L('ড্যাশবোর্ডে যান', 'Go to dashboard') + '</button>';
-      }
+      var foot = '<button class="btn primary lg block" data-go="home/empty">' +
+        L('ব্যবসা তৈরি করে শুরু করুন', 'Create Business and continue') + '</button>';
 
       return { chromeless: true, body:
         '<div class="auth wizard">' +
           '<div class="wizard-head">' +
-            (idx ? '<button class="auth-back" data-act="back">' + I.back(19) + '</button>' : '<span></span>') +
-            setupSteps(idx) +
+            '<button class="auth-back" data-act="back">' + I.back(19) + '</button>' +
+            '<span class="chip green">' + L('এক ধাপ', 'One step') + '</span>' +
           '</div>' +
           '<div class="auth-body">' +
             '<h1>' + title + '</h1>' + (sub ? '<p>' + sub + '</p>' : '') + body +
           '</div>' +
-          '<div class="auth-foot row">' + foot + '</div>' +
+          '<div class="auth-foot">' + foot + '</div>' +
         '</div>' };
     }
   };
@@ -302,7 +319,7 @@
     }).join('') + '</div>';
   }
 
-  /* One list, two cards: the Staff card is this list minus the money items.
+  /* One list, two cards: the Sales Staff card is this list minus the money items.
      Built once because the previous pair each carried their own copy of the
      same counts, which is how the two drifted apart. */
   function attentionItems() {
@@ -403,7 +420,7 @@
   }
   App.orderRow = orderRow;
 
-  /* the packing queue — the only thing a Packer needs */
+  /* Stock and packing work are the Inventory Staff dashboard's centre. */
   function packQueue() {
     var queue = App.orders.filter(function (o) { return o.status === 'confirmed' || o.status === 'packed'; });
     return '<div class="card flush">' +
@@ -424,20 +441,36 @@
   App.screens.home = {
     view: function (args) {
       if (args[0] === 'summary') return dailySummary();
+      if (args[0] === 'empty') return {
+        route: 'home', nav: 'home', noBack: true,
+        eyebrow: esc(L(App.business.name, App.business.nameEn)),
+        title: L('ড্যাশবোর্ড', 'Dashboard'),
+        acts: '<button class="iconbtn bordered" data-go="settings">' + I.gear(17) + '</button>',
+        body: '<div class="stack g4 zero-dashboard">' + greeting() +
+          U.emptyState({ icon: I.orders(26),
+            title: L('প্রথম অর্ডারটি নিন', 'Capture your first order'),
+            body: L('এখনো কোনো অর্ডার, পণ্য, ক্রেতা বা সরবরাহকারী নেই। একটি মেসেজ পেস্ট করেই শুরু করুন।',
+                    'There are no orders, Products, Customers, or Suppliers yet. Start by pasting a message.'),
+            action: '<button class="btn primary lg" data-go="capture/paste">' +
+              I.plus(16) + L('অর্ডার পেস্ট করুন', 'Paste order') + '</button>' }) +
+          U.provenance(L('আগে ক্যাটালগ বা টিম তৈরি করতে হবে না—অর্ডারের মধ্যেই নতুন পণ্য যোগ করা যাবে।',
+            'No catalogue or team setup is required first—new Products can be added inside the Order.'), 'teal') +
+        '</div>'
+      };
 
       var level = App.moneyLevel();
       var body;
 
-      if (level === 'none') {
+      if (level === 'cost') {
         body = '<div class="stack g4">' + greeting() +
-          U.provenance(L('আপনি প্যাকার — টাকার হিসাব আপনার স্ক্রিনে দেখানো হয় না।',
-                         'You are a Packer — money figures are not shown on your screen.'), 'teal', I.lock(15)) +
+          U.provenance(L('আপনি ইনভেন্টরি কর্মী—ক্রয়মূল্য ও স্টক দেখবেন, কিন্তু বিক্রয়মূল্য, লাভ বা নিষ্পত্তি নয়।',
+                         'You are Inventory Staff—you see Purchase Cost and stock, but not selling price, profit, or settlement.'), 'teal', I.lock(15)) +
           packQueue() + '</div>';
       } else if (level === 'price') {
         body = '<div class="stack g4">' + greeting() + todayCard() +
-          U.provenance(L('আপনি কর্মী — বিক্রয় মূল্য দেখতে পাবেন, কিন্তু ক্রয়মূল্য ও লাভ নয়।',
-                         'You are Staff — you see selling prices, but not cost or profit.'), 'brass', I.lock(15)) +
-          attentionForStaff() + recentOrders(6) + '</div>';
+          U.provenance(L('আপনি বিক্রয় কর্মী—বিক্রয়মূল্য দেখবেন, কিন্তু ক্রয়মূল্য, লাভ বা নিষ্পত্তি নয়।',
+                         'You are Sales Staff—you see selling prices, but not cost, profit, or settlement.'), 'brass', I.lock(15)) +
+          attentionForSales() + recentOrders(6) + '</div>';
       } else {
         body = '<div class="stack g4">' + greeting() + moneyHero() + askBox() + cashStrip() +
           attention() + todayCard() + recentOrders(5) + '</div>';
@@ -452,7 +485,7 @@
     }
   };
 
-  function attentionForStaff() {
+  function attentionForSales() {
     return attentionCard(attentionItems().filter(function (it) { return !it.money; }));
   }
 
@@ -512,15 +545,16 @@
      q1…q10 read straight against the enumeration in EXPERIENCE.md. The order is also load-
      bearing: the refusal state offers `slice(0, 5)`, and §4.3's retreat path reduces
      toward the Thin five and then toward q1 alone. */
-  /* `needs` is the visibility the ANSWER requires, not the question. §6.2 grants every Role
-     the right to ask — `Ask Insight Queries | Yes | Yes | Yes | Yes | Yes` — so the ten are
-     filtered by what a Role may be told, and a Role that may see nothing here still keeps
-     the three that carry no money at all. Absent means everyone. */
+  /* `needs` and `roles` describe what the ANSWER requires, not who may open Ask SmartBiz.
+     §6.2 grants every Role the right to ask, then filters each answer by its underlying
+     capability. `roles` handles non-money cells such as Customer visibility; absent means
+     every Role. */
   var QUERIES = [
     { id: 'q1', needs: 'price',  bn: 'আজ কত বিক্রি হয়েছে?', en: 'How much did I sell today?' },
     { id: 'q2', needs: 'profit', bn: 'সবচেয়ে বেশি বিক্রি হওয়া পণ্য কোনটি?', en: 'Which product sells most?' },
     { id: 'q3',                  bn: 'কোন পণ্য শেষ হয়ে যাচ্ছে?', en: 'What is running out of stock?' },
-    { id: 'q4',                  bn: 'কারা বেশি রিটার্ন করে?', en: 'Which Customers return most?' },
+    { id: 'q4', roles: ['owner', 'manager', 'accountant', 'sales'],
+                                  bn: 'কারা বেশি রিটার্ন করে?', en: 'Which Customers return most?' },
     { id: 'q5', needs: 'profit', bn: 'এ মাসে সবচেয়ে বড় খরচ কোন খাতে?', en: 'What are my largest expenses this month?' },
     { id: 'q6', needs: 'profit', bn: 'লাভ কমল কেন?', en: 'Why did profit go down?' },
     { id: 'q7', needs: 'profit', bn: 'কুরিয়ারের কাছে কত টাকা আটকে আছে?', en: 'How much is stuck with couriers?' },
@@ -531,6 +565,7 @@
 
   function askable(q) {
     if (!q) return false;
+    if (q.roles && q.roles.indexOf(App.role) < 0) return false;
     if (q.needs === 'profit') return App.seesProfit();
     if (q.needs === 'price') return App.seesPrice();
     return true;
@@ -685,7 +720,7 @@
 
   App.screens.insights = {
     /* Deliberately un-gated. §6.2 grants the Ask capability to all five Roles, and this
-       screen used to carry `money: true`, which refused the Packer at the door — including
+       screen used to carry `money: true`, which refused Inventory Staff at the door — including
        the three questions about stock, returns and stuck orders that the matrix grants them
        outright. The filter belongs on the answer, which is what `needs` above does. */
     title: function () { return L('জিজ্ঞাসা করুন', 'Ask SmartBiz'); },
@@ -739,8 +774,8 @@
         body += '<div class="card pad ai-answer refused">' +
           '<div class="row top">' + I.lock(18) +
           '<div><b>' + L('এই উত্তরটি আপনার দায়িত্বে দেখানো যায় না', 'This answer is not for your Role') + '</b>' +
-          '<p>' + L('“' + esc(st.typed) + '” — প্রশ্নটি বোঝা গেছে, কিন্তু এর উত্তরে টাকার হিসাব আসে, যা আপনার দায়িত্বে দেখানো হয় না। মালিক বা হিসাবরক্ষক এটি দেখতে পারবেন।',
-            '“' + esc(st.typed) + '” was understood, but its answer is money your Role may not see. The Owner or the Accountant can read it.') + '</p></div></div></div>';
+          '<p>' + L('“' + esc(st.typed) + '” — প্রশ্নটি বোঝা গেছে, কিন্তু এর উত্তরে এমন তথ্য বা টাকার হিসাব আসে যা আপনার দায়িত্বে দেখানো হয় না। মালিক বা হিসাবরক্ষক এটি দেখতে পারবেন।',
+            '“' + esc(st.typed) + '” was understood, but its answer contains data or money your Role may not see. The Owner or the Accountant can read it.') + '</p></div></div></div>';
       }
 
       if (st.state === 'answered') {
@@ -759,7 +794,7 @@
               'The ' + n(vis.length) + ' questions your Role can ask')) + '</h3>' +
         '<span class="chip sm outline">' + L('নির্দিষ্ট তালিকা', 'closed set') + '</span></div>' +
         /* numbered by position in the closed set, not in this list: query 8 is query 8
-           whoever is reading, so a Packer's three read 3, 4 and 8 rather than 1, 2, 3 */
+           whoever is reading, so Inventory Staff read 3 and 8 rather than 1 and 2 */
         vis.map(function (q) {
           return '<button class="list-item" data-act="ai-run" data-arg="' + q.id + '">' +
             '<span class="lead">' + n(QUERIES.indexOf(q) + 1) + '</span>' +
@@ -768,8 +803,8 @@
         }).join('') + '</div>';
 
       if (!whole) {
-        body += U.provenance(L('বাকি প্রশ্নগুলোর উত্তরে টাকার হিসাব আসে, যা আপনার দায়িত্বে দেখানো হয় না — তাই সেগুলো এখানে নেই। কিছু নষ্ট হয়নি।',
-          'The remaining questions answer with money your Role may not see, so they are not listed. Nothing is broken.'),
+        body += U.provenance(L('বাকি প্রশ্নগুলোর উত্তরে এমন তথ্য বা টাকার হিসাব আসে যা আপনার দায়িত্বে দেখানো হয় না — তাই সেগুলো এখানে নেই। কিছু নষ্ট হয়নি।',
+          'The remaining questions answer with data or money your Role may not see, so they are not listed. Nothing is broken.'),
           'brass', I.lock(15));
       }
 
@@ -889,7 +924,10 @@
   };
 
   App.actions['ai-run'] = function (id) {
-    App.state.insight = { state: 'answered', query: id };
+    var q = queryById(id);
+    App.state.insight = askable(q)
+      ? { state: 'answered', query: id }
+      : { typed: q ? L(q.bn, q.en) : id, state: 'gated', query: id };
     App.render();
   };
 })(window.App);

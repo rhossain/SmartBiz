@@ -11,7 +11,21 @@ window.App = window.App || {};
   var U = App.ui;
   var I = App.I;
   var esc = App.esc;
-  var stories = window.SMARTBIZ_SCREEN_MAP || [];
+  /* Consume the current mockup contract while retaining compatibility with an older
+     checked-out map. The prototype URL stays a presentation URL, not the app route. */
+  var stories = (window.SMARTBIZ_SCREEN_MAP || []).map(function (raw) {
+    var proofs = raw.proofs || [];
+    var action = raw.actionModel || {};
+    return Object.assign({}, raw, {
+      mode: raw.primaryMode || raw.mode,
+      secondaryMode: raw.secondaryMode || (raw.mode === 'phone' ? 'desktop' : 'phone'),
+      route: String(raw.appRoute || raw.route || '').replace(/^\//, ''),
+      action: action.label || raw.action,
+      evidence: raw.evidence || proofs.map(function (proof) { return proof.label; }),
+      proofs: proofs,
+      variants: raw.variants || []
+    });
+  });
   function digits(value) { return App.lang === 'bn' ? App.bnDigits(value) : String(value); }
   var epicNames = {
     1: ['ভিত্তি, অ্যাকাউন্ট ও ব্যবসা', 'Foundation, accounts & tenancy'],
@@ -50,7 +64,7 @@ window.App = window.App || {};
           return '<button class="journey-story" data-go="journeys/' + story.id + '">' +
             '<span class="journey-kind">' + screenIcon(story.kind) + '</span>' +
             '<span class="journey-story-copy"><b>' + digits(story.id) + ' · ' + esc(story.title) + '</b>' +
-            '<span>' + esc(story.surface) + ' · ' + story.mode + '</span></span>' +
+            '<span>' + esc(story.surface) + ' · ' + story.mode + ' + ' + story.secondaryMode + '</span></span>' +
             '<span class="chev">' + I.chev(16) + '</span></button>';
         }).join('') + '</div></section>');
     }
@@ -138,11 +152,14 @@ window.App = window.App || {};
     return { route: 'journeys', nav: 'settings',
       eyebrow: L('এপিক', 'Epic') + ' ' + digits(story.epic) + ' · ' + esc(epicLabel(story.epic)),
       title: digits(story.id) + ' · ' + esc(story.surface),
-      acts: '<span class="chip outline sm">' + story.mode + ' · ' + story.kind + '</span>',
+      acts: '<span class="chip outline sm">' + story.mode + ' + ' + story.secondaryMode + ' · ' + story.kind + '</span>',
       body: '<article class="stack g4 journey-frame" data-story-id="' + story.id + '">' +
         '<header class="journey-frame-head"><span class="eyebrow">' + L('গল্পের শিরোনাম', 'Story title') + '</span><h2>' + digits(esc(story.title)) + '</h2>' +
           '<span class="journey-surface">' + L('টার্গেট স্ক্রিন: ', 'Target screen: ') + digits(esc(story.surface)) + '</span>' +
-          '<div class="journey-route">#/' + digits(esc(story.route)) + '</div><p><b>' + L('দেখানোর অবস্থা:', 'Presentation state:') + '</b> ' + digits(esc(story.state)) + '</p></header>' +
+          '<div class="journey-route">' + esc(story.mockupHash || ('#story/' + story.id)) + ' · #/journeys/' + story.id + '</div>' +
+          '<p><b>' + L('অ্যাপ রুট:', 'App route:') + '</b> /' + digits(esc(story.route)) + '</p>' +
+          '<p><b>' + L('দেখানোর অবস্থা:', 'Presentation state:') + '</b> ' + digits(esc(story.state)) + '</p>' +
+          (story.variants.length ? '<p><b>' + L('অবস্থাগুলো:', 'States:') + '</b> ' + story.variants.map(function (variant) { return esc(variant.label); }).join(' · ') + '</p>' : '') + '</header>' +
         pattern(story) + proofList(story) +
         '<div class="journey-primary"><button class="btn ghost" data-go="journeys/' + previous.id + '">' + I.back(16) + L('আগের গল্প', 'Previous') + '</button>' +
           '<button class="btn primary" data-act="journey-action" data-arg="' + story.id + '">' + esc(story.action) + '</button>' +

@@ -76,10 +76,10 @@ const { boot, sleep } = require('./boot');
   /* ---- 2b · assistant: a known question whose answer this Role may not read ----
      The third outcome, and the one that only exists because §6.2 grants the Ask capability
      to Roles that may not see money. It must not look like the refusal above: the question
-     WAS understood, and telling a Packer "that is not one of the ten" about a question that
+     WAS understood, and telling Inventory Staff "that is not one of the ten" about a question that
      plainly is would be a lie about the product's own closed set. */
   console.log('\n· assistant — a known question a gated Role may not be answered');
-  App.role = 'packer'; doc.body.dataset.role = 'packer';
+  App.role = 'inventory'; doc.body.dataset.role = 'inventory';
   App.state.insight = null;
   nav('insights');
   doc.getElementById('ai-q').value = 'কুরিয়ারের কাছে কত টাকা আটকে আছে';

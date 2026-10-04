@@ -146,8 +146,9 @@
               (low.length ? ' <i class="chip brass sm">' + n(low.length) + L(' টি কম', ' low') + '</i>' : '') + '</b>' +
               '<span>' + p.sku + ' · ' + (p.variantAxes.length ? n(vc) + L(' ধরন', ' variants') : L('একটাই ধরন', 'single')) +
               ' · ' + L('স্টক ', 'stock ') + n(App.stockOf(p)) + '</span></span>' +
-              (App.seesPrice() ? '<span class="trail"><span class="money">' + tk(p.price) + '</span>' +
-                (App.seesProfit() ? '<span>' + L('ক্রয় ', 'cost ') + App.tkPlain(p.cost) + '</span>' : '') + '</span>' : '') +
+              ((App.seesPrice() || App.seesCost()) ? '<span class="trail">' +
+                (App.seesPrice() ? '<span class="money">' + tk(p.price) + '</span>' : '') +
+                (App.seesCost() ? '<span>' + L('ক্রয় ', 'cost ') + App.tkPlain(p.cost) + '</span>' : '') + '</span>' : '') +
               '<span class="chev">' + I.chev(16) + '</span></button>';
           }).join('') + '</div></div>' };
     }
@@ -215,10 +216,10 @@
           '<span class="cell-sub">' + p.sku + ' · ' + esc(L(p.cat, p.catEn)) + '</span></div>' +
           '<span class="spacer"></span>' +
           '<button class="iconbtn bordered" data-act="noop">' + I.gear(17) + '</button></div>' +
-        (App.seesPrice() ? '<div class="price-row">' +
-          '<div><span class="eyebrow">' + L('বিক্রয় মূল্য', 'Selling price') + '</span><span class="money big">' + tk(p.price) + '</span></div>' +
-          (App.seesProfit() ? '<div><span class="eyebrow">' + L('ক্রয়মূল্য', 'Cost') + '</span><span class="money mid">' + tk(p.cost) + '</span></div>' +
-            '<div><span class="eyebrow">' + L('মার্জিন', 'Margin') + '</span><span class="money mid green">' + n(margin, 1) + '%</span></div>' : '') +
+        ((App.seesPrice() || App.seesCost()) ? '<div class="price-row">' +
+          (App.seesPrice() ? '<div><span class="eyebrow">' + L('বিক্রয় মূল্য', 'Selling price') + '</span><span class="money big">' + tk(p.price) + '</span></div>' : '') +
+          (App.seesCost() ? '<div><span class="eyebrow">' + L('ক্রয়মূল্য', 'Purchase Cost') + '</span><span class="money mid">' + tk(p.cost) + '</span></div>' : '') +
+          (App.seesProfit() ? '<div><span class="eyebrow">' + L('মার্জিন', 'Margin') + '</span><span class="money mid green">' + n(margin, 1) + '%</span></div>' : '') +
           '</div>' : '') +
         '</div>';
 
@@ -634,7 +635,7 @@
         title: L('স্টক', 'Inventory'),
         eyebrow: n(units) + L(' টি পণ্য হাতে', ' units on hand'),
         body: '<div class="stack g4">' +
-          (App.seesProfit() ? '<div class="grid c2 strip">' +
+          (App.seesCost() ? '<div class="grid c2 strip">' +
             '<div class="card pad cash-cell"><span class="eyebrow">' + L('হাতে থাকা পণ্যের দাম', 'Stock at cost') + '</span>' +
             '<span class="money mid">' + tk(value) + '</span><span class="cell-sub">' + L('ক্রয়মূল্য ধরে', 'valued at cost') + '</span></div>' +
             '<div class="card pad cash-cell"><span class="eyebrow">' + L('কমে যাওয়া ধরন', 'Low variants') + '</span>' +

@@ -76,9 +76,9 @@
   --violet-050: #F4F1FA;
 
   /* ---- Semantic ------------------------------------------------------ */
-  --realized: var(--green-600);   /* money in hand */
-  --earned: var(--amber-600);     /* money earned, not yet collected */
-  --incomplete: var(--brass-600); /* figure with a completeness caveat */
+  --realized: #0C6E52;   /* money in hand; literal keeps DESIGN.md token parity */
+  --earned: #B4761A;     /* money earned, not yet collected */
+  --incomplete: #A97F42; /* figure with a completeness caveat */
 
   /* ---- Type ---------------------------------------------------------- */
   --font-ui: 'Hind Siliguri', 'Noto Sans Bengali', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
@@ -128,8 +128,19 @@
 
   /* ---- Frame ---------------------------------------------------------- */
   --phone-w: 390px;
-  --phone-h: 812px;
+  --phone-h: 844px;
+  --phone-min-w: 360px;
+  --desktop-w: 1440px;
+  --desktop-h: 900px;
   --sidebar-w: 244px;
+  --interactive-hit-area: 44px;
+  --empty-icon-size: 52px;
+  --empty-copy-max-w: 34ch;
+  --quantity-control-size: 32px;
+  --quantity-control-size-sm: 26px;
+  --exclusive-tile-border-w: 1.5px;
+  --icon-size: 24px;
+  --icon-stroke-w: 1.7px;
   --z-sheet: 60;
   --z-toast: 80;
 }

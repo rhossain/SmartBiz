@@ -1,40 +1,48 @@
 ---
 name: SmartBiz BD mockups
-description: Authoritative story-to-screen design catalog for every story in epics.md.
+description: Authoritative story-to-screen contract for every story in epics.md.
 status: final
 created: 2026-09-08
-updated: 2026-09-11
+updated: 2026-09-12
 ---
 
-# Mockups
+# Authoritative mockup catalog
 
-This folder is the design authority for story-to-screen work. Open [all-screens.html](all-screens.html) directly in a browser. It provides a presentation hub and one addressable design frame for each of the **76 stories across 12 epics**.
+Open [all-screens.html](all-screens.html) directly in a browser. It contains exactly 76 story frames across 12 epics. A green coverage card is read from the generated `coverage-manifest.js`; the browser never infers or self-asserts coverage.
 
-The sequence is deliberate:
+Run the gate before review or implementation:
 
-1. Define or revise the screen in `screen-map.js` and the mockup catalog.
-2. Run `node verify-coverage.js`; the result must be 76/76 with exact `epics.md` title parity.
-3. Only after that gate passes may the corresponding route be implemented in `prototype/`.
+```sh
+node verify-coverage.js
+```
 
-`screen-map.js` is the source of truth for each story's target surface, viewport, presentation state, primary action, and three visible proof points. Hash routes such as `all-screens.html#story/4.12` make every frame directly presentable. The generated [journey hub concept](journey-hub-concept.png) records the approved visual direction; the browsable catalog carries the exact copy and complete coverage.
+The gate fixes the contract at 76 stories and verifies unique planned/designed IDs, exact title parity, epic consistency, enums, both responsive modes, shell type, action behavior, application/mockup/prototype route semantics, addressable variants, and exactly three structured in-frame proofs per story. Application routes may repeat when several story states belong to the same product surface.
 
-## Coverage artifacts
+## Contract fields
 
-| Artifact | Purpose |
+| Field | Meaning |
 | --- | --- |
-| `all-screens.html` | Browsable presentation hub and all 76 story frames |
-| `screen-map.js` | Authoritative story-to-screen contract |
-| `mockups.css` / `mockups.js` | Warm Ledger responsive presentation rendering |
-| `verify-coverage.js` | Exact comparison of the design map with `epics.md` |
-| `journey-hub-concept.png` | Visual exploration used to set the catalog direction |
+| `primaryMode` / `secondaryMode` | Review priority only; both are views of the same responsive route and codebase |
+| `responsive` | Required behavior between the 360px acceptance floor and desktop |
+| `shell` | `onboarding` (chromeless), `app` (Role-composed navigation), or `proof` |
+| `appRoute` | Planned route inside the real application; repetition is allowed |
+| `mockupHash` | Canonical catalog address: `#story/{id}` |
+| `prototypeJourneyUrl` | Downstream prototype reference: `prototype/index.html#/journeys/{id}` |
+| `actionModel` | Commit, navigation, inspection, or export; only commits receive a sticky footer |
+| `variants` | Addressable states under `#story/{id}/{variant}`; add `/phone` or `/desktop` to inspect either viewport |
+| `proofs` | Exactly three stable IDs rendered inside the device frame as `data-proof-id` locators |
 
-The older PNG captures remain useful records of individual product states, but they are no longer the coverage index. When a still, prototype route, or implementation disagrees with this catalog, [DESIGN.md](../DESIGN.md), or [EXPERIENCE.md](../EXPERIENCE.md), update the downstream artifact rather than silently changing the design contract.
+The catalog is Bangla-first. Latin identifiers may remain Latin; ordinary quantities, money, dates, and times use Bangla digits. Phone frames include the Role-composed bottom tab bar and desktop frames use the 244px five-group rail. Story 5.2 owns the addressable Inventory Staff pack-slip handoff exception: items, address, and COD amount are visible while Purchase Cost and margin remain absent.
 
-## Presentation paths
+## Authority and sequence
 
-- Start at the hub and select any epic or search a story.
-- Use “Present from start” to walk Story 1.1 through Story 12.5 in order.
-- Use the previous/next controls to keep the presentation linear.
-- Each frame states its planned prototype route and shows synthetic data explicitly.
+1. Revise `screen-map.js` and the story-specific renderer.
+2. Run `node verify-coverage.js` to regenerate `coverage-manifest.js`.
+3. Review both primary and parity viewports and every required variant.
+4. Only then implement the corresponding application route in `prototype/` or production code.
 
-System stories are not hidden. They use a visible **proof surface** showing the testable assurance—tenant isolation, capability enforcement, rendering, recognition basis, completeness, and safe-answer validation—so every story has something concrete to present.
+`DESIGN.md` owns visual rules and `EXPERIENCE.md` owns cross-screen behavior. This catalog owns story-specific state, action, route, and visible acceptance evidence. If implementation exposes a problem, update the upstream contract and rerun the gate.
+
+## Archive
+
+[`archive/`](archive/) contains pre-contract screenshots and the obsolete journey-hub concept. They use earlier Role names, information architecture, and story groupings. They are retained only for visual-history reference and are **non-authoritative**: do not implement from them, cite them as coverage, or use them to resolve a conflict.

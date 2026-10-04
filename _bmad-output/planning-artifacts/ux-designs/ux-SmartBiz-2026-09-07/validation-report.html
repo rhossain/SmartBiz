@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UX Design Validation: SmartBiz BD</title>
+<style>
+  :root{--bg:#f6f5f1;--surface:#fff;--line:#e4e0d8;--ink:#0b1014;--muted:#656c74;--green:#0c6e52;--green-soft:#eff7f3}
+  *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.wrap{max-width:980px;margin:auto;padding:36px 24px 64px}header{border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:24px}h1{font:600 28px/1.2 Georgia,serif;margin:0 0 6px}.path,.meta{color:var(--muted);font:12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace}.verdict{background:var(--green-soft);border:1px solid #cfe7dc;border-left:4px solid var(--green);border-radius:10px;padding:20px 22px;margin-bottom:22px}.verdict strong{color:var(--green)}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(205px,1fr));gap:10px;margin-bottom:22px}.card{background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:14px 16px}.card span{display:block;color:var(--muted);font-size:12px}.card b{color:var(--green)}section{background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:18px 22px;margin:12px 0}h2{font-size:16px;margin:0 0 10px}ul{margin:0;padding-left:20px}li+li{margin-top:5px}.counts{display:flex;gap:10px;flex-wrap:wrap}.count{border:1px solid var(--line);border-radius:999px;padding:4px 10px}.count b{color:var(--green)}footer{border-top:1px solid var(--line);margin-top:28px;padding-top:14px}
+</style>
+</head>
+<body><main class="wrap">
+  <header><h1>SmartBiz BD — UX Design Validation</h1><div class="path">_bmad-output/planning-artifacts/ux-designs/ux-SmartBiz-2026-09-07</div></header>
+  <div class="verdict"><strong>Implementation-ready.</strong> The updated DESIGN.md and EXPERIENCE.md pair is source-extractable under all eight BMAD UX rubric categories. Every earlier finding is closed, and both executable gates pass.</div>
+  <div class="grid">
+    <div class="card"><span>Flow coverage</span><b>strong</b></div>
+    <div class="card"><span>Token completeness</span><b>strong</b></div>
+    <div class="card"><span>Component coverage</span><b>strong</b></div>
+    <div class="card"><span>State coverage</span><b>strong</b></div>
+    <div class="card"><span>Visual references</span><b>strong</b></div>
+    <div class="card"><span>Bloat &amp; overspecification</span><b>strong</b></div>
+    <div class="card"><span>Inheritance discipline</span><b>strong</b></div>
+    <div class="card"><span>Shape fit</span><b>strong</b></div>
+  </div>
+  <section><h2>Findings</h2><div class="counts"><span class="count">Critical <b>0</b></span><span class="count">High <b>0</b></span><span class="count">Medium <b>0</b></span><span class="count">Low <b>0</b></span></div></section>
+  <section><h2>Contract evidence</h2><ul>
+    <li>9/9 PRD journeys use exact identifiers and titles, with six steps, a climax, and an edge path each.</li>
+    <li>49 literal color tokens; 92 cross-spine token references resolve.</li>
+    <li>27/27 canonical presentation/runtime components match across visual and behavioral contracts.</li>
+    <li>Loading, empty, validation/error, offline, and permission states close across the IA.</li>
+    <li>Status vocabularies, tab composition, numeral rules, audit scope, Order capture, and the Insight Query × Role matrix match controlling sources.</li>
+  </ul></section>
+  <section><h2>Executable evidence</h2><ul>
+    <li>Mockup gate: <b>76/76 stories</b>, responsive contracts, variants, and <b>228 proofs</b>.</li>
+    <li>Prototype suite: smoke, auth/zero-setup, arithmetic, permissions, localization, flows, class coverage, contrast/token parity, and <b>76/76 story routes</b>.</li>
+    <li>Patch integrity: <b>git diff --check passed</b>.</li>
+  </ul></section>
+  <footer class="meta">Generated 2026-09-13T06:08:35+06:00 · Detailed evidence: review-rubric.md</footer>
+</main></body></html>

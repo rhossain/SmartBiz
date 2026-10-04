@@ -15,8 +15,8 @@ window.App = window.App || {};
     owner:      { name: 'নুসরাত জাহান',  nameEn: 'Nusrat Jahan',  initials: 'নু', money: 'full',  label: 'মালিক',      labelEn: 'Owner' },
     manager:    { name: 'রাকিব হাসান',   nameEn: 'Rakib Hasan',   initials: 'রা', money: 'full',  label: 'ম্যানেজার',  labelEn: 'Manager' },
     accountant: { name: 'মিজানুর রহমান', nameEn: 'Mizanur Rahman',initials: 'মি', money: 'full',  label: 'হিসাবরক্ষক', labelEn: 'Accountant' },
-    staff:      { name: 'সাথী আক্তার',   nameEn: 'Shathi Akter',  initials: 'সা', money: 'price', label: 'কর্মী',      labelEn: 'Staff' },
-    packer:     { name: 'জামাল উদ্দিন',  nameEn: 'Jamal Uddin',   initials: 'জা', money: 'none',  label: 'প্যাকার',    labelEn: 'Packer' }
+    inventory:  { name: 'জামাল উদ্দিন',  nameEn: 'Jamal Uddin',   initials: 'জা', money: 'cost',  label: 'ইনভেন্টরি কর্মী', labelEn: 'Inventory Staff' },
+    sales:      { name: 'সাথী আক্তার',   nameEn: 'Shathi Akter',  initials: 'সা', money: 'price', label: 'বিক্রয় কর্মী', labelEn: 'Sales Staff' }
   };
 
   /* An avatar showing a Bangla initial next to a Latin name reads as a rendering
@@ -235,7 +235,7 @@ window.App = window.App || {};
   App.expenses = [
     { id: 'E-201', date: '2026-09-07', cat: 'প্যাকেজিং', catEn: 'Packaging', amount: 1200, note: 'পলি ব্যাগ ও টেপ', by: 'manager' },
     { id: 'E-202', date: '2026-09-06', cat: 'বিজ্ঞাপন', catEn: 'Advertising', amount: 3500, note: 'ফেসবুক বুস্ট', by: 'owner' },
-    { id: 'E-203', date: '2026-09-05', cat: 'পরিবহন', catEn: 'Transport', amount: 450, note: 'কুরিয়ার হাব পর্যন্ত', by: 'staff' },
+    { id: 'E-203', date: '2026-09-05', cat: 'পরিবহন', catEn: 'Transport', amount: 450, note: 'কুরিয়ার হাব পর্যন্ত', by: 'sales' },
     { id: 'E-204', date: '2026-09-03', cat: 'বেতন', catEn: 'Salary', amount: 12000, note: 'সাথী — সেপ্টেম্বর অগ্রিম', by: 'owner' },
     { id: 'E-205', date: '2026-09-02', cat: 'ভাড়া', catEn: 'Rent', amount: 8000, note: 'গুদাম ভাড়া', by: 'owner' },
     { id: 'E-206', date: '2026-09-01', cat: 'ইন্টারনেট', catEn: 'Internet', amount: 1100, note: '', by: 'manager' }
@@ -260,16 +260,16 @@ window.App = window.App || {};
 
   /* ------------------------------------------------- audit trail (FR-64+) */
   App.audit = [
-    { id: 'A-88', at: '2026-09-07 10:42', who: 'staff', act: 'order.create', target: 'ORD-1042', detail: 'মেসেঞ্জার পেস্ট থেকে তৈরি', detailEn: 'Created from messenger paste' },
+    { id: 'A-88', at: '2026-09-07 10:42', who: 'sales', act: 'order.create', target: 'ORD-1042', detail: 'মেসেঞ্জার পেস্ট থেকে তৈরি', detailEn: 'Created from messenger paste' },
     { id: 'A-87', at: '2026-09-07 09:12', who: 'manager', act: 'price.override', target: 'P-101 · অফ-হোয়াইট|XL', detail: '১২৫০ → ১৩৫০', detailEn: '1250 → 1350' },
     { id: 'A-86', at: '2026-09-06 21:40', who: 'accountant', act: 'settlement.import', target: 'STL-0831', detail: '৫ সারি, ৩টি অমিল', detailEn: '5 rows, 3 variances' },
     { id: 'A-85', at: '2026-09-06 18:03', who: 'owner', act: 'return.accept', target: 'ORD-1032', detail: 'পুনঃবিক্রয়যোগ্য — স্টকে ফেরত', detailEn: 'Resalable — returned to stock' },
     { id: 'A-84', at: '2026-09-06 17:55', who: 'owner', act: 'entry.reverse', target: 'E-199', detail: 'ভুল খরচ — বিপরীত এন্ট্রি', detailEn: 'Wrong expense — compensating entry' },
-    { id: 'A-83', at: '2026-09-06 15:20', who: 'packer', act: 'order.pack', target: 'ORD-1038', detail: '', detailEn: '' },
+    { id: 'A-83', at: '2026-09-06 15:20', who: 'inventory', act: 'order.pack', target: 'ORD-1038', detail: '', detailEn: '' },
     { id: 'A-82', at: '2026-09-05 12:31', who: 'manager', act: 'stock.adjust', target: 'P-105 · কালো', detail: '৪ → ১ (গণনা সংশোধন)', detailEn: '4 → 1 (count correction)' },
-    { id: 'A-81', at: '2026-09-04 10:02', who: 'owner', act: 'member.invite', target: 'জামাল উদ্দিন', detail: 'প্যাকার হিসেবে', detailEn: 'as Packer' },
+    { id: 'A-81', at: '2026-09-04 10:02', who: 'owner', act: 'member.invite', target: 'জামাল উদ্দিন', detail: 'ইনভেন্টরি কর্মী হিসেবে', detailEn: 'as Inventory Staff' },
     { id: 'A-80', at: '2026-09-03 09:14', who: 'accountant', act: 'due.record', target: 'D-02', detail: '৬২০ টাকা বাকি', detailEn: '৳620 outstanding' },
-    { id: 'A-79', at: '2026-09-02 16:47', who: 'staff', act: 'customer.create', target: 'C-08', detail: '', detailEn: '' }
+    { id: 'A-79', at: '2026-09-02 16:47', who: 'sales', act: 'customer.create', target: 'C-08', detail: '', detailEn: '' }
   ];
 
   /* ============================================================ COMPUTED */

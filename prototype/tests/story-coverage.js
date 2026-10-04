@@ -27,10 +27,14 @@ const { boot } = require('./boot');
     const frame = doc.querySelector('[data-story-id="' + story.id + '"]');
     if (!frame) failures.push(`Story ${story.id} did not render an addressable prototype frame.`);
     else {
-      for (const text of [design.title, design.surface, design.state, ...design.evidence]) {
+      const evidence = (design.proofs || []).map(proof => proof.label);
+      for (const text of [design.title, design.surface, design.state, ...evidence]) {
         if (!frame.textContent.includes(text)) failures.push(`Story ${story.id} omitted visible contract text: ${text}`);
       }
       if (!frame.querySelector('[data-act="journey-action"]')) failures.push(`Story ${story.id} has no primary action.`);
+      const rendered = doc.getElementById('app').textContent;
+      if (!rendered.includes(design.primaryMode) || !rendered.includes(design.secondaryMode)) failures.push(`Story ${story.id} omitted responsive modes.`);
+      if (!frame.textContent.includes('#/journeys/' + story.id)) failures.push(`Story ${story.id} omitted its presentation URL.`);
     }
   }
 

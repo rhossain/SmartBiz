@@ -35,9 +35,9 @@ const LATIN_OK = [
 ];
 
 /* Role is not established until sign-in, so onboarding carries no Role to gate. */
-const PRE_LOGIN = /^(splash|signin|verify|setup)/;
+const PRE_LOGIN = /^(splash|signin|register|recovery|setup|invite)/;
 
-/* The pack slip is the spine's one deliberate exception: the packer must read the
+/* The pack slip is the spine's one deliberate exception: Inventory Staff must read the
    amount to collect at the door, so the slip carries a figure by design. */
 const SLIP = /\/slip$/;
 
@@ -112,7 +112,7 @@ const SLIP = /\/slip$/;
   console.log('\n· a gated Role reaches no money figure on any route');
   const figures = [s.earnedProfit, s.realizedProfit, s.custody, s.pipeline, s.expenses, s.dues, s.payable];
   const moneyRoutes = new Set(Object.keys(App.screens).filter((k) => App.screens[k].money));
-  for (const role of ['staff', 'packer']) {
+  for (const role of ['sales', 'inventory']) {
     App.role = role; doc.body.dataset.role = role;
     const leaks = [], reach = [], marks = [];
     for (const r of routes) {
@@ -124,7 +124,7 @@ const SLIP = /\/slip$/;
       }
       /* a currency mark followed by a digit is a figure; a bare prefix on an empty
          input is not, which is why the digit is part of the test */
-      if (role === 'packer' && !SLIP.test(r) && /৳\s*[0-9০-৯]/.test(t)) marks.push('#/' + r);
+      if (role === 'inventory' && !SLIP.test(r) && doc.querySelector('.econ')) marks.push('#/' + r);
       for (const el of doc.querySelectorAll('[data-go]')) {
         const dest = el.getAttribute('data-go').split('/')[0];
         if (moneyRoutes.has(dest)) reach.push('#/' + r + ' → ' + dest);
@@ -132,8 +132,8 @@ const SLIP = /\/slip$/;
     }
     assert(role + ' sees no computed money figure anywhere', leaks.length === 0, leaks.slice(0, 6).join('; '));
     assert(role + ' is offered no destination into a money screen', reach.length === 0, reach.slice(0, 6).join('; '));
-    if (role === 'packer') {
-      assert('packer sees no taka amount anywhere', marks.length === 0, marks.slice(0, 6).join(', '));
+    if (role === 'inventory') {
+      assert('Inventory Staff sees no unit-economics panel', marks.length === 0, marks.slice(0, 6).join(', '));
     }
   }
   App.role = 'owner'; doc.body.dataset.role = 'owner';
@@ -144,32 +144,45 @@ const SLIP = /\/slip$/;
      Both rows below were wrong in the prototype and passed every test in this file, because
      the only Role rule asserted anywhere was "may this Role see money", and §6.2 has rows
      that are not about money at all. */
-  const CAN_AUDIT = { owner: true, manager: false, accountant: true, staff: false, packer: false };
-  const CAN_ASK = { owner: 10, manager: 10, accountant: 10, staff: 4, packer: 3 };
+  const CAN_AUDIT = { owner: true, manager: false, accountant: true, inventory: false, sales: false };
+  const CAN_CAPTURE = { owner: true, manager: true, accountant: false, inventory: false, sales: true };
+  const CAN_ASK = {
+    owner: ['q1','q2','q3','q4','q5','q6','q7','q8','q9','q10'],
+    manager: ['q1','q2','q3','q4','q5','q6','q7','q8','q9','q10'],
+    accountant: ['q1','q2','q3','q4','q5','q6','q7','q8','q9','q10'],
+    inventory: ['q3','q8'],
+    sales: ['q1','q3','q4','q8']
+  };
   for (const role of Object.keys(CAN_AUDIT)) {
     App.role = role; doc.body.dataset.role = role;
     assert(role + (CAN_AUDIT[role] ? ' reaches' : ' is refused') + ' the audit trail',
       App.canReach('audit') === CAN_AUDIT[role]);
+    assert(role + (CAN_CAPTURE[role] ? ' reaches' : ' is refused') + ' Order capture',
+      App.canReach('capture') === CAN_CAPTURE[role]);
     /* `Ask Insight Queries | Yes | Yes | Yes | Yes | Yes` — every Role may ask. What a Role
        may be TOLD is the closed set filtered by the money its answer carries. */
     assert(role + ' may open Ask SmartBiz', App.canReach('insights'));
-    assert(role + ' is offered ' + CAN_ASK[role] + ' of the ten queries',
-      App.askableQueries().length === CAN_ASK[role], 'got ' + App.askableQueries().length);
+    const offered = App.askableQueries().map((q) => q.id);
+    assert(role + ' is offered the exact permitted Insight Queries',
+      offered.join(',') === CAN_ASK[role].join(','), 'got ' + offered.join(','));
   }
 
   /* A filtered list must not renumber itself. The seller and the Owner have to be able to
      say "query 8" and mean the same question, so the lead number is the position in FR-65's
-     closed set — a Packer's three read 3, 4 and 8, never 1, 2 and 3. */
-  App.role = 'packer'; doc.body.dataset.role = 'packer';
+     closed set — Inventory Staff read 3 and 8, never a renumbered 1 and 2. */
+  App.role = 'inventory'; doc.body.dataset.role = 'inventory';
   App.state.insight = {};
   nav('insights');
   const leads = [...doc.querySelectorAll('.card.flush .list-item .lead')].map((e) => e.textContent.trim());
   /* through App.n, because this runs before the language flip below and a Bangla view
-     numbers its rows ৩, ৪, ৮ — the claim is about which three, not about the script */
-  assert('the packer\'s queries keep their numbers in the closed set',
-    leads.join(',') === [3, 4, 8].map((q) => App.n(q)).join(','), leads.join(','));
+     numbers its rows ৩ and ৮ — the claim is about which queries, not about the script */
+  assert('Inventory Staff queries keep their numbers in the closed set',
+    leads.join(',') === [3, 8].map((q) => App.n(q)).join(','), leads.join(','));
+  App.actions['ai-run']('q4');
+  assert('Inventory Staff receives the Role-withheld state for the Customer query',
+    App.state.insight.state === 'gated' && !!doc.querySelector('.ai-answer.refused'));
   /* asserted as an element rather than as prose for the same reason */
-  assert('the packer is told why the list is short',
+  assert('Inventory Staff is told why the list is short',
     !!doc.querySelector('.provenance.brass'));
   App.role = 'owner'; doc.body.dataset.role = 'owner';
 
