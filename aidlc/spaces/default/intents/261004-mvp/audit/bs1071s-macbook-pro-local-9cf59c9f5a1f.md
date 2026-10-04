@@ -1826,3 +1826,267 @@
 **Agent**: aidlc-pipeline-deploy-agent
 
 ---
+
+## Decision Recorded
+**Timestamp**: 2026-10-04T13:24:39Z
+**Event**: DECISION_RECORDED
+**Stage**: practices-discovery
+**Decision**: PD interview Q1 — TypeScript vs JSDoc: developer-agent objected that the lead's 'TypeScript (or // @ts-check + JSDoc)' is too soft because the recognition-basis invariant and the role × capability matrix need real discriminated unions. Ask the human to commit.
+
+---
+
+## Question Answered
+**Timestamp**: 2026-10-04T13:28:32Z
+**Event**: QUESTION_ANSWERED
+**Stage**: practices-discovery
+**Details**: Q1: A. TypeScript; Q2: A. Gated; Q3: A. 5 years DB-level insert-only; Q4: B. All nine in MVP. Assumption confirmation: None.
+
+---
+
+## Decision Recorded
+**Timestamp**: 2026-10-04T13:31:02Z
+**Event**: DECISION_RECORDED
+**Stage**: practices-discovery
+**Decision**: PD §13 learnings: surface returned 0 candidates. Per stage-protocol-learnings.md step 3, render the mandatory 'Anything to add?' question.
+
+---
+
+## Question Answered
+**Timestamp**: 2026-10-04T13:31:26Z
+**Event**: QUESTION_ANSWERED
+**Stage**: practices-discovery
+**Details**: Anything to add to the diary for next time? = Nothing to add
+
+---
+
+## Error Logged
+**Timestamp**: 2026-10-04T13:34:56Z
+**Event**: ERROR_LOGGED
+**Tool**: aidlc-state
+**Command**: aidlc-state engine state practices-event --help
+**Error**: Usage: aidlc-state.ts practices-event --type <discovered|override|empty> [--field "Key: Value"]...
+
+---
+
+## Practices Discovered
+**Timestamp**: 2026-10-04T13:34:59Z
+**Event**: PRACTICES_DISCOVERED
+**Sources Scanned**: codekb/SmartBiz/{business-overview,architecture,code-structure,api-documentation,component-inventory,technology-stack,dependencies,code-quality-assessment}.md, memory/org.md, memory/team.md (empty template), memory/project.md (empty template), ideation/{intent-capture,scope-definition,feasibility}/, docs/scope.md
+**Drafts**: team-practices.md, discovered-rules.md
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-04T13:35:20Z
+**Event**: SENSOR_FIRED
+**Fire id**: 7911f81b
+**Sensor ID**: required-sections
+**Stage slug**: practices-discovery
+**Output path**: aidlc/spaces/default/intents/261004-mvp/inception/practices-discovery/team-practices.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-04T13:35:20Z
+**Event**: SENSOR_PASSED
+**Fire id**: 7911f81b
+**Sensor ID**: required-sections
+**Stage slug**: practices-discovery
+**Output path**: aidlc/spaces/default/intents/261004-mvp/inception/practices-discovery/team-practices.md
+**Duration ms**: 59
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-04T13:35:21Z
+**Event**: SENSOR_FIRED
+**Fire id**: e7e803a5
+**Sensor ID**: required-sections
+**Stage slug**: practices-discovery
+**Output path**: aidlc/spaces/default/intents/261004-mvp/inception/practices-discovery/discovered-rules.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-04T13:35:21Z
+**Event**: SENSOR_PASSED
+**Fire id**: e7e803a5
+**Sensor ID**: required-sections
+**Stage slug**: practices-discovery
+**Output path**: aidlc/spaces/default/intents/261004-mvp/inception/practices-discovery/discovered-rules.md
+**Duration ms**: 58
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-04T13:35:21Z
+**Event**: SENSOR_FIRED
+**Fire id**: 17b84f71
+**Sensor ID**: required-sections
+**Stage slug**: practices-discovery
+**Output path**: aidlc/spaces/default/intents/261004-mvp/inception/practices-discovery/evidence.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-04T13:35:21Z
+**Event**: SENSOR_PASSED
+**Fire id**: 17b84f71
+**Sensor ID**: required-sections
+**Stage slug**: practices-discovery
+**Output path**: aidlc/spaces/default/intents/261004-mvp/inception/practices-discovery/evidence.md
+**Duration ms**: 62
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-04T13:35:21Z
+**Event**: SENSOR_FIRED
+**Fire id**: 8ba49d4f
+**Sensor ID**: required-sections
+**Stage slug**: practices-discovery
+**Output path**: aidlc/spaces/default/intents/261004-mvp/inception/practices-discovery/practices-discovery-timestamp.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-04T13:35:21Z
+**Event**: SENSOR_FAILED
+**Fire id**: 8ba49d4f
+**Sensor ID**: required-sections
+**Stage slug**: practices-discovery
+**Output path**: aidlc/spaces/default/intents/261004-mvp/inception/practices-discovery/practices-discovery-timestamp.md
+**Detail path**: aidlc/spaces/default/intents/261004-mvp/.aidlc-engine/sensors/practices-discovery/required-sections-8ba49d4f.md
+**Findings count**: 1
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-04T13:35:21Z
+**Event**: SENSOR_FIRED
+**Fire id**: 03cbc011
+**Sensor ID**: upstream-coverage
+**Stage slug**: practices-discovery
+**Output path**: aidlc/spaces/default/intents/261004-mvp/inception/practices-discovery/team-practices.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-04T13:35:21Z
+**Event**: SENSOR_FAILED
+**Fire id**: 03cbc011
+**Sensor ID**: upstream-coverage
+**Stage slug**: practices-discovery
+**Output path**: aidlc/spaces/default/intents/261004-mvp/inception/practices-discovery/team-practices.md
+**Detail path**: aidlc/spaces/default/intents/261004-mvp/.aidlc-engine/sensors/practices-discovery/upstream-coverage-03cbc011.md
+**Findings count**: 1
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-04T13:35:21Z
+**Event**: SENSOR_FIRED
+**Fire id**: a2d4b2fa
+**Sensor ID**: upstream-coverage
+**Stage slug**: practices-discovery
+**Output path**: aidlc/spaces/default/intents/261004-mvp/inception/practices-discovery/discovered-rules.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-04T13:35:21Z
+**Event**: SENSOR_FAILED
+**Fire id**: a2d4b2fa
+**Sensor ID**: upstream-coverage
+**Stage slug**: practices-discovery
+**Output path**: aidlc/spaces/default/intents/261004-mvp/inception/practices-discovery/discovered-rules.md
+**Detail path**: aidlc/spaces/default/intents/261004-mvp/.aidlc-engine/sensors/practices-discovery/upstream-coverage-a2d4b2fa.md
+**Findings count**: 1
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-04T13:35:21Z
+**Event**: SENSOR_FIRED
+**Fire id**: c08f55be
+**Sensor ID**: upstream-coverage
+**Stage slug**: practices-discovery
+**Output path**: aidlc/spaces/default/intents/261004-mvp/inception/practices-discovery/evidence.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-04T13:35:21Z
+**Event**: SENSOR_FAILED
+**Fire id**: c08f55be
+**Sensor ID**: upstream-coverage
+**Stage slug**: practices-discovery
+**Output path**: aidlc/spaces/default/intents/261004-mvp/inception/practices-discovery/evidence.md
+**Detail path**: aidlc/spaces/default/intents/261004-mvp/.aidlc-engine/sensors/practices-discovery/upstream-coverage-c08f55be.md
+**Findings count**: 1
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-04T13:35:22Z
+**Event**: SENSOR_FIRED
+**Fire id**: e64939d1
+**Sensor ID**: upstream-coverage
+**Stage slug**: practices-discovery
+**Output path**: aidlc/spaces/default/intents/261004-mvp/inception/practices-discovery/practices-discovery-timestamp.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-04T13:35:22Z
+**Event**: SENSOR_FAILED
+**Fire id**: e64939d1
+**Sensor ID**: upstream-coverage
+**Stage slug**: practices-discovery
+**Output path**: aidlc/spaces/default/intents/261004-mvp/inception/practices-discovery/practices-discovery-timestamp.md
+**Detail path**: aidlc/spaces/default/intents/261004-mvp/.aidlc-engine/sensors/practices-discovery/upstream-coverage-e64939d1.md
+**Findings count**: 1
+
+---
+
+## Stage Awaiting Approval
+**Timestamp**: 2026-10-04T13:35:22Z
+**Event**: STAGE_AWAITING_APPROVAL
+**Stage**: practices-discovery
+
+---
+
+## Practices Affirmed
+**Timestamp**: 2026-10-04T13:37:06Z
+**Event**: PRACTICES_AFFIRMED
+**Affirming User**: bs1071
+**Sections Written**: Way of Working, Walking Skeleton, Testing Posture, Deployment, Code Style
+**Mandated Rules Appended**: 0
+**Forbidden Rules Appended**: 0
+
+---
+
+## Gate Approved
+**Timestamp**: 2026-10-04T13:37:13Z
+**Event**: GATE_APPROVED
+**Stage**: practices-discovery
+**User Input**: Approve
+
+---
+
+## Stage Completion
+**Timestamp**: 2026-10-04T13:37:13Z
+**Event**: STAGE_COMPLETED
+**Stage**: practices-discovery
+**Validation Basis**: {"graphContract":"sha256:886af627a0fea6d271a662e4a54b4c5993ecee715d6144d46d4a58c2bc3d19bb","inputs":[{"artifact":"architecture","contentHash":"sha256:ba2baf1efb9029ca2e9f383f5d0a995b0704d8d44f3bd280bcda0b8ee7db0c26","instanceCount":1,"presentCount":1,"producer":"reverse-engineering","required":false,"structureHash":"sha256:497d35376a6af2003f95b7d9af26b0452d905c5f111891904d6863cec2c19486"},{"artifact":"business-overview","contentHash":"sha256:7d7d92a2e5ceaf9c4e628a7b8c7f1dc1d916e81d342263673ac348d370715a18","instanceCount":1,"presentCount":1,"producer":"reverse-engineering","required":false,"structureHash":"sha256:d70b08a93f1a0163fea4c995ce401850fd67f54f064f5700d2c5c21982663d09"},{"artifact":"code-quality-assessment","contentHash":"sha256:336a3855504b41ea848c50374244aef1cbb1a38f247fcf341cdc89c5612b0eaf","instanceCount":1,"presentCount":1,"producer":"reverse-engineering","required":false,"structureHash":"sha256:a30a2ec5cfd01960971296692d9c1d6b8ce4de8bba27a14d796cbb19281fac25"},{"artifact":"code-structure","contentHash":"sha256:b8c9945698d2d4671dacd5979e3d36ee234045695cf2ab11366ba18970b923a7","instanceCount":1,"presentCount":1,"producer":"reverse-engineering","required":false,"structureHash":"sha256:fe7442302753abfd5eb0ae677a6b1f378f39b35340250aa2d23203329812816c"},{"artifact":"dependencies","contentHash":"sha256:0b728b7c362209846e95b7ae95db8137c5cb2fe683fdfd001827e1652f906e85","instanceCount":1,"presentCount":1,"producer":"reverse-engineering","required":false,"structureHash":"sha256:7c09268b895f28ece1a627b1bab8593fdfc2dd3fa6737c58b2a9ccea439ee3e1"},{"artifact":"technology-stack","contentHash":"sha256:4e623a85962636f9ec301b094e641d27c2936a1136a38ac6baa7654703f12b69","instanceCount":1,"presentCount":1,"producer":"reverse-engineering","required":false,"structureHash":"sha256:ba7e3a2f7ea275f1e0cc5d9e185ee1c31122bf21924508d9a11aa92150ad15bb"}],"outputs":[{"artifact":"discovered-rules","contentHash":"sha256:f4b49e199bd5ae09b2b7dd0cc5ecc7a4e2973d804bdd18b97d98c9743d98f4db","instanceCount":1,"presentCount":1,"producer":"practices-discovery","required":true,"structureHash":"sha256:6e8164d6c5852c9e5cb095e627c9786d073e12fb9d9cd611bfee9f4b5edae61c"},{"artifact":"evidence","contentHash":"sha256:f3757bc773a554cdd3509aeeefd250016ae3f12db3e9e2be58bffe4814bde1b0","instanceCount":1,"presentCount":1,"producer":"practices-discovery","required":true,"structureHash":"sha256:f07ce7c87fec099492c310f99cde25253fc576af7cfdcf830f9845bfb734975c"},{"artifact":"practices-discovery-timestamp","contentHash":"sha256:9e5409117425a2e05950607b69ffc562da3cc253b1dff0cb9a715fa465b0fd08","instanceCount":1,"presentCount":1,"producer":"practices-discovery","required":true,"structureHash":"sha256:3a4f640b72bd4f14a02c7210e922a37ef47761d77cdee1a224d84dd62bc3b784"},{"artifact":"team-practices","contentHash":"sha256:95c4ce87268dfd64f69643c4bc16f1d36d4f69de83bedcf4ffb5a8415b562c83","instanceCount":1,"presentCount":1,"producer":"practices-discovery","required":true,"structureHash":"sha256:f271c0d36f06c94db8375a1d1ab778fb9dce90993fc791722560302ba4472d04"}],"projectType":"brownfield","schema":3}
+**Details**: Stage Practices Discovery approved by gate
+
+---
+
+## Stage Start
+**Timestamp**: 2026-10-04T13:37:13Z
+**Event**: STAGE_STARTED
+**Stage**: requirements-analysis
+**Agent**: aidlc-product-agent
+
+---
