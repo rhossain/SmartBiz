@@ -4,23 +4,23 @@
 - **Project**: [Project description]
 - **Project Description Source**: project-description.json
 - **Project Type**: Brownfield
-- **Scope**: feature
+- **Scope**: mvp
 - **Start Date**: 2026-10-04T10:43:20Z
 - **State Version**: 8
-- **Active Agent**: aidlc-design-agent
+- **Active Agent**: aidlc-pipeline-deploy-agent
 - **Worktree Path**:
 - **Bolt Refs**:
 - **Practices Affirmed Timestamp**:
 
 ## Scope Configuration
-- **Stages to Execute**: 0.1, 0.2, 0.3, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7
-- **Stages to Skip**: none
+- **Stages to Execute**: 0.1, 0.2, 0.3, 1.1, 1.3, 1.4, 1.6, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7
+- **Stages to Skip**: 1.2 (market-research), 1.5 (team-formation), 1.7 (approval-handoff), 4.1 (deployment-pipeline), 4.2 (environment-provisioning), 4.3 (deployment-execution), 4.4 (observability-setup), 4.5 (incident-response), 4.6 (performance-validation), 4.7 (feedback-optimization)
 - **Depth**: Standard
 - **Test Strategy**: Standard
 - **Review Override**: 
-- **Guard Policy**: relaxed (from scope feature)
-- **Sensors**: on (from scope feature)
-- **Learnings**: on (from scope feature)
+- **Guard Policy**: relaxed (from scope mvp)
+- **Sensors**: on (from scope mvp)
+- **Learnings**: on (from scope mvp)
 - **Summary Confirmation**: off (set by you)
 
 ## Workspace State
@@ -30,9 +30,9 @@
 - **Build System**: Unknown
 
 ## Execution Plan Summary
-- **Total Stages**: 33
-- **Completed**: 7
-- **In Progress**: rough-mockups
+- **Total Stages**: 23
+- **Completed**: 9
+- **In Progress**: practices-discovery
 
 ## Runtime State
 - **Revision Count**: 0
@@ -44,10 +44,10 @@
 <!-- Status values: Pending, Active, Verified, Skipped -->
 
 - **Initialization**: Verified
-- **Ideation**: Active
-- **Inception**: Pending
+- **Ideation**: Verified
+- **Inception**: Active
 - **Construction**: Pending
-- **Operation**: Pending
+- **Operation**: Skipped
 
 ## Stage Progress
 <!-- Checkbox states: [ ] not started, [-] in progress, [x] completed, [S] skipped via --stage/--phase jump -->
@@ -59,16 +59,16 @@
 
 ### IDEATION PHASE
 - [x] intent-capture — EXECUTE
-- [x] market-research — EXECUTE
+- [x] market-research — SKIP
 - [x] feasibility — EXECUTE
 - [x] scope-definition — EXECUTE
-- [S] team-formation — EXECUTE
-- [-] rough-mockups — EXECUTE
-- [ ] approval-handoff — EXECUTE
+- [S] team-formation — SKIP
+- [x] rough-mockups — EXECUTE
+- [ ] approval-handoff — SKIP
 
 ### INCEPTION PHASE
-- [ ] reverse-engineering — EXECUTE
-- [ ] practices-discovery — EXECUTE
+- [x] reverse-engineering — EXECUTE
+- [-] practices-discovery — EXECUTE
 - [ ] requirements-analysis — EXECUTE
 - [ ] user-stories — EXECUTE
 - [ ] refined-mockups — EXECUTE
@@ -88,22 +88,22 @@ Per unit: [TBD]
 - [ ] ci-pipeline — EXECUTE
 
 ### OPERATION PHASE
-- [ ] deployment-pipeline — EXECUTE
-- [ ] environment-provisioning — EXECUTE
-- [ ] deployment-execution — EXECUTE
-- [ ] observability-setup — EXECUTE
-- [ ] incident-response — EXECUTE
-- [ ] performance-validation — EXECUTE
-- [ ] feedback-optimization — EXECUTE
+- [ ] deployment-pipeline — SKIP
+- [ ] environment-provisioning — SKIP
+- [ ] deployment-execution — SKIP
+- [ ] observability-setup — SKIP
+- [ ] incident-response — SKIP
+- [ ] performance-validation — SKIP
+- [ ] feedback-optimization — SKIP
 
 ## Current Status
-- **Lifecycle Phase**: IDEATION
-- **Current Stage**: rough-mockups
-- **Next Stage**: approval-handoff
+- **Lifecycle Phase**: INCEPTION
+- **Current Stage**: practices-discovery
+- **Next Stage**: requirements-analysis
 - **Status**: Running
-- **Last Updated**: 2026-10-04T12:10:40Z
+- **Last Updated**: 2026-10-04T12:49:59Z
 
 ## Session Resume Point
-- **Last Completed Stage**: scope-definition
-- **Next Action**: Execute Rough Mockups
+- **Last Completed Stage**: reverse-engineering
+- **Next Action**: Execute Practices Discovery
 - **Pending Artifacts**: none
