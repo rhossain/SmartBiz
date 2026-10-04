@@ -1238,3 +1238,178 @@
 **Agent**: aidlc-product-agent
 
 ---
+
+## Decision Recorded
+**Timestamp**: 2026-10-04T11:48:58Z
+**Event**: DECISION_RECORDED
+**Stage**: scope-definition
+**Decision**: MVP scope slice, module-level must-have vs nice-to-have, dependency map, sequencing preference, hard deadlines, out-of-scope classification
+**Options**: A,B,C,D,E,X
+
+---
+
+## Question Answered
+**Timestamp**: 2026-10-04T11:51:04Z
+**Event**: QUESTION_ANSWERED
+**Stage**: scope-definition
+**Details**: Q1=C (9 table-stakes first, 3 differentiators phase-2); Q2=A (no sub-feature cuts); Q3=B (flag specific dependencies); Q4=C (dependency-first sequencing); Q5=A (only the 90-day pilot window); Q6=B (distinguish planned vs unplanned deferrals); assumption confirmation = None.
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-04T11:52:05Z
+**Event**: SENSOR_FIRED
+**Fire id**: f9e67d06
+**Sensor ID**: required-sections
+**Stage slug**: scope-definition
+**Output path**: aidlc/spaces/default/intents/261004-mvp/ideation/scope-definition/scope-document.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-04T11:52:05Z
+**Event**: SENSOR_PASSED
+**Fire id**: f9e67d06
+**Sensor ID**: required-sections
+**Stage slug**: scope-definition
+**Output path**: aidlc/spaces/default/intents/261004-mvp/ideation/scope-definition/scope-document.md
+**Duration ms**: 57
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-04T11:52:06Z
+**Event**: SENSOR_FIRED
+**Fire id**: ed2806c7
+**Sensor ID**: required-sections
+**Stage slug**: scope-definition
+**Output path**: aidlc/spaces/default/intents/261004-mvp/ideation/scope-definition/intent-backlog.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-04T11:52:06Z
+**Event**: SENSOR_PASSED
+**Fire id**: ed2806c7
+**Sensor ID**: required-sections
+**Stage slug**: scope-definition
+**Output path**: aidlc/spaces/default/intents/261004-mvp/ideation/scope-definition/intent-backlog.md
+**Duration ms**: 55
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-04T11:52:06Z
+**Event**: SENSOR_FIRED
+**Fire id**: 054a1357
+**Sensor ID**: required-sections
+**Stage slug**: scope-definition
+**Output path**: aidlc/spaces/default/intents/261004-mvp/ideation/scope-definition/scope-definition-questions.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-04T11:52:06Z
+**Event**: SENSOR_PASSED
+**Fire id**: 054a1357
+**Sensor ID**: required-sections
+**Stage slug**: scope-definition
+**Output path**: aidlc/spaces/default/intents/261004-mvp/ideation/scope-definition/scope-definition-questions.md
+**Duration ms**: 54
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-04T11:52:06Z
+**Event**: SENSOR_FIRED
+**Fire id**: b140f34c
+**Sensor ID**: upstream-coverage
+**Stage slug**: scope-definition
+**Output path**: aidlc/spaces/default/intents/261004-mvp/ideation/scope-definition/scope-document.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-04T11:52:06Z
+**Event**: SENSOR_PASSED
+**Fire id**: b140f34c
+**Sensor ID**: upstream-coverage
+**Stage slug**: scope-definition
+**Output path**: aidlc/spaces/default/intents/261004-mvp/ideation/scope-definition/scope-document.md
+**Duration ms**: 58
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-04T11:52:06Z
+**Event**: SENSOR_FIRED
+**Fire id**: be3e8f88
+**Sensor ID**: upstream-coverage
+**Stage slug**: scope-definition
+**Output path**: aidlc/spaces/default/intents/261004-mvp/ideation/scope-definition/intent-backlog.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-04T11:52:06Z
+**Event**: SENSOR_PASSED
+**Fire id**: be3e8f88
+**Sensor ID**: upstream-coverage
+**Stage slug**: scope-definition
+**Output path**: aidlc/spaces/default/intents/261004-mvp/ideation/scope-definition/intent-backlog.md
+**Duration ms**: 61
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-04T11:52:06Z
+**Event**: SENSOR_FIRED
+**Fire id**: 5a010126
+**Sensor ID**: upstream-coverage
+**Stage slug**: scope-definition
+**Output path**: aidlc/spaces/default/intents/261004-mvp/ideation/scope-definition/scope-definition-questions.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-04T11:52:06Z
+**Event**: SENSOR_PASSED
+**Fire id**: 5a010126
+**Sensor ID**: upstream-coverage
+**Stage slug**: scope-definition
+**Output path**: aidlc/spaces/default/intents/261004-mvp/ideation/scope-definition/scope-definition-questions.md
+**Duration ms**: 56
+
+---
+
+## Stage Awaiting Approval
+**Timestamp**: 2026-10-04T11:52:06Z
+**Event**: STAGE_AWAITING_APPROVAL
+**Stage**: scope-definition
+
+---
+
+## Gate Approved
+**Timestamp**: 2026-10-04T12:09:36Z
+**Event**: GATE_APPROVED
+**Stage**: scope-definition
+**User Input**: Approve
+
+---
+
+## Stage Completion
+**Timestamp**: 2026-10-04T12:09:36Z
+**Event**: STAGE_COMPLETED
+**Stage**: scope-definition
+**Validation Basis**: {"graphContract":"sha256:f507bca6811bab5a3fbe73663d1debe5d0de707829c0a8a0d3c77b97f91a29c7","inputs":[{"artifact":"constraint-register","contentHash":"sha256:77ded4a98cc0533559b4f3aaff1c94a8ed5ed4ec11da173dfec37b362df43489","instanceCount":1,"presentCount":1,"producer":"feasibility","required":false,"structureHash":"sha256:76d7b018c73140889b852a768889f2c487a26d5aa64c57614101c85faef5cba4"},{"artifact":"feasibility-assessment","contentHash":"sha256:0b66a973fd79629393d4668015123ffe48be4495734291dabecafb4ae0de3857","instanceCount":1,"presentCount":1,"producer":"feasibility","required":false,"structureHash":"sha256:5669f888e24b9419061035a53aaa91db10f03a8fa3bc4cc585e5c1947b79c9af"},{"artifact":"intent-statement","contentHash":"sha256:e37fcee94ad5a3cc6df19e54965a282b207597bcf0f846d60d712513dbdba7db","instanceCount":1,"presentCount":1,"producer":"intent-capture","required":true,"structureHash":"sha256:9a78b9791b1313ec38e4e2f4b41684722b88e369577b0bd9b2ebbab5e999b911"}],"outputs":[{"artifact":"intent-backlog","contentHash":"sha256:e7c17d25ffa785d651bf16fb4e394ffc5326debb3d8df6f0aa3c5f7e4ee42a15","instanceCount":1,"presentCount":1,"producer":"scope-definition","required":true,"structureHash":"sha256:58b927cc55896bdffe411294128256912fefd361adad2e6dd0a19b6673e4bea8"},{"artifact":"scope-definition-questions","contentHash":"sha256:d481d9b0b40d51c1a8f36928fab8646e90fa92f6fbd5e095d3eafcda84e61360","instanceCount":1,"presentCount":1,"producer":"scope-definition","required":true,"structureHash":"sha256:0c5067130e655d961753b36a560bc5304a94a742d6c95ac5d85c7c7741872f7e"},{"artifact":"scope-document","contentHash":"sha256:c6041d2f31d21b3d58786ea28afb943de83e994cd9ee2906b1943b0b24dc09b3","instanceCount":1,"presentCount":1,"producer":"scope-definition","required":true,"structureHash":"sha256:3f63c2ee6fa18a908304ed71d996e9fecd52998bb35c3d7d776070c36285328d"}],"projectType":"brownfield","schema":3}
+**Details**: Stage Scope Definition approved by gate
+
+---
+
+## Stage Start
+**Timestamp**: 2026-10-04T12:09:36Z
+**Event**: STAGE_STARTED
+**Stage**: team-formation
+**Agent**: aidlc-delivery-agent
+
+---
