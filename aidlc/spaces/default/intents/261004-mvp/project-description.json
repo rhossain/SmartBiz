@@ -1,0 +1,4 @@
+{
+  "description": "See docs/scope.md — SmartBiz BD, a Bangla-first SME Business & Order Management Platform for Bangladesh. MVP scope covers auth, customers, products, inventory, COD, expenses, suppliers, dues, payments, reports, dashboard, and lightweight AI insights. No paid third-party integrations in MVP.",
+  "source": "document:docs/scope.md"
+}
