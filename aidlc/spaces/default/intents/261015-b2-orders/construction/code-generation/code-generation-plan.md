@@ -45,7 +45,7 @@
 Ordering follows the Testing Contract's test-after `plan_profile.steps`. Each
 step lists its files, its bindings, and an exit check.
 
-- [ ] Step 1 — Project structure and production configuration skeleton
+- [x] Step 1 — Project structure and production configuration skeleton
   - Create `src/orders/` with `deferred/` and `screens/` sub-directories; `src/orders/index.ts` exports the typed surface.
   - Binds: team.md §CS-6 (one registry per concern).
   - Exit: the directories exist; `bun run type-check` stays green.
