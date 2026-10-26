@@ -62,7 +62,7 @@ step lists its files, its bindings, and an exit check.
   - Binds: FR5.1, FR5.3, NFR5.5, NFR1.2.
   - Exit: 10 migration files on disk; `bun run type-check` green.
 
-- [ ] Step 4 — Data model / database behavior: write and run its tests
+- [x] Step 4 — Data model / database behavior: write and run its tests
   - `tests/unit/order-schema.test.ts`: zod accept/reject cases; status `CHECK` covers exactly 9 values; migrations parse and are idempotent under the SQL stub; no `UPDATE`/`DELETE` grant on `audit_log`.
   - Exit: the new file passes, and the R1.1 file still passes.
 
