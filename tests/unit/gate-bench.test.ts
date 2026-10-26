@@ -25,7 +25,8 @@ describe("NFR2.c — three-layer gate micro-bench", () => {
     }
     samples.sort((a, b) => a - b);
     const p95 = percentile(samples, 0.95);
-    expect(p95).toBeLessThanOrEqual(0.002);
+    // performance.now() is in milliseconds: NFR2.c's 2 ms budget is 2, not 0.002 (2 µs). Review M-06.
+    expect(p95).toBeLessThanOrEqual(2);
   });
 
   // B2: the full dispatch (route match, including the `:id` pattern walk,
