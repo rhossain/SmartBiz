@@ -40,3 +40,13 @@ bun run coverage                                   # same, with the coverage tab
 
 - Seeded fixtures only; each test builds its own business, users and orders through the stub; no shared mutable state.
 - Paste-parse fixtures cover multiple products, multiple variants per product, and the Bangla connectors `আর`, `এবং`, `তারপর`, `এ`, `ও`, `ওর`, `আরো` (team.md §TP-8, NFR6.7.3).
+
+## Real-Postgres boundary (added in run 2)
+
+The in-memory stub cannot exercise `FOR UPDATE`, `ANY($1::uuid[])`, the keyset cursor, the real role
+grants or JSONB parameter typing. Run `evidence/realdb-smoke.ts` against a throwaway `postgres:18`
+container as a login role in `app_role` (setup in `build-instructions.md` §"Local real-Postgres
+check"). Pass criteria:
+- every check in its output is non-`BAD`;
+- `UPDATE`/`DELETE` on `audit_log` return SQLSTATE 42501;
+- `jsonb_typeof` of `orders.contact` and `audit_log.payload` is `object`.

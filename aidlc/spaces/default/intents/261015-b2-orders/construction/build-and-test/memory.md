@@ -10,7 +10,10 @@
 - 2026-10-26T09:52:00Z — Loop-back 1 to code-generation for u3-orders (Owner chose Retry with fix); planned fix is to regenerate the B2 Orders source the earlier pass recorded but never wrote, verifying each manifest path on disk. This run's approval gate and learnings ritual are deferred to the passing re-run.
 - 2026-10-26T09:39:45Z — Treated code-summary.md as unverified and checked every source-manifest path on disk; 35 of 46 created files are missing, so all B2 targets are Not Met despite the summary reporting them shipped.
 
+- 2026-10-26T13:10:00Z — Run 2 added a real-Postgres container check that the plan's instructions did not require; the reviewer flagged that the SQL stub never exercises FOR UPDATE, ANY(uuid[]) or JSONB typing, and it found the double-encoded JSONB defect (T-JSONB).
+
 ## Tradeoffs
+- 2026-10-26T13:10:00Z — Trial-upgraded the dependencies in a throwaway worktree instead of only estimating; the measured result (audit clean, 217/217, one zod line) makes the T-DEPS impact estimate evidence rather than a guess. The upgrade itself was not applied on the branch because a library/version choice belongs to code-generation.
 <!-- example: 2026-05-29T10:14:32Z — picked TDD over BDD this run; the team is unit-first and the domain is well-understood -->
 - 2026-10-26T09:39:45Z — Recorded the dependency advisories (happy-dom, vite, zod) as a Not Met target in this run rather than deferring them; zod is a runtime dependency on the paste-parse validation path, so leaving it out would understate the risk.
 

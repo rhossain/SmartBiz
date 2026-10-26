@@ -45,6 +45,27 @@ bun run build          # vite build → dist/
 bun run migrate        # applies migrations idempotently (needs DATABASE_URL)
 ```
 
+### Local real-Postgres check (no managed instance needed)
+
+The in-memory SQL stub never exercises `FOR UPDATE`, `ANY($1::uuid[])`, the
+keyset cursor or JSONB parameter typing, so run the migrations and the order
+paths against a throwaway Postgres container:
+
+```bash
+docker run -d --name smartbiz-bt-pg -e POSTGRES_PASSWORD=<local-only> \
+  -e POSTGRES_DB=smartbiz -p 55432:5432 postgres:18
+export DATABASE_URL=postgres://postgres:<local-only>@localhost:55432/smartbiz
+bun run migrate && bun run migrate          # second run must skip all 10
+# app-role login for the smoke (grants come from 0007_grants.sql):
+#   CREATE ROLE bt_app LOGIN PASSWORD '<local-only>' IN ROLE app_role;
+bun run construction/build-and-test/evidence/realdb-smoke.ts \
+  postgres://bt_app:<local-only>@localhost:55432/smartbiz
+docker rm -f smartbiz-bt-pg
+```
+
+The smoke script lives under this record's `evidence/` folder; run it from the
+repo root with the record path prefixed.
+
 ## Build verification
 
 - `tsc` reports zero errors.

@@ -38,3 +38,13 @@ grep -rnE '(password|secret|api[_-]?key)\s*[:=]\s*["'"'"'][^"'"'"']+' src/   # h
 
 OWASP ZAP baseline against staging after deploy. This workflow has no
 Operation-phase stage that owns it, so it is advisory and not a gate here.
+
+## Real-database grant check (added in run 2)
+
+After `bun run migrate` on a real Postgres, list `app_role` grants from
+`information_schema.role_table_grants`. Expected:
+- `audit_log`: INSERT, SELECT only.
+- `orders`: no DELETE.
+- `consignment_link`: INSERT, SELECT only.
+
+Then, as a login role in `app_role`, `UPDATE` and `DELETE` on `audit_log` must fail with SQLSTATE 42501.
