@@ -25,34 +25,35 @@ describe("R1.2 — three-layer gate absence", () => {
     }
   });
 
+  // (2) and (3) drive the real `dispatch()` through window.location.hash
+  // (happy-dom), so the hash-reading path is exercised, not just the gate.
+  // Review L-03: they previously discarded the outcome (`void o`).
+  const atHash = <T>(hash: string, fn: () => T): T => {
+    const before = window.location.hash;
+    window.location.hash = hash;
+    try {
+      return fn();
+    } finally {
+      window.location.hash = before;
+    }
+  };
+
   test("(2) Owner reaches audit trail + daily card (inverse)", () => {
-    const ownerCaps = capabilitiesFor("owner");
-    expect(ownerCaps.has("audit.view")).toBe(true);
-    const ownerSession = {
-      userId: "u", businessId: "b", role: "owner" as const, expiresAt: 1_000_000,
-    };
-    const auditRoute = routes.get("/audit-trail");
-    expect(auditRoute).toBeDefined();
-    const o1 = dispatch(ownerSession, 1, undefined);
-    // Simulating path /audit-trail: stub currentPath returns "/" in the test env;
-    // the route resolution is exercised via the gate directly.
-    void o1;
-    expect(auditRoute!.requiredCapability).not.toBeNull();
+    expect(capabilitiesFor("owner").has("audit.view")).toBe(true);
+    const ownerSession = { userId: "u", businessId: "b", role: "owner" as const, expiresAt: 1_000_000 };
+    for (const path of ["/audit-trail", "/daily-card"] as const) {
+      const o = atHash(`#${path}`, () => dispatch(ownerSession, 1, undefined));
+      expect(o.kind === "render" && o.path).toBe(path);
+    }
   });
 
-  test("(3) the absence of a gate on a route would cause a redirect to /lock", () => {
-    // Construct a hypothetical route WITHOUT a capability check, and assert
-    // the dispatcher would NOT route the user to it.
-    const salesStaffSession = {
-      userId: "u", businessId: "b", role: "sales_staff" as const, expiresAt: 1_000_000,
-    };
-    const o = dispatch(salesStaffSession, 1, undefined);
-    // The dispatcher reads the current path; with the test env at "/", the
-    // public path returns render. To assert the gate redirects, we exercise
-    // the gate directly.
-    void o;
-    const salesCaps = capabilitiesFor("sales_staff");
-    expect(salesCaps.has("business.edit")).toBe(false);
+  test("(3) a role without the route's capability is redirected to /lock, not rendered", () => {
+    const salesStaffSession = { userId: "u", businessId: "b", role: "sales_staff" as const, expiresAt: 1_000_000 };
+    expect(capabilitiesFor("sales_staff").has("business.edit")).toBe(false);
+    const o = atHash("#/business", () => dispatch(salesStaffSession, 1, undefined));
+    expect(o).toMatchObject({ kind: "redirect", to: "/lock", reason: { kind: "forbidden", capability: "business.edit" } });
+    const anon = atHash("#/audit-trail", () => dispatch(null, 1, undefined));
+    expect(anon).toMatchObject({ kind: "redirect", to: "/sign-in" });
   });
 });
 
