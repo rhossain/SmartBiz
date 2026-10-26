@@ -112,6 +112,40 @@ const toParsedItem = (
 export const reparseItem = (lineNo: number, text: string, catalog: ReadonlyArray<CatalogEntry> = []): ParsedItem =>
   toParsedItem(lineNo, readSegment(text.trim(), catalog), catalog);
 
+/**
+ * A detail-only fragment ("কুর্তা ২টা, লাল, M": the "লাল" and the "M")
+ * belongs to the item it follows: customers list an item and then its
+ * details, comma-separated. So the fragment's words are appended to the
+ * PRECEDING item's own words and its size / colour fill that item's
+ * empty detail. It is never given to the following item, which is what
+ * keeps segment isolation intact. A fragment value that disagrees with a
+ * value the item already has, or an ambiguous fragment, empties that
+ * detail and marks the item incomplete rather than picking one.
+ */
+const mergeDetail = (
+  current: string | null,
+  incoming: string | null,
+): { readonly value: string | null; readonly conflict: boolean } => {
+  if (incoming === null) return { value: current, conflict: false };
+  if (current === null || current === incoming) return { value: incoming, conflict: false };
+  return { value: null, conflict: true };
+};
+
+const attachFragment = (item: ParsedItem, fragment: ReturnType<typeof readSegment>): ParsedItem => {
+  const size = mergeDetail(item.size, fragment.size);
+  const colour = mergeDetail(item.colour, fragment.colour);
+  return {
+    ...item,
+    text: `${item.text}, ${fragment.text}`,
+    size: size.value,
+    colour: colour.value,
+    incomplete: item.incomplete || fragment.ambiguous || size.conflict || colour.conflict,
+  };
+};
+
+const hasDetail = (fragment: ReturnType<typeof readSegment>): boolean =>
+  fragment.size !== null || fragment.colour !== null || fragment.ambiguous;
+
 /** Parse a pasted Messenger/WhatsApp order. Optional `catalog` resolves product ids. */
 export const parseMessage = (text: unknown, catalog: ReadonlyArray<CatalogEntry> = []): ParseResult => {
   if (typeof text !== "string") return { ok: false, reason: "malformed" };
@@ -126,12 +160,19 @@ export const parseMessage = (text: unknown, catalog: ReadonlyArray<CatalogEntry>
   const itemText = lines.filter((_, i) => !usedLines.has(i)).join("\n");
 
   const items: ParsedItem[] = [];
+  const unattached: string[] = [];
   for (const segment of splitSegments(itemText)) {
     const details = readSegment(segment, catalog);
-    if (!details.isItem) continue;
+    if (!details.isItem) {
+      if (!hasDetail(details)) continue; // filler such as "দিয়েন" or a price note
+      const previous = items[items.length - 1];
+      if (previous) items[items.length - 1] = attachFragment(previous, details);
+      else unattached.push(details.text);
+      continue;
+    }
     if (items.length === MAX_PARSE_ITEMS) return { ok: false, reason: "too_large" };
     items.push(toParsedItem(items.length + 1, details, catalog));
   }
   if (items.length === 0) return { ok: false, reason: "malformed" };
-  return { ok: true, items, contact, cashOnDelivery: COD.test(text) };
+  return { ok: true, items, contact, cashOnDelivery: COD.test(text), unattached };
 };

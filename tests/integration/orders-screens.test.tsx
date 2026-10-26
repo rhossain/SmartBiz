@@ -170,6 +170,9 @@ describe("U3 screens", () => {
     fireEvent.change(getByTestId("paste-item-text-1"), { target: { value: "কালো কুর্তি M ১টা" } });
     expect(getAllByTestId("paste-item")[0]!.getAttribute("data-incomplete")).toBe("false");
     expect((getByTestId("paste-save") as HTMLButtonElement).disabled).toBe(false);
+    fireEvent.change(getByTestId("paste-box"), { target: { value: "লাল, কুর্তা ২টা" } });
+    fireEvent.click(getByTestId("paste-parse"));
+    expect(getByTestId("paste-unattached").textContent).toBe("These details matched no item: লাল");
     fireEvent.change(getByTestId("paste-box"), { target: { value: "   " } });
     fireEvent.click(getByTestId("paste-parse"));
     expect(getByTestId("toast").textContent).toBe("The message is empty");

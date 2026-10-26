@@ -178,6 +178,12 @@ export interface ParsedMessage {
   readonly items: ReadonlyArray<ParsedItem>;
   readonly contact: OrderContact;
   readonly cashOnDelivery: boolean;
+  /**
+   * Detail fragments (a size or colour with no item of their own) that
+   * came before any item, so had no preceding item to belong to. They are
+   * reported, never attached forward and never silently dropped.
+   */
+  readonly unattached: ReadonlyArray<string>;
 }
 
 export type ParseFailureReason = "empty" | "malformed" | "too_large";

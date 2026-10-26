@@ -71,6 +71,9 @@ const FIXTURES: ReadonlyArray<{ readonly text: string; readonly items: ReadonlyA
     items: [{ qty: 1, size: "S", colour: "গোলাপি" }, { qty: 1, size: "M", colour: "হলুদ" }, { qty: 1, size: "L", colour: "সবুজ" }],
   },
   { text: "বেগুনি শাল ২ পিস এবং ধূসর শাল ১ পিস", items: [{ qty: 2, size: null, colour: "বেগুনি" }, { qty: 1, size: null, colour: "ধূসর" }] },
+  // M-04: comma-separated details after an item belong to that item.
+  { text: "কুর্তা ২টা, লাল, M\nশাড়ি ১টা", items: [{ qty: 2, size: "M", colour: "লাল" }, { qty: 1, size: null, colour: null }] },
+  { text: "টি-শার্ট ৩টা, কালো, XL, তারপর জিন্স ১টা, নীল", items: [{ qty: 3, size: "XL", colour: "কালো" }, { qty: 1, size: null, colour: "নীল" }] },
 ];
 
 const matches = (items: ReadonlyArray<ParsedItem>, expected: ReadonlyArray<Expected>): boolean =>
@@ -161,5 +164,50 @@ describe("R2.2 — segment isolation: an item's details come from the item's own
     expect(r.ok && r.cashOnDelivery).toBe(false);
     const noPhone = parseMessage("লাল শাড়ি ১টা");
     expect(noPhone.ok && noPhone.contact).toEqual({ name: null, phone: null, address: null });
+  });
+});
+
+/*
+ * M-04. The rule, restated again for these cases:
+ *
+ *     SEGMENT RULE: an item's details come from the item's own words.
+ *
+ * A detail-only fragment written after an item ("কুর্তা ২টা, লাল, M") is
+ * part of that item's own words. It joins the PRECEDING item and never the
+ * following one; it is never silently dropped; a disagreeing or ambiguous
+ * fragment leaves the detail empty and the item incomplete.
+ */
+describe("M-04 — comma-separated detail fragments belong to the preceding item", () => {
+  test("the reviewer's probe: লাল and M join the kurta, the saree stays without them", () => {
+    const r = parseMessage("কুর্তা ২টা, লাল, M\nশাড়ি ১টা");
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.items[0]).toMatchObject({ quantity: 2, colour: "লাল", size: "M", incomplete: false });
+    expect(r.items[1]).toMatchObject({ quantity: 1, colour: null, size: null, incomplete: false });
+    for (const item of r.items) assertOwnWords(item);
+    expect(r.items[1]!.text).toBe("শাড়ি ১টা");
+    expect(r.unattached).toEqual([]);
+  });
+
+  test("a detail before any item is reported as unattached, never given to the following item", () => {
+    const r = parseMessage("লাল, কুর্তা ২টা");
+    expect(r.ok && r.items[0]).toMatchObject({ colour: null, text: "কুর্তা ২টা" });
+    expect(r.ok && r.unattached).toEqual(["লাল"]);
+  });
+
+  test("a fragment that contradicts the item's own detail empties it and marks the item incomplete", () => {
+    const colour = parseMessage("কালো কুর্তি ১টা, লাল");
+    expect(colour.ok && colour.items[0]).toMatchObject({ colour: null, incomplete: true });
+    const size = parseMessage("কুর্তি M ১টা, L");
+    expect(size.ok && size.items[0]).toMatchObject({ size: null, incomplete: true });
+    const same = parseMessage("কালো কুর্তি ১টা, কালো");
+    expect(same.ok && same.items[0]).toMatchObject({ colour: "কালো", incomplete: false });
+  });
+
+  test("an ambiguous fragment marks the item incomplete; filler fragments change nothing", () => {
+    const ambiguous = parseMessage("কুর্তি ১টা, লাল নীল");
+    expect(ambiguous.ok && ambiguous.items[0]).toMatchObject({ colour: null, incomplete: true });
+    const filler = parseMessage("লাল শাড়ি ১টা, দিয়েন, দাম ১২০০ টাকা");
+    expect(filler.ok && filler.items[0]).toMatchObject({ text: "লাল শাড়ি ১টা", colour: "লাল", incomplete: false });
   });
 });

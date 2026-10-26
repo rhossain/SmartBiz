@@ -47,6 +47,7 @@ const COPY = {
   "paste.malformed": L("কোনো পণ্য পাওয়া যায়নি", "No item found in the message"),
   "paste.too_large": L("২০০টির বেশি পণ্য — ভাগ করে দিন", "More than 200 items — split the message"),
   "paste.cod": L("ক্যাশ অন ডেলিভারি", "Cash on delivery"),
+  "paste.unattached": L("এই বিবরণ কোনো পণ্যের সাথে মেলেনি", "These details matched no item"),
   "manual.title": L("নতুন অর্ডার", "New order"),
   "manual.line": L("লাইন", "Line"),
   "manual.variant": L("ভ্যারিয়েন্ট (ঐচ্ছিক)", "Variant (optional)"),

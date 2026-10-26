@@ -134,6 +134,11 @@ export const PasteParse = ({ locale, draft, onSave }: PasteParseProps): React.Re
             {[edits.parsed.contact.name, edits.parsed.contact.phone, edits.parsed.contact.address].filter(Boolean).join(" · ")}
           </p>
           {edits.parsed.cashOnDelivery ? <Pill kind="neutral" label={tr("paste.cod", locale)} /> : null}
+          {edits.parsed.unattached.length > 0 ? (
+            <p role="alert" data-testid="paste-unattached">
+              {`${tr("paste.unattached", locale)}: ${edits.parsed.unattached.join(" · ")}`}
+            </p>
+          ) : null}
           <ol data-testid="paste-items">
             {edits.parsed.items.map((item, index) => (
               <ItemRow
