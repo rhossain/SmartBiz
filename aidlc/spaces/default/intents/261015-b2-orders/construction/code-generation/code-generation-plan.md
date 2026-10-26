@@ -72,7 +72,7 @@ step lists its files, its bindings, and an exit check.
   - Binds: FR12.1, FR12.3, FR12.4, NFR5.7, NFR6.10, Contracts #1–#4.
   - Exit: `bun run type-check` green.
 
-- [ ] Step 6 — Repository / data access: write and run its tests
+- [x] Step 6 — Repository / data access: write and run its tests
   - `tests/unit/order-audit-append.test.ts` (R2.1): every mutation inserts exactly one audit row with the right action, subject, actor and before/after, and the audit insert precedes the entity write.
   - `tests/unit/consignment-link.test.ts`: link once, link immutable, cross-business link rejected, audit row written.
   - `tests/integration/order-create-integration.test.ts`: create, transition and read under the SQL stub; forbidden transition writes nothing; cross-business read returns `NotFound`.
