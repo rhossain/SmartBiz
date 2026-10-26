@@ -8,7 +8,8 @@
  * already run by the time `render` is called (dispatch.ts), so this
  * file never decides who may see what, it only picks the screen:
  *
- *   /orders, /orders/new          → OrdersList (with quick-add)
+ *   /orders                       → OrdersList (with quick-add)
+ *   /orders/new                   → ManualOrder (multi-line entry)
  *   /orders/new/paste-parse       → PasteParse
  *   /orders/new/repeat            → RepeatFromPast (over the loaded page)
  *   /orders/:id, …/transition     → OrderDetail
@@ -17,6 +18,7 @@ import * as React from "react";
 import type { Locale } from "../../auth/types.js";
 import type { OrderDraftStore, SaveOrder } from "../order-draft.js";
 import { assertNever, type Order, type OrdersPage, type OrderStatus } from "../types.js";
+import { ManualOrder } from "./ManualOrder.js";
 import { OrderDetail } from "./OrderDetail.js";
 import { OrdersList, type OrdersListFilter } from "./OrdersList.js";
 import { PasteParse } from "./PasteParse.js";
@@ -40,7 +42,7 @@ export interface OrdersRouteState {
 export const isOrdersRouteState = (state: unknown): state is OrdersRouteState =>
   typeof state === "object" && state !== null && (state as { kind?: unknown }).kind === "orders";
 
-export type OrdersScreen = "list" | "paste-parse" | "repeat" | "detail";
+export type OrdersScreen = "list" | "manual" | "paste-parse" | "repeat" | "detail";
 
 export const renderOrdersScreen = (screen: OrdersScreen, state: unknown): React.ReactElement | null => {
   if (!isOrdersRouteState(state)) return null;
@@ -60,6 +62,8 @@ export const renderOrdersScreen = (screen: OrdersScreen, state: unknown): React.
           onSave={onSave}
         />
       );
+    case "manual":
+      return <ManualOrder locale={locale} draft={draft} onSave={onSave} />;
     case "paste-parse":
       return <PasteParse locale={locale} draft={draft} onSave={onSave} />;
     case "repeat":

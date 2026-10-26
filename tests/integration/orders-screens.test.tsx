@@ -231,7 +231,7 @@ describe("U3 screens", () => {
     };
     const expectations: ReadonlyArray<readonly [string, string]> = [
       ["/orders", "orders-summary"],
-      ["/orders/new", "orders-quick-add"],
+      ["/orders/new", "manual-order-form"],
       ["/orders/new/paste-parse", "paste-box"],
       ["/orders/new/repeat", "repeat-orders"],
       ["/orders/:id", "order-detail-header"],

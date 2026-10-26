@@ -17,6 +17,7 @@ import type { Route, RoutePath } from "./types.js";
 
 const renderStub = (): unknown => null;
 const ordersList = (state: unknown): unknown => renderOrdersScreen("list", state);
+const manualOrder = (state: unknown): unknown => renderOrdersScreen("manual", state);
 const pasteParse = (state: unknown): unknown => renderOrdersScreen("paste-parse", state);
 const repeatFromPast = (state: unknown): unknown => renderOrdersScreen("repeat", state);
 const orderDetail = (state: unknown): unknown => renderOrdersScreen("detail", state);
@@ -29,7 +30,7 @@ export const routes: ReadonlyMap<RoutePath, Route> = new Map<RoutePath, Route>([
   ["/reset", { path: "/reset", requiredCapability: null, render: renderStub }],
   ["/accept", { path: "/accept", requiredCapability: null, render: renderStub }],
   ["/orders", { path: "/orders", requiredCapability: ORDER_READ_CAPABILITY, render: ordersList }],
-  ["/orders/new", { path: "/orders/new", requiredCapability: ORDER_MUTATE_CAPABILITIES, render: ordersList }],
+  ["/orders/new", { path: "/orders/new", requiredCapability: ORDER_MUTATE_CAPABILITIES, render: manualOrder }],
   [
     "/orders/new/paste-parse",
     { path: "/orders/new/paste-parse", requiredCapability: ORDER_MUTATE_CAPABILITIES, render: pasteParse },
