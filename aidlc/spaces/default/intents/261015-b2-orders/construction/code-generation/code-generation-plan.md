@@ -106,7 +106,7 @@ step lists its files, its bindings, and an exit check.
   - Extend `tests/unit/gate-bench.test.ts` (NFR2.c ≤ 2 ms p95) to cover the U3 routes.
   - Exit: both pass.
 
-- [ ] Step 11 — Frontend behavior: implement
+- [x] Step 11 — Frontend behavior: implement
   - `src/orders/screens/OrdersList.tsx`, `OrderDetail.tsx`, `PasteParse.tsx`, `RepeatFromPast.tsx`, wired into the U3 routes. The typed state container holds pending orders until an explicit Save.
   - Binds: NFR4.1, NFR4.2, FR5.5, FR10.1, FR10.3.
   - Exit: `bun run build` green; JS ≤ 350 KB gzip.

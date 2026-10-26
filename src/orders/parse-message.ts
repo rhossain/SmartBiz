@@ -90,6 +90,28 @@ const scanContact = (lines: ReadonlyArray<string>): ContactScan => {
   return { contact: { name, phone, address }, usedLines: used };
 };
 
+const toParsedItem = (
+  lineNo: number,
+  details: ReturnType<typeof readSegment>,
+  catalog: ReadonlyArray<CatalogEntry>,
+): ParsedItem => ({
+  lineNo,
+  text: details.text,
+  productId: details.productId,
+  quantity: details.quantity,
+  size: details.size,
+  colour: details.colour,
+  incomplete: details.ambiguous || details.quantity < 1 || (catalog.length > 0 && details.productId === null),
+});
+
+/**
+ * Re-read one item after the person edits its words on the paste screen
+ * (AC1.10.3). Only the edited text is read, so the segment rule holds
+ * for edits exactly as it does for the original parse.
+ */
+export const reparseItem = (lineNo: number, text: string, catalog: ReadonlyArray<CatalogEntry> = []): ParsedItem =>
+  toParsedItem(lineNo, readSegment(text.trim(), catalog), catalog);
+
 /** Parse a pasted Messenger/WhatsApp order. Optional `catalog` resolves product ids. */
 export const parseMessage = (text: unknown, catalog: ReadonlyArray<CatalogEntry> = []): ParseResult => {
   if (typeof text !== "string") return { ok: false, reason: "malformed" };
@@ -108,15 +130,7 @@ export const parseMessage = (text: unknown, catalog: ReadonlyArray<CatalogEntry>
     const details = readSegment(segment, catalog);
     if (!details.isItem) continue;
     if (items.length === MAX_PARSE_ITEMS) return { ok: false, reason: "too_large" };
-    items.push({
-      lineNo: items.length + 1,
-      text: details.text,
-      productId: details.productId,
-      quantity: details.quantity,
-      size: details.size,
-      colour: details.colour,
-      incomplete: details.ambiguous || details.quantity < 1 || (catalog.length > 0 && details.productId === null),
-    });
+    items.push(toParsedItem(items.length + 1, details, catalog));
   }
   if (items.length === 0) return { ok: false, reason: "malformed" };
   return { ok: true, items, contact, cashOnDelivery: COD.test(text) };

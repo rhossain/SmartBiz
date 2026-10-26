@@ -10,7 +10,6 @@ import { RecoverScreen } from "../../src/router/screens/Recover.js";
 import { ResetScreen } from "../../src/router/screens/Reset.js";
 import { AcceptScreen } from "../../src/router/screens/Accept.js";
 import { LockScreen } from "../../src/router/screens/Lock.js";
-import { OrdersPlaceholder } from "../../src/router/screens/OrdersPlaceholder.js";
 import { DailyCardPlaceholder } from "../../src/router/screens/DailyCardPlaceholder.js";
 import { AuditTrailPlaceholder } from "../../src/router/screens/AuditTrailPlaceholder.js";
 import { setLocale } from "../../src/i18n/useTranslations.js";
@@ -74,9 +73,9 @@ describe("screens render and submit", () => {
     cleanup();
   });
 
+  // The B1 orders placeholder was replaced by the real U3 screens in B2
+  // (tests/integration/orders-screens.test.tsx).
   test("placeholder screens render", () => {
-    expect(render(<OrdersPlaceholder />).container.textContent).toContain("B2");
-    cleanup();
     expect(render(<DailyCardPlaceholder />).container.textContent).toContain("B5");
     cleanup();
     expect(render(<AuditTrailPlaceholder />).container.textContent).toContain("B5");

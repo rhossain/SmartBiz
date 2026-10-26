@@ -11,9 +11,14 @@
  * the order-mutation capability. No new Capability value is added.
  */
 import { ORDER_MUTATE_CAPABILITY, ORDER_READ_CAPABILITY } from "../orders/order-capability.js";
+import { renderOrdersScreen } from "../orders/screens/render-orders-route.js";
 import type { Route, RoutePath } from "./types.js";
 
 const renderStub = (): unknown => null;
+const ordersList = (state: unknown): unknown => renderOrdersScreen("list", state);
+const pasteParse = (state: unknown): unknown => renderOrdersScreen("paste-parse", state);
+const repeatFromPast = (state: unknown): unknown => renderOrdersScreen("repeat", state);
+const orderDetail = (state: unknown): unknown => renderOrdersScreen("detail", state);
 
 export const routes: ReadonlyMap<RoutePath, Route> = new Map<RoutePath, Route>([
   ["/", { path: "/", requiredCapability: null, render: renderStub }],
@@ -22,17 +27,17 @@ export const routes: ReadonlyMap<RoutePath, Route> = new Map<RoutePath, Route>([
   ["/recover", { path: "/recover", requiredCapability: null, render: renderStub }],
   ["/reset", { path: "/reset", requiredCapability: null, render: renderStub }],
   ["/accept", { path: "/accept", requiredCapability: null, render: renderStub }],
-  ["/orders", { path: "/orders", requiredCapability: ORDER_READ_CAPABILITY, render: renderStub }],
-  ["/orders/new", { path: "/orders/new", requiredCapability: ORDER_MUTATE_CAPABILITY, render: renderStub }],
+  ["/orders", { path: "/orders", requiredCapability: ORDER_READ_CAPABILITY, render: ordersList }],
+  ["/orders/new", { path: "/orders/new", requiredCapability: ORDER_MUTATE_CAPABILITY, render: ordersList }],
   [
     "/orders/new/paste-parse",
-    { path: "/orders/new/paste-parse", requiredCapability: ORDER_MUTATE_CAPABILITY, render: renderStub },
+    { path: "/orders/new/paste-parse", requiredCapability: ORDER_MUTATE_CAPABILITY, render: pasteParse },
   ],
-  ["/orders/new/repeat", { path: "/orders/new/repeat", requiredCapability: ORDER_MUTATE_CAPABILITY, render: renderStub }],
-  ["/orders/:id", { path: "/orders/:id", requiredCapability: ORDER_READ_CAPABILITY, render: renderStub }],
+  ["/orders/new/repeat", { path: "/orders/new/repeat", requiredCapability: ORDER_MUTATE_CAPABILITY, render: repeatFromPast }],
+  ["/orders/:id", { path: "/orders/:id", requiredCapability: ORDER_READ_CAPABILITY, render: orderDetail }],
   [
     "/orders/:id/transition",
-    { path: "/orders/:id/transition", requiredCapability: ORDER_MUTATE_CAPABILITY, render: renderStub },
+    { path: "/orders/:id/transition", requiredCapability: ORDER_MUTATE_CAPABILITY, render: orderDetail },
   ],
   ["/daily-card", { path: "/daily-card", requiredCapability: "business.view", render: renderStub }],
   ["/audit-trail", { path: "/audit-trail", requiredCapability: "audit.view", render: renderStub }],
