@@ -62,14 +62,17 @@ export interface SegmentDetails {
   readonly ambiguous: boolean;
 }
 
-const escapeRe = (s: string): string => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+/*
+ * A short Latin value must match as a whole word: "L" is a substring of
+ * "XL". Every size and Latin alias is one alphanumeric word, so the
+ * segment is split once into its upper-cased Latin words and each lookup
+ * is a Set hit. That is the same whole-word match as a per-value regex,
+ * at a fraction of the cost on the 200-item hot path (NFR6.7.1).
+ */
+const latinWords = (ascii: string): ReadonlySet<string> =>
+  new Set(ascii.toUpperCase().split(/[^A-Z0-9]+/).filter((w) => w.length > 0));
 
-/** A short Latin value must match as a word: "L" is a substring of "XL". */
-const latinWord = (value: string): RegExp =>
-  new RegExp(`(^|[^A-Za-z0-9])${escapeRe(value)}($|[^A-Za-z0-9])`, "i");
-
-const SIZE_PATTERNS = SIZES.map((s) => ({ value: s, re: latinWord(s) }));
-const COLOUR_PATTERNS = COLOURS.map((c) => ({ value: c.bn, latin: c.aliases.map(latinWord) }));
+const isLatinWord = (value: string): boolean => /^[A-Za-z0-9]+$/.test(value);
 /* A count followed by a counter word. `টা(?!কা)` keeps a price such as
    "৩২০ টাকা" from being read as a quantity of 320. */
 const QUANTITY = /(\d+)\s*(?:টা(?!কা)|টি|পিস|pcs?\b|pieces?\b)/gi;
@@ -92,8 +95,9 @@ export const splitSegments = (text: string): string[] => {
   return segments;
 };
 
-const mentions = (scope: string, word: string): boolean =>
-  /^[\x20-\x7E]+$/.test(word) ? latinWord(word).test(scope) : scope.includes(word);
+/** Whole-word match for a Latin catalog word, substring match for a Bangla one. */
+const mentions = (scope: string, words: ReadonlySet<string>, word: string): boolean =>
+  isLatinWord(word) ? words.has(word.toUpperCase()) : scope.includes(word);
 
 const single = <T>(hits: ReadonlyArray<T>): { value: T | null; ambiguous: boolean } => {
   const distinct = [...new Set(hits)];
@@ -104,13 +108,14 @@ const single = <T>(hits: ReadonlyArray<T>): { value: T | null; ambiguous: boolea
 /** Read one segment's own details. Nothing outside `segment` is consulted. */
 export const readSegment = (segment: string, catalog: ReadonlyArray<CatalogEntry>): SegmentDetails => {
   const ascii = toAsciiDigits(segment);
+  const words = latinWords(ascii);
   const quantities = [...ascii.matchAll(QUANTITY)].map((m) => Number(m[1]));
-  const size = single(SIZE_PATTERNS.filter((p) => p.re.test(ascii)).map((p) => p.value));
+  const size = single(SIZES.filter((s) => words.has(s)));
   const colour = single(
-    COLOUR_PATTERNS.filter((c) => segment.includes(c.value) || c.latin.some((re) => re.test(ascii))).map((c) => c.value),
+    COLOURS.filter((c) => segment.includes(c.bn) || c.aliases.some((a) => words.has(a.toUpperCase()))).map((c) => c.bn),
   );
   const product = single(
-    catalog.filter((p) => p.words.some((w) => w.length > 2 && mentions(segment, w))).map((p) => p.productId),
+    catalog.filter((p) => p.words.some((w) => w.length > 2 && mentions(segment, words, w))).map((p) => p.productId),
   );
   const qty = single(quantities);
   const isItem = quantities.length > 0 || product.value !== null || product.ambiguous;

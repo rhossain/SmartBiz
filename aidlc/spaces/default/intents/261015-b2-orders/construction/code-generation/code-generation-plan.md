@@ -84,7 +84,7 @@ step lists its files, its bindings, and an exit check.
   - Binds: FR5.2, FR5.3, FR10.2, NFR2.5, NFR3.3, NFR6.5, NFR6.7.1–NFR6.7.4.
   - Exit: `bun run type-check` and `bun run lint` green.
 
-- [ ] Step 8 — Business logic: write and run its tests
+- [x] Step 8 — Business logic: write and run its tests
   - `tests/unit/parseMessage-segments.test.ts` (R2.2): restates the segment-isolation rule inline; multiple products, multiple variants per product, Bangla connectors; ≥ 95% success on the seeded fixtures (NFR6.7.3).
   - `tests/unit/parseMessage-bad-input.test.ts` (NFR6.7.4): empty, malformed, 201 items; never throws.
   - `tests/unit/status-fsm.test.ts`: allowed and forbidden transitions, terminals, `partial` entry.
