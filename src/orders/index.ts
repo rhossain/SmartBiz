@@ -7,4 +7,4 @@
  * without breaking U4 (the settlement callback, Contract #6) or the
  * router. Each layer of the B2 Bolt adds its exports here as it lands.
  */
-export {};
+export * from "./types.js";

@@ -5,6 +5,7 @@
  * should pass typed values; zod is for the edges.
  */
 import { z } from "zod";
+import { COURIERS, ORDER_SOURCES, ORDER_STATUSES } from "../orders/types.js";
 
 export const RoleSchema = z.enum(["owner", "manager", "sales_staff", "accountant"]);
 export const LocaleSchema = z.enum(["bn", "en"]);
@@ -72,6 +73,111 @@ export const PasswordResetSchema = z.object({
   expiresAt: z.string(),
   usedAt: z.string().nullable(),
   createdAt: z.string(),
+});
+
+/*
+ * U3-orders boundary validators (B2).
+ *
+ * The enum lists are imported from src/orders/types.ts rather than
+ * restated, so the zod enum and the TypeScript union cannot drift: a
+ * tenth status added to ORDER_STATUSES reaches both. Money is integer
+ * paise with a ceiling well inside Number.MAX_SAFE_INTEGER so sums of
+ * up to 200 lines stay exact (ADR-002). The 200-line ceiling matches
+ * the paste-parse cap (OQ-NFR-D-B2-2).
+ */
+export const MAX_ORDER_ITEMS = 200;
+const MAX_PAISE = 1_000_000_000_000;
+
+export const PaiseSchema = z.number().int().min(0).max(MAX_PAISE);
+export const OrderStatusSchema = z.enum(ORDER_STATUSES);
+export const OrderSourceSchema = z.enum(ORDER_SOURCES);
+export const CourierSchema = z.enum(COURIERS);
+export const ConsignmentRefSchema = z
+  .string()
+  .regex(/^(PT-\d{4}|SF-\d{5}|RX-\d{5})$/, "consignment ref must be PT-####, SF-##### or RX-#####");
+
+export const OrderContactSchema = z.object({
+  name: z.string().max(200).nullable(),
+  phone: z
+    .string()
+    .regex(/^01\d{9}$/, "phone must be 11 digits starting 01")
+    .nullable(),
+  address: z.string().max(500).nullable(),
+});
+
+export const OrderItemInputSchema = z.object({
+  variantId: z.string().min(1).max(100).nullable(),
+  description: z.string().trim().min(1).max(500),
+  quantity: z.number().int().min(1).max(9999),
+  unitPricePaise: PaiseSchema,
+  lineDiscountPaise: PaiseSchema,
+});
+
+export const CreateOrderInputSchema = z.object({
+  source: OrderSourceSchema,
+  customerId: z.string().min(1).max(100).nullable(),
+  contact: OrderContactSchema.nullable(),
+  repeatOfOrderId: UuidSchema.nullable(),
+  items: z.array(OrderItemInputSchema).min(1).max(MAX_ORDER_ITEMS),
+  orderDiscountPaise: PaiseSchema,
+  deliveryChargePaise: PaiseSchema,
+});
+
+export const UpdateOrderInputSchema = z.object({
+  customerId: z.string().min(1).max(100).nullable().optional(),
+  contact: OrderContactSchema.nullable().optional(),
+  items: z.array(OrderItemInputSchema).min(1).max(MAX_ORDER_ITEMS).optional(),
+  orderDiscountPaise: PaiseSchema.optional(),
+  deliveryChargePaise: PaiseSchema.optional(),
+});
+
+export const ListOrdersFilterSchema = z.object({
+  status: OrderStatusSchema.nullable().optional(),
+  customerId: z.string().min(1).max(100).nullable().optional(),
+  from: z.string().datetime().nullable().optional(),
+  to: z.string().datetime().nullable().optional(),
+  cursor: z.string().max(200).nullable().optional(),
+  limit: z.number().int().min(1).max(1000).nullable().optional(),
+});
+
+export const OrderItemSchema = OrderItemInputSchema.extend({
+  id: UuidSchema,
+  orderId: UuidSchema,
+  businessId: UuidSchema,
+  lineNo: z.number().int().min(1),
+});
+
+export const OrderSchema = z.object({
+  id: UuidSchema,
+  businessId: UuidSchema,
+  orderNo: z.string().regex(/^ORD-\d{4,}$/),
+  customerId: z.string().nullable(),
+  contact: OrderContactSchema.nullable(),
+  status: OrderStatusSchema,
+  source: OrderSourceSchema,
+  repeatOfOrderId: UuidSchema.nullable(),
+  items: z.array(OrderItemSchema).max(MAX_ORDER_ITEMS),
+  orderDiscountPaise: PaiseSchema,
+  deliveryChargePaise: PaiseSchema,
+  totalPaise: PaiseSchema,
+  createdBy: UuidSchema.nullable(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
+export const ConsignmentLinkSchema = z.object({
+  id: UuidSchema,
+  businessId: UuidSchema,
+  orderId: UuidSchema,
+  courier: CourierSchema,
+  consignmentRef: ConsignmentRefSchema,
+  linkedBy: UuidSchema.nullable(),
+  linkedAt: z.string(),
+});
+
+export const ConsignmentLinkInputSchema = z.object({
+  orderId: UuidSchema,
+  consignmentRef: ConsignmentRefSchema,
 });
 
 /** Helper used by the API surface to validate request bodies. */

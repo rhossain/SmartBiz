@@ -55,7 +55,7 @@ step lists its files, its bindings, and an exit check.
   - Binds: NFR6.1, team.md §TP-3.
   - Exit: the B1 suite is still 108/108 green before any B2 code is added.
 
-- [ ] Step 3 — Data model / database behavior: implement
+- [x] Step 3 — Data model / database behavior: implement
   - `src/db/migrations/0008_create_orders.sql`, `0009_create_order_items.sql`, `0010_create_consignment_link.sql`.
   - `src/orders/types.ts`: `Order`, `OrderItem`, `OrderStatus`, `OrderSource`, `OrderAuditAction`, `ParseResult`, `OrderBucket`, `ConsignmentLink`.
   - Extend `src/data/zod-schemas.ts` with `OrderSchema`, `OrderItemSchema`, `ConsignmentLinkSchema` (input validation at the boundary).
