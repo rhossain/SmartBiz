@@ -11,7 +11,7 @@ name: ci
 
 on:
   push:
-    branches: [main, b1-foundation]
+    branches: [main, b1-foundation, b2-orders]
   pull_request:
     branches: [main]
 
@@ -56,6 +56,20 @@ jobs:
       # Build stage 5 — Coverage
       - name: "5. coverage (>= 80% line coverage)"
         run: bun run coverage
+
+      # Build stage 5b — Coverage floor (B2). Stage 5 prints the report but
+      # nothing enforced the 80% floor (.c8rc.json check-coverage is false
+      # and bunfig.toml sets no threshold). This step fails the build when
+      # line coverage over all reported source files is below 80%
+      # (NFR6.1, team.md §TP-2). The floor is never lowered here.
+      - name: "5b. coverage floor (fail below 80% lines)"
+        run: |
+          set -o pipefail
+          bun run coverage 2>&1 | tee coverage.txt
+          lines=$(awk -F'|' '/^All files/ {gsub(/ /, "", $3); print $3}' coverage.txt)
+          echo "All files line coverage: ${lines}%"
+          if [ -z "$lines" ]; then echo "::error::coverage summary line not found"; exit 1; fi
+          awk -v l="$lines" 'BEGIN { exit (l + 0 >= 80) ? 0 : 1 }' || { echo "::error::line coverage ${lines}% is below the 80% floor"; exit 1; }
 
       # Build stage 6 — R1.1 audit-immutability migration test
       - name: "6. R1.1 audit-immutability (NFR5.1, NFR1.2)"
@@ -174,6 +188,38 @@ jobs:
       # and email-gateway-failure graceful degradation.
       - name: "11. e2e smoke (integration suite — UC-1.9, UC-1.10, BR1.4, BR3.4)"
         run: bun test tests/integration
+
+      # -------------------------------------------------------------------
+      # B2 (U3-orders) gates. Each blocks merge (team.md §Dep-6). The
+      # benchmarks read CI=true (set by GitHub Actions) and fail at 10×
+      # their local budget, per the B2 cicd-pipeline design.
+      # -------------------------------------------------------------------
+      - name: "12. R2.1 order audit append per action (NFR5.7, FR12.3)"
+        run: bun test tests/unit/order-audit-append.test.ts
+
+      - name: "13. R2.2 paste-parse segment isolation (FR5.2, NFR6.5, NFR6.7.2-3)"
+        run: bun test tests/unit/parseMessage-segments.test.ts tests/unit/parseMessage-bad-input.test.ts
+
+      - name: "14. R2.3 status-bucket math (FR10.2)"
+        run: bun test tests/unit/status-bucket.test.ts
+
+      - name: "15. R2.4 status enum exhaustive (FR5.3)"
+        run: bun test tests/unit/status-exhaustive.test.ts tests/unit/status-fsm.test.ts
+
+      - name: "16. R2.5 deferred input logging (NFR3.3)"
+        run: bun test tests/unit/deferred-input-logging.test.ts
+
+      - name: "17. parseMessage micro-bench (NFR6.7.1 <= 20 ms p95; CI fails > 200 ms)"
+        run: bun test tests/unit/parseMessage-bench.test.ts
+
+      - name: "18. status-bucket micro-bench (NFR2.5 <= 1 ms p95; CI fails > 10 ms)"
+        run: bun test tests/unit/status-bucket-bench.test.ts
+
+      - name: "19. orders-list bench (NFR6.10 <= 1 s p95 for 1 000 orders; CI fails > 10 s)"
+        run: bun test tests/unit/orders-list-bench.test.ts
+
+      - name: "20. PCI deny-list over src/orders/ (NFR5.4)"
+        run: bun test tests/unit/pci-deny-list-orders.test.ts
 
   # -----------------------------------------------------------------------
   # JOB 3 — R1.3 round-trip (no-float drift) — NFR2.x + ADR-002 binding test

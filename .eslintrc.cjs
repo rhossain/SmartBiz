@@ -25,5 +25,24 @@ module.exports = {
     "react/prop-types": "off",
     "no-console": ["error", { allow: ["warn", "error"] }],
   },
+  overrides: [
+    {
+      // NFR5.4 / NFR5.3 (B2): SmartBiz has no card payments, so no card,
+      // CVV, PAN or bank-account identifier may be introduced in the
+      // orders unit. Blocks the names at edit time; the grep test
+      // tests/unit/pci-deny-list-orders.test.ts covers strings and comments.
+      files: ["src/orders/**/*.ts", "src/orders/**/*.tsx"],
+      rules: {
+        "no-restricted-syntax": [
+          "error",
+          {
+            selector: "Identifier[name=/^(card|cvv|pan|cardNumber|bankAccount|accountNumber)$/]",
+            message:
+              "PCI scope: do not introduce card / cvv / pan / cardNumber / bankAccount / accountNumber identifiers in src/orders/ (NFR5.4).",
+          },
+        ],
+      },
+    },
+  ],
   ignorePatterns: ["dist", "node_modules", "coverage", "*.cjs", "prototype/**", "_bmad/**", "_bmad-output/**", ".claude/**"],
 };

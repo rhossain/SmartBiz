@@ -17,6 +17,8 @@ import {
   getConsignmentLink,
   linkConsignment,
 } from "../../src/orders/consignment.js";
+import { getCustomer } from "../../src/orders/customer.js";
+import { getVariant } from "../../src/orders/variant.js";
 import type { Order } from "../../src/orders/types.js";
 import { makeSqlStub } from "../helpers/sql-stub.js";
 import { BUSINESS_A, BUSINESS_B, OWNER_A, OWNER_B, createInput, ctxFor } from "../helpers/order-fixtures.js";
@@ -98,6 +100,19 @@ describe("linkConsignment", () => {
     });
     expect(!manager.ok && manager.error.kind).toBe("forbidden");
     expect(stub.state.consignmentLinks.length).toBe(0);
+  });
+
+  test("the B3 catalog stubs answer NotFound deterministically, for any business", async () => {
+    for (const businessId of [BUSINESS_A, BUSINESS_B]) {
+      expect(await getCustomer(businessId, "C-01")).toEqual({
+        ok: false,
+        error: { kind: "not_found", entity: "Customer", id: "C-01" },
+      });
+      expect(await getVariant(businessId, "V-01")).toEqual({
+        ok: false,
+        error: { kind: "not_found", entity: "Variant", id: "V-01" },
+      });
+    }
   });
 
   test("courierForRef and the U4 read stub", async () => {

@@ -39,9 +39,6 @@ export const createOrderDraftStore = (initial: OrderDraft = EMPTY_DRAFT): OrderD
 export const setPending = (store: OrderDraftStore, pending: CreateOrderInput | null): void =>
   store.set({ pending, status: "idle", message: null, savedOrderId: null });
 
-export const setDraftMessage = (store: OrderDraftStore, message: string): void =>
-  store.update((d) => ({ ...d, status: "error", message }));
-
 export type SaveOrder = (input: CreateOrderInput) => Promise<Result<Order, OrderError>>;
 
 export const saveDraft = async (store: OrderDraftStore, save: SaveOrder): Promise<void> => {

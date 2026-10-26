@@ -116,7 +116,7 @@ step lists its files, its bindings, and an exit check.
   - `tests/unit/pci-deny-list-orders.test.ts` (NFR5.4): no card/cvv/pan/bank identifiers under `src/orders/`.
   - Exit: both pass.
 
-- [ ] Step 13 — Environment / build configuration
+- [x] Step 13 — Environment / build configuration
   - `.eslintrc.cjs`: add the NFR5.4 `no-restricted-syntax` deny-list override for `src/orders/**`.
   - `.github/workflows/ci.yml`: add named steps for R2.1–R2.5 and the 3 B2 benchmarks; the coverage gate stays at 80%.
   - Exit: `bun run lint` green; full `bun run coverage` green with ≥ 80% lines on `src/**` and on `src/orders/**`.
