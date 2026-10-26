@@ -87,6 +87,19 @@ describe("US1.11 — ManualOrder screen", () => {
     expect(saveButton(getByTestId).disabled).toBe(false);
   });
 
+  test("a quantity typed in Bangla digits is read like the price fields", () => {
+    const { getByTestId, queryByTestId } = render(
+      <ManualOrder locale="en" draft={createOrderDraftStore()} onSave={async () => { throw new Error("unused"); }} />,
+    );
+    type(getByTestId, "manual-line-description-1", "নীল জিন্স");
+    type(getByTestId, "manual-line-price-1", "1800");
+    type(getByTestId, "manual-line-quantity-1", "৩");
+    expect(queryByTestId("manual-line-error-1")).toBeNull();
+    expect(saveButton(getByTestId).disabled).toBe(false);
+    type(getByTestId, "manual-line-quantity-1", "৩x");
+    expect(saveButton(getByTestId).disabled).toBe(true);
+  });
+
   test("a discount larger than its line, or than the order, is refused, never clamped", () => {
     const { getByTestId, queryByTestId } = render(
       <ManualOrder locale="en" draft={createOrderDraftStore()} onSave={async () => { throw new Error("unused"); }} />,

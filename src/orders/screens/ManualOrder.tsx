@@ -19,6 +19,7 @@
  */
 import * as React from "react";
 import type { Locale } from "../../auth/types.js";
+import { toAsciiDigits } from "../../i18n/bnDigits.js";
 import { money } from "../../money/money-figure.js";
 import { Screen } from "../../pres/Screen.js";
 import { buildManualOrder } from "../input-modes.js";
@@ -54,7 +55,9 @@ const INITIAL: Form = { lines: [EMPTY_LINE], orderDiscount: "0", delivery: "0" }
 
 /** One line's fields as an order item, or null when any field is unusable. */
 export const readLine = (line: LineFields): OrderItemInput | null => {
-  const quantity = /^\d{1,4}$/.test(line.quantity.trim()) ? Number(line.quantity.trim()) : NaN;
+  // Bangla digits are accepted here as in the price fields ("২" is 2).
+  const typed = toAsciiDigits(line.quantity.trim());
+  const quantity = /^\d{1,4}$/.test(typed) ? Number(typed) : NaN;
   const unitPricePaise = parseTakaToPaise(line.price);
   const lineDiscountPaise = parseTakaToPaise(line.discount === "" ? "0" : line.discount);
   if (line.description.trim() === "" || !(quantity >= 1) || unitPricePaise === null || lineDiscountPaise === null) {
