@@ -210,4 +210,24 @@ describe("M-04 — comma-separated detail fragments belong to the preceding item
     const filler = parseMessage("লাল শাড়ি ১টা, দিয়েন, দাম ১২০০ টাকা");
     expect(filler.ok && filler.items[0]).toMatchObject({ text: "লাল শাড়ি ১টা", colour: "লাল", incomplete: false });
   });
+
+  // Rule restated: an item's details come from the item's own words. A
+  // fragment that names something else is not the kurti's words, even when
+  // it carries a colour, so it may never colour the kurti.
+  test("a fragment naming another thing keeps its colour: the saree's লাল never reaches the kurti", () => {
+    const r = parseMessage("কুর্তা ২টা\nশাড়ি লাল");
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.items).toHaveLength(1);
+    expect(r.items[0]).toMatchObject({ text: "কুর্তা ২টা", colour: null, size: null });
+    expect(r.unattached).toEqual(["শাড়ি লাল"]);
+  });
+
+  test("labelled pure details still join the preceding item; mixed fragments never do", () => {
+    const labelled = parseMessage("কুর্তি ১টা, সাইজ M, রং নীল");
+    expect(labelled.ok && labelled.items[0]).toMatchObject({ size: "M", colour: "নীল", incomplete: false });
+    const mixed = parseMessage("কুর্তি ১টা, ওড়না সবুজ");
+    expect(mixed.ok && mixed.items[0]).toMatchObject({ text: "কুর্তি ১টা", colour: null });
+    expect(mixed.ok && mixed.unattached).toEqual(["ওড়না সবুজ"]);
+  });
 });

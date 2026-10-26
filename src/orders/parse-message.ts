@@ -121,6 +121,13 @@ export const reparseItem = (lineNo: number, text: string, catalog: ReadonlyArray
  * keeps segment isolation intact. A fragment value that disagrees with a
  * value the item already has, or an ambiguous fragment, empties that
  * detail and marks the item incomplete rather than picking one.
+ *
+ * Only a PURE detail fragment is folded in: every word a size, a colour
+ * or a detail label. "কুর্তা ২টা\nশাড়ি লাল" has a second segment with no
+ * quantity and an uncatalogued product word; folding its "লাল" into the
+ * kurti would hand one item another item's colour, the exact defect this
+ * rule exists to stop. Such a fragment goes to `unattached` instead, so
+ * the paste screen shows it and the person decides.
  */
 const mergeDetail = (
   current: string | null,
@@ -166,7 +173,7 @@ export const parseMessage = (text: unknown, catalog: ReadonlyArray<CatalogEntry>
     if (!details.isItem) {
       if (!hasDetail(details)) continue; // filler such as "দিয়েন" or a price note
       const previous = items[items.length - 1];
-      if (previous) items[items.length - 1] = attachFragment(previous, details);
+      if (previous && details.detailOnly) items[items.length - 1] = attachFragment(previous, details);
       else unattached.push(details.text);
       continue;
     }

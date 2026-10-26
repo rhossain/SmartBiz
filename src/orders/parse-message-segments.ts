@@ -60,7 +60,23 @@ export interface SegmentDetails {
   readonly colour: string | null;
   readonly productId: string | null;
   readonly ambiguous: boolean;
+  /** Every word is a size, a colour or a detail label ("সাইজ", "রং"). */
+  readonly detailOnly: boolean;
 }
+
+/* Words that only introduce a detail. A fragment made of these plus a
+   size or colour is a pure detail ("সাইজ M"); any other word means the
+   fragment may name something else, so it is never folded into an item. */
+const DETAIL_LABELS: ReadonlyArray<string> = ["সাইজ", "সাইজের", "রং", "রঙ", "কালার", "SIZE", "COLOUR", "COLOR"];
+
+const isDetailWord = (token: string): boolean => {
+  const upper = toAsciiDigits(token).toUpperCase();
+  return (
+    SIZES.includes(upper) ||
+    DETAIL_LABELS.includes(upper) ||
+    COLOURS.some((c) => token.startsWith(c.bn) || c.aliases.some((a) => a.toUpperCase() === upper))
+  );
+};
 
 /*
  * A short Latin value must match as a whole word: "L" is a substring of
@@ -128,5 +144,6 @@ export const readSegment = (segment: string, catalog: ReadonlyArray<CatalogEntry
     colour: colour.value,
     productId: product.value,
     ambiguous: size.ambiguous || colour.ambiguous || product.ambiguous || qty.ambiguous,
+    detailOnly: segment.split(/\s+/).every((t) => t.length === 0 || isDetailWord(t)),
   };
 };
