@@ -121,7 +121,7 @@ step lists its files, its bindings, and an exit check.
   - `.github/workflows/ci.yml`: add named steps for R2.1–R2.5 and the 3 B2 benchmarks; the coverage gate stays at 80%.
   - Exit: `bun run lint` green; full `bun run coverage` green with ≥ 80% lines on `src/**` and on `src/orders/**`.
 
-- [ ] Step 14 — Documentation and traceability
+- [x] Step 14 — Documentation and traceability
   - Write `code-summary.md`, `source-manifest.json` and `traceability.json` in this record directory.
   - **On-disk check:** every path in `source-manifest.json` exists, and every `OK` target in `traceability.json` is an existing file. The pass fails if either check finds a missing path.
   - Exit: both checks print zero missing paths; every checkbox above is ticked.
