@@ -79,7 +79,7 @@ step lists its files, its bindings, and an exit check.
   - `tests/unit/orders-list-bench.test.ts` (NFR6.10): 1 000 seeded orders paged at 50; p95 ≤ 1 s locally, CI fails above 10 s.
   - Exit: all four pass.
 
-- [ ] Step 7 — Business logic: implement
+- [x] Step 7 — Business logic: implement
   - `src/orders/parse-message.ts` and `parse-message-segments.ts`; `status-fsm.ts`; `status-bucket.ts`; `deferred-input.ts`; `deferred/photo-order.ts`, `deferred/spreadsheet-order.ts`, `deferred/voice-order.ts`; manual, quick-add and repeat-from-past builders in `src/orders/input-modes.ts`.
   - Binds: FR5.2, FR5.3, FR10.2, NFR2.5, NFR3.3, NFR6.5, NFR6.7.1–NFR6.7.4.
   - Exit: `bun run type-check` and `bun run lint` green.

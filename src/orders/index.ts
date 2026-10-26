@@ -27,3 +27,27 @@ export {
 export { getCustomer, type Customer } from "./customer.js";
 export { getVariant, type Variant } from "./variant.js";
 export { canTransition, nextStatuses, isTerminal, isEditable, statusLabel, isOrderStatus } from "./status-fsm.js";
+export {
+  EARNED_STATUSES,
+  REALIZED_STATUSES,
+  PIPELINE_STATUSES,
+  bucketOf,
+  bucketTotals,
+  orderMoneyFigure,
+  type BucketTotals,
+  type BucketCounts,
+} from "./status-bucket.js";
+export { parseMessage, MAX_PARSE_ITEMS, MAX_PARSE_CHARS } from "./parse-message.js";
+export { splitSegments, readSegment, CONNECTORS, type CatalogEntry } from "./parse-message-segments.js";
+export {
+  buildManualOrder,
+  buildQuickAddOrder,
+  buildRepeatOrder,
+  buildPasteParseOrder,
+  type ManualOrderDraft,
+  type QuickAddDraft,
+} from "./input-modes.js";
+export { deferInput, DEFERRED_INPUT_EVENT, type DeferredInputResult } from "./deferred-input.js";
+export { photoOrder, type PhotoOrderInput } from "./deferred/photo-order.js";
+export { spreadsheetOrder, type SpreadsheetOrderInput } from "./deferred/spreadsheet-order.js";
+export { voiceOrder, type VoiceOrderInput } from "./deferred/voice-order.js";
