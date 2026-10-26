@@ -111,7 +111,7 @@ step lists its files, its bindings, and an exit check.
   - Binds: NFR4.1, NFR4.2, FR5.5, FR10.1, FR10.3.
   - Exit: `bun run build` green; JS ≤ 350 KB gzip.
 
-- [ ] Step 12 — Frontend behavior: write and run its tests
+- [x] Step 12 — Frontend behavior: write and run its tests
   - `tests/integration/orders-screens.test.tsx`: each screen renders under happy-dom; status buttons follow `nextStatuses`; basis pill and completeness shown on every money figure; Save is required before persist.
   - `tests/unit/pci-deny-list-orders.test.ts` (NFR5.4): no card/cvv/pan/bank identifiers under `src/orders/`.
   - Exit: both pass.
