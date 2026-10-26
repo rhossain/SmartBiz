@@ -17,7 +17,7 @@ import { money } from "../../money/money-figure.js";
 import { Pill } from "../../pres/Pill.js";
 import { Screen } from "../../pres/Screen.js";
 import { lineTotalPaise } from "../order-total.js";
-import { orderMoneyFigure } from "../status-bucket.js";
+import { bucketOf, orderMoneyFigure } from "../status-bucket.js";
 import { nextStatuses, statusLabel } from "../status-fsm.js";
 import type { Order, OrderStatus } from "../types.js";
 import { tr } from "./copy.js";
@@ -36,6 +36,7 @@ const label = (status: OrderStatus, locale: Locale): string =>
 
 export const OrderDetail = ({ order, locale, canMutate, onTransition, onRepeat }: OrderDetailProps): React.ReactElement => {
   const basis = orderMoneyFigure(order);
+  const pipeline = bucketOf(order.status) === "pipeline";
   const figure = (paise: number) => money(paise, basis.recognition, basis.completeness);
   return (
     <Screen title={order.orderNo}>
@@ -62,7 +63,7 @@ export const OrderDetail = ({ order, locale, canMutate, onTransition, onRepeat }
               <td>{item.description}</td>
               <td>{item.quantity}</td>
               <td>
-                <MoneyCell figure={figure(lineTotalPaise(item))} locale={locale} testId="order-detail-line-total" />
+                <MoneyCell figure={figure(lineTotalPaise(item))} locale={locale} testId="order-detail-line-total" pipeline={pipeline} />
               </td>
             </tr>
           ))}
@@ -70,11 +71,11 @@ export const OrderDetail = ({ order, locale, canMutate, onTransition, onRepeat }
       </table>
       <div>
         <span>{tr("detail.discount", locale)}</span>
-        <MoneyCell figure={figure(order.orderDiscountPaise)} locale={locale} testId="order-detail-discount" />
+        <MoneyCell figure={figure(order.orderDiscountPaise)} locale={locale} testId="order-detail-discount" pipeline={pipeline} />
         <span>{tr("detail.delivery", locale)}</span>
-        <MoneyCell figure={figure(order.deliveryChargePaise)} locale={locale} testId="order-detail-delivery" />
+        <MoneyCell figure={figure(order.deliveryChargePaise)} locale={locale} testId="order-detail-delivery" pipeline={pipeline} />
         <span>{tr("orders.total", locale)}</span>
-        <MoneyCell figure={basis} locale={locale} testId="order-detail-total" />
+        <MoneyCell figure={basis} locale={locale} testId="order-detail-total" pipeline={pipeline} />
       </div>
       {canMutate ? (
         <div data-testid="order-detail-actions">

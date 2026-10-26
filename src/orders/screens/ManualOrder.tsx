@@ -15,7 +15,7 @@
  * - Nothing is persisted until Save (draft store, as on every U3 entry
  *   screen); a failed save keeps the draft.
  * - Every amount (line totals, order total) is shown through MoneyCell
- *   as an earned, partial figure: a new order is in the pipeline.
+ *   as a pipeline, partial figure: a new order is not earned yet.
  */
 import * as React from "react";
 import type { Locale } from "../../auth/types.js";
@@ -136,7 +136,7 @@ const LineEditor = (props: {
           {tr("manual.line_invalid", locale)}
         </span>
       ) : lineTotal !== null && lineTotal >= 0 ? (
-        <MoneyCell figure={money(lineTotal, "earned", "partial")} locale={locale} testId={`manual-line-total-${n}`} />
+        <MoneyCell figure={money(lineTotal, "earned", "partial")} locale={locale} testId={`manual-line-total-${n}`} pipeline />
       ) : null}
       {props.canRemove ? (
         <button type="button" data-testid={`manual-line-remove-${n}`} onClick={props.onRemove}>
@@ -199,7 +199,7 @@ export const ManualOrder = ({ locale, draft, onSave }: ManualOrderProps): React.
         {result.totalPaise !== null ? (
           <div>
             <span>{tr("orders.total", locale)}</span>
-            <MoneyCell figure={money(result.totalPaise, "earned", "partial")} locale={locale} testId="manual-total" />
+            <MoneyCell figure={money(result.totalPaise, "earned", "partial")} locale={locale} testId="manual-total" pipeline />
           </div>
         ) : null}
         <button type="submit" data-testid="manual-save" disabled={state.pending === null || state.status === "saving"}>

@@ -46,7 +46,11 @@ const assertEveryMoneyHasBasis = (root: HTMLElement): number => {
     const cell = (node.parentElement as HTMLElement | null)?.closest('[data-money="true"]') ?? null;
     expect({ text: node.textContent, inMoneyCell: cell !== null }).toEqual({ text: node.textContent, inMoneyCell: true });
     const pills = cell ? [...cell.querySelectorAll('[data-testid="pill"]')].map((p) => p.textContent) : [];
-    expect(pills.some((p) => p === "earned" || p === "realized")).toBe(true);
+    expect(pills.some((p) => p === "earned" || p === "realized" || p === "pipeline")).toBe(true);
+    // L-01: a pipeline figure never claims to be earned or realized.
+    if (cell?.getAttribute("data-basis") === "pipeline") {
+      expect(pills.includes("earned") || pills.includes("realized")).toBe(false);
+    }
     expect(pills.some((p) => p === "complete" || p === "partial" || p === "unknown")).toBe(true);
   }
   return count;
@@ -84,6 +88,9 @@ describe("U3 screens", () => {
     expect(getByTestId("orders-summary-realized").textContent).toContain(`৳${(b.totalPaise / 100).toFixed(2)}`);
     expect(getByTestId("orders-summary-pipeline").textContent).toContain(`৳${(a.totalPaise / 100).toFixed(2)}`);
     expect(assertEveryMoneyHasBasis(container)).toBe(5);
+    // L-01: pipeline money is labelled pipeline, settled money realized.
+    expect(getByTestId("orders-summary-pipeline").getAttribute("data-basis")).toBe("pipeline");
+    expect(getAllByTestId("orders-row-total").map((e) => e.getAttribute("data-basis"))).toEqual(["pipeline", "realized"]);
   });
 
   test("OrdersList: filters are handed to the caller; load more passes the cursor", () => {

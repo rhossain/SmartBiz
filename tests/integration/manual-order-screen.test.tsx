@@ -56,7 +56,7 @@ describe("US1.11 — ManualOrder screen", () => {
     // (2 × 1 250.00 − 50.00) + 1 × 600.00 − 100.00 + 60.00, in paise.
     const expected = 2 * 125_000 - 5_000 + 60_000 - 10_000 + 6_000;
     expect(getByTestId("manual-total").textContent).toContain(`৳${(expected / 100).toFixed(2)}`);
-    expect(getByTestId("manual-total").getAttribute("data-basis")).toBe("earned");
+    expect(getByTestId("manual-total").getAttribute("data-basis")).toBe("pipeline");
     expect(getByTestId("manual-line-total-1").getAttribute("data-completeness")).toBe("partial");
     expect(saveButton(getByTestId).disabled).toBe(false);
     expect(stub.state.orders.length).toBe(0);

@@ -5,7 +5,7 @@
  * store and previews its lines and total; Save creates a new order with
  * `source: 'repeat'` linked to the original. The preview total is
  * computed with the same `computeOrderTotal` the repository uses, and is
- * shown as an earned, partial figure: the new order is in the pipeline.
+ * shown as a pipeline, partial figure: the new order is not earned yet.
  */
 import * as React from "react";
 import type { Locale } from "../../auth/types.js";
@@ -14,7 +14,7 @@ import { Screen } from "../../pres/Screen.js";
 import { buildRepeatOrder } from "../input-modes.js";
 import { saveDraft, setPending, useOrderDraft, type OrderDraftStore, type SaveOrder } from "../order-draft.js";
 import { computeOrderTotal } from "../order-total.js";
-import { orderMoneyFigure } from "../status-bucket.js";
+import { bucketOf, orderMoneyFigure } from "../status-bucket.js";
 import type { Order } from "../types.js";
 import { tr } from "./copy.js";
 import { DraftStatus } from "./DraftStatus.js";
@@ -40,7 +40,12 @@ export const RepeatFromPast = ({ pastOrders, locale, draft, onSave }: RepeatFrom
         {pastOrders.map((o) => (
           <li key={o.id} data-testid="repeat-order" data-order-id={o.id}>
             <span>{o.orderNo}</span>
-            <MoneyCell figure={orderMoneyFigure(o)} locale={locale} testId="repeat-order-total" />
+            <MoneyCell
+              figure={orderMoneyFigure(o)}
+              locale={locale}
+              testId="repeat-order-total"
+              pipeline={bucketOf(o.status) === "pipeline"}
+            />
             <button type="button" data-testid="repeat-pick" onClick={() => setPending(draft, buildRepeatOrder(o))}>
               {tr("repeat.pick", locale)}
             </button>
@@ -56,7 +61,7 @@ export const RepeatFromPast = ({ pastOrders, locale, draft, onSave }: RepeatFrom
               </li>
             ))}
           </ol>
-          <MoneyCell figure={money(preview.value, "earned", "partial")} locale={locale} testId="repeat-preview-total" />
+          <MoneyCell figure={money(preview.value, "earned", "partial")} locale={locale} testId="repeat-preview-total" pipeline />
           <button
             type="button"
             data-testid="repeat-save"

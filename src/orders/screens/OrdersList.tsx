@@ -20,7 +20,7 @@ import { Screen } from "../../pres/Screen.js";
 import { buildQuickAddOrder } from "../input-modes.js";
 import { saveDraft, setPending, useOrderDraft, type OrderDraftStore, type SaveOrder } from "../order-draft.js";
 import { parseTakaToPaise } from "../order-total.js";
-import { bucketTotals, orderMoneyFigure } from "../status-bucket.js";
+import { bucketOf, bucketTotals, orderMoneyFigure } from "../status-bucket.js";
 import { isOrderStatus, statusLabel } from "../status-fsm.js";
 import { ORDER_STATUSES, type Order, type OrderStatus } from "../types.js";
 import { tr } from "./copy.js";
@@ -150,7 +150,7 @@ export const OrdersList = (props: OrdersListProps): React.ReactElement => {
         <span>{tr("orders.realized", locale)}</span>
         <MoneyCell figure={totals.realized} locale={locale} testId="orders-summary-realized" />
         <span>{tr("orders.pipeline", locale)}</span>
-        <MoneyCell figure={totals.pipeline} locale={locale} testId="orders-summary-pipeline" />
+        <MoneyCell figure={totals.pipeline} locale={locale} testId="orders-summary-pipeline" pipeline />
       </div>
       <Filters locale={locale} onFilter={props.onFilter} />
       {orders.length === 0 ? (
@@ -173,7 +173,12 @@ export const OrdersList = (props: OrdersListProps): React.ReactElement => {
                 <td>{locale === "bn" ? statusLabel(o.status).bn : statusLabel(o.status).en}</td>
                 <td data-testid="orders-row-source">{o.source}</td>
                 <td>
-                  <MoneyCell figure={orderMoneyFigure(o)} locale={locale} testId="orders-row-total" />
+                  <MoneyCell
+                    figure={orderMoneyFigure(o)}
+                    locale={locale}
+                    testId="orders-row-total"
+                    pipeline={bucketOf(o.status) === "pipeline"}
+                  />
                 </td>
                 <td>
                   <button type="button" data-testid="orders-row-open" onClick={() => props.onOpen(o.id)}>
