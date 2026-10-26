@@ -4,6 +4,14 @@
     "slug": "mvp",
     "dirName": "261004-mvp",
     "scope": "mvp",
-    "status": "in-flight"
+    "status": "complete"
+  },
+  {
+    "uuid": "01a13f92-e199-73c4-83be-03f9becf6b88",
+    "slug": "b2-orders",
+    "dirName": "261015-b2-orders",
+    "scope": "mvp",
+    "status": "in-flight",
+    "request": "af9ca986"
   }
 ]

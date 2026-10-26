@@ -1,0 +1,150 @@
+{
+  "stage": "infrastructure-design",
+  "unit": "u1-foundation",
+  "bolt": "B1",
+  "scope": "mvp",
+  "intent": "261004-mvp",
+  "upstream_ids": [
+    "NFR1.1",
+    "NFR1.2",
+    "NFR1.3",
+    "NFR2.1",
+    "NFR2.2",
+    "NFR2.3",
+    "NFR2.4",
+    "NFR2.a",
+    "NFR2.b",
+    "NFR2.c",
+    "NFR2.d",
+    "NFR3.1",
+    "NFR3.2",
+    "NFR3.3",
+    "NFR4",
+    "NFR5.1",
+    "NFR5.2",
+    "NFR5.3",
+    "NFR5.4",
+    "NFR5.5",
+    "NFR5.6",
+    "NFR6",
+    "NFR7.1",
+    "NFR7.7",
+    "NFR8"
+  ],
+  "design_files": {
+    "infrastructure-specification.md": {
+      "nfr_binding": ["NFR1.1", "NFR1.2", "NFR1.3", "NFR2.1", "NFR2.b", "NFR5.1", "NFR5.5", "NFR5.6", "NFR7.7", "NFR8"],
+      "key_decisions": [
+        "Vendor's free-tier managed runtime is the deployment (single bundle, no containers / VMs / serverless)",
+        "Vendor's free-tier managed-DB with daily snapshot is the RPO; the audit-log table is partitioned by year (5-year retention)",
+        "Staging + production (single-tenant per deployment); staging auto-deploys on merge to main; production deploys on manual approval",
+        "No IaC (CDK / Terraform / CloudFormation) in U1 — vendor's free-tier runtime configuration is the binding mechanism",
+        "No CDN, no DNS, no LB, no Redis, no message broker, no container orchestrator, no WAF — free-tier envelope does not justify them",
+        "TLS 1.3 + HSTS are vendor-managed; only egress is to the vendor's two managed services (DB + email gateway)",
+        "postgres.js connection pool (max: 5) is shared across U1 + U2-U5 via typed function-calls; the audit_log table is the shared cross-unit resource"
+      ]
+    },
+    "monitoring-design.md": {
+      "nfr_binding": ["NFR2.1", "NFR2.2", "NFR2.3", "NFR2.4", "NFR2.a", "NFR2.b", "NFR2.c", "NFR2.d", "NFR3.1", "NFR3.2", "NFR3.3", "NFR5.5"],
+      "key_decisions": [
+        "Audit-log row IS the log line (no separate console.log for state-mutating actions); vendor's free-tier slow-query dashboard is the binding observability surface",
+        "stdout (JSON line) is the secondary log surface for non-state-mutating events; queryable by event and level",
+        "No Prometheus / StatsD / OpenTelemetry / Jaeger on the free-tier envelope",
+        "SLI set: audit_log INSERT success rate (≥ 99.9 %), audit_log INSERT p95 (≤ 200 ms), audit_log read p95 (≤ 500 ms), 3G page render p95 (≤ 3 s), bootstrap success rate (≥ 99 %)",
+        "correlation_id (random(16)) propagated through every typed function-call in a single request; stored in audit_log.correlation_id (the per-request timeline)",
+        "Negative position: no PagerDuty / no OpsGenie (free-tier envelope; ≤ 5 staff + ≤ 50 orders/day does not justify an alerting service)"
+      ]
+    },
+    "cicd-pipeline.md": {
+      "nfr_binding": ["NFR5.1", "NFR5.6", "NFR6", "NFR7.1", "NFR8", "R1.1", "R1.2"],
+      "key_decisions": [
+        "Trunk-based dev (org.md); squash-merge to main with the Bolt slug as the commit message; no release branches",
+        "10 build stages (lint, tsc, prettier, bun test, coverage ≥ 80 %, R1.1, R1.2, vite build, bundle-size assertion, mutation discipline) — every stage blocks the merge",
+        "Reverse-deploy gates (team.md §Dep-6): a regression in coverage, CI, or the recognition-basis / role-gate / audit-immutability invariants blocks the merge — not just a failed unit test",
+        "Staging auto-deploys on merge to main (RTO ≤ 24 h); production deploys on manual approval (OC1 / single-decider)",
+        "Rollback is re-deploy the previous artifact (vendor's free-tier keeps the last 5 deploys); code revert is reserved for the rare case where the prior artifact itself is the source of the failure",
+        "No feature-flag service on the free-tier envelope; Bolt-by-Bolt deploys + the routes registry + the three-layer gate + audit-log reversals are the natural boundaries",
+        "No Vault / no AWS Secrets Manager (free-tier envelope); env vars on the vendor's free-tier runtime are the binding mechanism for DATABASE_URL, SESSION_KEY, EMAIL_KEY",
+        "Chrome binary path parameterised (NFR7.6); Playwright 3G profile runs nightly (scheduled CI) for the 3 s p95 budget assertion"
+      ],
+      "review_artifact": true,
+      "reviewer": "aidlc-architecture-reviewer-agent",
+      "review_class": "adversarial",
+      "reviewer_max_iterations": 2
+    }
+  },
+  "coverage": [
+    { "id": "NFR1.1", "status": "OK", "target": "Vendor's free-tier runtime uptime ≥ 95 %", "design_artifact": "infrastructure-specification.md, monitoring-design.md" },
+    { "id": "NFR1.2", "status": "OK", "target": "Vendor's free-tier managed-DB daily snapshot (RPO ≤ 24 h)", "design_artifact": "infrastructure-specification.md" },
+    { "id": "NFR1.3", "status": "OK", "target": "Staging auto-deploy on merge to main; vendor's re-deploy from the deploy artifact (RTO ≤ 24 h)", "design_artifact": "infrastructure-specification.md, cicd-pipeline.md" },
+    { "id": "NFR2.1", "status": "OK", "target": "3 s p95 page render on 3G; Playwright nightly", "design_artifact": "monitoring-design.md" },
+    { "id": "NFR2.2", "status": "OK", "target": "audit_log INSERT p95 ≤ 200 ms; vendor's slow-query dashboard", "design_artifact": "monitoring-design.md", "open_question": "OQ-NFR-3, OQ-NFR-7" },
+    { "id": "NFR2.3", "status": "OK", "target": "L(bn, en) resolve p95 ≤ 5 ms; bun test micro-benchmark", "design_artifact": "monitoring-design.md" },
+    { "id": "NFR2.4", "status": "OK", "target": "Locale switch p95 re-render ≤ 100 ms; bun test micro-benchmark", "design_artifact": "monitoring-design.md" },
+    { "id": "NFR2.a", "status": "OK", "target": "Noto Sans Bengali woff2 subset ≤ 80 KB gzip, preloaded via <link rel=\"preload\">", "design_artifact": "monitoring-design.md" },
+    { "id": "NFR2.b", "status": "OK", "target": "Vite SPA bundle ≤ 350 KB gzip; bundle-size assertion (CI)", "design_artifact": "monitoring-design.md, cicd-pipeline.md" },
+    { "id": "NFR2.c", "status": "OK", "target": "Three-layer-gate dispatch p95 ≤ 2 ms per route; bun test micro-benchmark", "design_artifact": "monitoring-design.md" },
+    { "id": "NFR2.d", "status": "OK", "target": "Typed state container p95 ≤ 1 ms per get/set; bun test micro-benchmark", "design_artifact": "monitoring-design.md" },
+    { "id": "NFR3.1", "status": "OK", "target": "Structured JSON log line on every state-mutating U1 action; stdout collector (vendor's free-tier runtime)", "design_artifact": "monitoring-design.md" },
+    { "id": "NFR3.2", "status": "OK", "target": "audit_log INSERT success rate SLI; vendor's free-tier slow-query dashboard", "design_artifact": "monitoring-design.md" },
+    { "id": "NFR3.3", "status": "OK", "target": "5-year audit retention; schema (retention_until column) + read-path filter", "design_artifact": "infrastructure-specification.md, monitoring-design.md" },
+    { "id": "NFR4", "status": "OK", "target": "WCAG AA contrast (design tokens, CI); keyboard reach (role-lock sheet, CI)", "design_artifact": "cicd-pipeline.md" },
+    { "id": "NFR5.1", "status": "OK", "target": "DB-level INSERT-only on audit_log; REVOKE UPDATE, DELETE on audit_log FROM app_role; R1.1 binding test", "design_artifact": "infrastructure-specification.md, cicd-pipeline.md" },
+    { "id": "NFR5.2", "status": "OK", "target": "argon2id (m=64MB, t=3, p=1); env-var-free (compile-time constant); OQ-NFR-5 carry-forward", "design_artifact": "cicd-pipeline.md" },
+    { "id": "NFR5.3", "status": "OK", "target": "sha256(raw_token) for invitation tokens; OQ-NFR-6 carry-forward", "design_artifact": "infrastructure-specification.md" },
+    { "id": "NFR5.4", "status": "OK", "target": "No PCI scope; absence by design; not in U1's deploy", "design_artifact": "(absence)" },
+    { "id": "NFR5.5", "status": "OK", "target": "5-year audit retention; audit_log partitioned by year; vendor's free-tier snapshot is the recovery point", "design_artifact": "infrastructure-specification.md" },
+    { "id": "NFR5.6", "status": "OK", "target": "Three-layer gate (auth → capability → business-rule); absence-asserted per route (R1.2); TLS 1.3 (vendor's free-tier)", "design_artifact": "infrastructure-specification.md, cicd-pipeline.md" },
+    { "id": "NFR6", "status": "OK", "target": "80 % coverage floor (c8); test-after per layer; mutation discipline; segment-isolation (orders paste-parser, deferred to U3)", "design_artifact": "cicd-pipeline.md" },
+    { "id": "NFR7.1", "status": "OK", "target": "Full TypeScript strict + 2 index/init flags; tsc --noEmit (CI)", "design_artifact": "cicd-pipeline.md" },
+    { "id": "NFR7.7", "status": "OK", "target": "Vite for the SPA build; vite build (CI); single bundle ≤ 350 KB gzip", "design_artifact": "infrastructure-specification.md, cicd-pipeline.md" },
+    { "id": "NFR8", "status": "OK", "target": "Vendor's free-tier runtime is the deployment; Vite SPA build is the single bundle; staging auto-deploy on merge to main (NFR8.1); daily snapshot is the recovery point (NFR8.2)", "design_artifact": "infrastructure-specification.md" }
+  ],
+  "shared_resources": [
+    "postgres.js connection pool (max: 5) — U1 owns; U1 + U2-U5 consume",
+    "audit_log table — U1 (L2 Audit) owns; U1 + U2-U5 consume via appendAudit typed function-call",
+    "users / business / invitations / sessions tables — U1 (L1 Identity) owns; U1 only",
+    "Vendor's free-tier runtime — vendor owns; U1 + U2-U5 deploy to the same runtime",
+    "Vendor's free-tier managed-DB — vendor owns; U1 + U2-U5 share the DB",
+    "Vendor's free-tier email gateway — vendor owns; U1 (L1 Identity) consumes",
+    "Stdout collector (vendor's runtime) — vendor owns; U1 + U2-U5 emit",
+    "Slow-query dashboard (vendor's managed-DB) — vendor owns; U1 + U2-U5 read",
+    "Translation table (L(bn, en)) — U1 (L3 i18n) owns; U1 + U2-U5 consume",
+    "Typed routes registry — U1 (L4 Router) owns; U1 + U2-U5 add to at boot",
+    "Typed state container — U1 (L5 State container) owns; U1 + U2-U5 add slices to at boot",
+    "Noto Sans Bengali (woff2 subset) — U1 (L3 i18n, Shell primitive) owns; U1 + U2-U5 import",
+    "Design tokens (CSS custom properties) — U1 owns; U1 + U2-U5 consume"
+  ],
+  "ci_gates": {
+    "R1.1": {
+      "name": "Audit-immutability migration test",
+      "asserts": "NFR5.1, NFR1.2",
+      "test": "audit-immutability-migration.test.ts",
+      "stage_in_cicd": "cicd-pipeline.md stage 6"
+    },
+    "R1.2": {
+      "name": "Three-layer-gate absence test + Owner inverse",
+      "asserts": "NFR5.6, NFR6",
+      "test": "three-layer-gate-absence.test.ts",
+      "stage_in_cicd": "cicd-pipeline.md stage 7"
+    }
+  },
+  "inherited_answers": {
+    "Q1": { "answer": "A", "binding": "NFR2.1 inherited unchanged for all U1 primary screens" },
+    "Q2": { "answer": "A", "binding": "NFR5 inherited unchanged; R1.1 is the binding test" },
+    "Q3": { "answer": "A", "binding": "NFR4 inherited + per-primitive assertion (Field + Pill + role-lock sheet)" },
+    "Q4": { "answer": "A", "binding": "NFR3 inherited + audit-log SLI; the audit-log row IS the log line" },
+    "Q5": { "answer": "A", "binding": "NFR1 inherited unchanged; free-tier managed-DB daily snapshot" },
+    "Q6": { "answer": "A", "binding": "NFR6 inherited + three-layer-gate absence test per route + Owner inverse" },
+    "Q7": { "answer": "A", "binding": "NFR7 inherited unchanged; full TypeScript strict + modern ES + typed registries + typed state container" },
+    "Q8": { "answer": "A", "binding": "No per-Unit scalability targets; scalability is at the deployment level" }
+  },
+  "open_questions": [
+    { "id": "OQ-NFR-2", "question": "Confirm the audit-log INSERT latency target (Q4=A) with the free-tier managed-DB vendor" },
+    { "id": "OQ-NFR-3", "question": "Confirm the 200 ms audit-log INSERT guideline (NFR2.2) with the free-tier managed-DB vendor" },
+    { "id": "OQ-NFR-4", "question": "Confirm the Playwright 3G profile is the right reference device for the 3 s budget" },
+    { "id": "OQ-NFR-5", "question": "Confirm the argon2id cost parameters (m=64MB, t=3, p=1) with the platform engineer" },
+    { "id": "OQ-NFR-6", "question": "Confirm the sha256 vs bcrypt decision for invitation tokens" },
+    { "id": "OQ-NFR-7", "question": "Confirm the 200 ms audit-log INSERT SLI (Q4=A) with the free-tier managed-DB vendor" }
+  ]
+}

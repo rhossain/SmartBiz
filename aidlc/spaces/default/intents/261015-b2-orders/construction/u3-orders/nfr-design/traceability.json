@@ -1,0 +1,411 @@
+{
+  "stage": "nfr-design",
+  "unit": "u3-orders",
+  "bolt": "B2",
+  "scope": "mvp",
+  "intent": "261015-b2-orders",
+  "upstream_ids": [
+    "NFR1.1", "NFR1.2", "NFR1.3", "NFR1.4",
+    "NFR2.1", "NFR2.3", "NFR2.4", "NFR2.5", "NFR2.b",
+    "NFR3.1", "NFR3.2", "NFR3.3", "NFR3.4",
+    "NFR4.1", "NFR4.2", "NFR4.3",
+    "NFR5.1", "NFR5.2", "NFR5.3", "NFR5.4", "NFR5.5", "NFR5.6", "NFR5.7",
+    "NFR6.1", "NFR6.2", "NFR6.3", "NFR6.4", "NFR6.5", "NFR6.6", "NFR6.7", "NFR6.8", "NFR6.9", "NFR6.10",
+    "NFR7.1", "NFR7.2", "NFR7.3", "NFR7.4", "NFR7.5", "NFR7.6", "NFR7.7", "NFR7.8",
+    "NFR8.1", "NFR8.2"
+  ],
+  "coverage": [
+    {
+      "id": "NFR1.1",
+      "status": "OK",
+      "target": "Free-tier runtime uptime ≥ 95 % (inherited from U1)",
+      "artifact": "reliability-design.md",
+      "ci_gate": "(vendor's free-tier runtime uptime dashboard)"
+    },
+    {
+      "id": "NFR1.2",
+      "status": "OK",
+      "target": "Free-tier managed-DB daily snapshot (inherited from U1)",
+      "artifact": "reliability-design.md",
+      "ci_gate": "R1.1 (B1)"
+    },
+    {
+      "id": "NFR1.3",
+      "status": "OK",
+      "target": "Staging auto-deploy on merge to main (inherited from U1)",
+      "artifact": "reliability-design.md",
+      "ci_gate": "(CI gate)"
+    },
+    {
+      "id": "NFR1.4",
+      "status": "OK",
+      "target": "Order hot path: single synchronous path with typed appendAudit helper",
+      "artifact": "reliability-design.md",
+      "ci_gate": "R2.1, R2.2, R2.3, R2.4 (B2)"
+    },
+    {
+      "id": "NFR2.1",
+      "status": "OK",
+      "target": "p95 page render ≤ 3 s on 3G (inherited from U1)",
+      "artifact": "performance-design.md",
+      "ci_gate": "NFR2-p95 (Playwright, scheduled)"
+    },
+    {
+      "id": "NFR2.3",
+      "status": "OK",
+      "target": "p95 L(bn, en) resolve ≤ 10 ms (inherited from U1)",
+      "artifact": "performance-design.md",
+      "ci_gate": "NFR2-locale micro-benchmark"
+    },
+    {
+      "id": "NFR2.4",
+      "status": "OK",
+      "target": "p95 three-layer gate ≤ 20 ms (inherited from U1)",
+      "artifact": "performance-design.md",
+      "ci_gate": "NFR2-gate micro-benchmark"
+    },
+    {
+      "id": "NFR2.5",
+      "status": "OK",
+      "target": "p95 status-bucket re-compute ≤ 1 ms for ≤ 1 000 orders (per-page)",
+      "artifact": "performance-design.md",
+      "ci_gate": "NFR2.5-bucket micro-benchmark"
+    },
+    {
+      "id": "NFR2.b",
+      "status": "OK",
+      "target": "JS bundle ≤ 350 KB gzip (inherited from U1)",
+      "artifact": "performance-design.md",
+      "ci_gate": "NFR2-bundle (CI)"
+    },
+    {
+      "id": "NFR3.1",
+      "status": "OK",
+      "target": "Structured JSON logs to stdout (inherited from U1)",
+      "artifact": "observability-design.md",
+      "ci_gate": "(asserted by code review + the audit-log row shape)"
+    },
+    {
+      "id": "NFR3.2",
+      "status": "OK",
+      "target": "Free-tier managed-DB dashboards (inherited from U1)",
+      "artifact": "observability-design.md",
+      "ci_gate": "(vendor's slow-query dashboard)"
+    },
+    {
+      "id": "NFR3.3",
+      "status": "OK",
+      "target": "Deferred-input-mode logging (module-level deferred_input_invoked log event)",
+      "artifact": "observability-design.md",
+      "ci_gate": "R2.5 (B2)"
+    },
+    {
+      "id": "NFR3.4",
+      "status": "OK",
+      "target": "Paste-parse hot path metric (micro-benchmark is the binding test)",
+      "artifact": "observability-design.md",
+      "ci_gate": "NFR6.7-parse micro-benchmark"
+    },
+    {
+      "id": "NFR4.1",
+      "status": "OK",
+      "target": "WCAG AA contrast (inherited from U1)",
+      "artifact": "(enforced via test suite)",
+      "ci_gate": "design-token contrast assertion (test suite)"
+    },
+    {
+      "id": "NFR4.2",
+      "status": "OK",
+      "target": "Keyboard reach (inherited from U1, extended in B2)",
+      "artifact": "(enforced via test suite)",
+      "ci_gate": "role-lock keyboard-reach test (R1.2 extended in B2)"
+    },
+    {
+      "id": "NFR4.3",
+      "status": "OK",
+      "target": "Paste-parse textarea keyboard-reachable + focus ring + bilingual aria-label",
+      "artifact": "(enforced via test suite)",
+      "ci_gate": "paste-parse aria-label test"
+    },
+    {
+      "id": "NFR5.1",
+      "status": "OK",
+      "target": "DB-level insert-only audit (inherited from U1)",
+      "artifact": "security-design.md",
+      "ci_gate": "R1.1 (B1)"
+    },
+    {
+      "id": "NFR5.2",
+      "status": "OK",
+      "target": "argon2id password hashing (inherited from U1)",
+      "artifact": "security-design.md",
+      "ci_gate": "unit test on hash format"
+    },
+    {
+      "id": "NFR5.3",
+      "status": "OK",
+      "target": "sha256 invitation token (inherited from U1)",
+      "artifact": "security-design.md",
+      "ci_gate": "unit test on hash format"
+    },
+    {
+      "id": "NFR5.4",
+      "status": "OK",
+      "target": "No PCI scope (extended to src/orders/)",
+      "artifact": "security-design.md",
+      "ci_gate": "PCI deny-list grep test (B2)"
+    },
+    {
+      "id": "NFR5.5",
+      "status": "OK",
+      "target": "5-year retention (inherited from U1)",
+      "artifact": "security-design.md",
+      "ci_gate": "integration test (B1)"
+    },
+    {
+      "id": "NFR5.6",
+      "status": "OK",
+      "target": "Three-layer gate (extended in B2 to cover U3 routes)",
+      "artifact": "security-design.md",
+      "ci_gate": "R1.2 (B1) extended in B2"
+    },
+    {
+      "id": "NFR5.7",
+      "status": "OK",
+      "target": "Typed appendAudit helper that wraps every order-mutating action",
+      "artifact": "security-design.md",
+      "ci_gate": "R2.1 (B2)"
+    },
+    {
+      "id": "NFR6.1",
+      "status": "OK",
+      "target": "80% line coverage floor (inherited from U1)",
+      "artifact": "(enforced via test suite)",
+      "ci_gate": "(CI gate)"
+    },
+    {
+      "id": "NFR6.2",
+      "status": "OK",
+      "target": "8-harness mutual-blindness discipline (inherited from U1)",
+      "artifact": "(enforced via test suite)",
+      "ci_gate": "(CI gate)"
+    },
+    {
+      "id": "NFR6.3",
+      "status": "OK",
+      "target": "Test-after ordering per layer (inherited from U1)",
+      "artifact": "(enforced via test suite)",
+      "ci_gate": "(CI gate)"
+    },
+    {
+      "id": "NFR6.4",
+      "status": "OK",
+      "target": "Mutation discipline (inherited from U1, asserted by R2.3 status-bucket math restated inline)",
+      "artifact": "(enforced via test suite)",
+      "ci_gate": "R2.3 (B2)"
+    },
+    {
+      "id": "NFR6.5",
+      "status": "OK",
+      "target": "Segment-isolation rule restated inline (parseMessage)",
+      "artifact": "performance-design.md",
+      "ci_gate": "R2.2 (B2)"
+    },
+    {
+      "id": "NFR6.6",
+      "status": "OK",
+      "target": "Three-layer gate absence test (inherited from U1)",
+      "artifact": "(enforced via test suite)",
+      "ci_gate": "R1.2 (B1) extended in B2"
+    },
+    {
+      "id": "NFR6.7",
+      "status": "OK",
+      "target": "parseMessage p95 ≤ 20 ms for ≤ 200 items (pure-function module)",
+      "artifact": "performance-design.md",
+      "ci_gate": "NFR6.7-parse micro-benchmark + R2.2 (B2)"
+    },
+    {
+      "id": "NFR6.8",
+      "status": "OK",
+      "target": "Status-bucket math restated inline",
+      "artifact": "performance-design.md",
+      "ci_gate": "R2.3 (B2)"
+    },
+    {
+      "id": "NFR6.9",
+      "status": "OK",
+      "target": "Status-exhaustive with never-asserted default",
+      "artifact": "performance-design.md",
+      "ci_gate": "R2.4 (B2)"
+    },
+    {
+      "id": "NFR6.10",
+      "status": "OK",
+      "target": "Cursor-based pagination (page size 50, max 1 000 orders rendered)",
+      "artifact": "scalability-design.md",
+      "ci_gate": "NFR6.10-orders-list micro-benchmark"
+    },
+    {
+      "id": "NFR7.1",
+      "status": "OK",
+      "target": "TypeScript strict (inherited from U1)",
+      "artifact": "(enforced via tsc --noEmit CI)",
+      "ci_gate": "tsc --noEmit (CI)"
+    },
+    {
+      "id": "NFR7.2",
+      "status": "OK",
+      "target": "Modern ES uniformly (inherited from U1)",
+      "artifact": "(enforced via tsc --noEmit CI)",
+      "ci_gate": "tsc --noEmit (CI)"
+    },
+    {
+      "id": "NFR7.3",
+      "status": "OK",
+      "target": "Single top-level package.json (inherited from U1)",
+      "artifact": "(enforced via repo structure)",
+      "ci_gate": "(CI gate)"
+    },
+    {
+      "id": "NFR7.4",
+      "status": "OK",
+      "target": "Typed routes / actions / state registries (inherited from U1)",
+      "artifact": "(enforced via tsc --noEmit CI)",
+      "ci_gate": "tsc --noEmit (CI)"
+    },
+    {
+      "id": "NFR7.5",
+      "status": "OK",
+      "target": "Typed state container (inherited from U1)",
+      "artifact": "(enforced via tsc --noEmit CI)",
+      "ci_gate": "tsc --noEmit (CI)"
+    },
+    {
+      "id": "NFR7.6",
+      "status": "OK",
+      "target": "Chrome binary path parameterised (inherited from U1)",
+      "artifact": "(enforced via repo structure)",
+      "ci_gate": "(CI gate)"
+    },
+    {
+      "id": "NFR7.7",
+      "status": "OK",
+      "target": "Vite for the SPA build (inherited from U1)",
+      "artifact": "(enforced via Vite build CI)",
+      "ci_gate": "Vite build (CI)"
+    },
+    {
+      "id": "NFR7.8",
+      "status": "OK",
+      "target": "Comments-as-design-rationale (inherited from U1)",
+      "artifact": "(enforced via code review)",
+      "ci_gate": "(CI gate)"
+    },
+    {
+      "id": "NFR8.1",
+      "status": "OK",
+      "target": "Staging auto-deploy on merge to main (inherited from U1)",
+      "artifact": "(enforced via CI pipeline)",
+      "ci_gate": "(CI gate)"
+    },
+    {
+      "id": "NFR8.2",
+      "status": "OK",
+      "target": "Free-tier managed runtime (inherited from U1)",
+      "artifact": "(enforced via deployment configuration)",
+      "ci_gate": "(CI gate)"
+    }
+  ],
+  "subdivision_decisions": {
+    "Q1": {
+      "question": "Performance design (paste-parse hot path)",
+      "answer": "A",
+      "binding": "Pure-function module with typed ParseResult; one-pass pointer arithmetic on the input string; 200-item cap; segment-isolation rule restated inline in every test"
+    },
+    "Q2": {
+      "question": "Security design (per-action audit append)",
+      "answer": "A",
+      "binding": "Typed appendAudit helper imported from U1's AuditService; called BEFORE the DB write; the B2 R2.1 gate asserts the helper is called"
+    },
+    "Q3": {
+      "question": "Code quality design (status enum + bucket math)",
+      "answer": "A",
+      "binding": "Discriminated string-literal union with exhaustive switch + never-asserted default; module-level bucket constants restated inline in every test"
+    },
+    "Q4": {
+      "question": "Reliability design (order hot path)",
+      "answer": "A",
+      "binding": "Single synchronous path with typed appendAudit helper + DB-level audit-immutability; one DB transaction per mutation; free-tier managed-DB daily snapshot as the recovery point"
+    },
+    "Q5": {
+      "question": "Observability design (deferred-input logging)",
+      "answer": "A",
+      "binding": "Module-level deferred_input_invoked log event with typed shape; the log line is the audit-log row shape (a stable contract); the R2.5 gate asserts the log line shape"
+    },
+    "Q6": {
+      "question": "Logical components (failure domain mapping)",
+      "answer": "A",
+      "binding": "Orders unit is one failure domain; paste-parse is the highest-risk surface; the 3 deferred input mode placeholders are isolated (their failure is the deferred reason, not a crash)"
+    },
+    "Q7": {
+      "question": "Scalability design (list size + paste-parse cap)",
+      "answer": "A",
+      "binding": "Cursor-based pagination (page size 50, max 1 000 orders rendered) + client-side size cap on paste-parse (200 items); status-bucket math computed on the rendered page, not the full list"
+    }
+  },
+  "ci_gates": {
+    "R1.1": {
+      "name": "Audit-immutability migration test (B1, continues in B2)",
+      "asserts": "NFR5.1, NFR1.2",
+      "test": "tests/unit/audit-immutability-migration.test.ts"
+    },
+    "R1.2": {
+      "name": "Three-layer-gate absence test + inverse (B1, extended in B2 to cover U3 routes)",
+      "asserts": "NFR5.6, NFR6.6",
+      "test": "tests/unit/three-layer-gate-absence.test.ts"
+    },
+    "R2.1": {
+      "name": "Order audit append per action (B2)",
+      "asserts": "NFR5.7, FR12.3",
+      "test": "tests/unit/order-audit-append.test.ts"
+    },
+    "R2.2": {
+      "name": "Paste-parse segments with multiple products, multiple variants per product, common Bangla connector words (B2)",
+      "asserts": "NFR6.5, NFR6.7.2, NFR6.7.3",
+      "test": "tests/unit/parseMessage-segments.test.ts"
+    },
+    "R2.3": {
+      "name": "Status-bucket math restated inline (B2, NFR6.4 mutation discipline)",
+      "asserts": "NFR6.4, FR10.2",
+      "test": "tests/unit/status-bucket.test.ts"
+    },
+    "R2.4": {
+      "name": "Status-exhaustive with never-asserted default (B2)",
+      "asserts": "NFR6.9, FR5.3, team.md §TP-9",
+      "test": "tests/unit/status-exhaustive.test.ts"
+    },
+    "R2.5": {
+      "name": "Deferred-input-mode logging (B2)",
+      "asserts": "NFR3.3",
+      "test": "tests/unit/deferred-input-logging.test.ts"
+    }
+  },
+  "open_questions": [
+    {
+      "id": "OQ-NFR-D-B2-1",
+      "origin": "nfr-design-questions.md (was OQ-NFR-D-B2-1)",
+      "question": "Confirm the paste-parse size cap (200 items) with the Owner; the 200 figure is a product decision. The CI gate allows a 100-item headroom for slow CI runners."
+    },
+    {
+      "id": "OQ-NFR-D-B2-2",
+      "origin": "nfr-design-questions.md (was OQ-NFR-D-B2-2)",
+      "question": "Confirm the page size for the orders list (50) with the Owner; the 50 figure is a product decision."
+    },
+    {
+      "id": "OQ-NFR-D-B2-3",
+      "origin": "nfr-design-questions.md (was OQ-NFR-D-B2-3)",
+      "question": "Confirm the deferred-input-mode CC-AC-DEFERRAL discipline with the Owner; the rule 'a deferred body must fail with reason deferred when called' is a cross-cutting pattern that B3-B5 will inherit."
+    }
+  ]
+}

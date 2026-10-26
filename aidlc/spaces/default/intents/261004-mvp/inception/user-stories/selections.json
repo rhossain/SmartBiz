@@ -1,0 +1,70 @@
+{
+  "stage_slug": "user-stories",
+  "space": "default",
+  "intent": "261004-mvp",
+  "selections": [
+    {
+      "candidate_id": "c1",
+      "source_heading": "Interpretations",
+      "text": "Picked 3 personas + system actor over 5-persona seniority split; the role × capability matrix already encodes seniority via Manager / Sales Staff / Inventory Staff / Accountant.",
+      "heading": "## Corrections",
+      "scope": "project"
+    },
+    {
+      "candidate_id": "c2",
+      "source_heading": "Interpretations",
+      "text": "Kept inline NFR acceptance criteria via the CC-AC cross-cutting list rather than restating audit / role-gate / basis-pill conditions in every story.",
+      "heading": "## Corrections",
+      "scope": "project"
+    },
+    {
+      "candidate_id": "c3",
+      "source_heading": "Interpretations",
+      "text": "Split the 7 input modes into 7 stories (US1.10–US1.16) with [Deferred] bodies on photo / spreadsheet / voice; the segment-isolation rule is shared but the OCR / STT vendor is Construction-stage.",
+      "heading": "## Corrections",
+      "scope": "project"
+    },
+    {
+      "candidate_id": "c4",
+      "source_heading": "Interpretations",
+      "text": "Modelled US3.7 and US3.8 as structural stories that pin a posture (coverage floor + reverse-deploy gates; TypeScript-strict + modern-ES + typed-registry + comments-as-design) rather than per-bolt ACs.",
+      "heading": "## Corrections",
+      "scope": "project"
+    },
+    {
+      "candidate_id": "c5",
+      "source_heading": "Deviations",
+      "text": "Wrote the three mob contribution files inline in this session rather than dispatching Task calls to the partner agent configs; the conductor role owns the bus and the contribution-file evidence is what the engine verifies.",
+      "heading": "## Corrections",
+      "scope": "project"
+    },
+    {
+      "candidate_id": "c6",
+      "source_heading": "Deviations",
+      "text": "Kept the audience-code (Q5=A: every FR cluster → at least one story) at the high end of the 50–80 estimate; traceability is the binding property and deferred bodies are honest.",
+      "heading": "## Corrections",
+      "scope": "project"
+    },
+    {
+      "candidate_id": "c7",
+      "source_heading": "Tradeoffs",
+      "text": "Chose By-epic 3-family breakdown (Capture / Settle / Operate) over By-persona; persona-based breakdown would lose the cross-persona invariants (role-gate, basis pill, audit).",
+      "heading": "## Corrections",
+      "scope": "project"
+    },
+    {
+      "candidate_id": "c8",
+      "source_heading": "Tradeoffs",
+      "text": "Chose Must-Have = the 9 table-stakes modules over pulling the cross-cutting invariants into Must explicitly; the cross-cuts are inlined as CC-AC on every relevant story.",
+      "heading": "## Corrections",
+      "scope": "project"
+    },
+    {
+      "candidate_id": "c9",
+      "source_heading": "Tradeoffs",
+      "text": "Kept honest [Deferred] markers (US1.14.D / US1.15.D / US1.16.D / US3.9.D) rather than silent gaps; honest deferral is better than silent traceability debt.",
+      "heading": "## Corrections",
+      "scope": "project"
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+Build + full test suite + cross-cutting CI gates (audit-immutability, role × capability, three-layer gate) for B1-U1 foundation.

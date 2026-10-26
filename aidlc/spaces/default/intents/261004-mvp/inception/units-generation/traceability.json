@@ -1,0 +1,361 @@
+{
+  "stage_slug": "units-generation",
+  "stage": "2.7",
+  "intent": "261004-mvp",
+  "space": "default",
+  "generated_at": "2026-10-11T00:00:00Z",
+  "decomposition": {
+    "strategy": "by_component_cluster",
+    "granularity": "5_units",
+    "dependency_ordering": "strict_topological",
+    "integration_contract": "typed_function_call",
+    "deployment_model": "modular_monolith",
+    "rationale": "Cluster-based grouping mirrors the 1:1 module-to-component decomposition (ADR-001) and the Capture/Settle/Operate epic structure from stories.md. Strict-topological DAG with 4 edges; U1 is the root. Modular Monolith stays in-process; every edge is a typed function-call across the module boundary (TypeScript imports). The 3 deferred input modules (PhotoOrderComponent / SpreadsheetOrderComponent / VoiceOrderComponent — US1.14/15/16) ride inside U3-orders as placeholders."
+  },
+  "units": [
+    {
+      "id": "U1",
+      "name": "foundation",
+      "kind": ["library", "packaging"],
+      "construction_dir": "u1-foundation",
+      "purpose": "Cross-cutting base every other unit imports. Owns identity, role x capability matrix, append-only audit log, typed state container with MoneyEngine co-located, Bangla-first i18n layer, shared chrome and 30 prototype components (PresentationComponent with basis pill, completeness control, status chip), and the hash router with the three-layer role-gate dispatch.",
+      "components": [
+        {"id": "RouterComponent", "role": "Hash router, role-gate dispatch, chrome wiring, action dispatch"},
+        {"id": "AuthComponent", "role": "Identity, role x capability matrix, business, invitations, audit chokepoint; three-layer role-gate owned here (ADR-004)"},
+        {"id": "AuditService", "kind": "sub-module", "role": "Append-only audit log; reversal pattern; 5-year retention; CI migration test for UPDATE/DELETE re-grant (CC-AC-AUDIT-IMmutability)"},
+        {"id": "I18nComponent", "role": "Bangla-first language + numeral layer, bilingual copy (L(bn,en)), date/time/number formatters"},
+        {"id": "PresentationComponent", "role": "Shared chrome + 30 prototype components (typed); basis pill + completeness control; status chip; pack-slip; role-lock sheet"},
+        {"id": "DataComponent", "role": "Typed state container; getters/setters; frozen-clock for tests; schema, ownership, mutation rules (NFR7.5)"},
+        {"id": "MoneyEngine", "kind": "sub-module", "role": "Cross-cutting money math: econ, summary, risk, lowVariants, countByStatus, RECOGNITION constants (ADR-002)"}
+      ],
+      "stories_primary": ["US1.1", "US1.2", "US1.3", "US1.4", "US1.5", "US2.10", "US3.3", "US3.4", "US3.5", "US3.6"],
+      "stories_supporting": ["US1.6", "US1.7", "US1.8", "US1.9", "US1.10", "US1.11", "US1.12", "US1.13", "US1.14", "US1.15", "US1.16", "US1.17", "US1.18", "US2.1", "US2.2", "US2.3", "US2.4", "US2.5", "US2.6", "US2.7", "US2.8", "US2.9", "US3.1", "US3.2", "US3.7", "US3.8"],
+      "fr_clusters_primary": ["FR1", "FR10", "FR11", "FR12"],
+      "fr_clusters_supporting": ["FR2", "FR3", "FR4", "FR5", "FR6", "FR7", "FR8", "FR9"],
+      "nfr_clusters_primary": ["NFR1", "NFR3", "NFR5", "NFR7", "NFR8"],
+      "nfr_clusters_supporting": ["NFR2", "NFR4", "NFR6"],
+      "cc_ac_owned": ["CC-AC-AUDIT", "CC-AC-ROLE-GATE", "CC-AC-BASIS", "CC-AC-STATUS-BUCKET", "CC-AC-I18N", "CC-AC-AUDIT-IMmutability", "CC-AC-TENANT", "CC-AC-COVERAGE", "CC-AC-TYPESCRIPT-STRICT", "CC-AC-COMMENTS-AS-DESIGN"],
+      "depth": 0,
+      "longest_chain": [],
+      "indeg": 0,
+      "outdeg": 4
+    },
+    {
+      "id": "U2",
+      "name": "catalog",
+      "kind": ["library"],
+      "construction_dir": "u2-catalog",
+      "purpose": "Customer, product, variant, supplier, and inventory surface. Owns the variant matrix (the load-bearing shape for FR3) and the low-stock / restock / physical-received / stock-adjust actions.",
+      "components": [
+        {"id": "CatalogComponent", "role": "Customers, products, variants, suppliers, inventory, low-stock list, restock, physical-received, stock-adjust; append-only customer notes (FR2.4)"}
+      ],
+      "stories_primary": ["US1.6", "US1.7", "US1.8", "US1.9", "US2.6_read", "US2.7_read", "US2.8_read", "US2.9"],
+      "stories_supporting": ["US1.10", "US1.11", "US1.12", "US1.13", "US1.14", "US1.15", "US1.16", "US1.17", "US1.18", "US2.1", "US2.2", "US2.3", "US2.4", "US3.3", "US3.5", "US3.7", "US3.8"],
+      "fr_clusters_primary": ["FR2", "FR3", "FR4", "FR9"],
+      "fr_clusters_supporting": ["FR5", "FR6", "FR8", "FR11", "FR12"],
+      "nfr_clusters_primary": ["NFR2", "NFR5", "NFR6"],
+      "nfr_clusters_supporting": ["NFR6", "NFR7"],
+      "fr_split_note": "FR9: U2 owns the Supplier entity (read side); U4 owns the SupplierPayment create (write side). See unit-of-work-story-map.md US2.6 / US2.7 / US2.8 / US2.9 ownership rows.",
+      "cc_ac_owned": [],
+      "cc_ac_consumed": ["CC-AC-AUDIT", "CC-AC-I18N", "CC-AC-TENANT", "CC-AC-COVERAGE", "CC-AC-TYPESCRIPT-STRICT", "CC-AC-COMMENTS-AS-DESIGN"],
+      "depth": 1,
+      "longest_chain": ["U1"],
+      "indeg": 1,
+      "outdeg": 1
+    },
+    {
+      "id": "U3",
+      "name": "orders",
+      "kind": ["library"],
+      "construction_dir": "u3-orders",
+      "purpose": "Order lifecycle, the 4 must-have input modes (paste-parse, manual, quick-add, repeat) + the 3 deferred input modes (photo, spreadsheet, voice — placeholders), the 9-value status enum with status-bucket math, the consignment link, and the parseMessage function with the segment-isolation rule.",
+      "components": [
+        {"id": "OrdersComponent", "role": "Order lifecycle, 4 must-have input modes + 3 deferred placeholders, status-bucket math, consignment link, parseMessage (segment-isolation rule owned here per Q5=A from domain-design)"},
+        {"id": "PhotoOrderComponent", "status": "deferred", "defers_story": "US1.14", "deferral_marker": "US1.14.D", "role": "Photo OCR input mode — placeholder; vendor selected in Construction"},
+        {"id": "SpreadsheetOrderComponent", "status": "deferred", "defers_story": "US1.15", "deferral_marker": "US1.15.D", "role": "Spreadsheet ingestion — placeholder; vendor selected in Construction"},
+        {"id": "VoiceOrderComponent", "status": "deferred", "defers_story": "US1.16", "deferral_marker": "US1.16.D", "role": "Voice STT — placeholder; vendor selected in Construction"}
+      ],
+      "stories_primary": ["US1.10", "US1.11", "US1.12", "US1.13", "US1.14", "US1.15", "US1.16", "US1.17", "US1.18"],
+      "stories_supporting": ["US2.1", "US2.2", "US2.3", "US2.4", "US2.8", "US3.3", "US3.5", "US3.7", "US3.8"],
+      "fr_clusters_primary": ["FR5"],
+      "fr_clusters_supporting": ["FR6", "FR8", "FR10", "FR11", "FR12"],
+      "nfr_clusters_primary": ["NFR2.1", "NFR6.5"],
+      "nfr_clusters_supporting": ["NFR6", "NFR7"],
+      "cc_ac_owned": ["CC-AC-STATUS-BUCKET"],
+      "cc_ac_consumed": ["CC-AC-AUDIT", "CC-AC-BASIS", "CC-AC-I18N", "CC-AC-TENANT", "CC-AC-COVERAGE", "CC-AC-TYPESCRIPT-STRICT", "CC-AC-COMMENTS-AS-DESIGN"],
+      "depth": 2,
+      "longest_chain": ["U1", "U2"],
+      "indeg": 2,
+      "outdeg": 1
+    },
+    {
+      "id": "U4",
+      "name": "money",
+      "kind": ["library"],
+      "construction_dir": "u4-money",
+      "purpose": "Payments, consignments, settlement runs, expenses, supplier payments, the variance state machine (matched / short / unmatched / duplicate x accept_partial / dispute / write_off), and the derived Dues view (no dues table — computed from Orders + Payments per FR8.1).",
+      "components": [
+        {"id": "MoneyComponent", "role": "Payments, consignments, settlement runs, expenses, dues (derived), supplier payments, variance state machine"}
+      ],
+      "stories_primary": ["US2.1", "US2.2", "US2.3", "US2.4", "US2.5", "US2.6_write", "US2.7_write", "US2.8_write"],
+      "stories_supporting": ["US3.1", "US3.3", "US3.5", "US3.7", "US3.8"],
+      "fr_clusters_primary": ["FR6", "FR7", "FR8", "FR9"],
+      "fr_clusters_supporting": ["FR5", "FR10", "FR11", "FR12"],
+      "nfr_clusters_primary": ["NFR5", "NFR6"],
+      "nfr_clusters_supporting": ["NFR6", "NFR7"],
+      "fr_split_note": "FR9: U4 owns the SupplierPayment create (write side); U2 owns the Supplier entity (read side).",
+      "cc_ac_owned": [],
+      "cc_ac_consumed": ["CC-AC-AUDIT", "CC-AC-BASIS", "CC-AC-STATUS-BUCKET", "CC-AC-I18N", "CC-AC-TENANT", "CC-AC-COVERAGE", "CC-AC-TYPESCRIPT-STRICT", "CC-AC-COMMENTS-AS-DESIGN"],
+      "depth": 3,
+      "longest_chain": ["U1", "U2", "U3"],
+      "indeg": 3,
+      "outdeg": 1
+    },
+    {
+      "id": "U5",
+      "name": "operate",
+      "kind": ["ui"],
+      "construction_dir": "u5-operate",
+      "purpose": "The Owner's one-page morning read (DailyCard — US3.1), the audit-trail view (US3.2), the business-level toggles surface (US3.4), the settings screen, and the phase-2 dashboard / reports / AI insights placeholder (US3.9.D).",
+      "components": [
+        {"id": "OperateComponent", "role": "Settings, business-level toggles, audit-trail view, DailyCard, phase-2 dashboard placeholder"}
+      ],
+      "stories_primary": ["US3.1", "US3.2", "US3.4", "US3.5_settings", "US3.9"],
+      "stories_supporting": ["US1.5", "US2.10", "US3.3", "US3.7", "US3.8"],
+      "fr_clusters_primary": ["FR5", "FR7", "FR8", "FR12"],
+      "fr_clusters_supporting": ["FR1", "FR10", "FR11"],
+      "nfr_clusters_primary": ["NFR2", "NFR3", "NFR4"],
+      "nfr_clusters_supporting": ["NFR6", "NFR7", "NFR8"],
+      "fr_split_note": "FR5/FR7/FR8: U5 owns the DailyCard surface (US3.1) and the audit-trail export (US3.2); U3/U4 own the underlying money-mutating actions. FR12: U5 owns the audit-trail view and CSV export; U1 owns the Audit table itself.",
+      "cc_ac_owned": ["CC-AC-AUDIT-IMmutability"],
+      "cc_ac_consumed": ["CC-AC-AUDIT", "CC-AC-ROLE-GATE", "CC-AC-BASIS", "CC-AC-I18N", "CC-AC-TENANT", "CC-AC-COVERAGE", "CC-AC-TYPESCRIPT-STRICT", "CC-AC-COMMENTS-AS-DESIGN"],
+      "depth": 4,
+      "longest_chain": ["U1", "U3", "U4"],
+      "indeg": 2,
+      "outdeg": 0
+    }
+  ],
+  "edges": [
+    {
+      "id": "E1",
+      "from": "U1",
+      "to": "U2",
+      "direction": "U2 imports U1",
+      "type": "typed_function_call",
+      "contract": "CatalogComponent imports AuthComponent (audit append), I18nComponent (L/bnDigits/tk), PresentationComponent (RiskChip, BarRow, ProvenanceCell), DataComponent (typed getters/setters for Customer/Product/Variant/Supplier/Stock).",
+      "api_surface_from": [
+        "Auth.appendAudit(actor, business, entity, before, after) -> AuditRow",
+        "Data.getCustomer(id) / Data.putCustomer(c) / Data.listCustomers(filter)",
+        "Data.getProduct(id) / Data.listVariants(productId)",
+        "Data.getSupplier(id) / Data.adjustStock(variantKey, delta, reason)",
+        "I18n.L(bn, en) / I18n.bnDigits(n) / I18n.tk(key)"
+      ],
+      "returns": "typed entity (Customer/Product/Variant/Supplier/Stock) or AuditRow",
+      "failure_mode": "throw AuditImmutabilityError if DB role holds UPDATE/DELETE (CI catches re-grant migration); throw on missing business FK (CC-AC-TENANT)"
+    },
+    {
+      "id": "E2",
+      "from": "U1",
+      "to": "U3",
+      "direction": "U3 imports U1",
+      "type": "typed_function_call",
+      "contract": "OrdersComponent imports DataComponent (typed getters/setters for Order/OrderItem), I18nComponent, PresentationComponent (BasisPill, CompletenessControl, StatusChip), AuthComponent (audit append via AuditService).",
+      "api_surface_from": [
+        "Data.getOrder(id) / Data.putOrder(o) / Data.listOrders(filter)",
+        "I18n.L(bn, en) / I18n.bnDigits(n) / I18n.tk(key)",
+        "Pres.BasisPill / Pres.CompletenessControl / Pres.StatusChip",
+        "Auth.appendAudit(actor, business, entity, before, after) -> AuditRow"
+      ],
+      "returns": "typed entity (Order/OrderItem) or AuditRow",
+      "failure_mode": "throw on missing business FK (CC-AC-TENANT); status enum exhaustive (never default)"
+    },
+    {
+      "id": "E3",
+      "from": "U1",
+      "to": "U5",
+      "direction": "U5 imports U1",
+      "type": "typed_function_call",
+      "contract": "OperateComponent imports DataComponent (typed getters/setters for BusinessSettings/AuditView), I18nComponent, PresentationComponent (BasisPill, CompletenessControl), AuthComponent (audit append; read of Audit rows for audit-trail export).",
+      "api_surface_from": [
+        "Data.getBusinessSettings(businessId) / Data.putBusinessSettings(s)",
+        "Data.exportAudit(filter) -> AuditRow[] (read-only projection)",
+        "I18n.L(bn, en) / I18n.bnDigits(n) / I18n.tk(key)",
+        "Pres.BasisPill / Pres.CompletenessControl",
+        "Auth.appendAudit(actor, business, entity, before, after) -> AuditRow"
+      ],
+      "returns": "typed entity (BusinessSettings) or AuditRow[] (export)",
+      "failure_mode": "throw on missing business FK (CC-AC-TENANT); export is read-only"
+    },
+    {
+      "id": "E4",
+      "from": "U2",
+      "to": "U3",
+      "direction": "U3 imports U2",
+      "type": "typed_function_call",
+      "contract": "OrdersComponent reads Customer/Product/Variant from Catalog's typed surface; OrderItem.productId + Order.customerId resolve via Catalog's getter.",
+      "api_surface_from": [
+        "Catalog.getCustomer(id) -> Customer",
+        "Catalog.getProduct(id) -> Product",
+        "Catalog.listVariants(productId) -> Variant[]"
+      ],
+      "returns": "typed entity (Customer/Product/Variant)",
+      "failure_mode": "throw on missing customer/product; absence-asserted test catches cross-tenant reads (CC-AC-TENANT)"
+    },
+    {
+      "id": "E5",
+      "from": "U3",
+      "to": "U4",
+      "direction": "U4 imports U3 (callback)",
+      "type": "typed_function_call",
+      "contract": "MoneyComponent calls back into OrdersComponent to flip the order's status (Order moves to settled) and to read the order's items / paid amount. U3 -> U4 is implicit through the typed function import of DataComponent (the order's status field is in Order; MoneyComponent reads / writes through DataComponent's typed setter).",
+      "api_surface_from": [
+        "Orders.markSettled(orderId) -> Order (updated)",
+        "Orders.markDelivered(orderId) -> Order (updated)",
+        "Orders.getOrder(id) -> Order"
+      ],
+      "returns": "updated Order (typed entity)",
+      "failure_mode": "throw on illegal status transition (exhaustive switch + never default)"
+    },
+    {
+      "id": "E6",
+      "from": "U4",
+      "to": "U5",
+      "direction": "U5 imports U4",
+      "type": "typed_function_call",
+      "contract": "OperateComponent reads MoneyEngine.summary for the DailyCard's today-earned / today-realised / today-outstanding-dues figures.",
+      "api_surface_from": [
+        "MoneyEngine.summary(today) -> { earnedTotal, realisedTotal, outstandingDues, basisPill, completeness }"
+      ],
+      "returns": "DailyCard summary object (basis-pill aware)",
+      "failure_mode": "never throws (pure function over Data state)"
+    }
+  ],
+  "independence_tests": {
+    "U1": [
+      "Schema + state container: DataComponent exposes typed getters/setters; MoneyEngine returns expected econ/summary/risk/lowVariants/countByStatus over seeded fixture (CC-AC-STATUS-BUCKET, NFR6.4).",
+      "Audit append + reversal: AuditService writes to single audit table; reversal is a new row referencing the original; migration that re-grants UPDATE/DELETE fails CI (CC-AC-AUDIT-IMmutability, FR12.1, NFR5.2).",
+      "Role x capability matrix + gate: RouterComponent denies URL whose role does not cover; AuthComponent screen-side self-gate hides money figure; absence-asserted test fails for any non-permitted role (FR1.4, FR10.3, FR12.2, NFR6.6).",
+      "Bangla-first layer: I18nComponent renders Bangla digits by default; Latin-digit allow-list exact (FR11.1, FR11.2, FR11.3).",
+      "Chrome + 30 prototype components: PresentationComponent typed registry imports compile; basis pill + completeness control pair renders (CC-AC-BASIS, FR10.1, FR10.3).",
+      "Build shell: Vite + TypeScript + single package.json compiles under strict posture (NFR7.1, NFR7.7)."
+    ],
+    "U2": [
+      "Customer CRUD + append-only notes: Customer creates with 01XXXXXXXXX-format phone validation; CustomerNote appends (no overwrite); supersedesId chains revisions (FR2.1, FR2.4).",
+      "Product + variant matrix: Variant matrix with multi-axis values renders; SKU uniqueness per business; non-negative cost and price; zero-value variant axis rejected (FR3.1, FR3.3).",
+      "Low-stock + suggested supplier: Variants below their minimum surface Supplier-linked CTA; dedicated low-stock screen lists every variant below its minimum (FR4.2).",
+      "Stock adjust with reason note: Stock adjustment requires a reason note and appends an audit row (FR4.3, CC-AC-AUDIT).",
+      "Physical-received on return: Returned order does not auto-restore inventory; physical-received event is a separate, audited action (FR4.4, FR5.6).",
+      "Supplier CRUD + outstanding payable view: Supplier detail screen exposes purchase history and outstanding balance (read-only surface; supplier-payment create is U4)."
+    ],
+    "U3": [
+      "Status enum exhaustiveness: 9-value status enum (new, confirmed, packed, shipped, delivered, settled, cancelled, returned, partial) is a discriminated string-literal union with exhaustive switch and never-asserted default (FR5.3).",
+      "Status-bucket math: EARNED_STATUSES / REALIZED_STATUSES / PIPELINE_STATUSES restated inline in any test that asserts them (CC-AC-STATUS-BUCKET, NFR6.4).",
+      "Segment-isolation rule: parseMessage accepts free-text block and returns one parsed order with item rows, quantities, and detected customer; segment-isolation rule asserted by tests that re-state the rule inline (FR5.2, NFR6.5).",
+      "4 must-have input modes: paste-parse / manual / quick-add / repeat each save an Order with the correct source discriminator and the basis pill at earned (FR5.5).",
+      "3 deferred placeholders: photo / spreadsheet / voice components exist as typed shells; deferred body (US1.14.D / US1.15.D / US1.16.D) lands when vendor is selected in Construction.",
+      "Recognition basis: Every order carries a basis pill (earned at create) and the completeness control (have/of) with a why-missing sheet (CC-AC-BASIS, FR10.1, FR10.3).",
+      "Audit append: Every order create / update appends an audit row (CC-AC-AUDIT, FR12.1, FR12.3)."
+    ],
+    "U4": [
+      "Payment create: Payment captures amount, date, optional note, and the order it settles; collect partial reduces the derived due balance (FR8.2, FR6.2).",
+      "Consignment create + status flip: Consignment records courier, consignment id, COD amount, courier charge, delivery status; order moves to shipped and links to consignment; basis pill stays earned until settlement (FR6.1, FR6.2, FR10.1).",
+      "Settlement run + variance state machine: Settlement run lists every consignment for chosen period with disposition (matched/short/unmatched/duplicate); Owner picks variance disposition (accept_partial/dispute/write_off) per row; matched flips order's basis pill from earned to realized (FR6.3, FR10.1, CC-AC-BASIS).",
+      "Expense create: Expense records date, amount, category, optional vendor, and notes; expense category list seedable from fixed default; expense included in profit calculation; realised bucket subtracts expenses (FR7.1, FR7.2, FR7.3).",
+      "Supplier payment + stock-in (atomic): Record purchase and restock record both SupplierPayment and corresponding stock-in in one atomic action; low-stock screen reflects new stock immediately (FR4.1, FR4.2, FR9.2, CC-AC-AUDIT).",
+      "Derived Dues view (no dues table): Customer dues are a derived view computed from Orders + Payments; dues list shows every customer with outstanding balance and per-customer due detail (FR8.1, FR8.3).",
+      "Audit append: Every money-mutating action appends an audit row (CC-AC-AUDIT, FR12.1, FR12.3)."
+    ],
+    "U5": [
+      "DailyCard surface: Today's orders count and earned total (earned basis pill), today's realised total (realized basis pill, orders + payments - expenses), total outstanding dues (realized basis pill) all render with basis pill and completeness control (FR10.1, FR7.3, FR8.3, CC-AC-BASIS).",
+      "Audit-trail export: Owner can export audit trail to CSV filtered by date range and entity; audit table is append-only at database role level; migration that re-grants UPDATE/DELETE to application role fails CI (FR12.1, NFR5.2, CC-AC-AUDIT-IMmutability).",
+      "Business-level toggles: Owner can flip AI opt-in toggle and debug-only flows toggle in business settings; every toggle change appends an audit row (FR1.6, CC-AC-AUDIT).",
+      "Settings surface: Owner can update business name, address, phone, currency, default language; any user can change their display language and default role for new sessions (FR1.5, FR1.6).",
+      "Bangla-first rendering: DailyCard and audit-trail export render Bangla-first (CC-AC-I18N, FR11.1, FR11.2).",
+      "Role-gate coverage: Audit-trail export visible only to Owner; absence-asserted tests cover every non-Owner role over every route (FR12.2, NFR6.6)."
+    ]
+  },
+  "dag": {
+    "nodes": 5,
+    "edges": 6,
+    "forward_edges": 0,
+    "reverse_edges": 0,
+    "cycles": 0,
+    "stub_edges": 0,
+    "soft_cycles": 0,
+    "is_dag": true,
+    "root": "U1",
+    "longest_path": ["U1", "U3", "U4", "U5"],
+    "longest_path_depth": 3,
+    "topological_sort_one_valid": ["U1", "U2", "U3", "U4", "U5"],
+    "parallel_opportunities": {
+      "after_U1": ["U2", "U3", "U5"],
+      "after_U2": ["U3_continues", "U5_continues"],
+      "after_U3": ["U4_starts", "U5_continues"],
+      "after_U4": ["U5_finalises_DailyCard"]
+    }
+  },
+  "deferred_placeholders": [
+    {
+      "story": "US1.14",
+      "marker": "US1.14.D",
+      "component": "PhotoOrderComponent",
+      "unit": "U3",
+      "status": "deferred",
+      "vendor_gate": "Construction",
+      "free_tier_envelope_required": true
+    },
+    {
+      "story": "US1.15",
+      "marker": "US1.15.D",
+      "component": "SpreadsheetOrderComponent",
+      "unit": "U3",
+      "status": "deferred",
+      "vendor_gate": "Construction",
+      "free_tier_envelope_required": true
+    },
+    {
+      "story": "US1.16",
+      "marker": "US1.16.D",
+      "component": "VoiceOrderComponent",
+      "unit": "U3",
+      "status": "deferred",
+      "vendor_gate": "Construction",
+      "free_tier_envelope_required": true
+    },
+    {
+      "story": "US3.9",
+      "marker": "US3.9.D",
+      "component": "dashboard placeholder in OperateComponent",
+      "unit": "U5",
+      "status": "deferred",
+      "vendor_gate": "phase_2",
+      "oos_ref": "OOS14"
+    }
+  ],
+  "upstream_coverage": {
+    "components_total": 14,
+    "components_assigned": 14,
+    "components_unassigned": 0,
+    "components_with_deferred_marker": 3,
+    "stories_total": 39,
+    "stories_with_primary_unit": 39,
+    "stories_with_supporting_units_at_least_one": 39,
+    "stories_unassigned": 0,
+    "fr_clusters_total": 12,
+    "fr_clusters_with_at_least_one_primary": 12,
+    "nfr_clusters_total": 8,
+    "nfr_clusters_with_at_least_one_primary": 8
+  },
+  "posture": {
+    "autonomy": "gated",
+    "owner_signs_off_every_bolt": true,
+    "deployment_target": "managed_container_hosting + managed_postgres",
+    "deployment_envelope": "free_tier",
+    "module_count": 1,
+    "deployable_count": 1
+  },
+  "forward_references": {
+    "stage_2_9_delivery_planning": "Choose the economic path through this DAG (Bolt sequence) using WSJF, risk-first, value-first, or walking-skeleton-first heuristics.",
+    "stage_2_8_application_code_generation": "Per-unit construction-design artifacts (the kind taxonomy drives the artifact set)."
+  }
+}
