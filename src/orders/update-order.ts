@@ -29,14 +29,17 @@ export const updateOrder = async (
   sql: Sql,
   ctx: OrderContext,
   orderId: string,
-  patch: UpdateOrderInput,
+  raw: UpdateOrderInput,
 ): Promise<Result<Order, OrderError>> => {
   if (!canMutateOrders(ctx.role)) return err({ kind: "forbidden", reason: "role cannot edit orders" });
   if (!isUuid(orderId)) return err({ kind: "not_found", entity: "Order", id: orderId });
-  const valid = UpdateOrderInputSchema.safeParse(patch);
+  const valid = UpdateOrderInputSchema.safeParse(raw);
   if (!valid.success) {
     return err({ kind: "invalid_input", message: valid.error.issues.map((i) => i.message).join("; ") });
   }
+  // Use the parsed patch only: unknown keys are stripped before anything
+  // reaches the stored row or the audit payload.
+  const patch = valid.data;
 
   return sql.begin(async (tx): Promise<Result<Order, OrderError>> => {
     const before = await selectOrder(tx, ctx.businessId, orderId, "lock");

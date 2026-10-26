@@ -59,13 +59,18 @@ const orderExistsInBusiness = async (tx: Queryable, businessId: Uuid, orderId: U
 export const createOrder = async (
   sql: Sql,
   ctx: OrderContext,
-  input: CreateOrderInput,
+  raw: CreateOrderInput,
 ): Promise<Result<Order, OrderError>> => {
   if (!canMutateOrders(ctx.role)) return err({ kind: "forbidden", reason: "role cannot create orders" });
-  const valid = CreateOrderInputSchema.safeParse(input);
+  const valid = CreateOrderInputSchema.safeParse(raw);
   if (!valid.success) {
     return err({ kind: "invalid_input", message: valid.error.issues.map((i) => i.message).join("; ") });
   }
+  // Only the parsed value is used from here on: zod strips keys the
+  // schema does not name, so nothing unvalidated reaches the contact
+  // JSONB or the permanent audit payload.
+  // UuidSchema has just checked repeatOfOrderId, so the brand is earned.
+  const input = { ...valid.data, repeatOfOrderId: valid.data.repeatOfOrderId as Uuid | null } satisfies CreateOrderInput;
   const total = computeOrderTotal(input.items, input.orderDiscountPaise, input.deliveryChargePaise);
   if (!total.ok) return total;
 

@@ -90,13 +90,15 @@ const selectLink = async (tx: Queryable, businessId: Uuid, orderId: Uuid): Promi
 export const linkConsignment = async (
   sql: Sql,
   ctx: OrderContext,
-  input: LinkConsignmentInput,
+  raw: LinkConsignmentInput,
 ): Promise<Result<ConsignmentLink, LinkError>> => {
   if (!canMutateOrders(ctx.role)) return err({ kind: "forbidden", reason: "role cannot link consignments" });
-  const valid = ConsignmentLinkInputSchema.safeParse(input);
+  const valid = ConsignmentLinkInputSchema.safeParse(raw);
   if (!valid.success) {
     return err({ kind: "invalid_input", message: valid.error.issues.map((i) => i.message).join("; ") });
   }
+  // The parsed value only, so an unvalidated key never reaches the audit row.
+  const input = valid.data;
   const courier = courierForRef(input.consignmentRef);
   if (courier === null) return err({ kind: "invalid_input", message: "unknown courier prefix" });
   const orderId = input.orderId as Uuid;
