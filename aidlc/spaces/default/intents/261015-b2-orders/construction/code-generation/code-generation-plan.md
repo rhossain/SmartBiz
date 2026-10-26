@@ -50,7 +50,7 @@ step lists its files, its bindings, and an exit check.
   - Binds: team.md §CS-6 (one registry per concern).
   - Exit: the directories exist; `bun run type-check` stays green.
 
-- [ ] Step 2 — Verify the existing test runner and record the unit-scoped command
+- [x] Step 2 — Verify the existing test runner and record the unit-scoped command
   - Confirm `bunfig.toml` (root `tests`, preload `tests/setup.ts`) and `bun test --version`. Record the exact B2 command in `unit-test-instructions.md`.
   - Binds: NFR6.1, team.md §TP-3.
   - Exit: the B1 suite is still 108/108 green before any B2 code is added.
