@@ -15,11 +15,25 @@ export type RoutePath =
   | "/reset"
   | "/accept"
   | "/orders"
+  | "/orders/new"
+  | "/orders/new/paste-parse"
+  | "/orders/new/repeat"
+  | "/orders/:id"
+  | "/orders/:id/transition"
   | "/daily-card"
   | "/audit-trail"
   | "/business"
   | "/settings"
   | "/lock";
+
+/**
+ * A resolved navigation: the registry key (a pattern such as
+ * `/orders/:id`) plus the values its `:name` segments matched.
+ */
+export interface RouteMatch {
+  readonly path: RoutePath;
+  readonly params: Readonly<Record<string, string>>;
+}
 
 export interface Route<State = unknown> {
   readonly path: RoutePath;

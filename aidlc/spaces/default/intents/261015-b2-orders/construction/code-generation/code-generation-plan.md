@@ -96,7 +96,7 @@ step lists its files, its bindings, and an exit check.
   - Mutation check (team.md §TP-10): for R2.2, R2.3 and R2.4, reintroduce each targeted defect once, confirm the test fails, then revert. Record the result in `code-summary.md`.
   - Exit: all pass; coverage ≥ 90% lines on `parse-message*.ts`, `status-fsm.ts`, `status-bucket.ts`.
 
-- [ ] Step 9 — API / endpoint: implement
+- [x] Step 9 — API / endpoint: implement
   - Extend `src/router/types.ts` and `src/router/routes.ts` with `/orders`, `/orders/new`, `/orders/new/paste-parse`, `/orders/new/repeat`, `/orders/:id`, `/orders/:id/transition`, replacing the `/orders` stub. Extend `src/router/dispatch.ts` / `hash-router.ts` to match the `:id` pattern.
   - Binds: NFR5.6, FR12.2.
   - Exit: `bun run type-check` green.
