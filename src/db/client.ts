@@ -7,6 +7,15 @@ import postgres from "postgres";
 
 export type Sql = ReturnType<typeof postgres>;
 
+/**
+ * Anything that can run a tagged-template query: the pool itself or the
+ * `tx` handle inside `sql.begin(...)`. Functions that must be callable
+ * from inside a caller's transaction (insertAudit, the order writes)
+ * take this type, so the audit row and the entity write commit or roll
+ * back together (NFR5.7).
+ */
+export type Queryable = postgres.ISql;
+
 let pool: Sql | null = null;
 
 export const getPool = (): Sql => {

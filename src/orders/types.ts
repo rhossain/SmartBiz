@@ -17,6 +17,7 @@
  * - Every entity carries `businessId` (FR12.4). Repository functions
  *   take the caller's business from `OrderContext`, never from input.
  */
+import type { Role } from "../auth/types.js";
 import type { Uuid } from "../types/uuid.js";
 
 export const ORDER_STATUSES = [
@@ -158,6 +159,7 @@ export interface OrdersPage {
 export interface OrderContext {
   readonly businessId: Uuid;
   readonly actorUserId: Uuid;
+  readonly role: Role;
   readonly correlationId?: string;
 }
 

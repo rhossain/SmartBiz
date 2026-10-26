@@ -66,7 +66,7 @@ step lists its files, its bindings, and an exit check.
   - `tests/unit/order-schema.test.ts`: zod accept/reject cases; status `CHECK` covers exactly 9 values; migrations parse and are idempotent under the SQL stub; no `UPDATE`/`DELETE` grant on `audit_log`.
   - Exit: the new file passes, and the R1.1 file still passes.
 
-- [ ] Step 5 — Repository / data access: implement
+- [x] Step 5 — Repository / data access: implement
   - `src/orders/create-order.ts`, `update-order.ts`, `transition-status.ts`, `get-order.ts`, `list-orders.ts`, `consignment.ts` (`linkConsignment` + `getConsignmentByOrderId` stub), `customer.ts`, `variant.ts`.
   - Each mutation runs `insertAudit` (subject kind `order` / `order_item`, payload `{ before, after }`) before its write, in one transaction. Each query filters by `businessId`.
   - Binds: FR12.1, FR12.3, FR12.4, NFR5.7, NFR6.10, Contracts #1–#4.

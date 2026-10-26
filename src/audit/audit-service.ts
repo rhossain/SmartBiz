@@ -5,7 +5,7 @@
  * The DB-level INSERT-only invariant (BR3.1) is enforced by the
  * migration (`bun run migrate` → 0007_grants.sql).
  */
-import type { Sql } from "../db/client.js";
+import type { Queryable, Sql } from "../db/client.js";
 import { newCorrelationId } from "../observability/correlation.js";
 import { now } from "../data/clock.js";
 import type { Uuid } from "../types/uuid.js";
@@ -24,8 +24,12 @@ export interface AuditInsertInput {
   readonly correlationId?: string;
 }
 
+/**
+ * `sql` may be a transaction handle: B2 order mutations call this inside
+ * their own `sql.begin(...)` so the audit row and the write are atomic.
+ */
 export const insertAudit = async (
-  sql: Sql,
+  sql: Queryable,
   input: AuditInsertInput,
 ): Promise<{ readonly id: Uuid; readonly correlationId: string; readonly occurredAt: string }> => {
   const id = uuid();
