@@ -17,7 +17,8 @@ import {
   updateOrder,
 } from "../../src/orders/index.js";
 import { makeSqlStub } from "../helpers/sql-stub.js";
-import { BUSINESS_A, BUSINESS_B, OWNER_A, OWNER_B, createInput, ctxFor } from "../helpers/order-fixtures.js";
+import { BUSINESS_A, BUSINESS_B, OWNER_A, OWNER_B, createInput, ctxFor, itemInput } from "../helpers/order-fixtures.js";
+import { computeOrderTotal } from "../../src/orders/order-total.js";
 
 const ctxA = ctxFor(BUSINESS_A, OWNER_A);
 const ctxB = ctxFor(BUSINESS_B, OWNER_B);
@@ -103,6 +104,32 @@ describe("integration: order create / transition / read", () => {
     expect(!refused.ok && refused.error.kind).toBe("forbidden");
     const listed = await listOrders(stub.sql, accountant);
     expect(listed.ok && listed.value.orders.length).toBe(2);
+  });
+
+  test("M-01: an amount beyond Number.MAX_SAFE_INTEGER is refused, never written", async () => {
+    const stub = makeSqlStub();
+    // Each field is within its zod limit (price ≤ 10^12 paise, quantity ≤ 9 999),
+    // but the line 9 999 × 10^12 is not a safe integer.
+    const hugeLine = createInput({ items: [itemInput({ quantity: 9_999, unitPricePaise: 1_000_000_000_000 })], orderDiscountPaise: 0 });
+    const r = await createOrder(stub.sql, ctxA, hugeLine);
+    expect(r).toEqual({ ok: false, error: { kind: "invalid_input", message: "line 1: amount is too large to store exactly" } });
+    // Each line is safe, but their sum is not.
+    const big = itemInput({ quantity: 9_000, unitPricePaise: 1_000_000_000_000 }); // 9 × 10^15, safe
+    const sum = await createOrder(stub.sql, ctxA, createInput({ items: [big, big], orderDiscountPaise: 0 }));
+    expect(!sum.ok && sum.error.kind === "invalid_input" && sum.error.message).toBe("order subtotal is too large to store exactly");
+    expect(stub.calls.length).toBe(0);
+    expect(stub.state.orders.length).toBe(0);
+    expect(stub.state.auditLog.length).toBe(0);
+  });
+
+  test("M-01 boundary: the total may reach exactly MAX_SAFE_INTEGER, not one paisa more", () => {
+    const max = Number.MAX_SAFE_INTEGER;
+    const line = itemInput({ quantity: 1, unitPricePaise: max - 1 });
+    expect(computeOrderTotal([line], 0, 1)).toEqual({ ok: true, value: max });
+    expect(computeOrderTotal([line], 0, 2)).toEqual({
+      ok: false,
+      error: { kind: "invalid_input", message: "order total is too large to store exactly" },
+    });
   });
 
   test("invalid input is refused before any SQL runs", async () => {

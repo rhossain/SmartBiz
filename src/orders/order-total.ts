@@ -5,8 +5,12 @@
  *
  * A discount larger than what it discounts is refused rather than
  * clamped: a silent clamp would store a total the Owner never agreed
- * to. Inputs are already zod-validated integers, so every step stays an
- * exact integer and no float ever enters the money path.
+ * to. Inputs are zod-validated integers, but the per-field limits alone
+ * do not bound a product or a 200-line sum below Number.MAX_SAFE_INTEGER
+ * (9 999 × 10^12 paise already exceeds it). So each line, the running
+ * subtotal and the total are checked with Number.isSafeInteger and an
+ * unrepresentable amount is refused as `invalid_input`: it must never be
+ * written, because `toPaise` would then reject the row on every read.
  */
 import { toAsciiDigits } from "../i18n/bnDigits.js";
 import { err, ok, type Result } from "../types/result.js";
@@ -35,13 +39,23 @@ export const computeOrderTotal = (
   let subtotal = 0;
   for (const [index, item] of items.entries()) {
     const line = lineTotalPaise(item);
+    if (!Number.isSafeInteger(line)) {
+      return err({ kind: "invalid_input", message: `line ${index + 1}: amount is too large to store exactly` });
+    }
     if (line < 0) {
       return err({ kind: "invalid_input", message: `line ${index + 1}: discount exceeds the line amount` });
     }
     subtotal += line;
+    if (!Number.isSafeInteger(subtotal)) {
+      return err({ kind: "invalid_input", message: "order subtotal is too large to store exactly" });
+    }
   }
   if (orderDiscountPaise > subtotal) {
     return err({ kind: "invalid_input", message: "order discount exceeds the order subtotal" });
   }
-  return ok(subtotal - orderDiscountPaise + deliveryChargePaise);
+  const total = subtotal - orderDiscountPaise + deliveryChargePaise;
+  if (!Number.isSafeInteger(total)) {
+    return err({ kind: "invalid_input", message: "order total is too large to store exactly" });
+  }
+  return ok(total);
 };

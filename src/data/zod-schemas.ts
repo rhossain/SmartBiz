@@ -81,9 +81,13 @@ export const PasswordResetSchema = z.object({
  * The enum lists are imported from src/orders/types.ts rather than
  * restated, so the zod enum and the TypeScript union cannot drift: a
  * tenth status added to ORDER_STATUSES reaches both. Money is integer
- * paise with a ceiling well inside Number.MAX_SAFE_INTEGER so sums of
- * up to 200 lines stay exact (ADR-002). The 200-line ceiling matches
- * the paste-parse cap (OQ-NFR-D-B2-2).
+ * paise, and each single field is capped at MAX_PAISE (10^12 paise),
+ * which is itself a safe integer. The cap does NOT make products or
+ * sums safe: 9 999 × 10^12 is above Number.MAX_SAFE_INTEGER, and so are
+ * 200 such lines. Exactness of line totals, the subtotal and the order
+ * total is enforced by the Number.isSafeInteger checks in
+ * src/orders/order-total.ts:computeOrderTotal (ADR-002, review M-01).
+ * The 200-line ceiling matches the paste-parse cap (OQ-NFR-D-B2-2).
  */
 export const MAX_ORDER_ITEMS = 200;
 const MAX_PAISE = 1_000_000_000_000;
