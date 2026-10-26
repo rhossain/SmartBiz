@@ -246,4 +246,30 @@ describe("U3 screens", () => {
     expect(renderOrdersScreen("list", { kind: "other" })).toBeNull();
     expect(renderOrdersScreen("detail", { ...state, current: null })).toBeNull();
   });
+
+  test("screen-side self-gate (M-03): a read-only role never sees an order-creating form or a Save", async () => {
+    const stub = makeSqlStub();
+    const order = await seed(stub);
+    const readOnly: OrdersRouteState = {
+      kind: "orders", locale: "en", canMutate: false, draft: createOrderDraftStore(),
+      page: { orders: [order], nextCursor: null }, current: order,
+      onOpen: noop, onLoadMore: noop, onFilter: noop, onSave: async () => { throw new Error("must not save"); },
+      onTransition: noop, onRepeat: noop,
+    };
+    const SAVE_IDS = ["manual-save", "paste-save", "paste-box", "repeat-save", "repeat-pick", "quick-add-save", "order-detail-actions"];
+    for (const path of ["/orders/new", "/orders/new/paste-parse", "/orders/new/repeat"]) {
+      const { container, queryByTestId } = render(routes.get(path as never)!.render(readOnly) as React.ReactElement);
+      expect({ path, lock: queryByTestId("lock-sheet") !== null }).toEqual({ path, lock: true });
+      for (const id of SAVE_IDS) expect({ path, id, present: queryByTestId(id) !== null }).toEqual({ path, id, present: false });
+      expect(container.querySelector("button[type=submit], form")).toBeNull();
+      cleanup();
+    }
+    // List and detail stay readable but carry no mutating control.
+    for (const path of ["/orders", "/orders/:id", "/orders/:id/transition"]) {
+      const { queryByTestId } = render(routes.get(path as never)!.render(readOnly) as React.ReactElement);
+      expect(queryByTestId("lock-sheet")).toBeNull();
+      for (const id of SAVE_IDS) expect({ path, id, present: queryByTestId(id) !== null }).toEqual({ path, id, present: false });
+      cleanup();
+    }
+  });
 });

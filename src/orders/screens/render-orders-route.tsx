@@ -18,6 +18,7 @@ import * as React from "react";
 import type { Locale } from "../../auth/types.js";
 import type { OrderDraftStore, SaveOrder } from "../order-draft.js";
 import { assertNever, type Order, type OrdersPage, type OrderStatus } from "../types.js";
+import { LockScreen } from "../../router/screens/Lock.js";
 import { ManualOrder } from "./ManualOrder.js";
 import { OrderDetail } from "./OrderDetail.js";
 import { OrdersList, type OrdersListFilter } from "./OrdersList.js";
@@ -44,8 +45,30 @@ export const isOrdersRouteState = (state: unknown): state is OrdersRouteState =>
 
 export type OrdersScreen = "list" | "manual" | "paste-parse" | "repeat" | "detail";
 
+/**
+ * Screens whose whole purpose is creating an order. They self-gate
+ * (team.md §TP-9, the screen-side layer): a role that may not mutate
+ * orders gets the B1 Lock screen, never a form with a Save button, even
+ * if it reached the screen by some path other than the router gate.
+ * List and detail stay readable and hide their own mutating controls.
+ */
+export const isMutatingScreen = (screen: OrdersScreen): boolean => {
+  switch (screen) {
+    case "manual":
+    case "paste-parse":
+    case "repeat":
+      return true;
+    case "list":
+    case "detail":
+      return false;
+    default:
+      return assertNever(screen, "orders screen");
+  }
+};
+
 export const renderOrdersScreen = (screen: OrdersScreen, state: unknown): React.ReactElement | null => {
   if (!isOrdersRouteState(state)) return null;
+  if (isMutatingScreen(screen) && !state.canMutate) return <LockScreen />;
   const { locale, draft, onSave } = state;
   switch (screen) {
     case "list":
