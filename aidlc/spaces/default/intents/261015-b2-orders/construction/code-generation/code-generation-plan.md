@@ -101,7 +101,7 @@ step lists its files, its bindings, and an exit check.
   - Binds: NFR5.6, FR12.2.
   - Exit: `bun run type-check` green.
 
-- [ ] Step 10 — API / endpoint: write and run its tests
+- [x] Step 10 — API / endpoint: write and run its tests
   - Extend `tests/unit/three-layer-gate-absence.test.ts` (R1.2) to walk every U1 + U3 route by absence, plus the Owner inverse (order detail, audit trail, daily card).
   - Extend `tests/unit/gate-bench.test.ts` (NFR2.c ≤ 2 ms p95) to cover the U3 routes.
   - Exit: both pass.
