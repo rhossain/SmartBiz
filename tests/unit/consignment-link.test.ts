@@ -94,11 +94,11 @@ describe("linkConsignment", () => {
     expect(!early.ok && early.error.kind).toBe("invalid_input");
     const badRef = await linkConsignment(stub.sql, ctxA, { orderId: fresh.value.id, consignmentRef: "ZZ-1" });
     expect(!badRef.ok && badRef.error.kind).toBe("invalid_input");
-    const manager = await linkConsignment(stub.sql, ctxFor(BUSINESS_A, OWNER_A, "manager"), {
+    const accountant = await linkConsignment(stub.sql, ctxFor(BUSINESS_A, OWNER_A, "accountant"), {
       orderId: fresh.value.id,
       consignmentRef: "PT-1234",
     });
-    expect(!manager.ok && manager.error.kind).toBe("forbidden");
+    expect(!accountant.ok && accountant.error.kind).toBe("forbidden");
     expect(stub.state.consignmentLinks.length).toBe(0);
   });
 

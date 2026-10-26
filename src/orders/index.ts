@@ -8,7 +8,7 @@
  * router. Each layer of the B2 Bolt adds its exports here as it lands.
  */
 export * from "./types.js";
-export { ORDER_MUTATE_CAPABILITY, ORDER_READ_CAPABILITY, canMutateOrders, canReadOrders } from "./order-capability.js";
+export { ORDER_MUTATE_CAPABILITIES, ORDER_READ_CAPABILITY, canMutateOrders, canReadOrders } from "./order-capability.js";
 export { computeOrderTotal, lineTotalPaise } from "./order-total.js";
 export { createOrder, formatOrderNo } from "./create-order.js";
 export { updateOrder } from "./update-order.js";

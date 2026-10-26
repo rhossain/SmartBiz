@@ -37,7 +37,12 @@ export interface RouteMatch {
 
 export interface Route<State = unknown> {
   readonly path: RoutePath;
-  readonly requiredCapability: Capability | null;
+  /**
+   * null = public. A list means "any one of these" (B2: order mutation is
+   * open to `money.mutate.price` OR `money.mutate.full`); the dispatcher
+   * still runs the single-capability three-layer gate.
+   */
+  readonly requiredCapability: Capability | ReadonlyArray<Capability> | null;
   readonly render: (state: State) => unknown;
   readonly businessRule?: BusinessRule<State>;
 }

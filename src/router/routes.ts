@@ -7,10 +7,11 @@
  * B2 adds the U3 order routes. Their capabilities come from
  * src/orders/order-capability.ts so the router and the order
  * repository cannot disagree about who may read or mutate an order:
- * reads need `business.view`, every create/edit/transition route needs
- * the order-mutation capability. No new Capability value is added.
+ * reads need `business.view`; every create/edit/transition route needs
+ * any one of the order-mutation capabilities (`money.mutate.price` or
+ * `money.mutate.full`). No new Capability value is added.
  */
-import { ORDER_MUTATE_CAPABILITY, ORDER_READ_CAPABILITY } from "../orders/order-capability.js";
+import { ORDER_MUTATE_CAPABILITIES, ORDER_READ_CAPABILITY } from "../orders/order-capability.js";
 import { renderOrdersScreen } from "../orders/screens/render-orders-route.js";
 import type { Route, RoutePath } from "./types.js";
 
@@ -28,16 +29,16 @@ export const routes: ReadonlyMap<RoutePath, Route> = new Map<RoutePath, Route>([
   ["/reset", { path: "/reset", requiredCapability: null, render: renderStub }],
   ["/accept", { path: "/accept", requiredCapability: null, render: renderStub }],
   ["/orders", { path: "/orders", requiredCapability: ORDER_READ_CAPABILITY, render: ordersList }],
-  ["/orders/new", { path: "/orders/new", requiredCapability: ORDER_MUTATE_CAPABILITY, render: ordersList }],
+  ["/orders/new", { path: "/orders/new", requiredCapability: ORDER_MUTATE_CAPABILITIES, render: ordersList }],
   [
     "/orders/new/paste-parse",
-    { path: "/orders/new/paste-parse", requiredCapability: ORDER_MUTATE_CAPABILITY, render: pasteParse },
+    { path: "/orders/new/paste-parse", requiredCapability: ORDER_MUTATE_CAPABILITIES, render: pasteParse },
   ],
-  ["/orders/new/repeat", { path: "/orders/new/repeat", requiredCapability: ORDER_MUTATE_CAPABILITY, render: repeatFromPast }],
+  ["/orders/new/repeat", { path: "/orders/new/repeat", requiredCapability: ORDER_MUTATE_CAPABILITIES, render: repeatFromPast }],
   ["/orders/:id", { path: "/orders/:id", requiredCapability: ORDER_READ_CAPABILITY, render: orderDetail }],
   [
     "/orders/:id/transition",
-    { path: "/orders/:id/transition", requiredCapability: ORDER_MUTATE_CAPABILITY, render: orderDetail },
+    { path: "/orders/:id/transition", requiredCapability: ORDER_MUTATE_CAPABILITIES, render: orderDetail },
   ],
   ["/daily-card", { path: "/daily-card", requiredCapability: "business.view", render: renderStub }],
   ["/audit-trail", { path: "/audit-trail", requiredCapability: "audit.view", render: renderStub }],

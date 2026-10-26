@@ -89,6 +89,22 @@ describe("integration: order create / transition / read", () => {
     expect((await transitionStatus(stub.sql, ctxA, "nope", "confirmed")).ok).toBe(false);
   });
 
+  test("Owner decision (M-07): Manager and Sales Staff mutate orders; Accountant reads only", async () => {
+    const stub = makeSqlStub();
+    for (const role of ["manager", "sales_staff"] as const) {
+      const made = await createOrder(stub.sql, ctxFor(BUSINESS_A, OWNER_A, role), createInput());
+      expect({ role, ok: made.ok }).toEqual({ role, ok: true });
+      if (!made.ok) continue;
+      const moved = await transitionStatus(stub.sql, ctxFor(BUSINESS_A, OWNER_A, role), made.value.id, "confirmed");
+      expect({ role, ok: moved.ok }).toEqual({ role, ok: true });
+    }
+    const accountant = ctxFor(BUSINESS_A, OWNER_A, "accountant");
+    const refused = await createOrder(stub.sql, accountant, createInput());
+    expect(!refused.ok && refused.error.kind).toBe("forbidden");
+    const listed = await listOrders(stub.sql, accountant);
+    expect(listed.ok && listed.value.orders.length).toBe(2);
+  });
+
   test("invalid input is refused before any SQL runs", async () => {
     const stub = makeSqlStub();
     const noItems = await createOrder(stub.sql, ctxA, createInput({ items: [] }));
