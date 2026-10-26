@@ -39,6 +39,20 @@ The Owner decided M-07 and H-01 on 2026-10-26.
 | L-03 | The two vacuous B1 gate tests now drive the real `dispatch()` through `window.location.hash` and assert render or redirect outcomes. | `e2d8918` |
 | M-05, records | This file, `traceability.json` and `source-manifest.json` (see "Known gaps" for M-05) | "review fixes — records" commit |
 
+## Recorded review (READY) follow-up fixes
+
+The recorded review (`reviews/review-01.md`, READY: 0 Critical, 1 Major, 5 Minor) found:
+
+| ID | Fix | Commit |
+|---|---|---|
+| R-01 (Major) | M-04 folded any non-item fragment carrying a size or colour into the item above, so `"কুর্তা ২টা\nশাড়ি লাল"` gave the saree's colour to the kurti and lost the saree. Now only a pure-detail fragment (every word a size, a colour or a detail label such as `সাইজ`/`রং`) joins the preceding item; anything else goes to `unattached` and is shown on the paste screen. Two tests restate the rule inline; mutation-checked (removing the condition fails both). | `b9affc5` |
+| R-02 | Manual quantity accepts Bangla digits, like the price fields; screen test added. | `6c64c29` |
+| R-03 | Screen self-gate reads a caller-supplied `canMutate`; layers 1 and 2 are not exercised together until the router is mounted. Tracked with M-05 under Known gaps. | — |
+| R-04 | The pipeline label is a display override in `MoneyCell`; `bucketTotals().pipeline` and `orderMoneyFigure` still carry recognition `earned`. Later consumers (B5 daily card) must not show it as earned. Open item. | — |
+| R-05, R-06 | Same as L-02 and L-04 below. | — |
+
+After these: 217 pass / 0 fail; type-check, lint and build clean; `src/**` lines 96.49 %.
+
 ## Files created, modified and deleted
 
 **Created — migrations (3):** `src/db/migrations/0008_create_orders.sql`,
@@ -269,4 +283,6 @@ Re-run after the review fixes, with a script that reads both JSON files:
 
 Review iteration 1 fixes: `9571339` M-02 · `48f1534` M-07 · `a40df2c` H-01 ·
 `8fd86d0` M-03 · `c4720ee` M-01 · `589b8b5` M-04 · `da993bc` M-06 ·
-`6433fc7` L-01 · `e2d8918` L-03 · records (this update).
+`6433fc7` L-01 · `e2d8918` L-03 · `db806d1` records.
+
+Recorded-review follow-ups: `b9affc5` R-01 · `6c64c29` R-02 · records (this update).
