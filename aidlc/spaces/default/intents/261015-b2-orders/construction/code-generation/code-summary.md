@@ -10,19 +10,41 @@
 
 - All 14 plan steps executed in order, each closed by its exit check and a
   commit on branch `b2-orders` (no push).
-- Full suite: **201 pass, 0 fail** across 44 files (baseline: 108 pass).
-- Line coverage: **`src/**` 96.81 %** (2 518 / 2 601 lines; baseline 92.95 %),
-  **`src/orders/**` 99.14 %** (1 383 / 1 395 lines). Floors: 80 % (met), and
+- Architecture review iteration 1 was NOT-READY. Every finding the Owner
+  asked to be fixed is fixed, one commit each (see "Review iteration 1
+  fixes"). L-02 and L-04 stay open by instruction.
+- Full suite after the fixes: **214 pass, 0 fail** across 45 files
+  (baseline 108; 201 at the first hand-off).
+- Line coverage: **`src/**` 97.11 %** (2 752 / 2 834 lines; baseline 92.95 %),
+  **`src/orders/**` 99.32 %** (1 607 / 1 618 lines). Floors: 80 % (met), and
   90 % on the four high-risk files (met, see table).
 - `bun run type-check` 0 errors · `bun run lint` 0 errors ·
   `bun run build` OK, JS 47.32 KB gzip (limit 350 KB).
+
+## Review iteration 1 fixes
+
+Review: `.aidlc-engine/reviews/code-generation/stage/2fbf5f321ead2360/1.9b793e6a37a6c223761c1388bc9e96d1.review.md`.
+The Owner decided M-07 and H-01 on 2026-10-26.
+
+| ID | Fix | Commit |
+|---|---|---|
+| M-02 | create, update and link build from zod's parsed `valid.data`, so unknown keys never reach the row or the audit payload (made by the coordinator) | `9571339` |
+| M-07 | Owner decision: Owner, Manager and Sales Staff may create, edit, transition and link orders; Accountant reads only. `ORDER_MUTATE_CAPABILITIES = [money.mutate.price, money.mutate.full]` (any of); a route may declare an any-of capability list and the dispatcher passes the first held one to the unchanged three-layer gate. No new Capability value. The reach table and the consignment test were updated, and a repository test was added for the decision. | `48f1534` |
+| H-01 | Owner decision: build US1.11. `src/orders/screens/ManualOrder.tsx` on `/orders/new`: multiple lines (description, optional variant, quantity, unit price, line discount), order discount, delivery charge; built with `buildManualOrder`, staged in the draft store, saved only on Save, money through MoneyCell. Five screen tests. | `a40df2c` |
+| M-03 | Screen-side self-gate: `renderOrdersScreen` returns the B1 `LockScreen` for the manual, paste-parse and repeat screens when `!canMutate`. A test walks every U3 route with `canMutate: false` and asserts no form or Save control is present. Mutation-checked: removing the gate fails the test. | `8fd86d0` |
+| M-01 | `computeOrderTotal` refuses any line, subtotal or total that is not a safe integer (`invalid_input`), so an unrepresentable amount is never written. The false MAX_SAFE_INTEGER comment in `zod-schemas.ts` was corrected. Tests: line overflow, subtotal overflow, total exactly at MAX_SAFE_INTEGER (accepted) and one above (refused). | `c4720ee` |
+| M-04 | A detail-only fragment ("কুর্তা ২টা, লাল, M") joins the preceding item's own words, never the following item. A conflicting or ambiguous fragment marks the item incomplete. A detail before any item is reported in `ParsedMessage.unattached` and shown on the paste screen; nothing is dropped silently. The segment rule is restated inline in the new tests. Fixtures: 22 / 22 exact (≥ 95 %); the parser benchmark passes. | `589b8b5` |
+| M-06 | The B1 gate bench asserted `≤ 0.002` (2 µs); now `≤ 2` (ms), matching NFR2.c. | `da993bc` |
+| L-01 | Pipeline money (new, confirmed, packed, shipped, partial, and every unsaved new order) shows a "pipeline" pill instead of "earned"; `data-basis="pipeline"`. The data keeps ADR-002's two-valued Recognition. The absence harness asserts that a pipeline cell never shows earned or realized. | `6433fc7` |
+| L-03 | The two vacuous B1 gate tests now drive the real `dispatch()` through `window.location.hash` and assert render or redirect outcomes. | `e2d8918` |
+| M-05, records | This file, `traceability.json` and `source-manifest.json` (see "Known gaps" for M-05) | "review fixes — records" commit |
 
 ## Files created, modified and deleted
 
 **Created — migrations (3):** `src/db/migrations/0008_create_orders.sql`,
 `0009_create_order_items.sql`, `0010_create_consignment_link.sql`.
 
-**Created — `src/orders/` (32):** `types.ts`, `index.ts`,
+**Created — `src/orders/` (33):** `screens/ManualOrder.tsx` (review fix H-01), `types.ts`, `index.ts`,
 `order-capability.ts`, `order-total.ts`, `order-rows.ts`, `order-audit.ts`,
 `create-order.ts`, `update-order.ts`, `transition-status.ts`, `get-order.ts`,
 `list-orders.ts`, `consignment.ts`, `customer.ts`, `variant.ts`,
@@ -33,7 +55,7 @@
 `screens/PasteParse.tsx`, `screens/RepeatFromPast.tsx`, `screens/MoneyCell.tsx`,
 `screens/DraftStatus.tsx`, `screens/copy.ts`, `screens/render-orders-route.tsx`.
 
-**Created — tests (17):** `tests/helpers/order-fixtures.ts`;
+**Created — tests (18):** `tests/integration/manual-order-screen.test.tsx` (review fix H-01), `tests/helpers/order-fixtures.ts`;
 `tests/unit/` `order-schema`, `order-audit-append`, `consignment-link`,
 `orders-list-bench`, `parseMessage-segments`, `parseMessage-bad-input`,
 `status-fsm`, `status-exhaustive`, `status-bucket`, `input-modes`,
@@ -62,10 +84,12 @@ that file's check requires every listed path to exist.
    `sql.begin(...)` before the entity write. One audit row per mutation
    with `subject_kind: 'order'` and `{ before, after }`. A failed write rolls
    the audit row back too; a refused mutation writes nothing.
-2. **Order capability.** Reads need `business.view`; every create, edit,
-   transition and link needs `money.mutate.price`. The router and the
-   repository both read the constants in `src/orders/order-capability.ts`.
-   No new `Capability` value was added. See the Owner question below.
+2. **Order capability (Owner decision, M-07).** Reads need `business.view`;
+   every create, edit, transition and link needs `money.mutate.price` OR
+   `money.mutate.full`, so Owner, Manager and Sales Staff may mutate and the
+   Accountant reads only. The router and the repository both read the
+   constants in `src/orders/order-capability.ts`. No new `Capability`
+   value was added.
 3. **Tenant guard by absence.** Every query filters by `business_id`. An id
    from another business, a missing id and a malformed id all return the same
    `NotFound`.
@@ -90,26 +114,27 @@ that file's check requires every listed path to exist.
 ## Test and coverage results
 
 Command: `bun run coverage` (= `bun test tests/unit tests/integration --coverage`).
-Result: 201 pass, 0 fail, 44 files. The B1 suite (108 tests) stays green;
-93 tests are new.
+Result after the review fixes: **214 pass, 0 fail, 45 files**. The B1 suite
+stays green; 106 tests are new or extended in B2 (201 at the first
+hand-off, 13 added by the review fixes).
 
 | Scope | Lines covered | % |
 |---|---|---|
-| `src/**` (all reported source) | 2 518 / 2 601 | 96.81 |
-| `src/orders/**` | 1 383 / 1 395 | 99.14 |
+| `src/**` (all reported source) | 2 752 / 2 834 | 97.11 |
+| `src/orders/**` | 1 607 / 1 618 | 99.32 |
 
 High-risk files (90 % floor):
 
 | File | % lines |
 |---|---|
-| `src/orders/parse-message.ts` | 97.59 |
+| `src/orders/parse-message.ts` | 98.17 |
 | `src/orders/parse-message-segments.ts` | 100.00 |
 | `src/orders/status-fsm.ts` | 100.00 |
 | `src/orders/status-bucket.ts` | 100.00 |
 
-Every other `src/orders/**` file: 100 %, except `order-draft.ts` 91.67,
-`order-rows.ts` 98.86, `order-total.ts` 96.00, `list-orders.ts` 98.00,
-`update-order.ts` 98.15 and `screens/PasteParse.tsx` 96.72.
+Every other `src/orders/**` file: 100 % (including `screens/ManualOrder.tsx`
+and `order-total.ts`), except `order-draft.ts` 91.67, `order-rows.ts` 98.86,
+`list-orders.ts` 98.00, `update-order.ts` 98.18 and `screens/PasteParse.tsx` 96.85.
 
 Benchmarks, local budget and CI gate (10×) unchanged:
 
@@ -125,7 +150,7 @@ was kept and the hot path was fixed instead: per-value regexes were replaced
 by one Latin-word tokenisation per segment, with the same whole-word
 semantics. That made the run about 10× faster.
 
-Paste-parse fixtures: 20 seeded messages, **20 / 20 parse exactly**, 100 %
+Paste-parse fixtures: 22 seeded messages (2 added for M-04), **22 / 22 parse exactly**, 100 %
 against the ≥ 95 % target (NFR6.7.3).
 
 ## Mutation-check results
@@ -174,41 +199,65 @@ was reverted. Afterwards `git diff` against the step commit was empty.
 
 ## Open questions for the Owner
 
-- **Who may mutate orders?** With `money.mutate.price`, Owner and Sales Staff
-  can create, edit and move orders; **Manager and Accountant can only read
-  them**. If Manager should mutate orders, change one line in
-  `src/orders/order-capability.ts`, or add `money.mutate.price` to the
-  manager's set in the role matrix.
+- The order-permission question is resolved (M-07, 2026-10-26): Owner,
+  Manager and Sales Staff mutate orders; Accountant reads only.
 - OQ-NFR-D-B2-1 (3G vs 4G for the 3 s budget), OQ-NFR-D-B2-2 (200-item cap,
   implemented as 200) and OQ-NFR-D-B2-3 (bucket sets, implemented as listed)
   remain open.
 
+## Open review items (not changed by instruction)
+
+- **L-02, customer PII in the audit log.** Every order audit payload
+  carries the full `contact` (name, phone, address) in `before` and
+  `after`. The audit log is insert-only and kept 5 years, so this PII can
+  never be erased. The privacy position is undecided. Options: record a
+  security decision that accepts it, or store a contact reference or
+  hash in the audit payload instead.
+- **L-04, weak traceability evidence.** NFR5.5 points at
+  `0008_create_orders.sql`, which has no retention column or read-path
+  filter; it holds only in the sense that orders are never deleted
+  (no DELETE grant). Audit retention itself is B1 (`audit_log.retention_until`).
+  FR12.1 points at `order-schema.test.ts`, which proves only that no B2
+  migration grants on `audit_log`; the binding mechanism is B1's
+  `0007_grants.sql` plus R1.1. The targets were left as they are.
+
 ## Known gaps (not regressions)
 
-- `src/index.tsx` (B1) mounts the Shell but not the router, so the U3 screens
-  are wired to their routes but not bundled into the running app yet
-  (36 modules in the build).
-- There is no multi-line manual-entry screen. US1.11 ships as the
-  `buildManualOrder` builder plus quick-add, within the plan's four-screen
-  scope.
+- **M-05: the screens are not reachable in the running app.**
+  `src/index.tsx` (B1) mounts the Shell but not the router, and no
+  composition root builds an `OrdersRouteState` wired to `createOrder` and
+  a database handle (`onSave` is supplied only by the tests). So the U3
+  screens are registered on their routes and fully tested, but not bundled
+  into the app (36 modules in the build). The B2 outcome "orders can be
+  captured end-to-end" (bolt-plan.md) is demonstrated through test
+  harnesses only. **Owner of the fix:** no Bolt in `bolt-plan.md` names the
+  app composition root. The Router is a U1 (B1) component; B2's outcome
+  depends on it. The Owner should assign it: a B2 follow-up before merge,
+  or a B1 fix-forward.
 - No layer-3 business rule is attached to the U3 routes. The state machine
   and tenant guard are enforced in the repository.
-- `tests/unit/gate-bench.test.ts` (B1) asserts `≤ 0.002` ms, which is 2 µs,
-  not the documented 2 ms. It was left unchanged; the new U3 bench uses 2 ms.
 - NFR5.4 means "manual courier entry" in the inception `requirements.md` but
   "no PCI scope" in the U3 NFR set. This record follows the U3 meaning.
+- `tests/unit/router.test.ts` (B1) still has one test that only `void`s its
+  values. It was outside L-03's cited lines and was left unchanged.
+- The SQL stub never exercises `FOR UPDATE`, `ANY($1::uuid[])` or the
+  cursor row comparison. Build and Test or CI should run `bun run migrate`
+  and the order queries against a real Postgres.
 - The `bun audit` advisories (happy-dom, vite, zod) remain out of scope.
 
 ## On-disk verification
 
-Run at the end of Step 14 with a script that reads both JSON files:
+Re-run after the review fixes, with a script that reads both JSON files:
 
-- `source-manifest.json`: 66 paths, **0 missing**, 0 record-directory paths.
-  The 66 paths are exactly the application paths changed since the baseline
-  commit (`git diff --name-status 9bd4de8 HEAD`), less the one deletion.
+- `source-manifest.json`: 68 paths, **0 missing**, 0 record-directory paths.
+  The 68 paths are set-equal to the application paths changed since the
+  baseline commit (`git diff --name-only --diff-filter=d 9bd4de8 HEAD`,
+  excluding `aidlc/`); the one deletion is the only changed path not
+  listed.
 - `traceability.json`: 39 entries (34 `OK`, 5 `Deferred`). **0 `OK` targets
-  missing**, and every `OK` target is a single existing file path. Every
-  upstream id has an entry, and every `Deferred` entry has a justification.
+  missing**, and every `OK` target is a single existing file path. US1.11
+  now points at `src/orders/screens/ManualOrder.tsx`. Every upstream id has
+  an entry, and every `Deferred` entry has a justification.
 - `src/router/screens/OrdersPlaceholder.tsx` is confirmed absent.
 
 ## Commits (branch `b2-orders`)
@@ -216,4 +265,8 @@ Run at the end of Step 14 with a script that reads both JSON files:
 `9bd4de8` baseline · `c72fc44` S1 · `004e368` S2 · `ef55bca` S3 ·
 `d597ca5` S4 · `6d24b17` S5 · `4cf718d` S6 · `0e885fd` S7 · `2d76465` S8 ·
 `7c1e2d9` S9 · `c57ce93` S10 · `de23e6f` S11 · `cbad80d` S12 ·
-`f1bc30f` S13 · S14 (this record).
+`f1bc30f` S13 · `f59e436` S14.
+
+Review iteration 1 fixes: `9571339` M-02 · `48f1534` M-07 · `a40df2c` H-01 ·
+`8fd86d0` M-03 · `c4720ee` M-01 · `589b8b5` M-04 · `da993bc` M-06 ·
+`6433fc7` L-01 · `e2d8918` L-03 · records (this update).

@@ -9,7 +9,7 @@
   ],
   "coverage": [
     { "id": "US1.10", "status": "OK", "target": "src/orders/parse-message.ts" },
-    { "id": "US1.11", "status": "OK", "target": "src/orders/input-modes.ts" },
+    { "id": "US1.11", "status": "OK", "target": "src/orders/screens/ManualOrder.tsx" },
     { "id": "US1.12", "status": "OK", "target": "src/orders/screens/RepeatFromPast.tsx" },
     { "id": "US1.13", "status": "OK", "target": "src/orders/screens/OrdersList.tsx" },
     { "id": "US1.14", "status": "Deferred", "target": "OCR vendor not chosen; the photo body is deferred (US1.14.D). The typed entry point and its deferred_input_invoked log ship in B2." },
