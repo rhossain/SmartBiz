@@ -238,9 +238,9 @@ that layer is implemented, together with the full existing suite, before the nex
 
 ### Step 14 — Documentation and traceability
 
-- [ ] Module header comments on every new file; inline comments cite BR/NFR ids.
-- [ ] `code-summary.md`, `source-manifest.json` (every path created, modified, moved or deleted), `traceability.json` (42 ACs, BR1.1–BR10.3, NFR1.1–NFR10.1, each `OK` target an existing file).
-- [ ] Commit per step on `app-wiring`.
+- [x] Module header comments on every new file; inline comments cite BR/NFR ids.
+- [x] `code-summary.md`, `source-manifest.json` (every path created, modified, moved or deleted), `traceability.json` (42 ACs, BR1.1–BR10.3, NFR1.1–NFR10.1, each `OK` target an existing file).
+- [x] Commit per step on `app-wiring`.
 
 ## Story-to-step traceability
 
