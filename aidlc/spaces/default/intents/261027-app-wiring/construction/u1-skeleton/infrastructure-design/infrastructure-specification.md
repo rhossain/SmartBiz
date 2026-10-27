@@ -20,7 +20,7 @@
 
 | Service | Role | Configuration | Notes |
 |---------|------|---------------|-------|
-| `smartbiz-db` (postgres:18) | database | image pinned as `postgres:18.6@sha256:4ef4dbc939d61acea57712655ddb4b4ab27419c913f94cca0cd57cb3ea3c2280` (the image already on this machine); `127.0.0.1:${SMARTBIZ_DB_PORT:-5432}:5432`; volume `smartbiz-pgdata`; healthcheck `pg_isready` every 5 s | created once with `docker compose up -d` |
+| `smartbiz-db` (postgres:18) | database (started with `docker compose --env-file .env.migrate up -d`, because compose reads only `.env` by itself) | image pinned as `postgres:18.6@sha256:4ef4dbc939d61acea57712655ddb4b4ab27419c913f94cca0cd57cb3ea3c2280` (the image already on this machine); `127.0.0.1:${SMARTBIZ_DB_PORT:-5432}:5432`; volume `smartbiz-pgdata`; healthcheck `pg_isready` every 5 s | created once with `docker compose up -d` |
 | Roles in `smartbiz-db` | database access | `app_role` NOLOGIN (privileges from migrations, exact set C9); `smartbiz_app` LOGIN, member of `app_role`, not superuser; admin `postgres` used only by `MIGRATE_DATABASE_URL` | NFR2.1–NFR2.3; checked at server start |
 | Connection settings | database | per connection: `statement_timeout=5s`, `idle_in_transaction_session_timeout=10s`; connect timeout 10 s | NFR7.1 |
 | Gate database | database (ephemeral) | `docker run -d -p 127.0.0.1::5432 -v ./db/init:/docker-entrypoint-initdb.d:ro -e POSTGRES_PASSWORD -e SMARTBIZ_APP_PASSWORD postgres:18.6@sha256:4ef4dbc939d61acea57712655ddb4b4ab27419c913f94cca0cd57cb3ea3c2280`; one fresh database per gate step; the outage test uses `docker restart` (data kept); always removed by the gate runner | NFR8.9; review R-03 |
@@ -56,7 +56,7 @@ If free space drops below 2 GiB the gate runner stops before starting a containe
 | `db/init/01-roles.sh` | creates `smartbiz`, `app_role` (NOLOGIN) and `smartbiz_app` (LOGIN, member of `app_role`, password from `SMARTBIZ_APP_PASSWORD`) |
 | `.env.example`, `.env.migrate.example` | placeholders for every variable above |
 | `README.md` | prerequisites, `docker compose up -d`, `bun run start`, backup and restore commands, FileVault note |
-| `package.json` scripts | `start` (build only when `dist/` is missing → migrate with `.env.migrate` → serve, appending logs), `build`, `serve`, `migrate`, `test:realdb`, `test:e2e`, `bench`, `check:bundle`, `check:secrets`, `mutants`, `smoke`, `gate`, `logs:summary` |
+| `package.json` scripts | `start` (build when `dist/BUILD_SHA` is missing or differs from `git rev-parse HEAD` or the working tree is dirty → migrate with `.env.migrate` → serve, appending logs); `build` writes `dist/BUILD_SHA` and the server serves it at `/build-sha` for the smoke check, `build`, `serve`, `migrate`, `test:realdb`, `test:e2e`, `bench`, `check:bundle`, `check:secrets`, `mutants`, `smoke`, `gate`, `logs:summary` |
 | `.github/workflows/ci.yml` | trigger branches corrected; new gate steps (see `cicd-pipeline.md`) |
 | `.gitignore` | adds `backups/` and the exception `!.env.migrate.example` (the existing `.env.*` pattern already ignores `.env.migrate`; `logs/` is already ignored by the `logs` pattern) |
 | `scripts/gate.ts` | the one-command local gate runner (see `cicd-pipeline.md`), written in U1 Code Generation with the file tool |

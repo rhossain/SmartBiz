@@ -17,6 +17,7 @@
 
 | # | Step | Command | Gate | New in U1 |
 |---|------|---------|------|-----------|
+| 0 | preflight | inside `bun run gate` | Docker up, ≥ 2 GiB free, gate container started, `REALDB_*` set | yes |
 | 1 | install | `bun install --frozen-lockfile` | lockfile unchanged | — |
 | 2 | lint | `bun run lint` | zero errors, incl. the browser-file import rules and `src/data/**` rule (BR7.1, BR7.4) | rules added |
 | 3 | type-check | `bun run type-check` | zero errors | — |
@@ -29,7 +30,6 @@
 | 10 | mutants | the scripted mutant runner | every named mutant caught | new mutants for session limits, Origin check, grants |
 | 11 | dependency audit | `bun audit --audit-level=high` | no High/Critical | — |
 | 12 | secret scan | `bun run check:secrets` | no unallowed match | yes |
-| 0 | preflight | inside `bun run gate` | Docker up, ≥ 2 GiB free, gate container started, `REALDB_*` set | yes |
 | 13 | realdb | `bun run test:realdb` against a fresh `gate_realdb` database migrated twice with the admin URL; tests connect as the `smartbiz_app` member of `app_role` | all pass, incl. exact grants, sessions, line revisions, outage recovery (via `docker restart`) | expanded |
 | 14 | wiring check | `bun run test:e2e` against a fresh, empty `gate_e2e` database | W10 passes end to end, starting from `businessExists: false` | yes |
 | 15 | benchmark | `bun run bench` against a fresh `gate_bench` database it seeds itself (`base` profile; `large` before a Bolt merge) | NFR6.1–NFR6.3 met | yes |
@@ -45,17 +45,17 @@ Recreate: stop the running server (Ctrl-C, graceful shutdown up to 5 s), `git pu
 
 ## Post-merge smoke
 
-`bun run smoke` (part of the wiring-check script, live mode): `GET /api/health` is up with `db: up`, sign in with the Owner's account (password typed at the prompt, never stored), `GET /api/orders` answers 200, sign out. The deployment is not done until it passes (team.md Deployment).
+`bun run smoke` (part of the wiring-check script, live mode): `GET /build-sha` equals `git rev-parse HEAD`, `GET /api/health` is up with `db: up`, sign in with the Owner's account (password typed at the prompt, never stored), `GET /api/orders` answers 200, sign out. The deployment is not done until it passes (team.md Deployment).
 
 ## Rollback
 
 | Situation | Steps |
 |-----------|-------|
-| Code defect, schema fine | `git revert <squash commit>` on `main`, push, `bun run start` |
-| Migration broke the live database | stop the server; `docker compose exec smartbiz-db dropdb -U postgres smartbiz && createdb -U postgres -O postgres smartbiz`; `pg_restore -U postgres -d smartbiz` the verified pre-merge dump; check out the previous `main` commit; `bun run start` (its migrations are all already applied, so nothing re-runs) |
+| Code defect, schema fine | `git revert <squash commit>` on `main`, push, `bun run start` (it rebuilds `dist/` because `BUILD_SHA` no longer matches HEAD); the smoke check compares `/build-sha` with HEAD |
+| Migration broke the live database | stop the server; `docker compose --env-file .env.migrate exec -T smartbiz-db dropdb -U postgres smartbiz`; `docker compose --env-file .env.migrate exec -T smartbiz-db createdb -U postgres -O postgres smartbiz`; `docker compose --env-file .env.migrate exec -T smartbiz-db pg_restore -U postgres -d smartbiz < backups/<pre-merge>.dump` (the verified pre-merge dump, piped in); check out the previous `main` commit; `bun run start` (its migrations are all already applied, so nothing re-runs) |
 | Backups pile up | keep the 10 newest dumps (README one-liner); never delete the pre-merge dump of the current Bolt |
 | Migration 0012 side effect | expected: everyone signs in again; no rollback needed |
 
 ## Secrets in the pipeline
 
-The gate generates a random throwaway password per run and passes it only through environment variables of the child processes; nothing is written to disk except the container's own state, which is removed. Live passwords stay in `.env`. The secret scan (gate 12) and `.gitignore` keep both out of commits.
+The gate generates a random throwaway password per run and passes it only through environment variables of the child processes; nothing is written to disk except the container's own state, which is removed. Live passwords: the app login's URL is in `.env`; the admin URL and both passwords are in `.env.migrate`. The secret scan (gate 12) and `.gitignore` keep both out of commits.

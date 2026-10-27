@@ -7,7 +7,7 @@
 
 ## Q1. How does Postgres run on this machine?
 
-A. A committed `docker-compose.yml` with one `postgres:18` service named `smartbiz-db`, port published on `127.0.0.1:5432` only, data in the named volume `smartbiz-pgdata`, and an init script that creates the `smartbiz` database, the `app_role` group role and a login user `smartbiz_app` that is a member of it. The admin (`postgres`) password and the app password come from `.env` (gitignored); `.env.example` holds placeholders. Throwaway gate databases keep using a separate `docker run --rm` container on another port
+A. A committed `docker-compose.yml` with one `postgres:18` service named `smartbiz-db`, port published on `127.0.0.1:5432` only, data in the named volume `smartbiz-pgdata`, and an init script that creates the `smartbiz` database, the `app_role` group role and a login user `smartbiz_app` that is a member of it. The admin (`postgres`) password and the app password come from `.env.migrate` (gitignored; compose is run with `--env-file .env.migrate`); `.env.example` and `.env.migrate.example` hold placeholders. (Revised after review R-01/R-11.) Throwaway gate databases keep using a separate `docker run --rm` container on another port
 B. Postgres installed natively
 X. Other (please specify)
 
@@ -31,7 +31,7 @@ X. Other (please specify)
 
 ## Q4. Secrets?
 
-A. Only local secrets exist: the Postgres admin and app passwords and the URLs built from them, in `.env` (gitignored, mode 600 recommended). Nothing is committed; the secret scan blocks a committed `.env` or URL with a password. Throwaway gate passwords are generated per run. No rotation policy beyond "change `.env` and recreate the role" (documented)
+A. Only local secrets exist: the app login URL in `.env`, and the Postgres admin URL plus both passwords in `.env.migrate` (both gitignored, mode 600 recommended). (Revised after review R-02/R-11.) Nothing is committed; the secret scan blocks a committed `.env` or URL with a password. Throwaway gate passwords are generated per run. No rotation policy beyond "change `.env` and recreate the role" (documented)
 B. A secrets manager
 X. Other (please specify)
 
