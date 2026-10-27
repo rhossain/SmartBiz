@@ -1232,3 +1232,57 @@
 **Summary Authorization Id**: 28ecd243c7153e1ba1fb3cea92f768e4ec9e9cdf1f0feab76089eb87a49f88b5
 
 ---
+
+## Decision Recorded
+**Timestamp**: 2026-10-27T09:37:41Z
+**Event**: DECISION_RECORDED
+**Stage**: scope-definition
+**Decision**: Scope Definition §13 learnings: 1 candidate (c1 MVP records disagree on B3 stories) plus the mandatory 'Anything to add for next time?' question.
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-27T09:49:09Z
+**Event**: HUMAN_TURN
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+**Picked**: ["Save it","Nothing to add"]
+
+---
+
+## Question Replied
+**Timestamp**: 2026-10-27T09:49:10Z
+**Event**: QUESTION_REPLIED
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+**Question**: Lesson from Scope Definition: save "when the MVP plan and the unit definitions disagree on a Bolt's stories, follow the unit definitions" as a project rule?
+**Reply**: Save it
+
+---
+
+## Question Replied
+**Timestamp**: 2026-10-27T09:49:10Z
+**Event**: QUESTION_REPLIED
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+**Question**: Anything else to add for next time?
+**Reply**: Nothing to add
+
+---
+
+## Question Answered
+**Timestamp**: 2026-10-27T09:49:22Z
+**Event**: QUESTION_ANSWERED
+**Stage**: scope-definition
+**Details**: Learning c1 = Save it; Anything to add = Nothing to add
+
+---
+
+## Rule Learned
+**Timestamp**: 2026-10-27T09:49:23Z
+**Event**: RULE_LEARNED
+**Stage**: scope-definition
+**Candidate-ID**: c1
+**Content-Hash**: 8a4504d3056a7f6497358608624b4e585bbe816b1f955665a68f601f800c3bdf
+**Destination**: <project-dir>/aidlc/spaces/default/memory/project.md
+**Heading**: ## Decided
+**Source**: orchestrator
+
+---

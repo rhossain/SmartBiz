@@ -60,6 +60,8 @@
 <!-- Decisions made in earlier stages that should not be re-asked. -->
 <!-- Format: DECIDED: [decision] (Stage [slug], [date]) -->
 
+- When the MVP bolt-plan.md and unit-of-work.md disagree on which stories a Bolt contains, follow unit-of-work.md and note the disagreement. (learned 2026-10-27) <!-- cid:261027-app-wiring:scope-definition:8a4504d3056a7f6497358608624b4e585bbe816b1f955665a68f601f800c3bdf -->
+
 ## Scope Overrides
 
 <!-- Custom scope rules for this project. -->
