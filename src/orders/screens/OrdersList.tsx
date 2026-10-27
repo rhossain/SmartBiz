@@ -26,7 +26,7 @@ import {
   type SaveOrder,
 } from "../order-draft.js";
 import { parseTakaToPaise } from "../order-total.js";
-import { bucketOf, bucketTotals, orderMoneyFigure } from "../status-bucket.js";
+import { bucketTotals, orderMoneyFigure } from "../status-bucket.js";
 import { isOrderStatus, statusLabel } from "../status-fsm.js";
 import { ORDER_STATUSES, type Order, type OrderStatus } from "../types.js";
 import { tr } from "./copy.js";
@@ -234,12 +234,7 @@ export const OrdersList = (props: OrdersListProps): React.ReactElement => {
         <span>{tr("orders.realized", locale)}</span>
         <MoneyCell figure={totals.realized} locale={locale} testId="orders-summary-realized" />
         <span>{tr("orders.pipeline", locale)}</span>
-        <MoneyCell
-          figure={totals.pipeline}
-          locale={locale}
-          testId="orders-summary-pipeline"
-          pipeline
-        />
+        <MoneyCell figure={totals.pipeline} locale={locale} testId="orders-summary-pipeline" />
       </div>
       <Filters locale={locale} onFilter={props.onFilter} />
       {orders.length === 0 ? (
@@ -266,7 +261,6 @@ export const OrdersList = (props: OrdersListProps): React.ReactElement => {
                     figure={orderMoneyFigure(o)}
                     locale={locale}
                     testId="orders-row-total"
-                    pipeline={bucketOf(o.status) === "pipeline"}
                   />
                 </td>
                 <td>

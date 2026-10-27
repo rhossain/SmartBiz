@@ -9,6 +9,11 @@
  *   REALIZED = { settled }
  *   PIPELINE = { new, confirmed, packed, shipped, partial }
  *   cancelled and returned are in no bucket.
+ *
+ * And the recognition rule (R-04), restated: only earned and realized
+ * money carries a `recognition`. Pipeline money and no-sale money
+ * (cancelled, returned) carry a `basis` of "pipeline" or "none" and NO
+ * recognition field, so they can never be summed or shown as earned.
  */
 import { describe, expect, test } from "bun:test";
 import { bucketOf, bucketTotals, orderMoneyFigure } from "../../src/orders/status-bucket.js";
@@ -77,7 +82,8 @@ describe("R2.3 — status-bucket math", () => {
     ]);
     expect(mixed.earned).toMatchObject({ recognition: "earned", completeness: "partial" });
     expect(mixed.realized).toMatchObject({ recognition: "realized", completeness: "partial" });
-    expect(mixed.pipeline).toMatchObject({ recognition: "earned", completeness: "partial" });
+    expect(mixed.pipeline).toEqual({ paise: 1, basis: "pipeline", completeness: "partial" });
+    expect("recognition" in mixed.pipeline).toBe(false);
     const settledOnly = bucketTotals([{ status: "settled", totalPaise: 5 }]);
     expect(settledOnly.earned.completeness).toBe("complete");
     expect(settledOnly.realized.completeness).toBe("complete");
@@ -96,15 +102,26 @@ describe("R2.3 — status-bucket math", () => {
       recognition: "earned",
       completeness: "complete",
     });
-    expect(orderMoneyFigure({ status: "shipped", totalPaise: 7 })).toEqual({
-      paise: 7,
-      recognition: "earned",
-      completeness: "partial",
-    });
-    expect(orderMoneyFigure({ status: "cancelled", totalPaise: 7 })).toEqual({
-      paise: 7,
-      recognition: "earned",
-      completeness: "unknown",
-    });
+    for (const s of PIPELINE) {
+      expect(orderMoneyFigure({ status: s, totalPaise: 7 })).toEqual({
+        paise: 7,
+        basis: "pipeline",
+        completeness: "partial",
+      });
+    }
+    for (const s of NONE) {
+      expect(orderMoneyFigure({ status: s, totalPaise: 7 })).toEqual({
+        paise: 7,
+        basis: "none",
+        completeness: "unknown",
+      });
+    }
+  });
+
+  test("R-04: only earned and realized orders ever carry a recognition", () => {
+    for (const s of ALL) {
+      const f = orderMoneyFigure({ status: s, totalPaise: 1 });
+      expect({ s, recognized: "recognition" in f }).toEqual({ s, recognized: EARNED.includes(s) });
+    }
   });
 });

@@ -41,7 +41,7 @@ export const subtract = (a: MoneyFigure, b: MoneyFigure): MoneyFigure => {
 };
 
 /** Convert a MoneyFigure to a display string in taka (2 dp). */
-export const toTaka = (m: MoneyFigure): string => {
+export const toTaka = (m: Pick<MoneyFigure, "paise">): string => {
   const taka = m.paise / 100;
   return `৳${taka.toFixed(2)}`;
 };

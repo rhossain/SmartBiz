@@ -8,54 +8,48 @@
  * no money figure is ever shown bare. Amounts render in Bangla digits
  * for the Bangla locale (FR11.1).
  *
- * Pipeline figures (review L-01): money of orders still in the pipeline
- * (new, confirmed, packed, shipped, partial) is not earned yet. The data
- * keeps ADR-002's two-valued Recognition (a forecast is carried as
- * `earned`), but the pill must not claim "earned", so a caller marks
- * such a figure `pipeline` and the cell shows a "pipeline" pill instead
- * of the earned/realized BasisPill. A pipeline figure is never realized.
+ * Money that is not a sale (review L-01, then R-04): pipeline orders
+ * (new, confirmed, packed, shipped, partial) are not earned yet, and
+ * cancelled or returned orders never will be. Such money arrives as an
+ * UnrecognizedFigure (order-figure.ts), a type with no recognition, so
+ * the cell shows a "pipeline" or "no sale" pill and BasisPill is never
+ * reached for it. The type decides the pill; no caller flag can claim
+ * earned for forecast money.
  */
 import * as React from "react";
 import type { Locale } from "../../auth/types.js";
 import { bnDigits } from "../../i18n/bnDigits.js";
-import { toTaka, type MoneyFigure } from "../../money/money-figure.js";
+import { toTaka } from "../../money/money-figure.js";
 import { BasisPill } from "../../pres/BasisPill.js";
 import { CompletenessControl } from "../../pres/CompletenessControl.js";
 import { Pill } from "../../pres/Pill.js";
+import { isRecognized, type OrderFigure } from "../order-figure.js";
 
 export interface MoneyCellProps {
-  readonly figure: MoneyFigure;
+  readonly figure: OrderFigure;
   readonly locale: Locale;
   readonly testId: string;
-  /** True for money of orders still in the pipeline (not yet earned). */
-  readonly pipeline?: boolean;
 }
 
-export const formatMoney = (figure: MoneyFigure, locale: Locale): string =>
+const UNRECOGNIZED_PILL = { pipeline: "pipeline", none: "no sale" } as const;
+
+export const formatMoney = (figure: OrderFigure, locale: Locale): string =>
   locale === "bn" ? bnDigits(toTaka(figure)) : toTaka(figure);
 
-export const MoneyCell = ({
-  figure,
-  locale,
-  testId,
-  pipeline = false,
-}: MoneyCellProps): React.ReactElement => {
-  const isPipeline = pipeline && figure.recognition === "earned";
-  return (
-    <span
-      className="money-cell"
-      data-testid={testId}
-      data-money="true"
-      data-basis={isPipeline ? "pipeline" : figure.recognition}
-      data-completeness={figure.completeness}
-    >
-      <span className="money-cell__amount">{formatMoney(figure, locale)}</span>
-      {isPipeline ? (
-        <Pill kind="neutral" label="pipeline" />
-      ) : (
-        <BasisPill basis={figure.recognition} />
-      )}
-      <CompletenessControl completeness={figure.completeness} />
-    </span>
-  );
-};
+export const MoneyCell = ({ figure, locale, testId }: MoneyCellProps): React.ReactElement => (
+  <span
+    className="money-cell"
+    data-testid={testId}
+    data-money="true"
+    data-basis={isRecognized(figure) ? figure.recognition : figure.basis}
+    data-completeness={figure.completeness}
+  >
+    <span className="money-cell__amount">{formatMoney(figure, locale)}</span>
+    {isRecognized(figure) ? (
+      <BasisPill basis={figure.recognition} />
+    ) : (
+      <Pill kind="neutral" label={UNRECOGNIZED_PILL[figure.basis]} />
+    )}
+    <CompletenessControl completeness={figure.completeness} />
+  </span>
+);

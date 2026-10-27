@@ -14,13 +14,16 @@
  * forward pending the Owner's answer to OQ-NFR-D-B2-3; tests restate them
  * inline and never import them, so a change here is a failing test.
  *
- * `bucketTotals` is pure over integer paise and returns MoneyFigures, so
- * every figure on a screen arrives with its basis and completeness
- * (ADR-002): earned is `partial` while pipeline orders could still land,
- * realized is `partial` while earned orders are unsettled.
+ * `bucketTotals` is pure over integer paise. Earned and realized come back
+ * as MoneyFigures; pipeline money comes back as an UnrecognizedFigure,
+ * because it is not earned yet and must never be summed or shown as
+ * earned (R-04, see order-figure.ts). Every figure carries its basis and
+ * completeness (ADR-002): earned is `partial` while pipeline orders could
+ * still land, realized is `partial` while earned orders are unsettled.
  */
 import { money, type MoneyFigure } from "../money/money-figure.js";
 import type { Completeness } from "../money/types.js";
+import { unrecognized, type OrderFigure, type UnrecognizedFigure } from "./order-figure.js";
 import type { Order, OrderBucket, OrderStatus } from "./types.js";
 
 export const EARNED_STATUSES: ReadonlySet<OrderStatus> = new Set<OrderStatus>([
@@ -55,7 +58,7 @@ export interface BucketCounts {
 export interface BucketTotals {
   readonly earned: MoneyFigure;
   readonly realized: MoneyFigure;
-  readonly pipeline: MoneyFigure;
+  readonly pipeline: UnrecognizedFigure;
   readonly counts: BucketCounts;
 }
 
@@ -88,7 +91,7 @@ export const bucketTotals = (orders: ReadonlyArray<Priced>): BucketTotals => {
   return {
     earned: money(earned, "earned", earnedCompleteness),
     realized: money(realized, "realized", realizedCompleteness),
-    pipeline: money(pipeline, "earned", pipelineCount > 0 ? "partial" : "complete"),
+    pipeline: unrecognized(pipeline, "pipeline", pipelineCount > 0 ? "partial" : "complete"),
     counts: {
       earned: earnedCount,
       realized: realizedCount,
@@ -100,19 +103,17 @@ export const bucketTotals = (orders: ReadonlyArray<Priced>): BucketTotals => {
 };
 
 /**
- * One order's total as a MoneyFigure: realized once settled, earned
- * otherwise; complete once earned, partial while in the pipeline, and
- * unknown for an order that is in no bucket (cancelled or returned).
+ * One order's total: a realized MoneyFigure once settled, an earned one
+ * once delivered (both complete); a `pipeline` UnrecognizedFigure while
+ * the order can still become a sale (partial); and a `none` one for an
+ * order in no bucket (cancelled or returned, completeness unknown), which
+ * is not a sale and must not claim earned (R-04).
  */
-export const orderMoneyFigure = (order: Priced): MoneyFigure => {
-  const completeness: Completeness = EARNED_STATUSES.has(order.status)
-    ? "complete"
-    : PIPELINE_STATUSES.has(order.status)
-      ? "partial"
-      : "unknown";
-  return money(
-    order.totalPaise,
-    REALIZED_STATUSES.has(order.status) ? "realized" : "earned",
-    completeness,
-  );
+export const orderMoneyFigure = (order: Priced): OrderFigure => {
+  if (REALIZED_STATUSES.has(order.status)) return money(order.totalPaise, "realized", "complete");
+  if (EARNED_STATUSES.has(order.status)) return money(order.totalPaise, "earned", "complete");
+  if (PIPELINE_STATUSES.has(order.status)) {
+    return unrecognized(order.totalPaise, "pipeline", "partial");
+  }
+  return unrecognized(order.totalPaise, "none", "unknown");
 };

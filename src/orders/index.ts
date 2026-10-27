@@ -49,6 +49,13 @@ export {
   type BucketTotals,
   type BucketCounts,
 } from "./status-bucket.js";
+export {
+  isRecognized,
+  unrecognized,
+  type OrderFigure,
+  type UnrecognizedBasis,
+  type UnrecognizedFigure,
+} from "./order-figure.js";
 export { parseMessage, MAX_PARSE_ITEMS, MAX_PARSE_CHARS } from "./parse-message.js";
 export {
   splitSegments,
