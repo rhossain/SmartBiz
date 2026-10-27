@@ -115,9 +115,9 @@ that layer is implemented, together with the full existing suite, before the nex
 
 ### Step 2 — Verify the test runner and record the unit-scoped command
 
-- [ ] Confirm `bun test` (bun 1.4.3) with `tests/setup.ts` (happy-dom, frozen clock) runs the existing suite green.
-- [ ] Make `tests/helpers/sql-stub.ts` fail closed: an unrecognised statement throws (team.md Testing Posture).
-- [ ] Record the exact U1-scoped commands in `unit-test-instructions.md` (already written before approval) and run the first of them against the existing moved modules.
+- [x] Confirm `bun test` (bun 1.4.3) with `tests/setup.ts` (happy-dom, frozen clock) runs the existing suite green.
+- [x] Make `tests/helpers/sql-stub.ts` fail closed: an unrecognised statement throws (team.md Testing Posture).
+- [x] Record the exact U1-scoped commands in `unit-test-instructions.md` (already written before approval) and run the first of them against the existing moved modules.
 
 ### Step 3 — Data model / database behaviour: implement (US1.1, US1.2, US2.1a; BR2.6, BR6.8, BR6.10, BR9.1–BR9.4)
 

@@ -452,6 +452,18 @@ export const makeSqlStub = (
       });
       return [];
     }
+    if (/FROM audit_log\s+WHERE business_id = \?\s+ORDER BY occurred_at DESC\s+LIMIT \?/i.test(text)) {
+      const [businessId, limit] = params as [string, number];
+      return state.auditLog
+        .filter((a) => a["business_id"] === businessId)
+        .sort(
+          (a, b) =>
+            new Date(String(b["occurred_at"])).getTime() -
+            new Date(String(a["occurred_at"])).getTime(),
+        )
+        .slice(0, limit)
+        .map((a) => ({ ...a }));
+    }
     if (/SELECT id, email, password_hash/i.test(text)) {
       const [email] = params as [string];
       return state.users.filter((u) => (u["email"] as string) === email);
@@ -504,7 +516,9 @@ export const makeSqlStub = (
       const [email] = params as [string];
       return state.users.filter((u) => (u["email"] as string) === email);
     }
-    return [];
+    // Fail closed (team.md Testing Posture): a new or mistyped query must not pass a unit
+    // test on an empty result. Every new query shape gets a handler here and a realdb test.
+    throw new Error(`sql-stub: unrecognised statement: ${text.replace(/\s+/g, " ").trim()}`);
   }) as unknown as Sql;
   // Attach begin() helper. Like Postgres, a throw inside the callback rolls
   // back every table to its state at BEGIN; a normal return commits.
