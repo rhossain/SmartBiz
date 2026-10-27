@@ -1575,3 +1575,240 @@
 **Context**: verification > phase-check-ideation.md
 
 ---
+
+## Decision Recorded
+**Timestamp**: 2026-10-27T09:53:14Z
+**Event**: DECISION_RECORDED
+**Stage**: approval-handoff
+**Decision**: Approval & Handoff §13 learnings: 0 candidates; mandatory 'Anything to add for next time?' question with Nothing to add + Add a note.
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-27T09:53:31Z
+**Event**: HUMAN_TURN
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+**Picked**: ["Nothing to add"]
+
+---
+
+## Question Replied
+**Timestamp**: 2026-10-27T09:53:31Z
+**Event**: QUESTION_REPLIED
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+**Question**: Planning is done (Go recommended). Anything to remember for next time? (Typing /aidlc --learnings off stops this question at every step.)
+**Reply**: Nothing to add
+
+---
+
+## Question Answered
+**Timestamp**: 2026-10-27T09:53:39Z
+**Event**: QUESTION_ANSWERED
+**Stage**: approval-handoff
+**Details**: Anything to add = Nothing to add
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-27T09:53:49Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: a0c2ac4087db72281
+**Message**: /aidlc --learnings off
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T09:53:58Z
+**Event**: SENSOR_FIRED
+**Fire id**: be0c551c
+**Sensor ID**: required-sections
+**Stage slug**: approval-handoff
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/approval-handoff/initiative-brief.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T09:53:58Z
+**Event**: SENSOR_PASSED
+**Fire id**: be0c551c
+**Sensor ID**: required-sections
+**Stage slug**: approval-handoff
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/approval-handoff/initiative-brief.md
+**Duration ms**: 114
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T09:53:58Z
+**Event**: SENSOR_FIRED
+**Fire id**: f77f255e
+**Sensor ID**: required-sections
+**Stage slug**: approval-handoff
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/approval-handoff/decision-log.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-27T09:53:59Z
+**Event**: SENSOR_FAILED
+**Fire id**: f77f255e
+**Sensor ID**: required-sections
+**Stage slug**: approval-handoff
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/approval-handoff/decision-log.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/approval-handoff/required-sections-f77f255e.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T09:53:59Z
+**Event**: SENSOR_FIRED
+**Fire id**: 7386c828
+**Sensor ID**: required-sections
+**Stage slug**: approval-handoff
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/approval-handoff/approval-handoff-questions.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T09:53:59Z
+**Event**: SENSOR_PASSED
+**Fire id**: 7386c828
+**Sensor ID**: required-sections
+**Stage slug**: approval-handoff
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/approval-handoff/approval-handoff-questions.md
+**Duration ms**: 195
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T09:54:00Z
+**Event**: SENSOR_FIRED
+**Fire id**: 50a1e76e
+**Sensor ID**: upstream-coverage
+**Stage slug**: approval-handoff
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/approval-handoff/initiative-brief.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-27T09:54:00Z
+**Event**: SENSOR_FAILED
+**Fire id**: 50a1e76e
+**Sensor ID**: upstream-coverage
+**Stage slug**: approval-handoff
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/approval-handoff/initiative-brief.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/approval-handoff/upstream-coverage-50a1e76e.md
+**Findings count**: 6
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T09:54:00Z
+**Event**: SENSOR_FIRED
+**Fire id**: 3239ea9d
+**Sensor ID**: upstream-coverage
+**Stage slug**: approval-handoff
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/approval-handoff/decision-log.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-27T09:54:01Z
+**Event**: SENSOR_FAILED
+**Fire id**: 3239ea9d
+**Sensor ID**: upstream-coverage
+**Stage slug**: approval-handoff
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/approval-handoff/decision-log.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/approval-handoff/upstream-coverage-3239ea9d.md
+**Findings count**: 6
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T09:54:01Z
+**Event**: SENSOR_FIRED
+**Fire id**: 3fe2211a
+**Sensor ID**: upstream-coverage
+**Stage slug**: approval-handoff
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/approval-handoff/approval-handoff-questions.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-27T09:54:01Z
+**Event**: SENSOR_FAILED
+**Fire id**: 3fe2211a
+**Sensor ID**: upstream-coverage
+**Stage slug**: approval-handoff
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/approval-handoff/approval-handoff-questions.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/approval-handoff/upstream-coverage-3fe2211a.md
+**Findings count**: 6
+
+---
+
+## Stage Awaiting Approval
+**Timestamp**: 2026-10-27T09:54:01Z
+**Event**: STAGE_AWAITING_APPROVAL
+**Stage**: approval-handoff
+
+---
+
+## Gate Approved
+**Timestamp**: 2026-10-27T09:54:03Z
+**Event**: GATE_APPROVED
+**Stage**: approval-handoff
+**User Input**: Approve (Owner standing instruction 2026-10-27: don't stop for approval; decide the right options)
+
+---
+
+## Stage Completion
+**Timestamp**: 2026-10-27T09:54:03Z
+**Event**: STAGE_COMPLETED
+**Stage**: approval-handoff
+**Validation Basis**: {"graphContract":"sha256:8f1543e205d2a9a223a57a0bc133871309218f55c508c2b942f2398926f9a31e","inputs":[{"artifact":"constraint-register","contentHash":"sha256:4ad159bd15bbc23803010349278d361c4b7c15beea6cd1a0f2ab29fc247a8e56","instanceCount":1,"presentCount":1,"producer":"feasibility","required":false,"structureHash":"sha256:23b94d4fcbbc25bc9ea5f0c402dada9d340417aed323c1d29dfdb851b407a82f"},{"artifact":"feasibility-assessment","contentHash":"sha256:d2b48fb4b5e02509f628c7228f9c2a44add36bc0f2216d157d6346666a6bc58d","instanceCount":1,"presentCount":1,"producer":"feasibility","required":false,"structureHash":"sha256:be95ae454ac1527826878b840cd07d5a926a52655909583779a21d97a83bd1f0"},{"artifact":"intent-backlog","contentHash":"sha256:e1d9497661b5a48c9b295715cf729ac499086dabeacdeab62ed04ba54fa53f83","instanceCount":1,"presentCount":1,"producer":"scope-definition","required":true,"structureHash":"sha256:a3930d90c15aa0b1d3a8edf7cf64abf3d957abb334a3a43f6e2f09e225f1966b"},{"artifact":"intent-statement","contentHash":"sha256:02d1bbd4ffbc7b1ad522d03fc2734ae98e364fa3f7f8acc6b7c7754cff412e38","instanceCount":1,"presentCount":1,"producer":"intent-capture","required":true,"structureHash":"sha256:44fa7c47fac660308028f42d353b9dbd07da6caca247ae0f0841199ce7cdbadc"},{"artifact":"scope-document","contentHash":"sha256:e9472e79777cb6dba1e22ed2c8791bacabcd7e9f1a6b50299797436fed4d8ab9","instanceCount":1,"presentCount":1,"producer":"scope-definition","required":true,"structureHash":"sha256:c0a5dbc35466c01570f5c844202ecfe252bae40e50b69a2f6694ec4f62c048ad"},{"artifact":"stakeholder-map","contentHash":"sha256:66605e4b31d61ce16369a8c66327d1ed2ce893d484dff3faaaaef83a5b3086a7","instanceCount":1,"presentCount":1,"producer":"intent-capture","required":true,"structureHash":"sha256:76429d53e06427e6090bd75f4c79dc6106c1594a690318aed842a84c10770baa"}],"outputs":[{"artifact":"approval-handoff-questions","contentHash":"sha256:afd69a067e5b9e1d248dbfa8c55e2b62ce17258e8e0242683fd4691a4f1d318e","instanceCount":1,"presentCount":1,"producer":"approval-handoff","required":true,"structureHash":"sha256:1d3774f7c59efa9235906ed01b5344f35113904612d3e6d35f32fdf3c5751982"},{"artifact":"decision-log","contentHash":"sha256:2b609a1c431bb3208d7cf3966fe918f64eac39151da775c9d3c0b46ad42f33b1","instanceCount":1,"presentCount":1,"producer":"approval-handoff","required":true,"structureHash":"sha256:23693ca24b87414df2daa15dec788510bad4b2509e18785cf7457950c884935e"},{"artifact":"initiative-brief","contentHash":"sha256:a1b3a39f16879b0b96353d7277d10754c7fc74ef90284376e9b200731564c561","instanceCount":1,"presentCount":1,"producer":"approval-handoff","required":true,"structureHash":"sha256:f2e46992c272a2624a8e0d41dbca89a6bc6fdfa6fc3bcf0028371a75498ca12f"}],"projectType":"brownfield","schema":3}
+**Details**: Stage Approval & Handoff approved by gate
+**Tokens In**: 24
+**Tokens Out**: 8102
+**Cache Read**: 7773634
+**Cache Write**: 34890
+**Cost USD**: 2.00
+**By Model**: opus-5-5=2.00
+**By Agent**: main=2.00
+**Tokens By Model**: opus-5-5=24/8.1k/7.8M/34.9k
+**Tokens By Agent**: main=24/8.1k/7.8M/34.9k
+
+---
+
+## Phase Completion
+**Timestamp**: 2026-10-27T09:54:03Z
+**Event**: PHASE_COMPLETED
+**From phase**: ideation
+**To phase**: inception
+**Stages completed**: 7
+
+---
+
+## Phase Verification
+**Timestamp**: 2026-10-27T09:54:03Z
+**Event**: PHASE_VERIFIED
+**Phase boundary**: ideation → inception
+
+---
+
+## Phase Start
+**Timestamp**: 2026-10-27T09:54:03Z
+**Event**: PHASE_STARTED
+**Phase**: inception
+**Scope**: feature
+
+---
+
+## Stage Start
+**Timestamp**: 2026-10-27T09:54:03Z
+**Event**: STAGE_STARTED
+**Stage**: reverse-engineering
+**Agent**: aidlc-developer-agent
+
+---
