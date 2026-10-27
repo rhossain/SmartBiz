@@ -102,3 +102,11 @@ Open gaps (not met by this step, reported rather than hidden):
   not on the U1 path and was left unchanged (13 % lines).
 - The six-harness rule's `classes` and `story-coverage` harnesses remain the tracked gaps
   team.md already records; U1 did not add them.
+
+## After review (iteration 1, READY)
+
+- C-01 fixed: `tests/unit/server-bind.test.ts` starts the real listener against a stub connection and asserts it is bound to `127.0.0.1`; mutant `server-binds-all-interfaces` (0.0.0.0) is caught. BR1.1 and NFR5.3 now trace to it. 399 tests pass.
+- C-02 fixed: NFR6.7 (first page load) and NFR7.8 (timed restore rehearsal) are marked `Deferred` in traceability.json; both are Build and Test work.
+- C-03 noted: 93.96 % is bun's per-file mean. The lowest files are the entry points and pool code (`src/db/client.ts` 30 %, `src/server/main.ts` 21 %, `src/db/migrate.ts` 18 %, `src/db/role-grants.ts` 13 %), exercised mainly by the realdb tests and the wiring check, which are not in the coverage run. Build and Test reports the aggregate line figure as well.
+- C-05 fixed: `coverage/` is gitignored.
+- C-04 (real-browser check of the `__Host-` Secure cookie over http://127.0.0.1, naming supported browsers) and C-06 (README restore verification through the container; a test for `needsBuild`) are carried to Build and Test.

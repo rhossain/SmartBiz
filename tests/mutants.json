@@ -104,6 +104,14 @@
       "find": "      before: redact(change.before),\n      after: redact(change.after),",
       "replace": "      before: change.before,\n      after: change.after,",
       "test": "tests/unit/order-audit-append.test.ts"
+    },
+    {
+      "id": "server-binds-all-interfaces",
+      "why": "The listener binds 127.0.0.1 only (BR1.1, NFR5.3); 0.0.0.0 would expose the server to the LAN.",
+      "file": "src/server/main.ts",
+      "find": "    hostname: BIND_HOST,",
+      "replace": "    hostname: \"0.0.0.0\",",
+      "test": "tests/unit/server-bind.test.ts"
     }
   ]
 }

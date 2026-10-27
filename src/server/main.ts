@@ -31,6 +31,7 @@ export const DIST_DIR = join(import.meta.dir, "..", "..", "dist");
 export const SHUTDOWN_GRACE_MS = 5_000;
 
 export interface RunningServer {
+  readonly hostname: string;
   readonly port: number;
   readonly stop: () => Promise<void>;
 }
@@ -75,7 +76,7 @@ export const startServer = async (
     await server.stop(true);
     await sql.end({ timeout: 5 });
   };
-  return { port: server.port ?? config.port, stop };
+  return { hostname: server.hostname ?? "", port: server.port ?? config.port, stop };
 };
 
 const fail = (message: string): never => {

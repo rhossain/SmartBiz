@@ -203,6 +203,7 @@
     { "path": "tests/unit/router.test.ts" },
     { "path": "tests/unit/routes-table.test.ts" },
     { "path": "tests/unit/screens.test.tsx" },
+    { "path": "tests/unit/server-bind.test.ts" },
     { "path": "tests/unit/server-config.test.ts" },
     { "path": "tests/unit/session-return.test.ts" },
     { "path": "tests/unit/session-store.test.ts" },

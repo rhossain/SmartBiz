@@ -110,3 +110,6 @@ aidlc/diagnostics/
 
 # Local CI build outputs (dist tarballs named by commit)
 .ci-artifacts/
+
+# bun test --coverage output (regenerated each run)
+coverage/
