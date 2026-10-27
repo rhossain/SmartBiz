@@ -60,7 +60,7 @@ export const AuditEntrySchema = z.object({
   action: z.string().min(1),
   subjectKind: z.string().nullable(),
   subjectId: UuidSchema.nullable(),
-  payload: z.record(z.unknown()),
+  payload: z.record(z.string(), z.unknown()),
   reversesId: UuidSchema.nullable(),
   occurredAt: z.string(),
   retentionUntil: z.string(),
