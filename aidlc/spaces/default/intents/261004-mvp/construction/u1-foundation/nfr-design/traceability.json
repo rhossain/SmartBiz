@@ -1,0 +1,267 @@
+{
+  "stage": "nfr-design",
+  "unit": "u1-foundation",
+  "bolt": "B1",
+  "scope": "mvp",
+  "intent": "261004-mvp",
+  "upstream_ids": [
+    "NFR1",
+    "NFR2",
+    "NFR3",
+    "NFR4",
+    "NFR5",
+    "NFR6",
+    "NFR7",
+    "NFR8"
+  ],
+  "design_files": {
+    "performance-design.md": {
+      "nfr_binding": ["NFR2.1", "NFR2.2", "NFR2.3", "NFR2.4", "NFR2.a", "NFR2.b", "NFR2.c", "NFR2.d"],
+      "key_decisions": [
+        "No dedicated cache layer (Redis / CDN); HTTP cache + postgres.js prepared-statement cache + typed-state-container + Intl format cache is sufficient",
+        "Vite SPA with manualChunks vendor split, route-level code split, Noto Sans Bengali woff2 subset preloaded",
+        "Audit-log INSERT is a single-statement INSERT (no transaction) with prepared statement; fire-and-forget stdout JSON line",
+        "L(bn, en) is a closure returning from a frozen Record<Locale, Record<Key, string>>; Intl.NumberFormat / Intl.DateTimeFormat cached per-locale",
+        "Three-layer-gate dispatch is O(1) per route: Map<RoutePath, Route> + Set<Capability> membership + pure business-rule function"
+      ]
+    },
+    "security-design.md": {
+      "nfr_binding": ["NFR5.1", "NFR5.2", "NFR5.3", "NFR5.4", "NFR5.5", "NFR5.6"],
+      "key_decisions": [
+        "argon2id (m=64MB, t=3, p=1) for password hashing",
+        "sha256(raw_token) for invitation tokens (high-entropy, no need for slow hash)",
+        "Cookie-based session (HttpOnly, Secure, SameSite=Lax, 30-day) over JWT (single-tenant + free-tier envelope)",
+        "Three-layer gate (auth → capability → business-rule) is the binding dispatch; absence-asserted per route (R1.2)",
+        "No CSRF token (SameSite=Lax + no GET-with-side-effects closes the surface); no application-level encryption (vendor's TLS + at-rest is sufficient)"
+      ],
+      "review_artifact": true,
+      "reviewer": "aidlc-architecture-reviewer-agent",
+      "review_class": "adversarial",
+      "reviewer_max_iterations": 2
+    },
+    "scalability-design.md": {
+      "nfr_binding": [],
+      "key_decisions": [
+        "No per-Unit scalability targets (Q8=A); scalability is at the deployment level, not the per-Unit level",
+        "Single-tenant topology + free-tier envelope make a per-Unit scalability NFR redundant",
+        "Only audit_log is partitioned (by year, 5-year retention); all other tables are too small to benefit",
+        "No auto-scaling rules (free-tier envelope is the design point, not a stepping stone)"
+      ]
+    },
+    "reliability-design.md": {
+      "nfr_binding": ["NFR1.1", "NFR1.2", "NFR1.3"],
+      "key_decisions": [
+        "Deployment is the recovery unit for single-tenant topology",
+        "No circuit breaker / no retry policy (in-process typed function-calls; failure mode is typed Result/throw, not network retry)",
+        "Only DB transaction on state-mutating actions is appendAudit + the typed entity write (NFR5.1 immutability binding)",
+        "Idempotent migration (R1.1); vendor's daily snapshot is the RPO; staging auto-deploy on merge to main is the RTO",
+        "Email gateway graceful-degradation: 'copy this URL' UI when the gateway is down"
+      ]
+    },
+    "observability-design.md": {
+      "nfr_binding": ["NFR3.1", "NFR3.2", "NFR3.3", "audit-log-INSERT-SLI", "audit-log-INSERT-latency-SLI", "audit-log-read-latency-SLI"],
+      "key_decisions": [
+        "Audit-log row IS the log line (no separate console.log for state-mutating actions)",
+        "stdout (JSON line) for non-state-mutating events: bootstrap, sign-in, sign-out, recovery, invitation, three-layer-gate denial, email-gateway graceful-degradation",
+        "No metrics collection pipeline (Prometheus / StatsD); vendor's free-tier slow-query dashboard covers the audit-log SLI set",
+        "No distributed tracing (OpenTelemetry / Jaeger); actor_id + business_id + route + ts in stdout is the per-action timeline",
+        "correlation_id (random(16)) propagated through every typed function-call in a single request; stored in audit_log.correlation_id"
+      ]
+    },
+    "logical-components.md": {
+      "nfr_binding": [],
+      "key_decisions": [
+        "5 logical components: L1 (Identity), L2 (Audit), L3 (i18n), L4 (Router), L5 (State container)",
+        "Module boundaries (compile-time) + DB tables (runtime) + DB role (runtime, R1.1) are the isolation layers",
+        "No network between components; modular monolith; only network surfaces are browser ↔ runtime ↔ DB (vendor-managed)",
+        "Deploy-wide failure modes: L1 (Identity) + L4 (Router) are the entry points; L2 (Audit) is state-mutating-only; L3 (i18n) + L5 (State container) are degrade-gracefully",
+        "U1 owns the runtime services; U2-U5 own the business logic that consumes them via typed function-calls (contracts #1-4 + #9)"
+      ]
+    }
+  },
+  "coverage": [
+    {
+      "id": "NFR1",
+      "inception_target": "uptime ≥ 95 %, RPO ≤ 24 h, RTO ≤ 24 h",
+      "design_status": "OK",
+      "target": "NFR1.1, NFR1.2, NFR1.3",
+      "rationale": "Inherit NFR1 unchanged (Q5=A). Free-tier managed-DB daily snapshot is the RPO (NFR1.2); staging auto-deploys on merge to main is the RTO (NFR1.3); the vendor's free-tier runtime uptime is NFR1.1. The single-tenant topology means the deployment is the recovery unit.",
+      "design_artifact": "reliability-design.md",
+      "ci_gate": "R1.1 (audit-immutability migration test, also asserts NFR1.2)"
+    },
+    {
+      "id": "NFR2",
+      "inception_target": "p95 page render ≤ 3 s on 3G",
+      "design_status": "OK",
+      "target": "NFR2.1, NFR2.2, NFR2.3, NFR2.4, NFR2.a, NFR2.b, NFR2.c, NFR2.d",
+      "rationale": "Strictly inherit NFR2.1 unchanged (Q1=A). All U1 primary screens inherit the 3 s p95 budget; no per-screen subdivision. The 3 s budget is measured end-to-end including the DB write for the audit log, the L(bn, en) resolve, and the locale switch. Sub-targets NFR2.2-NFR2.4 cover the dominant cost paths.",
+      "design_artifact": "performance-design.md",
+      "ci_gate": "NFR2-bundle (bundle size), NFR2-p95 (Playwright, scheduled), NFR2-locale (micro-benchmark)"
+    },
+    {
+      "id": "NFR3",
+      "inception_target": "structured JSON logs, free-tier metrics",
+      "design_status": "OK",
+      "target": "NFR3.1, NFR3.2, NFR3.3, audit-log INSERT success rate SLI, audit-log INSERT latency SLI, audit-log read latency SLI",
+      "rationale": "Inherit NFR3 unchanged + add audit-log SLI (Q4=A). The audit-log row IS the log line; stdout (JSON line) is the secondary log surface for non-state-mutating events. The vendor's free-tier slow-query dashboard covers the audit-log SLI set.",
+      "design_artifact": "observability-design.md",
+      "ci_gate": "(vendor's slow-query dashboard)"
+    },
+    {
+      "id": "NFR4",
+      "inception_target": "WCAG AA contrast, keyboard reach",
+      "design_status": "OK",
+      "target": "NFR4.1, NFR4.2",
+      "rationale": "Inherit NFR4 unchanged + per-primitive assertion (Q3=A). Every Field (Text, Number, Money, Date, Select, TextArea, Password, Email) and every Pill (Basis, Completeness, Status, RoleLock, PackSlip) inherits the WCAG AA contrast requirement asserted off design tokens. The keyboard-reach test extends to the role-lock sheet.",
+      "design_artifact": "(enforced via test suite, not a per-Unit artifact)",
+      "ci_gate": "design-token contrast assertion (test suite), role-lock keyboard-reach test (test suite)"
+    },
+    {
+      "id": "NFR5",
+      "inception_target": "security, audit-immutability, no PCI scope",
+      "design_status": "OK",
+      "target": "NFR5.1, NFR5.2, NFR5.3, NFR5.4, NFR5.5, NFR5.6",
+      "rationale": "Strictly inherit NFR5 unchanged (Q2=A). DB-level insert-only audit (BR3.1, NFR5.1), CI migration test (R1.1), password argon2id (NFR5.2), invitation token sha256 (NFR5.3), no PCI scope (NFR5.4), 5-year retention (NFR5.5), three-layer gate (NFR5.6). The B1 cross-cutting CI gate R1.1 is the binding test for NFR5.1.",
+      "design_artifact": "security-design.md",
+      "ci_gate": "R1.1 (audit-immutability migration test), R1.2 (three-layer-gate absence test)",
+      "review_artifact": true
+    },
+    {
+      "id": "NFR6",
+      "inception_target": "80 % coverage, test-after, mutation discipline, segment-isolation",
+      "design_status": "OK",
+      "target": "NFR6.1, NFR6.2, NFR6.3, NFR6.4",
+      "rationale": "Inherit NFR6 unchanged + three-layer-gate absence test per route (Q6=A). The role × capability gate is asserted by absence over every U1 route (BR2.2, BR2.4, team.md §TP-9). The Owner-still-reaches-audit-trail inverse is also asserted. NFR6.3 (mutation discipline) and NFR6.4 (segment-isolation) are inherited unchanged.",
+      "design_artifact": "(enforced via test suite, not a per-Unit artifact)",
+      "ci_gate": "R1.2 (three-layer-gate absence test, also asserts NFR5.6)"
+    },
+    {
+      "id": "NFR7",
+      "inception_target": "TypeScript strict, modern ES, single package.json, typed registries, typed state container, comments-as-design",
+      "design_status": "OK",
+      "target": "NFR7.1, NFR7.2, NFR7.3, NFR7.4, NFR7.5, NFR7.6, NFR7.7, NFR7.8",
+      "rationale": "Inherit NFR7 unchanged (Q7=A). Full TypeScript with the five strict flags + the two index/init flags (NFR7.1), modern ES uniformly (NFR7.2), single top-level package.json (NFR7.3), typed routes / actions / state registries (NFR7.4), typed state container (closure-based, get/set/subscribe, NFR7.5), Chrome binary path parameterised (NFR7.6), Vite for the SPA build (NFR7.7), comments-as-design-rationale on every module (NFR7.8).",
+      "design_artifact": "(cross-cutting; bound in performance-design.md, security-design.md, logical-components.md)",
+      "ci_gate": "tsc --noEmit (CI)"
+    },
+    {
+      "id": "NFR8",
+      "inception_target": "deployment (free-tier runtime, single bundle)",
+      "design_status": "OK",
+      "target": "NFR8.1, NFR8.2",
+      "rationale": "Inherit NFR8 unchanged. The free-tier managed runtime is the deployment; the Vite SPA build is the single bundle; staging auto-deploys on merge to main (NFR8.1); the daily snapshot is the recovery point (NFR8.2).",
+      "design_artifact": "(cross-cutting; bound in performance-design.md, reliability-design.md, observability-design.md)",
+      "ci_gate": "Vite build (CI), bun run migrate (deploy)"
+    },
+    {
+      "id": "NFR-scalability",
+      "inception_target": "(no separate scalability NFR in the inception NFR list)",
+      "design_status": "N/A",
+      "target": "(none)",
+      "rationale": "No per-Unit scalability targets (Q8=A). The single-tenant topology and free-tier managed-DB place scalability at the deployment level, not the per-Unit level. NFR1, NFR2, NFR6 carry the binding constraints. The scalability-design.md records the negative position explicitly so the inheritance is traceable.",
+      "design_artifact": "scalability-design.md",
+      "ci_gate": "(none)"
+    }
+  ],
+  "inherited_answers": {
+    "Q1": {
+      "question": "Performance targets (NFR2 decomposition)",
+      "answer": "A",
+      "binding": "NFR2.1 inherited unchanged for all U1 primary screens"
+    },
+    "Q2": {
+      "question": "Security & compliance (NFR5 decomposition)",
+      "answer": "A",
+      "binding": "NFR5 inherited unchanged; R1.1 is the binding test"
+    },
+    "Q3": {
+      "question": "Accessibility (NFR4 decomposition)",
+      "answer": "A",
+      "binding": "NFR4 inherited + per-primitive assertion (Field + Pill + role-lock sheet)"
+    },
+    "Q4": {
+      "question": "Observability (NFR3 decomposition)",
+      "answer": "A",
+      "binding": "NFR3 inherited + audit-log SLI; the audit-log row IS the log line"
+    },
+    "Q5": {
+      "question": "Reliability (NFR1 decomposition)",
+      "answer": "A",
+      "binding": "NFR1 inherited unchanged; free-tier managed-DB daily snapshot"
+    },
+    "Q6": {
+      "question": "Code quality & testability (NFR6 decomposition)",
+      "answer": "A",
+      "binding": "NFR6 inherited + three-layer-gate absence test per route + Owner inverse"
+    },
+    "Q7": {
+      "question": "Code style & architecture (NFR7 decomposition)",
+      "answer": "A",
+      "binding": "NFR7 inherited unchanged; full TypeScript strict + modern ES + typed registries + typed state container"
+    },
+    "Q8": {
+      "question": "Scalability (NFR-derived)",
+      "answer": "A",
+      "binding": "No per-Unit scalability targets; scalability is at the deployment level"
+    }
+  },
+  "ci_gates": {
+    "R1.1": {
+      "name": "Audit-immutability migration test",
+      "asserts": "NFR5.1, NFR1.2",
+      "test": "audit-immutability-migration.test.ts"
+    },
+    "R1.2": {
+      "name": "Three-layer-gate absence test + inverse",
+      "asserts": "NFR5.6, NFR6",
+      "test": "three-layer-gate-absence.test.ts"
+    }
+  },
+  "open_questions": [
+    {
+      "id": "OQ-NFR-1",
+      "origin": "nfr-requirements-questions.md (was OQ1)",
+      "question": "Confirm the per-Unit subdivision for NFR4 (keyboard reach on the role-lock sheet) with the platform engineer; the role-lock sheet is the failure-mode UI and may need a different reach standard than the rest."
+    },
+    {
+      "id": "OQ-NFR-2",
+      "origin": "nfr-requirements-questions.md (was OQ2)",
+      "question": "Confirm the audit-log INSERT latency target (Q4=A) with the free-tier managed-DB vendor; the spec is 'free-tier envelope', which leaves the specific RTT bound to the vendor's free tier."
+    },
+    {
+      "id": "OQ-NFR-3",
+      "origin": "performance-requirements.md (was OQ1)",
+      "question": "Confirm the 200 ms audit-log INSERT guideline (NFR2.2) with the free-tier managed-DB vendor."
+    },
+    {
+      "id": "OQ-NFR-4",
+      "origin": "performance-requirements.md (was OQ2)",
+      "question": "Confirm the Playwright 3G profile is the right reference device for the 3 s budget."
+    },
+    {
+      "id": "OQ-NFR-5",
+      "origin": "security-requirements.md (was OQ1)",
+      "question": "Confirm the argon2id cost parameters (m=64MB, t=3, p=1) with the platform engineer."
+    },
+    {
+      "id": "OQ-NFR-6",
+      "origin": "security-requirements.md (was OQ2)",
+      "question": "Confirm the sha256 vs bcrypt decision for invitation tokens."
+    },
+    {
+      "id": "OQ-NFR-7",
+      "origin": "observability-requirements.md (was OQ1)",
+      "question": "Confirm the 200 ms audit-log INSERT SLI (Q4=A) with the free-tier managed-DB vendor."
+    },
+    {
+      "id": "OQ-NFR-8",
+      "origin": "tech-stack-decisions.md (was OQ1)",
+      "question": "Confirm the bun version pin with the platform engineer."
+    },
+    {
+      "id": "OQ-NFR-9",
+      "origin": "tech-stack-decisions.md (was OQ2)",
+      "question": "Confirm the React 18.x version pin."
+    }
+  ]
+}

@@ -1,0 +1,230 @@
+{
+  "stage": "nfr-requirements",
+  "unit": "u3-orders",
+  "bolt": "B2",
+  "scope": "mvp",
+  "intent": "261015-b2-orders",
+  "upstream_ids": [
+    "NFR1",
+    "NFR2",
+    "NFR3",
+    "NFR4",
+    "NFR5",
+    "NFR6",
+    "NFR7",
+    "NFR8"
+  ],
+  "coverage": [
+    {
+      "id": "NFR1",
+      "inception_target": "uptime ≥ 95 %, RPO ≤ 24 h, RTO ≤ 24 h",
+      "status": "OK",
+      "target": "NFR1.1, NFR1.2, NFR1.3, NFR1.4",
+      "rationale": "Inherit NFR1 unchanged (Q4=A) + add NFR1.4 (order hot path: every order create / status-transition completes within 3 s p95, the NFR2.1 budget). The 3 s budget is the binding target. The free-tier managed-DB daily snapshot is the RPO (NFR1.2); staging auto-deploys on merge to main is the RTO (NFR1.3); the vendor's free-tier runtime uptime is NFR1.1. The single-tenant topology means the deployment is the recovery unit.",
+      "artifact": "reliability-requirements.md",
+      "ci_gate": "R1.1 (audit-immutability migration test, B1), R2.x (B2 R-gates)"
+    },
+    {
+      "id": "NFR2",
+      "inception_target": "p95 page render ≤ 3 s on 3G",
+      "status": "OK",
+      "target": "NFR2.1, NFR2.3, NFR2.4, NFR2.5, NFR2.a, NFR2.b, NFR2.c, NFR2.d, NFR6.7.1, NFR6.7.2, NFR6.7.3, NFR6.7.4",
+      "rationale": "Inherit NFR2.1 unchanged for every U3 primary screen (Q1=A). All U3 primary screens inherit the 3 s p95 budget; no per-screen subdivision. The paste-parse path is a separate hot path with its own sub-targets: NFR6.7.1 (parseMessage p95 ≤ 20 ms for ≤ 200 items), NFR6.7.2 (segment-isolation rule restated inline per NFR6.5), NFR6.7.3 (parse-success rate ≥ 95 % for the prototype's seeded fixtures), NFR6.7.4 (parseMessage never throws on bad input). NFR2.5 (status-bucket math re-compute ≤ 1 ms for ≤ 1 000 orders) is a per-Unit sub-target.",
+      "artifact": "performance-requirements.md",
+      "ci_gate": "NFR2-bundle (bundle size), NFR2-p95 (Playwright, scheduled), NFR2-locale (micro-benchmark), NFR2.5-bucket (status-bucket micro-benchmark), NFR6.7-parse (parseMessage micro-benchmark + segments test + bad-input test)"
+    },
+    {
+      "id": "NFR3",
+      "inception_target": "structured JSON logs, free-tier metrics",
+      "status": "OK",
+      "target": "NFR3.1, NFR3.2, NFR3.3, NFR3.4, audit-log INSERT success rate SLI, audit-log INSERT latency SLI, audit-log read latency SLI",
+      "rationale": "Inherit NFR3 unchanged + add NFR3.3 (deferred-input-mode logging — the 3 deferred input placeholders log a [Deferred] event when invoked so a future Bolt can read the log to size the impact) + NFR3.4 (paste-parse hot-path metric, covered by NFR3.2 dashboard). Every state-mutating U3 action emits a structured JSON log line; the audit-log row IS the log line; no separate metric. The vendor's free-tier slow-query dashboard covers the order-table INSERT path.",
+      "artifact": "observability-requirements.md",
+      "ci_gate": "NFR3.3-deferred-log (R2.5)"
+    },
+    {
+      "id": "NFR4",
+      "inception_target": "WCAG AA contrast, keyboard reach",
+      "status": "OK",
+      "target": "NFR4.1, NFR4.2, NFR4.3",
+      "rationale": "Inherit NFR4 unchanged + add NFR4.3 (paste-parse textarea is keyboard-reachable, has a visible focus ring bound to design tokens, and has a bilingual aria-label including the input mode name) (Q6=A). Every Field, Pill, and input-mode tab inherits the WCAG AA contrast requirement asserted off design tokens.",
+      "artifact": "(enforced via test suite, not a per-Unit artifact)",
+      "ci_gate": "design-token contrast assertion (test suite), role-lock keyboard-reach test (test suite, R1.2 extended in B2), paste-parse aria-label test (test suite)"
+    },
+    {
+      "id": "NFR5",
+      "inception_target": "security, audit-immutability, no PCI scope",
+      "status": "OK",
+      "target": "NFR5.1, NFR5.2, NFR5.3, NFR5.4, NFR5.5, NFR5.6, NFR5.7",
+      "rationale": "Inherit NFR5 unchanged + add NFR5.7 (per-action audit append for every order mutation, FR12.3) (Q2=A). DB-level insert-only audit (BR3.1, NFR5.1), CI migration test (R1.1, B1), password argon2id (NFR5.2), invitation token sha256 (NFR5.3), no PCI scope (NFR5.4), 5-year retention (NFR5.5), three-layer gate (NFR5.6, R1.2 extended in B2). NFR5.7 is the U3-specific per-action audit append; R2.1 is the B2 cross-cutting CI gate.",
+      "artifact": "security-requirements.md",
+      "ci_gate": "R1.1 (audit-immutability migration test, B1), R1.2 (three-layer-gate absence test, B1, extended in B2), R2.1 (order-audit-append test, B2)"
+    },
+    {
+      "id": "NFR6",
+      "inception_target": "80 % coverage, test-after, mutation discipline, segment-isolation",
+      "status": "OK",
+      "target": "NFR6.1, NFR6.2, NFR6.3, NFR6.4, NFR6.5, NFR6.6, NFR6.7, NFR6.8, NFR6.9, NFR6.10",
+      "rationale": "Inherit NFR6 unchanged + add per-Unit R-gates and mutation-discipline tests (Q3=A). NFR6.5 (segment-isolation rule restated inline) is the U3-specific critical-regression-path assertion. NFR6.7.x (paste-parse sub-targets) covers the parseMessage hot path. NFR6.8.x (status-bucket tests restate EARNED_STATUSES / REALIZED_STATUSES / PIPELINE_STATUSES inline, mutation discipline, FR10.2). NFR6.9 (status-exhaustive with never-asserted default, FR5.3, team.md §TP-9). NFR6.10 (orders list size assertion). The 80% line-coverage floor and 8-harness mutual-blindness discipline carry forward (NFR6.1, NFR6.2). The deferred input mode placeholders follow the CC-AC-DEFERRAL discipline: calling a deferred body fails with reason 'deferred'; a test that imports the deferred body fails.",
+      "artifact": "(enforced via test suite, not a per-Unit artifact)",
+      "ci_gate": "R1.2 (three-layer-gate absence test, B1, extended in B2), R2.2 (parse-parse segments test, B2), R2.3 (status-bucket test, B2), R2.4 (status-exhaustive test, B2)"
+    },
+    {
+      "id": "NFR7",
+      "inception_target": "TypeScript strict, modern ES, single package.json, typed registries, typed state container, comments-as-design",
+      "status": "OK",
+      "target": "NFR7.1, NFR7.2, NFR7.3, NFR7.4, NFR7.5, NFR7.6, NFR7.7, NFR7.8",
+      "rationale": "Inherit NFR7 unchanged (Q5=A). Full TypeScript with the five strict flags + the two index/init flags (NFR7.1), modern ES uniformly (NFR7.2), single top-level package.json (NFR7.3), typed routes / actions / state registries (NFR7.4), typed state container (closure-based, get/set/subscribe, NFR7.5), Chrome binary path parameterised (NFR7.6), Vite for the SPA build (NFR7.7), comments-as-design-rationale on every module (NFR7.8). The 9-value OrderStatus enum is a discriminated string-literal union (FR5.3); the parseMessage return type is a typed ParseResult (never throws); the deferred input mode placeholders are typed shells.",
+      "artifact": "tech-stack-decisions.md",
+      "ci_gate": "tsc --noEmit (CI)"
+    },
+    {
+      "id": "NFR8",
+      "inception_target": "deployment (free-tier runtime, single bundle)",
+      "status": "OK",
+      "target": "NFR8.1, NFR8.2",
+      "rationale": "Inherit NFR8 unchanged. The free-tier managed runtime is the deployment; the Vite SPA build is the single bundle; staging auto-deploys on merge to main (NFR8.1); the daily snapshot is the recovery point (NFR8.2). U3 adds no new deploy surface.",
+      "artifact": "tech-stack-decisions.md",
+      "ci_gate": "Vite build (CI), bun run migrate (deploy)"
+    },
+    {
+      "id": "NFR-scalability",
+      "inception_target": "(no separate scalability NFR in the inception NFR list)",
+      "status": "OK",
+      "target": "NFR-deploy-1, NFR-deploy-2, NFR6.10, NFR6.7.1, NFR2.5",
+      "rationale": "Inherit deployment-level scalability from U1 (NFR-deploy-1, NFR-deploy-2) + add U3 list-size assertion (NFR6.10: orders list renders in ≤ 1 s for 1 000 orders) + paste-parse size cap (NFR6.7.1: parseMessage ≤ 20 ms for ≤ 200 items) + status-bucket re-compute (NFR2.5: ≤ 1 ms for ≤ 1 000 orders) (Q7=A). The single-tenant topology and free-tier managed-DB place scalability at the deployment level, not the per-Unit level.",
+      "artifact": "scalability-requirements.md",
+      "ci_gate": "NFR6.10-orders-list (orders list size assertion), NFR6.7-parse (parseMessage size cap), NFR2.5-bucket (status-bucket re-compute)"
+    }
+  ],
+  "subdivision_decisions": {
+    "Q1": {
+      "question": "Performance (NFR2 decomposition for U3)",
+      "answer": "A",
+      "binding": "NFR2.1 inherited unchanged for every U3 primary screen; NFR6.7.x paste-parse sub-targets added (parseMessage p95 ≤ 20 ms for ≤ 200 items, segment-isolation rule restated inline, parse-success rate ≥ 95 %, parseMessage never throws on bad input)"
+    },
+    "Q2": {
+      "question": "Security & compliance (NFR5 decomposition for U3)",
+      "answer": "A",
+      "binding": "NFR5 inherited unchanged; NFR5.7 (per-action audit append for every order mutation) added; R2.1 is the B2 cross-cutting CI gate that asserts NFR5.7"
+    },
+    "Q3": {
+      "question": "Code quality (NFR6 decomposition for U3)",
+      "answer": "A",
+      "binding": "NFR6 inherited unchanged; NFR6.7.x paste-parse tests re-state the segment-isolation rule inline; NFR6.8.x status-bucket tests re-state the bucket math inline (mutation discipline); NFR6.9 status-exhaustive test asserts the 9-value enum; the B2 cross-cutting CI gates are R2.1 (audit append), R2.2 (paste-parse segments), R2.3 (status-bucket math), R2.4 (status-exhaustive); CC-AC-DEFERRAL discipline applies to the deferred input mode shells"
+    },
+    "Q4": {
+      "question": "Reliability & observability (NFR1 + NFR3 decomposition for U3)",
+      "answer": "A",
+      "binding": "NFR1 + NFR3 inherited unchanged; NFR3.3 (deferred-input-mode logging) added; the 3 deferred input placeholders log a [Deferred] event when invoked so a future Bolt can read the log to size the impact"
+    },
+    "Q5": {
+      "question": "Code style & architecture (NFR7 decomposition for U3)",
+      "answer": "A",
+      "binding": "NFR7 inherited unchanged; typed contracts for Order / OrderItem / OrderStatus added; the 9-value status enum is a discriminated string-literal union (FR5.3); the parseMessage return type is a typed ParseResult (never throws); the deferred input mode placeholders are typed shells that fail with reason 'deferred'"
+    },
+    "Q6": {
+      "question": "Accessibility (NFR4 decomposition for U3)",
+      "answer": "A",
+      "binding": "NFR4 inherited unchanged; NFR4.3 (paste-parse textarea is keyboard-reachable, has a visible focus ring bound to design tokens, and has a bilingual aria-label) added"
+    },
+    "Q7": {
+      "question": "Scalability (NFR-derived for U3)",
+      "answer": "A",
+      "binding": "NFR1.x deployment-level scalability inherited; NFR6.10 (orders list renders in ≤ 1 s for 1 000 orders) + NFR6.7.1 (paste-parse ≤ 200 items) + NFR2.5 (status-bucket re-compute ≤ 1 ms for ≤ 1 000 orders) added as U3-specific sub-targets"
+    }
+  },
+  "ci_gates": {
+    "R1.1": {
+      "name": "Audit-immutability migration test (B1, continues in B2)",
+      "asserts": "NFR5.1, NFR1.2",
+      "test": "tests/unit/audit-immutability-migration.test.ts"
+    },
+    "R1.2": {
+      "name": "Three-layer-gate absence test + inverse (B1, extended in B2 to cover U3 routes)",
+      "asserts": "NFR5.6, NFR6.6",
+      "test": "tests/unit/three-layer-gate-absence.test.ts"
+    },
+    "R2.1": {
+      "name": "Order audit append per action (B2)",
+      "asserts": "NFR5.7, FR12.3",
+      "test": "tests/unit/order-audit-append.test.ts"
+    },
+    "R2.2": {
+      "name": "Paste-parse segments with multiple products, multiple variants per product, common Bangla connector words (B2)",
+      "asserts": "NFR6.5, NFR6.7.2, NFR6.7.3",
+      "test": "tests/unit/parseMessage-segments.test.ts"
+    },
+    "R2.3": {
+      "name": "Status-bucket math restated inline (B2, NFR6.4 mutation discipline)",
+      "asserts": "NFR6.4, FR10.2",
+      "test": "tests/unit/status-bucket.test.ts"
+    },
+    "R2.4": {
+      "name": "Status-exhaustive with never-asserted default (B2)",
+      "asserts": "NFR6.9, FR5.3, team.md §TP-9",
+      "test": "tests/unit/status-exhaustive.test.ts"
+    },
+    "R2.5": {
+      "name": "Deferred-input-mode logging (B2)",
+      "asserts": "NFR3.3",
+      "test": "tests/unit/deferred-input-logging.test.ts"
+    }
+  },
+  "open_questions": [
+    {
+      "id": "OQ-NFR-B2-1",
+      "origin": "nfr-requirements-questions.md (was OQ-NFR-B2-1)",
+      "question": "Confirm the paste-parse input size cap (200 items) with the Owner; the 200 figure is a product decision. The CI gate allows a 100-item headroom for slow CI runners."
+    },
+    {
+      "id": "OQ-NFR-B2-2",
+      "origin": "nfr-requirements-questions.md (was OQ-NFR-B2-2)",
+      "question": "Confirm the 1 000-order list-size assertion target with the Owner; the 1 000 figure is a product decision. The CI gate asserts a 1 s render time; the 3 s product budget is the alert threshold on staging."
+    },
+    {
+      "id": "OQ-NFR-B2-3",
+      "origin": "nfr-requirements-questions.md (was OQ-NFR-B2-3)",
+      "question": "Confirm the deferred-input-mode CC-AC-DEFERRAL discipline with the Owner; the rule 'a deferred body must fail with reason deferred when called' is a cross-cutting pattern that the other Bolts (B3-B5) will inherit."
+    },
+    {
+      "id": "OQ-NFR-B2-4",
+      "origin": "security-requirements.md (carried from B1)",
+      "question": "Confirm the argon2id cost parameters (m=64MB, t=3, p=1) with the platform engineer; the values are a balance between brute-force resistance and sign-in latency on the 3 s budget."
+    },
+    {
+      "id": "OQ-NFR-B2-5",
+      "origin": "reliability-requirements.md (carried from B1)",
+      "question": "Confirm the free-tier managed-DB daily snapshot is the binding recovery point with the platform engineer; the spec is free-tier envelope, which leaves the specific RPO bound to the vendor's free tier."
+    },
+    {
+      "id": "OQ-NFR-B2-6",
+      "origin": "observability-requirements.md (was OQ2)",
+      "question": "Confirm the structured JSON log line shape is acceptable to the free-tier log drain; the shape is the audit-log row shape, which is a stable contract."
+    }
+  ],
+  "deferred_ids": [
+    {
+      "id": "US1.14.D",
+      "deferred_to": "future Bolt (B3 or later) when OCR vendor is selected",
+      "reason": "the photoOrder component is a typed placeholder; the OCR body lands when the vendor is chosen"
+    },
+    {
+      "id": "US1.15.D",
+      "deferred_to": "future Bolt (B3 or later) when spreadsheet parser vendor is selected",
+      "reason": "the spreadsheetOrder component is a typed placeholder; the parser body lands when the vendor is chosen"
+    },
+    {
+      "id": "US1.16.D",
+      "deferred_to": "future Bolt (B3 or later) when STT vendor is selected",
+      "reason": "the voiceOrder component is a typed placeholder; the STT body lands when the vendor is chosen"
+    }
+  ],
+  "deferred_to_subsequent_bolts": [
+    {
+      "id": "NFR5.7-FR12.3-audit-append",
+      "deferred_to": "B2 code-generation (will be implemented in the code-generation stage)",
+      "reason": "the per-action audit append is a U3 surface; the implementation lands in code-generation"
+    }
+  ]
+}

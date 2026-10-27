@@ -1,0 +1,27 @@
+<!-- INVARIANT: examples are single-line HTML comments so a fresh template parses to total=0 (MEMORY_EMPTY). Do NOT un-comment or split across lines. t100 guards this. -->
+> This file is kept up to date automatically while the stage runs. Add observations at the review step, not by editing here directly.
+
+## Interpretations
+<!-- example: 2026-05-29T10:14:32Z — chose REST over GraphQL; the consuming team only needs CRUD, revisit if subscriptions land -->
+- 2026-10-11T14:05:00Z — chose 1:1 module-to-component decomposition (Q1=A) over bounded context or layered; the brownfield prototype's tested surface is already in 1:1 module shape and the rewrite cost of re-decomposing does not change the binding guarantees (role × capability matrix, recognition-basis invariant, segment-isolation rule).
+- 2026-10-11T14:05:15Z — chose MoneyEngine as a cross-cutting sub-module of DataComponent (Q2=A) over inline in each component or as 3 components; the prototype's `data.js` line 215–220 documents the `declaredTotal` invariant (every money figure is computed from the same object) and the inlining alternative re-litigates the load-bearing decision.
+- 2026-10-11T14:05:30Z — chose AuditService as a sub-module of AuthComponent (Q3=A) over event bus or event-sourced; the prototype's `tests/audit-zero.js` is the canonical test-after discipline and the synchronous call preserves the test ordering. The DB-level enforcement (FR12.1) is at the schema layer; the application role holds `INSERT` only.
+- 2026-10-11T14:05:45Z — chose AuthComponent owns the role × capability gate (Q4=A) over split (Auth owns matrix, UI owns gate) or shared kernel; the prototype's `ui.js` keeps matrix + gate in the same file for a reason — the matrix is meaningless without the gate.
+- 2026-10-11T14:06:00Z — chose OrdersComponent owns the paste-parser segment-isolation (Q5=A) over CaptureComponent or pure-function PasteParserComponent; the prototype's `screens-orders.js` line 141–262 is the only place segment-isolation is implemented and the test-after discipline (NFR6.3) keeps the parser tests next to the parser.
+- 2026-10-11T14:06:15Z — chose the 3 deferred input modes (US1.14/15/16) listed as placeholders in the catalogue (Q6=A) over full now or excluded entirely; the catalogue is complete (every story has at least one component), the wiring is named, and the vendor selection is gated in Construction.
+
+## Deviations
+<!-- example: 2026-05-29T10:14:32Z — skipped the optional caching layer the stage prose suggested; the dataset is small enough that it adds risk -->
+- 2026-10-11T14:06:30Z — Wrote the 3 artifacts (`components.md`, `decisions.md`, `traceability.json`) inline in this session rather than dispatching separate Task calls to a design subagent. The conductor role owns the bus, and the artifact files are the evidence the engine verifies. The 6 Q&A decisions are recorded as ADRs (ADR-001 through ADR-006) with the four-section template mandated by `inception-phase §"Architecture Standards"`.
+
+## Tradeoffs
+<!-- example: 2026-05-29T10:14:32Z — picked TDD over BDD this run; the team is unit-first and the domain is well-understood -->
+- 2026-10-11T14:06:45Z — Chose 9 top-level components + 2 cross-cutting sub-modules + 3 deferred placeholders (14 total) over 5 bounded contexts; the 1:1 decomposition is reversible (a future Bolt can re-decompose without breaking the contract surface) and the prototype's tested surface maps directly. The bounded-context naming would read cleaner at a glance but the rewrite cost is high.
+- 2026-10-11T14:07:00Z — Chose MoneyEngine as a sub-module of DataComponent (Q2=A) over splitting it into MoneyMathComponent (pure functions) + MoneyPresentationComponent (basis pill + completeness control); the math and the presentation are coupled by convention, and the basis pill + completeness control pair is the load-bearing visual for the recognition-basis invariant (co-locating them is a feature, not a bug).
+
+## Open questions
+<!-- example: 2026-05-29T10:14:32Z — confirm the retention window with compliance before the next stage hardens the schema -->
+- 2026-10-11T14:07:15Z — Functional Design stage must produce the typed TypeScript signatures for every component in the catalogue; the `components.md` lists entities at the ownership + shape level (stage protocol Step 4) and Functional Design owns the data types, validation constraints, allowed values, and relationship cardinality.
+- 2026-10-11T14:07:30Z — Functional Design stage must produce the typed signature for `<PackSlip>` and the `App.canReach('pack-slip')` role-gate exception; the `components.md` lists PresentationComponent as the pack-slip owner, and the role-gate exception is one of the few deliberate matrix violations per `design-system-mapping §3`.
+- 2026-10-11T14:07:45Z — Contract Design stage must produce the cross-component contract surface (typed interfaces for every `depends_on` edge in the mermaid diagram); the catalogue names the edges but Contract Design owns the protocol + failure behaviour for each.
+- 2026-10-11T14:08:00Z — Delivery Planning stage must order the 5 design-system gaps (modal, toast, dialog, status-pill, basis-pill formalization) in a Bolt sequence that lands before the first money-screen Bolt; the basis-pill and status-pill are blocking for the daily card, the settlement run, and the orders list, so the gap-Bolt must come before any of those Bolts per `refined-mockups/memory.md` 2026-10-11T13:07:45Z.

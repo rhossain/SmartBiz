@@ -103,3 +103,6 @@ aidlc/diagnostics/
 .agents/skills/
 .puku-cli/settings.local.json
 # END AI-DLC:gitignore
+
+# Local CI build outputs (dist tarballs named by commit)
+.ci-artifacts/

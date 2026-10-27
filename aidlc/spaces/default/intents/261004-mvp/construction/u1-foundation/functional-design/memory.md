@@ -1,0 +1,17 @@
+<!-- INVARIANT: examples are single-line HTML comments so a fresh template parses to total=0 (MEMORY_EMPTY). Do NOT un-comment or split across lines. t100 guards this. -->
+> This file is kept up to date automatically while the stage runs. Add observations at the review step, not by editing here directly.
+
+## Interpretations
+<!-- example: 2026-05-29T10:14:32Z — chose REST over GraphQL; the consuming team only needs CRUD, revisit if subscriptions land -->
+- 2026-10-11T00:00:00Z — Grouped U1 entities by component cluster (Q1=A): Identity (User, Business, Invitation), Audit (AuditEntry), Money (MoneyFigure, Recognition, Completeness), I18n (Locale, Translation), Router (Route), plus cross-cutting (Capability, BusinessRule, BusinessRuleError). Each entity has exactly one owning component. 10 entities total. The MoneyFigure shape is paise-integer + recognition + completeness (Q2=A); the audit log is append-only with reverses_id self-reference (Q3=A); the role × capability matrix is Map<Role, Set<Capability>> with per-screen rule overrides (Q4=A); the route is { path, screen, requiredCapability, businessRule? } with the three-layer gate (Q5=A); the L(bn, en) macro + Intl formatters handle i18n (Q6=A); the typed state container with closure + frozen-clock is the state shape (Q7=A); the Shell → Screen → Field → Pill hierarchy is the UI primitive set (Q8=A).
+
+## Deviations
+<!-- example: 2026-05-29T10:14:32Z — skipped the optional caching layer the stage prose suggested; the dataset is small enough that it adds risk -->
+
+## Tradeoffs
+<!-- example: 2026-05-29T10:14:32Z — picked TDD over BDD this run; the team is unit-first and the domain is well-understood -->
+- 2026-10-11T00:00:00Z — Chose the by-component-cluster entity grouping (Q1=A) over by-lifecycle (eager/lazy) and by-bounded-context. The lifecycle grouping cross-cuts component boundaries and makes the entity's owner ambiguous; the bounded-context split forces a cross-unit call for every money-mutating action. The by-component-cluster grouping preserves ADR-001's 1:1 module shape and the cluster-based unit decomposition from units-generation. 16 business rules across 5 categories (validation, authorization, constraint, calculation, policy); 10 use cases (sign-up, sign-in, password recovery, invitation, three-layer gate, business settings, per-user settings, audit log, reversal, plus two state machine placeholders for the U3 OrderStatus enum and U4 Consignment state). Frontend hierarchy: 5 Field types, 5 Pill types, 1 Screen container, 1 Shell container — 12 typed primitives that compose the 30 prototype components.
+
+## Open questions
+<!-- example: 2026-05-29T10:14:32Z — confirm the retention window with compliance before the next stage hardens the schema -->
+- 2026-10-11T00:00:00Z — Confirm the audit log's `retention_until` column + read-path filter design with the platform engineer before code generation; if a cron job is needed for any reason, the schema-layer guarantee is weakened. StatusChip and PackSlip are U1 primitives that compose U3's OrderStatus enum and Order entity respectively; their B1 implementation is a stub that returns the typed enum and a typed Order shape; the real order logic lands in B2 functional-design. The MoneyEngine's `econ`, `summary`, `risk`, `lowVariants`, `countByStatus` functions are calculation rules (BR5.1, BR5.2); their concrete algorithms are pinned in code-generation with a 1000-iteration round-trip test for float-drift (per team.md#Testing Posture §TP-5).

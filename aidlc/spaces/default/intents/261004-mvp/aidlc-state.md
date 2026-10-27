@@ -7,7 +7,7 @@
 - **Scope**: mvp
 - **Start Date**: 2026-10-04T10:43:20Z
 - **State Version**: 8
-- **Active Agent**: aidlc-product-agent
+- **Active Agent**: aidlc-architect-agent
 - **Worktree Path**:
 - **Bolt Refs**:
 - **Practices Affirmed Timestamp**: 2026-10-04T13:37:06Z
@@ -31,22 +31,34 @@
 
 ## Execution Plan Summary
 - **Total Stages**: 23
-- **Completed**: 11
-- **In Progress**: user-stories
+- **Completed**: 19
+- **In Progress**: nfr-requirements
 
 ## Runtime State
-- **Revision Count**: 0
+- **Revision Count**: 3
 - **Construction Checkpoints**: enabled
 - **Construction Iteration**: unit-major
 - **Construction Execution**: serial
+
+
+
+- **Skeleton Stance**: off
+
+
+
+- **Unit Ownership**: team
+
+
+
+
 
 ## Phase Progress
 <!-- Status values: Pending, Active, Verified, Skipped -->
 
 - **Initialization**: Verified
 - **Ideation**: Verified
-- **Inception**: Active
-- **Construction**: Pending
+- **Inception**: Verified
+- **Construction**: Verified
 - **Operation**: Skipped
 
 ## Stage Progress
@@ -70,22 +82,22 @@
 - [x] reverse-engineering — EXECUTE
 - [x] practices-discovery — EXECUTE
 - [x] requirements-analysis — EXECUTE
-- [-] user-stories — EXECUTE
-- [ ] refined-mockups — EXECUTE
-- [ ] domain-design — EXECUTE
-- [ ] units-generation — EXECUTE
-- [ ] contract-design — EXECUTE
-- [ ] delivery-planning — EXECUTE
+- [x] user-stories — EXECUTE
+- [x] refined-mockups — EXECUTE
+- [x] domain-design — EXECUTE
+- [x] units-generation — EXECUTE
+- [x] contract-design — EXECUTE
+- [x] delivery-planning — EXECUTE
 
 ### CONSTRUCTION PHASE
 Per unit: [TBD]
-- [ ] functional-design — EXECUTE
-- [ ] nfr-requirements — EXECUTE
-- [ ] nfr-design — EXECUTE
-- [ ] infrastructure-design — EXECUTE
-- [ ] code-generation — EXECUTE
-- [ ] build-and-test — EXECUTE
-- [ ] ci-pipeline — EXECUTE
+- [S] functional-design — EXECUTE
+- [-] nfr-requirements — EXECUTE
+- [S] nfr-design — EXECUTE
+- [S] infrastructure-design — EXECUTE
+- [S] code-generation — EXECUTE
+- [x] build-and-test — EXECUTE
+- [x] ci-pipeline — EXECUTE
 
 ### OPERATION PHASE
 - [ ] deployment-pipeline — SKIP
@@ -96,14 +108,24 @@ Per unit: [TBD]
 - [ ] performance-validation — SKIP
 - [ ] feedback-optimization — SKIP
 
+## Unit Progress
+<!-- Derived, engine-owned projection; routing ignores hand edits. -->
+| unit | owner | code-generation | gate |
+| --- | --- | --- | --- |
+| U1-foundation | - | [?] | [?] |
+| U2-catalog | - | [ ] | [ ] |
+| U3-orders | - | [ ] | [ ] |
+| U4-money | - | [ ] | [ ] |
+| U5-operate | - | [ ] | [ ] |
+
 ## Current Status
-- **Lifecycle Phase**: INCEPTION
-- **Current Stage**: user-stories
-- **Next Stage**: refined-mockups
+- **Lifecycle Phase**: CONSTRUCTION
+- **Current Stage**: nfr-requirements
+- **Next Stage**: none
 - **Status**: Running
-- **Last Updated**: 2026-10-04T17:29:05Z
+- **Last Updated**: 2026-10-15T12:39:53Z
 
 ## Session Resume Point
-- **Last Completed Stage**: requirements-analysis
-- **Next Action**: Execute User Stories
+- **Last Completed Stage**: delivery-planning
+- **Next Action**: Execute NFR Requirements
 - **Pending Artifacts**: none

@@ -1,0 +1,9 @@
+[install]
+exact = false
+
+[test]
+root = "tests"
+preload = ["./tests/setup.ts"]
+
+[run]
+silent = false

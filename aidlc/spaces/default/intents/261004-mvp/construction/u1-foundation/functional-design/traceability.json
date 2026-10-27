@@ -1,0 +1,485 @@
+{
+  "unit": "U1",
+  "unit_name": "foundation",
+  "bolt": "B1",
+  "stage": "functional-design",
+  "scope": "mvp",
+  "summary": {
+    "entities": 10,
+    "rules": 16,
+    "use_cases": 10,
+    "frontend_components": 22,
+    "components_owned": 7,
+    "sub_modules_owned": 2,
+    "stories_primary": 10,
+    "fr_covered": 4,
+    "nfr_covered": 8,
+    "cc_ac_covered": 3
+  },
+  "entities": {
+    "User": {
+      "owner": "AuthComponent",
+      "cluster": "Identity",
+      "stories": ["US1.1", "US1.2", "US1.3"],
+      "fr": ["FR1.1", "FR1.2", "FR1.3"],
+      "nfr": ["NFR6.1", "NFR6.4"],
+      "rules": ["BR1.1", "BR1.2", "BR2.1"],
+      "use_cases": ["UC-1.1", "UC-1.2", "UC-1.4", "UC-1.5", "UC-1.8"]
+    },
+    "Business": {
+      "owner": "AuthComponent",
+      "cluster": "Identity",
+      "stories": ["US1.1", "US1.5", "US3.4", "US3.5"],
+      "fr": ["FR1.1", "FR1.5", "FR3.1"],
+      "nfr": ["NFR1.1"],
+      "rules": ["BR1.4", "BR3.4", "BR6.3"],
+      "use_cases": ["UC-1.1", "UC-1.7"]
+    },
+    "Invitation": {
+      "owner": "AuthComponent",
+      "cluster": "Identity",
+      "stories": ["US1.3"],
+      "fr": ["FR1.3"],
+      "nfr": ["NFR3.2"],
+      "rules": ["BR1.1", "BR1.3", "BR2.3"],
+      "use_cases": ["UC-1.4", "UC-1.5"]
+    },
+    "AuditEntry": {
+      "owner": "AuditService",
+      "cluster": "Audit",
+      "stories": ["US3.3", "US3.4", "US3.5", "US3.6"],
+      "fr": ["FR12.1", "FR12.2"],
+      "nfr": ["NFR5.2", "NFR6.2"],
+      "cc_ac": ["CC-AC-AUDIT-IMmutability"],
+      "rules": ["BR3.1", "BR3.2", "BR3.3", "BR3.4"],
+      "use_cases": ["UC-1.9", "UC-1.10"]
+    },
+    "MoneyFigure": {
+      "owner": "MoneyEngine",
+      "cluster": "Money",
+      "stories": ["US2.10"],
+      "fr": ["FR10.1", "FR10.3", "FR11.1", "FR11.2"],
+      "nfr": ["NFR1.1", "NFR6.5"],
+      "cc_ac": ["CC-AC-BASIS"],
+      "rules": ["BR5.1", "BR5.2", "BR5.3", "BR6.1", "BR6.2", "BR6.5"],
+      "use_cases": []
+    },
+    "Recognition": {
+      "owner": "MoneyEngine",
+      "cluster": "Money",
+      "stories": ["US2.10"],
+      "fr": ["FR10.1", "FR10.3"],
+      "nfr": [],
+      "cc_ac": ["CC-AC-BASIS"],
+      "rules": ["BR6.1"],
+      "use_cases": []
+    },
+    "Completeness": {
+      "owner": "MoneyEngine",
+      "cluster": "Money",
+      "stories": ["US2.10"],
+      "fr": ["FR10.3"],
+      "nfr": [],
+      "cc_ac": ["CC-AC-BASIS"],
+      "rules": ["BR6.2"],
+      "use_cases": []
+    },
+    "Locale": {
+      "owner": "I18nComponent",
+      "cluster": "I18n",
+      "stories": ["US1.5", "US2.10"],
+      "fr": ["FR11.1"],
+      "nfr": ["NFR1.1"],
+      "rules": ["BR6.3", "BR6.5"],
+      "use_cases": ["UC-1.7"]
+    },
+    "Translation": {
+      "owner": "I18nComponent",
+      "cluster": "I18n",
+      "stories": ["US1.1", "US1.2", "US1.5", "US2.10"],
+      "fr": ["FR11.1"],
+      "nfr": ["NFR1.1"],
+      "rules": ["BR6.4"],
+      "use_cases": ["UC-1.1", "UC-1.2", "UC-1.7"]
+    },
+    "Route": {
+      "owner": "RouterComponent",
+      "cluster": "Router",
+      "stories": ["US1.1", "US1.2", "US1.4", "US1.5"],
+      "fr": ["FR1.4"],
+      "nfr": ["NFR6.6"],
+      "cc_ac": ["CC-AC-ROLE-CAPABILITY-GATE"],
+      "rules": ["BR2.2", "BR2.4"],
+      "use_cases": ["UC-1.1", "UC-1.2", "UC-1.3", "UC-1.4", "UC-1.5", "UC-1.6", "UC-1.7", "UC-1.8"]
+    },
+    "Capability": {
+      "owner": "AuthComponent",
+      "cluster": "Cross-cutting",
+      "stories": ["US1.4", "US3.3", "US3.4", "US3.5"],
+      "fr": ["FR1.4", "FR12.2"],
+      "nfr": ["NFR6.6"],
+      "cc_ac": ["CC-AC-ROLE-CAPABILITY-GATE"],
+      "rules": ["BR2.2", "BR2.3", "BR2.4"],
+      "use_cases": ["UC-1.6"]
+    },
+    "BusinessRule": {
+      "owner": "AuthComponent",
+      "cluster": "Cross-cutting",
+      "stories": ["US1.4"],
+      "fr": ["FR1.4"],
+      "nfr": ["NFR6.6"],
+      "cc_ac": ["CC-AC-ROLE-CAPABILITY-GATE"],
+      "rules": ["BR2.4"],
+      "use_cases": ["UC-1.6"]
+    },
+    "BusinessRuleError": {
+      "owner": "AuthComponent",
+      "cluster": "Cross-cutting",
+      "stories": ["US1.4"],
+      "fr": ["FR1.4"],
+      "nfr": ["NFR6.6"],
+      "rules": ["BR2.4"],
+      "use_cases": ["UC-1.6"]
+    }
+  },
+  "rules": {
+    "BR1.1": {
+      "category": "validation",
+      "applies_to": ["User", "Invitation"],
+      "source": ["FR1.1", "FR1.3", "NFR6.1"],
+      "ci_gate": "email-validation-test"
+    },
+    "BR1.2": {
+      "category": "validation",
+      "applies_to": ["User"],
+      "source": ["FR1.1", "FR1.2", "NFR6.1", "NFR6.4"],
+      "ci_gate": "password-hash-test"
+    },
+    "BR1.3": {
+      "category": "validation",
+      "applies_to": ["Invitation"],
+      "source": ["FR1.3", "NFR3.2"],
+      "ci_gate": "invitation-expiry-test"
+    },
+    "BR1.4": {
+      "category": "validation",
+      "applies_to": ["Business"],
+      "source": ["FR1.5", "NFR6.1"],
+      "ci_gate": "single-tenant-test"
+    },
+    "BR2.1": {
+      "category": "authorization",
+      "applies_to": ["User"],
+      "source": ["FR1.1", "FR1.3"],
+      "ci_gate": "sign-in-flow-test"
+    },
+    "BR2.2": {
+      "category": "authorization",
+      "applies_to": ["Capability", "Route"],
+      "source": ["FR1.4", "NFR6.6", "CC-AC-ROLE-CAPABILITY-GATE", "team.md#Testing Posture §TP-9"],
+      "ci_gate": "role-capability-matrix-test"
+    },
+    "BR2.3": {
+      "category": "authorization",
+      "applies_to": ["Invitation", "Business", "User"],
+      "source": ["FR1.3", "FR1.5", "FR3.1"],
+      "ci_gate": "owner-only-mutation-test"
+    },
+    "BR2.4": {
+      "category": "authorization",
+      "applies_to": ["Route"],
+      "source": ["ADR-004", "FR1.4", "NFR6.6", "team.md#Testing Posture §TP-9"],
+      "ci_gate": "three-layer-gate-absence-asserted-test"
+    },
+    "BR3.1": {
+      "category": "constraint",
+      "applies_to": ["AuditEntry"],
+      "source": ["FR12.1", "NFR5.2", "CC-AC-AUDIT-IMmutability", "team.md#Deployment §Dep-6", "TC9"],
+      "ci_gate": "audit-immutability-migration-test"
+    },
+    "BR3.2": {
+      "category": "constraint",
+      "applies_to": ["AuditEntry"],
+      "source": ["FR12.1", "NFR5.2", "TC9", "team.md#Deployment §Dep-6"],
+      "ci_gate": "audit-retention-schema-test"
+    },
+    "BR3.3": {
+      "category": "constraint",
+      "applies_to": ["AuditEntry"],
+      "source": ["FR12.1", "NFR5.2", "CC-AC-AUDIT-IMmutability"],
+      "ci_gate": "audit-reversal-reference-test"
+    },
+    "BR3.4": {
+      "category": "constraint",
+      "applies_to": ["Business"],
+      "source": ["FR1.5", "FR12", "US3.5"],
+      "ci_gate": "tenant-boundary-test"
+    },
+    "BR5.1": {
+      "category": "calculation",
+      "applies_to": ["MoneyFigure"],
+      "source": ["FR10", "FR11", "team.md#Code Style §CS-2"],
+      "ci_gate": "money-engine-round-trip-test"
+    },
+    "BR5.2": {
+      "category": "calculation",
+      "applies_to": ["MoneyFigure"],
+      "source": ["ADR-002", "FR10.1", "FR10.3", "CC-AC-BASIS"],
+      "ci_gate": "money-math-per-function-test"
+    },
+    "BR5.3": {
+      "category": "calculation",
+      "applies_to": ["MoneyFigure"],
+      "source": ["team.md#Testing Posture §TP-5"],
+      "ci_gate": "money-jsdom-arithmetic-test"
+    },
+    "BR6.1": {
+      "category": "policy",
+      "applies_to": ["MoneyFigure"],
+      "source": ["ADR-002", "FR10.1", "FR10.3", "CC-AC-BASIS"],
+      "ci_gate": "basis-pill-render-test"
+    },
+    "BR6.2": {
+      "category": "policy",
+      "applies_to": ["MoneyFigure"],
+      "source": ["FR10.3", "CC-AC-BASIS"],
+      "ci_gate": "completeness-control-render-test"
+    },
+    "BR6.3": {
+      "category": "policy",
+      "applies_to": ["Locale", "Business"],
+      "source": ["NFR1", "US3.4"],
+      "ci_gate": "locale-switch-flow-test"
+    },
+    "BR6.4": {
+      "category": "policy",
+      "applies_to": ["Translation"],
+      "source": ["NFR1", "US2.10"],
+      "ci_gate": "missing-translation-fallback-test"
+    },
+    "BR6.5": {
+      "category": "policy",
+      "applies_to": ["MoneyFigure"],
+      "source": ["NFR1", "US2.10"],
+      "ci_gate": "money-intl-locale-test"
+    }
+  },
+  "use_cases": {
+    "UC-1.1": {
+      "name": "Sign up and provision the business",
+      "stories": ["US1.1"],
+      "fr": ["FR1.1"],
+      "nfr": ["NFR6.1"],
+      "entities": ["User", "Business"],
+      "rules": ["BR1.1", "BR1.2", "BR1.4"]
+    },
+    "UC-1.2": {
+      "name": "Sign in",
+      "stories": ["US1.2"],
+      "fr": ["FR1.2"],
+      "nfr": ["NFR6.4"],
+      "entities": ["User", "Session"],
+      "rules": ["BR2.1"]
+    },
+    "UC-1.3": {
+      "name": "Password recovery",
+      "stories": ["US1.2"],
+      "fr": ["FR1.2"],
+      "nfr": ["NFR3.2"],
+      "entities": ["User", "PasswordReset"],
+      "rules": ["BR1.2", "BR1.3"]
+    },
+    "UC-1.4": {
+      "name": "Invite a staff member",
+      "stories": ["US1.3"],
+      "fr": ["FR1.3"],
+      "nfr": ["NFR3.2"],
+      "entities": ["User", "Invitation"],
+      "rules": ["BR1.1", "BR1.3", "BR2.3"]
+    },
+    "UC-1.5": {
+      "name": "Accept an invitation",
+      "stories": ["US1.3"],
+      "fr": ["FR1.3"],
+      "nfr": ["NFR6.1"],
+      "entities": ["User", "Invitation"],
+      "rules": ["BR1.1", "BR1.2", "BR1.3"]
+    },
+    "UC-1.6": {
+      "name": "Three-layer gate enforcement",
+      "stories": ["US1.4"],
+      "fr": ["FR1.4"],
+      "nfr": ["NFR6.6"],
+      "cc_ac": ["CC-AC-ROLE-CAPABILITY-GATE"],
+      "entities": ["User", "Route", "Capability", "BusinessRule"],
+      "rules": ["BR2.2", "BR2.3", "BR2.4"]
+    },
+    "UC-1.7": {
+      "name": "Edit business profile",
+      "stories": ["US1.5"],
+      "fr": ["FR1.5", "FR3.1"],
+      "nfr": ["NFR1.1"],
+      "entities": ["Business", "Locale"],
+      "rules": ["BR2.3", "BR6.3"]
+    },
+    "UC-1.8": {
+      "name": "Per-user settings",
+      "stories": ["US1.5"],
+      "fr": ["FR1.5"],
+      "nfr": [],
+      "entities": ["User"],
+      "rules": ["BR2.3"]
+    },
+    "UC-1.9": {
+      "name": "Audit log entry",
+      "stories": ["US3.3", "US3.4", "US3.5", "US3.6"],
+      "fr": ["FR12.1", "FR12.2"],
+      "nfr": ["NFR5.2", "NFR6.2"],
+      "cc_ac": ["CC-AC-AUDIT-IMmutability"],
+      "entities": ["AuditEntry", "Business", "User"],
+      "rules": ["BR3.1", "BR3.2", "BR3.3", "BR3.4"]
+    },
+    "UC-1.10": {
+      "name": "Reversal",
+      "stories": ["US3.3", "US3.5"],
+      "fr": ["FR12.1"],
+      "nfr": ["NFR5.2"],
+      "cc_ac": ["CC-AC-AUDIT-IMmutability"],
+      "entities": ["AuditEntry"],
+      "rules": ["BR3.1", "BR3.3"]
+    }
+  },
+  "frontend_components": {
+    "Shell": {
+      "level": "Shell",
+      "stories": ["US1.1", "US1.5"],
+      "fr": ["FR1.1", "FR3.1"],
+      "nfr": ["NFR1.1"]
+    },
+    "Screen": {
+      "level": "Screen",
+      "stories": ["US1.1", "US1.2", "US1.3", "US1.4", "US1.5"],
+      "fr": ["FR1.1", "FR1.2", "FR1.3", "FR1.4", "FR1.5"],
+      "nfr": ["NFR6.6"]
+    },
+    "TextField": {
+      "level": "Field",
+      "stories": ["US1.1", "US1.5"],
+      "fr": ["FR1.1"],
+      "nfr": ["NFR1.1"]
+    },
+    "NumberField": {
+      "level": "Field",
+      "stories": ["US2.10"],
+      "fr": ["FR11.1"],
+      "nfr": ["NFR1.1"]
+    },
+    "MoneyField": {
+      "level": "Field",
+      "stories": ["US2.10"],
+      "fr": ["FR10.1", "FR10.3", "FR11.1", "FR11.2"],
+      "nfr": ["NFR1.1", "NFR6.5"],
+      "cc_ac": ["CC-AC-BASIS"]
+    },
+    "DateField": {
+      "level": "Field",
+      "stories": ["US1.1"],
+      "fr": ["FR1.1"],
+      "nfr": ["NFR1.1"]
+    },
+    "SelectField": {
+      "level": "Field",
+      "stories": ["US1.5"],
+      "fr": ["FR1.5"],
+      "nfr": []
+    },
+    "TextAreaField": {
+      "level": "Field",
+      "stories": [],
+      "fr": [],
+      "nfr": []
+    },
+    "PasswordField": {
+      "level": "Field",
+      "stories": ["US1.1", "US1.2"],
+      "fr": ["FR1.1", "FR1.2"],
+      "nfr": ["NFR6.4"]
+    },
+    "EmailField": {
+      "level": "Field",
+      "stories": ["US1.1", "US1.3"],
+      "fr": ["FR1.1", "FR1.3"],
+      "nfr": ["NFR6.1"]
+    },
+    "BasisPill": {
+      "level": "Pill",
+      "stories": ["US2.10"],
+      "fr": ["FR10.1", "FR10.3"],
+      "nfr": ["NFR1.1"],
+      "cc_ac": ["CC-AC-BASIS"]
+    },
+    "CompletenessControl": {
+      "level": "Pill",
+      "stories": ["US2.10"],
+      "fr": ["FR10.3"],
+      "nfr": ["NFR1.1"],
+      "cc_ac": ["CC-AC-BASIS"]
+    },
+    "StatusChip": {
+      "level": "Pill",
+      "stories": [],
+      "fr": [],
+      "nfr": [],
+      "notes": "StatusChip is a U1 primitive but its exhaustive switch is on U3's OrderStatus enum (B2 deliverable)."
+    },
+    "RoleLockSheet": {
+      "level": "Pill",
+      "stories": ["US1.4", "US3.3"],
+      "fr": ["FR1.4", "FR12.2"],
+      "nfr": ["NFR6.6"],
+      "cc_ac": ["CC-AC-ROLE-CAPABILITY-GATE"]
+    },
+    "PackSlip": {
+      "level": "Pill",
+      "stories": [],
+      "fr": [],
+      "nfr": [],
+      "notes": "PackSlip is a U1 primitive but it composes U3's Order (B2 deliverable)."
+    }
+  },
+  "cross_cutting_ci_gates": {
+    "B1_audit_immutability": {
+      "rules": ["BR3.1", "BR3.2", "BR3.3"],
+      "use_case": "UC-1.9",
+      "evidence": "audit-immutability-migration-test"
+    },
+    "B1_role_capability_three_layer": {
+      "rules": ["BR2.2", "BR2.3", "BR2.4"],
+      "use_case": "UC-1.6",
+      "evidence": "three-layer-gate-absence-asserted-test"
+    },
+    "B1_money_engine_round_trip": {
+      "rules": ["BR5.1", "BR5.2", "BR5.3"],
+      "use_case": null,
+      "evidence": "money-engine-round-trip-test"
+    }
+  },
+  "fr_split_notes": {
+    "FR1": "Split across U1 (sign-up, sign-in, recover, invite, settings — US1.1, US1.2, US1.3, US1.5) and U3 (apply three-layer gate in screen-level US1.4).",
+    "FR10": "Split across U1 (MoneyFigure + basis pill — US2.10) and U3 (order-level basis pill render + U2/U3 reads).",
+    "FR11": "Owned by U1 (MoneyFigure rendering with Intl — US2.10)."
+  },
+  "nfr_split_notes": {
+    "NFR1": "Owned by U1 (Bangla-first default + Intl formatters — BR6.3, BR6.5).",
+    "NFR5": "Owned by U1 (audit-immutability + retention — BR3.1, BR3.2).",
+    "NFR6": "Split across U1 (role × capability — BR2.2, BR2.4) and U3 (segment-isolation — B2 deliverable)."
+  },
+  "cc_ac_split_notes": {
+    "CC-AC-AUDIT-IMmutability": "Owned by U1 (BR3.1, BR3.3, UC-1.9, UC-1.10).",
+    "CC-AC-ROLE-CAPABILITY-GATE": "Owned by U1 (BR2.2, BR2.4, UC-1.6).",
+    "CC-AC-BASIS": "Split across U1 (MoneyFigure + basis pill — BR6.1, BR6.2) and U3 (order-level basis pill — B2 deliverable).",
+    "CC-AC-STATUS-BUCKET": "Owned by U3 (B2 deliverable).",
+    "CC-AC-SEGMENT-ISOLATION": "Owned by U3 (B2 deliverable).",
+    "CC-AC-NBR-AUDIT-RETENTION": "Owned by U1 (BR3.2)."
+  }
+}

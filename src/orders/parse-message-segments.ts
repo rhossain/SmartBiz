@@ -1,0 +1,192 @@
+/**
+ * src/orders/parse-message-segments.ts — the segment-isolation rule (FR5.2).
+ *
+ *     "An item's details come from the item's own words."
+ *
+ * Why this file exists: the prototype's first parser scanned the whole
+ * message for every product, so one product's colour was attributed to
+ * all of them (the sample's pink dupatta came out black, because the
+ * kurti's কালো appeared later and the last match won). The fix, carried
+ * forward verbatim in intent from prototype/js/screens-orders.js, is to
+ * cut the message into segments at its natural item boundaries and let
+ * each item read only its own segment.
+ *
+ * Boundaries are line breaks, the punctuation `, ; + · ।`, and the
+ * connector words আর, এবং, তারপর, এ, ও, ওর, আরো (and English "and"),
+ * matched as whole whitespace-separated words so a connector inside a
+ * longer word never splits it.
+ *
+ * Ambiguity is never resolved by guessing: two sizes, two colours or two
+ * quantities inside one segment leave that detail empty and mark the
+ * item incomplete, so the person picks. A wrong value is worse than an
+ * empty one.
+ */
+import { toAsciiDigits } from "../i18n/bnDigits.js";
+
+export const CONNECTORS: ReadonlyArray<string> = [
+  "আর",
+  "এবং",
+  "তারপর",
+  "এ",
+  "ও",
+  "ওর",
+  "আরো",
+  "and",
+];
+
+const HARD_BREAK = /\r?\n|[,;+·।]/;
+
+export const SIZES: ReadonlyArray<string> = [
+  "XS",
+  "S",
+  "M",
+  "L",
+  "XL",
+  "XXL",
+  "XXXL",
+  "2XL",
+  "3XL",
+];
+
+/** Canonical Bangla colour name plus the spellings customers use. */
+export const COLOURS: ReadonlyArray<{
+  readonly bn: string;
+  readonly aliases: ReadonlyArray<string>;
+}> = [
+  { bn: "কালো", aliases: ["black"] },
+  { bn: "সাদা", aliases: ["white"] },
+  { bn: "লাল", aliases: ["red"] },
+  { bn: "নীল", aliases: ["blue"] },
+  { bn: "সবুজ", aliases: ["green"] },
+  { bn: "হলুদ", aliases: ["yellow"] },
+  { bn: "গোলাপি", aliases: ["pink"] },
+  { bn: "বেগুনি", aliases: ["purple"] },
+  { bn: "কমলা", aliases: ["orange"] },
+  { bn: "খয়েরি", aliases: ["brown"] },
+  { bn: "ধূসর", aliases: ["grey", "gray"] },
+  { bn: "মেরুন", aliases: ["maroon"] },
+  { bn: "আকাশি", aliases: ["sky"] },
+];
+
+/** A product the parser can recognise, by any of its words (B3 supplies the catalog). */
+export interface CatalogEntry {
+  readonly productId: string;
+  readonly words: ReadonlyArray<string>;
+}
+
+export interface SegmentDetails {
+  readonly text: string;
+  readonly isItem: boolean;
+  readonly quantity: number;
+  readonly size: string | null;
+  readonly colour: string | null;
+  readonly productId: string | null;
+  readonly ambiguous: boolean;
+  /** Every word is a size, a colour or a detail label ("সাইজ", "রং"). */
+  readonly detailOnly: boolean;
+}
+
+/* Words that only introduce a detail. A fragment made of these plus a
+   size or colour is a pure detail ("সাইজ M"); any other word means the
+   fragment may name something else, so it is never folded into an item. */
+const DETAIL_LABELS: ReadonlyArray<string> = [
+  "সাইজ",
+  "সাইজের",
+  "রং",
+  "রঙ",
+  "কালার",
+  "SIZE",
+  "COLOUR",
+  "COLOR",
+];
+
+const isDetailWord = (token: string): boolean => {
+  const upper = toAsciiDigits(token).toUpperCase();
+  return (
+    SIZES.includes(upper) ||
+    DETAIL_LABELS.includes(upper) ||
+    COLOURS.some((c) => token.startsWith(c.bn) || c.aliases.some((a) => a.toUpperCase() === upper))
+  );
+};
+
+/*
+ * A short Latin value must match as a whole word: "L" is a substring of
+ * "XL". Every size and Latin alias is one alphanumeric word, so the
+ * segment is split once into its upper-cased Latin words and each lookup
+ * is a Set hit. That is the same whole-word match as a per-value regex,
+ * at a fraction of the cost on the 200-item hot path (NFR6.7.1).
+ */
+const latinWords = (ascii: string): ReadonlySet<string> =>
+  new Set(
+    ascii
+      .toUpperCase()
+      .split(/[^A-Z0-9]+/)
+      .filter((w) => w.length > 0),
+  );
+
+const isLatinWord = (value: string): boolean => /^[A-Za-z0-9]+$/.test(value);
+/* A count followed by a counter word. `টা(?!কা)` keeps a price such as
+   "৩২০ টাকা" from being read as a quantity of 320. */
+const QUANTITY = /(\d+)\s*(?:টা(?!কা)|টি|পিস|pcs?\b|pieces?\b)/gi;
+
+/** Split a message into item-sized segments at line breaks, punctuation and connectors. */
+export const splitSegments = (text: string): string[] => {
+  const segments: string[] = [];
+  for (const piece of text.split(HARD_BREAK)) {
+    let current: string[] = [];
+    for (const token of piece.split(/\s+/).filter((t) => t.length > 0)) {
+      if (CONNECTORS.includes(token.toLowerCase())) {
+        if (current.length > 0) segments.push(current.join(" "));
+        current = [];
+      } else {
+        current.push(token);
+      }
+    }
+    if (current.length > 0) segments.push(current.join(" "));
+  }
+  return segments;
+};
+
+/** Whole-word match for a Latin catalog word, substring match for a Bangla one. */
+const mentions = (scope: string, words: ReadonlySet<string>, word: string): boolean =>
+  isLatinWord(word) ? words.has(word.toUpperCase()) : scope.includes(word);
+
+const single = <T>(hits: ReadonlyArray<T>): { value: T | null; ambiguous: boolean } => {
+  const distinct = [...new Set(hits)];
+  if (distinct.length === 1) return { value: distinct[0] ?? null, ambiguous: false };
+  return { value: null, ambiguous: distinct.length > 1 };
+};
+
+/** Read one segment's own details. Nothing outside `segment` is consulted. */
+export const readSegment = (
+  segment: string,
+  catalog: ReadonlyArray<CatalogEntry>,
+): SegmentDetails => {
+  const ascii = toAsciiDigits(segment);
+  const words = latinWords(ascii);
+  const quantities = [...ascii.matchAll(QUANTITY)].map((m) => Number(m[1]));
+  const size = single(SIZES.filter((s) => words.has(s)));
+  const colour = single(
+    COLOURS.filter(
+      (c) => segment.includes(c.bn) || c.aliases.some((a) => words.has(a.toUpperCase())),
+    ).map((c) => c.bn),
+  );
+  const product = single(
+    catalog
+      .filter((p) => p.words.some((w) => w.length > 2 && mentions(segment, words, w)))
+      .map((p) => p.productId),
+  );
+  const qty = single(quantities);
+  const isItem = quantities.length > 0 || product.value !== null || product.ambiguous;
+  const quantity = quantities.length === 0 ? 1 : (qty.value ?? 0);
+  return {
+    text: segment,
+    isItem,
+    quantity,
+    size: size.value,
+    colour: colour.value,
+    productId: product.value,
+    ambiguous: size.ambiguous || colour.ambiguous || product.ambiguous || qty.ambiguous,
+    detailOnly: segment.split(/\s+/).every((t) => t.length === 0 || isDetailWord(t)),
+  };
+};
