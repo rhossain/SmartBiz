@@ -13516,3 +13516,196 @@
 **Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
 
 ---
+
+## Unit Started
+**Timestamp**: 2026-10-27T19:03:15Z
+**Event**: UNIT_STARTED
+**Stage**: code-generation
+**Unit**: u2-app-shell
+**Run floor**: WORKFLOW_STARTED:2026-10-27T06:05:58Z#1
+
+---
+
+## Unit Completed
+**Timestamp**: 2026-10-27T19:03:17Z
+**Event**: UNIT_COMPLETED
+**Stage**: code-generation
+**Unit**: u2-app-shell
+**Run floor**: WORKFLOW_STARTED:2026-10-27T06:05:58Z#1
+
+---
+
+## Change Accepted
+**Timestamp**: 2026-10-27T19:03:36Z
+**Event**: CHANGE_ACCEPTED
+**Stage**: code-generation
+**Unit**: u1-skeleton
+**Checkpoint**: review-receipt
+**Changed**: (paths unavailable)
+**Recorded**: sha256:48c0af8670e9ba43b55b8708ab833e7549ffdef4115bab43e893d376a1e4bd1c
+**Current**: sha256:025acdad4d0a41de4f2be0979825bde46c5a23913eec69e7a41da44579b1dc85
+**Details**: The skeleton Unit's list of files changed after it was reviewed; carrying on.
+
+---
+
+## Change Accepted
+**Timestamp**: 2026-10-27T19:03:36Z
+**Event**: CHANGE_ACCEPTED
+**Stage**: functional-design
+**Unit**: u2-app-shell
+**Checkpoint**: review-receipt
+**Changed**: (paths unavailable)
+**Recorded**: sha256:3e47da7e13d0272ad0f74a368caba05c427ac720481113828af2e030ab518695
+**Current**: sha256:fe9875008a4781e750ecfe151af8283d60e037a8fedc3a18122ee1c295105bdf
+**Details**: The app shell Unit's Functional Design documents changed after they were reviewed; carrying on.
+
+---
+
+## Change Accepted
+**Timestamp**: 2026-10-27T19:03:36Z
+**Event**: CHANGE_ACCEPTED
+**Stage**: nfr-requirements
+**Unit**: u2-app-shell
+**Checkpoint**: review-receipt
+**Changed**: (paths unavailable)
+**Recorded**: sha256:8ffb7dd906ed24af3f5486bae3af55d39615be75f77a77f83cb66707ebc4d6d0
+**Current**: sha256:b0bf576d0aaeaba827c6381a38adae7a10a2a009b8d19fbb6734f6caeee30586
+**Details**: The app shell Unit's NFR Requirements documents changed after they were reviewed; carrying on.
+
+---
+
+## Change Accepted
+**Timestamp**: 2026-10-27T19:03:36Z
+**Event**: CHANGE_ACCEPTED
+**Stage**: nfr-design
+**Unit**: u2-app-shell
+**Checkpoint**: review-receipt
+**Changed**: (paths unavailable)
+**Recorded**: sha256:db2f907296ba4e8a8475d8ad8e5c1e1f915ef3dcc72dab8ef315ff68c61ec812
+**Current**: sha256:5b41668820f53d30e5c79e193889db479aca9c7feb041efbbc6da76b841ff353
+**Details**: The app shell Unit's NFR Design documents changed after they were reviewed; carrying on.
+
+---
+
+## Change Accepted
+**Timestamp**: 2026-10-27T19:03:36Z
+**Event**: CHANGE_ACCEPTED
+**Stage**: infrastructure-design
+**Unit**: u2-app-shell
+**Checkpoint**: review-receipt
+**Changed**: (paths unavailable)
+**Recorded**: sha256:1d754e49214bd29b0fd536e9fd5e07b882219591f75afdd586fec199fccf06e0
+**Current**: sha256:937470890c5c8db0bcdfc473c43630142467d3ee0bfe7bfe9bf92060e79d7b04
+**Details**: The app shell Unit's Infrastructure Design documents changed after they were reviewed; carrying on.
+
+---
+
+## Change Accepted
+**Timestamp**: 2026-10-27T19:03:36Z
+**Event**: CHANGE_ACCEPTED
+**Stage**: code-generation
+**Unit**: u2-app-shell
+**Checkpoint**: review-receipt
+**Changed**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/code-generation/traceability.json, aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/code-generation/code-summary.md
+**Recorded**: sha256:22dfbdf69b6fdd7bbc083906f2019d4c8b6809bfcb25b5a5db310ae53b8209c9
+**Current**: sha256:63dd03477b635c582b2f2f5b03dcb5158874c3170b38c0d6b1d4f3b0c070f4c7
+**Details**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/code-generation/traceability.json, aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/code-generation/code-summary.md changed after the app shell Unit was reviewed; carrying on.
+
+---
+
+## Change Accepted
+**Timestamp**: 2026-10-27T19:03:36Z
+**Event**: CHANGE_ACCEPTED
+**Stage**: code-generation
+**Unit**: u2-app-shell
+**Checkpoint**: review-receipt
+**Changed**: (paths unavailable)
+**Recorded**: sha256:4bcd494865697abb83b0fc93dbd574d62b8118c8040cfffb3b3a0b3f5097ea4b
+**Current**: sha256:2d004de50d984944dd0e9b6592949d183760166580461b903141318fd9248f06
+**Details**: The app shell Unit's list of files changed after it was reviewed; carrying on.
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-27T19:03:40Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: a54815769b1614998
+**Message**: continue
+
+---
+
+## Checkpoint Verification Recorded
+**Timestamp**: 2026-10-27T19:06:55Z
+**Event**: CHECKPOINT_VERIFICATION_RECORDED
+**Unit**: u2-app-shell
+**Kind**: unit
+**Stage**: code-generation
+**Stages**: functional-design, nfr-requirements, nfr-design, infrastructure-design, code-generation
+**Verification Id**: 0308f7aa-97b0-4dff-9cd1-3c3e1823df61
+**Fingerprint**: sha256:8974ade5a4e0f16ba5f7b7fee4f5823eb24cea5ea9298a28cd5e9b261b44817f
+**Command SHA-256**: b6e2e214dd780220b0f72a9f2d906f0fad0d62e37afd018fae65289dd1f65122
+**Exit Code**: 1
+**Verified**: false
+**Run floor**: WORKFLOW_STARTED:2026-10-27T06:05:58Z#1
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-27T19:07:12Z
+**Event**: HUMAN_TURN
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-27T23:33:09Z
+**Event**: HUMAN_TURN
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+**Picked**: ["Re-run the check (Recommended)"]
+
+---
+
+## Question Replied
+**Timestamp**: 2026-10-27T23:33:09Z
+**Event**: QUESTION_REPLIED
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+**Question**: U2's check failed only on the session timing (49 ms against a 20 ms limit). U2 didn't touch that code, and the machine is busy right now (load about 11). What should I do?
+**Reply**: Re-run the check (Recommended)
+
+---
+
+## Checkpoint Verification Recorded
+**Timestamp**: 2026-10-27T23:36:27Z
+**Event**: CHECKPOINT_VERIFICATION_RECORDED
+**Unit**: u2-app-shell
+**Kind**: unit
+**Stage**: code-generation
+**Stages**: functional-design, nfr-requirements, nfr-design, infrastructure-design, code-generation
+**Verification Id**: a0d2f081-479e-4b0a-9c11-43e9bc4c55bf
+**Fingerprint**: sha256:8974ade5a4e0f16ba5f7b7fee4f5823eb24cea5ea9298a28cd5e9b261b44817f
+**Command SHA-256**: b6e2e214dd780220b0f72a9f2d906f0fad0d62e37afd018fae65289dd1f65122
+**Exit Code**: 0
+**Verified**: true
+**Run floor**: WORKFLOW_STARTED:2026-10-27T06:05:58Z#1
+
+---
+
+## Gate Approved
+**Timestamp**: 2026-10-27T23:36:36Z
+**Event**: GATE_APPROVED
+**Unit**: u2-app-shell
+**Stage**: code-generation
+**Stages**: functional-design, nfr-requirements, nfr-design, infrastructure-design, code-generation
+**Gate Stages**: functional-design, nfr-requirements, nfr-design, infrastructure-design, code-generation
+**Gate Scope**: unit-end
+**Checkpoint**: construction-unit
+**Fingerprint**: sha256:8974ade5a4e0f16ba5f7b7fee4f5823eb24cea5ea9298a28cd5e9b261b44817f
+**Run floor**: WORKFLOW_STARTED:2026-10-27T06:05:58Z#1
+**Run floors**: {"functional-design":"WORKFLOW_STARTED:2026-10-27T06:05:58Z#1","nfr-requirements":"WORKFLOW_STARTED:2026-10-27T06:05:58Z#1","nfr-design":"WORKFLOW_STARTED:2026-10-27T06:05:58Z#1","infrastructure-design":"WORKFLOW_STARTED:2026-10-27T06:05:58Z#1","code-generation":"WORKFLOW_STARTED:2026-10-27T06:05:58Z#1"}
+**Verification Command SHA-256**: b6e2e214dd780220b0f72a9f2d906f0fad0d62e37afd018fae65289dd1f65122
+**Verification Id**: a0d2f081-479e-4b0a-9c11-43e9bc4c55bf
+**Approved Evidence**: {"functional-design":["sha256:3e47da7e13d0272ad0f74a368caba05c427ac720481113828af2e030ab518695",null],"nfr-requirements":["sha256:8ffb7dd906ed24af3f5486bae3af55d39615be75f77a77f83cb66707ebc4d6d0",null],"nfr-design":["sha256:db2f907296ba4e8a8475d8ad8e5c1e1f915ef3dcc72dab8ef315ff68c61ec812",null],"infrastructure-design":["sha256:1d754e49214bd29b0fd536e9fd5e07b882219591f75afdd586fec199fccf06e0",null],"code-generation":["sha256:22dfbdf69b6fdd7bbc083906f2019d4c8b6809bfcb25b5a5db310ae53b8209c9","sha256:4bcd494865697abb83b0fc93dbd574d62b8118c8040cfffb3b3a0b3f5097ea4b"]}
+**Autonomous**: true
+
+---
