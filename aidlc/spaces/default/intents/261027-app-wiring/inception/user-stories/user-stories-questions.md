@@ -57,3 +57,45 @@ B. Coarse epics only
 X. Other (please specify)
 
 [Answer]: A. INVEST; matches the MVP's CC-AC cross-cutting approach.
+
+## Round 1 triage: judgment calls raised by the mob (answered on the Owner's standing instruction)
+
+## Q7. Password recovery: on-screen link, or out of band? (design, developer and quality all OBJECT to Q5's on-screen reset link)
+
+A. Out of band. `/recover` always gives the same neutral message. The Owner's own reset link is printed by a local terminal command (the same trust boundary as `.env` and the database). A signed-in Owner or Manager creates a reset link for a staff member on `/staff`, using the copy-link pattern
+B. Keep the link on screen and accept that the response reveals whether an account exists
+X. Other (please specify)
+
+[Answer]: A. An on-screen link lets anyone at the shared laptop take over the Owner's account, and it contradicts AC1.6.2. This replaces Q5's recovery half; invitations keep the copy-link flow.
+
+## Q8. Raw tokens in responses: allowed anywhere?
+
+A. Only in a closed allow-list: the response that creates an invitation and the response that creates a staff reset link each return their own raw token once, in a `link` field. No later read returns it, and the database stores only its hash. Every other response is token-free, and a test checks the allow-list
+B. Never; deliver links some other way
+X. Other (please specify)
+
+[Answer]: A. Copy-link invitations (Q5) need the token once; the allow-list keeps FR2.8 testable (quality review A1).
+
+## Q9. Token lifetimes and session limits
+
+A. Invitation 7 days; reset link 30 minutes; session: an absolute 30-day cap from creation plus a 12-hour idle limit that each use resets (FR2.2 is read this way); a password reset ends every existing session of that user; expiry is compared against the app clock passed into SQL
+B. Other values
+X. Other (please specify)
+
+[Answer]: A. Matches B1's 30 days and Q2; the app-clock rule makes the boundary tests possible on the frozen clock (quality review).
+
+## Q10. Who sets stock, and is the supplier a Must?
+
+A. Owner and Manager set stock (FR6.3 is read per Q2 and the role table); US3.6 suppliers is promoted to Must, because the low-stock story (Must) shows the default supplier; a variant with no supplier shows a "no supplier recorded" state
+B. Owner only; suppliers stay Should
+X. Other (please specify)
+
+[Answer]: A. Resolves the FR6.3 versus role-table contradiction and the priority inversion (developer review).
+
+## Q11. Small behaviour choices the ACs need
+
+A. Rate-limited sign-in answers 429 with the minutes to wait. Phone entry normalises Bangla digits, spaces, hyphens and a `+880`/`880` prefix to `01XXXXXXXXX`. A duplicate customer phone gives a non-blocking warning that links to the existing customer. Sign-out is idempotent (204 with or without a session). The app's only origin is `http://127.0.0.1:<port>`; `localhost` is refused by the Origin check. SKU uniqueness ignores case. Partial phone search needs at least 4 digits. Keep two Bolts (staff and recovery stay in Bolt 1, off the skeleton path)
+B. Other choices
+X. Other (please specify)
+
+[Answer]: A. Each is the reviewers' recommendation or the smallest testable rule.
