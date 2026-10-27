@@ -467,3 +467,15 @@ Recorded on the Owner's standing instruction; source `construction/u1-skeleton/f
 | C7 | Do Sales Staff see purchase cost on product reads? (refined-mockups R-04) | U4 |
 | C4 | ~~Does the Manager keep `audit.view`?~~ Closed: `capability.ts` grants it and the approved role table (US5.1) keeps it | — |
 | C1 | Body size limit of 64 KiB: enough for the largest paste-parse order? Confirmed in NFR Requirements | U1 |
+
+## Amendments from U3 Functional Design (2026-10-28)
+
+Recorded on the Owner's standing instruction; source `construction/u3-staff/functional-design/functional-spec.md` § Review follow-ups (F-05).
+
+| # | Contract | Change |
+|---|----------|--------|
+| B1 | C6 accept, reset | may answer 429 `rate_limited` when the password-hashing gate is full; the token stays unused |
+| B2 | C6 `GET /api/staff` | members gain `canReset`; the body gains `invitableRoles` and `truncated` |
+| B3 | C6 reset-links | 409 `conflict` for an inactive target |
+| B4 | C6 accept | 201 body is the public user `{id, email, role, locale}` with `Set-Cookie` |
+| B5 | C6 accept, reset, invitations | a short password is 400 `password_too_short`; a bad invite email is 400 `invalid_email` (auth kinds pass through, as A2) |
