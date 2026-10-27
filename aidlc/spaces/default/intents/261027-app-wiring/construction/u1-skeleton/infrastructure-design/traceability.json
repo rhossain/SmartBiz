@@ -1,0 +1,134 @@
+{
+  "stage": "infrastructure-design",
+  "unit": "u1-skeleton",
+  "upstream_ids": [
+    "NFR2.1",
+    "NFR2.2",
+    "NFR2.3",
+    "NFR3.8",
+    "NFR3.9",
+    "NFR5.3",
+    "NFR5.5",
+    "NFR6.1",
+    "NFR6.5",
+    "NFR6.6",
+    "NFR6.8",
+    "NFR6.12",
+    "NFR7.1",
+    "NFR7.2",
+    "NFR7.6",
+    "NFR7.8",
+    "NFR8.1",
+    "NFR8.6",
+    "NFR8.8",
+    "NFR8.9",
+    "NFR10.1"
+  ],
+  "coverage": [
+    {
+      "id": "NFR2.1",
+      "status": "OK",
+      "target": "infrastructure-specification: roles smartbiz_app (not superuser, member of app_role)"
+    },
+    {
+      "id": "NFR2.2",
+      "status": "OK",
+      "target": "cicd-pipeline gate 13 realdb exact-grant test on the throwaway postgres:18"
+    },
+    {
+      "id": "NFR2.3",
+      "status": "OK",
+      "target": "infrastructure-specification Configuration: MIGRATE_DATABASE_URL used only by migrations"
+    },
+    {
+      "id": "NFR3.8",
+      "status": "OK",
+      "target": "cicd-pipeline gate 12 secret scan"
+    },
+    {
+      "id": "NFR3.9",
+      "status": "OK",
+      "target": "infrastructure-specification: .env gitignored, .env.example placeholders"
+    },
+    {
+      "id": "NFR5.3",
+      "status": "OK",
+      "target": "infrastructure-specification Networking: bind 127.0.0.1:${PORT}; Postgres on 127.0.0.1:5432"
+    },
+    {
+      "id": "NFR5.5",
+      "status": "OK",
+      "target": "infrastructure-specification Networking: loopback only; Host fixed to 127.0.0.1:PORT"
+    },
+    {
+      "id": "NFR6.1",
+      "status": "OK",
+      "target": "monitoring-design Metrics: benchmark gate 15"
+    },
+    {
+      "id": "NFR6.5",
+      "status": "OK",
+      "target": "cicd-pipeline gate 9 bundle check"
+    },
+    {
+      "id": "NFR6.6",
+      "status": "OK",
+      "target": "monitoring-design start-up time via wiring check"
+    },
+    {
+      "id": "NFR6.8",
+      "status": "OK",
+      "target": "infrastructure-specification Resource sizing: pool max 5"
+    },
+    {
+      "id": "NFR6.12",
+      "status": "OK",
+      "target": "infrastructure-specification Resource sizing: 2 argon2 operations"
+    },
+    {
+      "id": "NFR7.1",
+      "status": "OK",
+      "target": "infrastructure-specification Connection settings: statement and idle timeouts"
+    },
+    {
+      "id": "NFR7.2",
+      "status": "OK",
+      "target": "monitoring-design SLI recovery after database restart (realdb outage test)"
+    },
+    {
+      "id": "NFR7.6",
+      "status": "OK",
+      "target": "cicd-pipeline gate 13 migrates twice"
+    },
+    {
+      "id": "NFR7.8",
+      "status": "OK",
+      "target": "infrastructure-specification Storage: named volume and pg_dump backups; cicd-pipeline Rollback"
+    },
+    {
+      "id": "NFR8.1",
+      "status": "OK",
+      "target": "monitoring-design Logs & Tracing: stdout JSON lines"
+    },
+    {
+      "id": "NFR8.6",
+      "status": "OK",
+      "target": "monitoring-design Alerts: health endpoint and banners; post-merge smoke"
+    },
+    {
+      "id": "NFR8.8",
+      "status": "OK",
+      "target": "cicd-pipeline gate 6 coverage over every src file"
+    },
+    {
+      "id": "NFR8.9",
+      "status": "OK",
+      "target": "cicd-pipeline gate 14 wiring check"
+    },
+    {
+      "id": "NFR10.1",
+      "status": "OK",
+      "target": "infrastructure-specification: Docker, bun and local scripts only; hosted Actions disabled"
+    }
+  ]
+}
