@@ -20,7 +20,6 @@
 import * as React from "react";
 import type { Locale } from "../../auth/types.js";
 import { toAsciiDigits } from "../../i18n/bnDigits.js";
-import { money } from "../../money/money-figure.js";
 import { Screen } from "../../pres/Screen.js";
 import { buildManualOrder } from "../input-modes.js";
 import {
@@ -35,6 +34,7 @@ import type { OrderItemInput } from "../types.js";
 import { tr } from "./copy.js";
 import { DraftStatus } from "./DraftStatus.js";
 import { MoneyCell } from "./MoneyCell.js";
+import { unrecognized } from "../order-figure.js";
 
 export interface ManualOrderProps {
   readonly locale: Locale;
@@ -172,10 +172,9 @@ const LineEditor = (props: {
         </span>
       ) : lineTotal !== null && lineTotal >= 0 ? (
         <MoneyCell
-          figure={money(lineTotal, "earned", "partial")}
+          figure={unrecognized(lineTotal, "pipeline", "partial")}
           locale={locale}
           testId={`manual-line-total-${n}`}
-          pipeline
         />
       ) : null}
       {props.canRemove ? (
@@ -254,10 +253,9 @@ export const ManualOrder = ({ locale, draft, onSave }: ManualOrderProps): React.
           <div>
             <span>{tr("orders.total", locale)}</span>
             <MoneyCell
-              figure={money(result.totalPaise, "earned", "partial")}
+              figure={unrecognized(result.totalPaise, "pipeline", "partial")}
               locale={locale}
               testId="manual-total"
-              pipeline
             />
           </div>
         ) : null}

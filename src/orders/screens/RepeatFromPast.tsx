@@ -9,7 +9,6 @@
  */
 import * as React from "react";
 import type { Locale } from "../../auth/types.js";
-import { money } from "../../money/money-figure.js";
 import { Screen } from "../../pres/Screen.js";
 import { buildRepeatOrder } from "../input-modes.js";
 import {
@@ -20,11 +19,12 @@ import {
   type SaveOrder,
 } from "../order-draft.js";
 import { computeOrderTotal } from "../order-total.js";
-import { bucketOf, orderMoneyFigure } from "../status-bucket.js";
+import { orderMoneyFigure } from "../status-bucket.js";
 import type { Order } from "../types.js";
 import { tr } from "./copy.js";
 import { DraftStatus } from "./DraftStatus.js";
 import { MoneyCell } from "./MoneyCell.js";
+import { unrecognized } from "../order-figure.js";
 
 export interface RepeatFromPastProps {
   readonly pastOrders: ReadonlyArray<Order>;
@@ -53,12 +53,7 @@ export const RepeatFromPast = ({
         {pastOrders.map((o) => (
           <li key={o.id} data-testid="repeat-order" data-order-id={o.id}>
             <span>{o.orderNo}</span>
-            <MoneyCell
-              figure={orderMoneyFigure(o)}
-              locale={locale}
-              testId="repeat-order-total"
-              pipeline={bucketOf(o.status) === "pipeline"}
-            />
+            <MoneyCell figure={orderMoneyFigure(o)} locale={locale} testId="repeat-order-total" />
             <button
               type="button"
               data-testid="repeat-pick"
@@ -79,10 +74,9 @@ export const RepeatFromPast = ({
             ))}
           </ol>
           <MoneyCell
-            figure={money(preview.value, "earned", "partial")}
+            figure={unrecognized(preview.value, "pipeline", "partial")}
             locale={locale}
             testId="repeat-preview-total"
-            pipeline
           />
           <button
             type="button"

@@ -54,9 +54,12 @@ const assertEveryMoneyHasBasis = (root: HTMLElement): number => {
     const pills = cell
       ? [...cell.querySelectorAll('[data-testid="pill"]')].map((p) => p.textContent)
       : [];
-    expect(pills.some((p) => p === "earned" || p === "realized" || p === "pipeline")).toBe(true);
-    // L-01: a pipeline figure never claims to be earned or realized.
-    if (cell?.getAttribute("data-basis") === "pipeline") {
+    expect(
+      pills.some((p) => p === "earned" || p === "realized" || p === "pipeline" || p === "no sale"),
+    ).toBe(true);
+    // L-01 / R-04: pipeline and no-sale money never claims to be earned or realized.
+    const basis = cell?.getAttribute("data-basis");
+    if (basis === "pipeline" || basis === "none") {
       expect(pills.includes("earned") || pills.includes("realized")).toBe(false);
     }
     expect(pills.some((p) => p === "complete" || p === "partial" || p === "unknown")).toBe(true);

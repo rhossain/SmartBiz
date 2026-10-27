@@ -38,6 +38,48 @@ const seedOrder = async (stub: ReturnType<typeof makeSqlStub>): Promise<Order> =
 beforeEach(() => setTestClock(FROZEN_TEST_NOW));
 afterEach(() => resetTestClock());
 
+describe("R-05 — no customer PII in the audit log", () => {
+  // Rule restated: audit_log is insert-only for 5 years, so a customer's
+  // name, phone and address must never be written to it. The payload keeps
+  // which contact fields were present and whether an update changed them.
+  const PII = ["ফারজানা আক্তার", "01711234567", "উত্তরা, ঢাকা"];
+  const noPii = (row: Record<string, unknown>): void => {
+    const raw = String(row["payload"]);
+    for (const value of PII)
+      expect({ value, inAudit: raw.includes(value) }).toEqual({ value, inAudit: false });
+  };
+
+  test("create keeps the contact on the order, only its field summary in the audit row", async () => {
+    const stub = makeSqlStub();
+    const order = await seedOrder(stub);
+    expect(order.contact?.phone).toBe("01711234567");
+    const row = stub.state.auditLog[0]!;
+    noPii(row);
+    expect((auditPayload(row).after as { contact: unknown }).contact).toEqual({
+      present: true,
+      fields: ["name", "phone", "address"],
+    });
+  });
+
+  test("update and every later action write no PII; a contact edit is flagged, not copied", async () => {
+    const stub = makeSqlStub();
+    const order = await seedOrder(stub);
+    await updateOrder(stub.sql, ctx, order.id, {
+      contact: { name: "রিনা", phone: "01811111111", address: null },
+    });
+    await updateOrder(stub.sql, ctx, order.id, { deliveryChargePaise: 8_000 });
+    await transitionStatus(stub.sql, ctx, order.id, "confirmed");
+    for (const row of stub.state.auditLog) {
+      noPii(row);
+      expect(String(row["payload"]).includes("01811111111")).toBe(false);
+    }
+    const [, edit, noEdit] = stub.state.auditLog.map((r) => JSON.parse(String(r["payload"])));
+    expect(edit.contactChanged).toBe(true);
+    expect(edit.after.contact).toEqual({ present: true, fields: ["name", "phone"] });
+    expect(noEdit.contactChanged).toBe(false);
+  });
+});
+
 describe("R2.1 — order audit append per action", () => {
   test("createOrder: one row, action order.create, before null, after the order; audit first", async () => {
     const stub = makeSqlStub();
