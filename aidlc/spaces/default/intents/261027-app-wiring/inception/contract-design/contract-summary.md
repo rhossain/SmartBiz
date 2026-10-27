@@ -61,8 +61,8 @@ status_table:                               # closed set; a new kind needs a row
   internal: 500                              # thrown error: logged with correlation id; body {error: internal, correlationId}
   db_unavailable: 503
 paging:
-  request: { cursor?: string, limit?: integer 1..50, default 50 }
-  response: { nextCursor: string | null }
+  request: "{ cursor?: string, limit?: integer 1..50, default 50 }"
+  response: "{ nextCursor: string | null }"
   cursor: base64url("<createdAt ISO>|<uuid>"); opaque to the client; undecodable -> 400 invalid_input
 time: every timestamp is an ISO-8601 UTC string; every "now" is the app clock
 money: integer paise, never a float; field names end in "Paise"

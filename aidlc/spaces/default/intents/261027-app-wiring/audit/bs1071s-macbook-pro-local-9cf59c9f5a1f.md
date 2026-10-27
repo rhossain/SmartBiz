@@ -5158,3 +5158,40 @@
 **Context**: inception > contract-design > contract-summary.md
 
 ---
+
+## Review Requested
+**Timestamp**: 2026-10-27T11:22:59Z
+**Event**: REVIEW_REQUESTED
+**Stage**: contract-design
+**Reviewer**: aidlc-architecture-reviewer-agent
+**Iteration**: 1
+**Artifact Fingerprint**: sha256:3c49184902d03df785484ce9fa9c2896946a54a8b2ee72707c367f43896b3167
+**Request Id**: review:12be3a4fcb475a3318422a23ce6ac98d
+**Review File**: .aidlc-engine/reviews/contract-design/stage/2b7cfd3ea8a47ef0/1.12be3a4fcb475a3318422a23ce6ac98d.review.md
+
+---
+
+## Artifact Updated
+**Timestamp**: 2026-10-27T11:23:08Z
+**Event**: ARTIFACT_UPDATED
+**Tool**: Edit
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/inception/contract-design/contract-summary.md
+**Context**: inception > contract-design > contract-summary.md
+
+---
+
+## Decision Recorded
+**Timestamp**: 2026-10-27T11:23:27Z
+**Event**: DECISION_RECORDED
+**Stage**: contract-design
+**Decision**: Contract Design Q1-Q6 answered A by the assistant on the Owner's standing instruction: no external API; HTTP/JSON same-origin plus in-process calls and one Postgres; per-Unit ownership with shared zod schemas; no URL versioning; closed error table, 10 s client timeout, no automatic retry of writes; opaque base64url keyset cursor capped at 50.
+
+---
+
+## Question Answered
+**Timestamp**: 2026-10-27T11:23:27Z
+**Event**: QUESTION_ANSWERED
+**Stage**: contract-design
+**Details**: Q1-Q6 all A (see contract-design-questions.md)
+
+---
