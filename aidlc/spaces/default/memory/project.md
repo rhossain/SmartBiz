@@ -25,6 +25,14 @@
 
 <!-- Project-specific specialisation. -->
 
+- Treat a Code Generation summary as unverified: before Build and Test runs, check on disk that every path in source-manifest.json and every OK traceability target exists. (learned 2026-10-27) <!-- cid:261015-b2-orders:build-and-test:52576271a8619ddb66b9743b980d27f5301d98fd400950b5fa4e97f2baf5d5f4 -->
+
+- Run migrations and the order/audit data paths against a throwaway real Postgres container in Build and Test; the in-memory SQL stub cannot see FOR UPDATE, ANY(uuid[]), keyset cursors, real grants or JSONB parameter typing. (learned 2026-10-27) <!-- cid:261015-b2-orders:build-and-test:32c64aad272da50e75296a39d048bd8d91382ce10bf0446b37cad4dfc9aca2b5 -->
+
+- Estimate a dependency-upgrade fix by trying it in a throwaway git worktree (audit, tsc, lint, full suite, build) rather than guessing its impact. (learned 2026-10-27) <!-- cid:261015-b2-orders:build-and-test:13aa557fd0a32174f80142f6d8b7f13b058d7940132f5f0b13757ce2e8400f3f -->
+
+- Record Critical/High dependency advisories as a failing Build and Test target, never as a deferred note, especially when the package is a runtime dependency such as zod. (learned 2026-10-27) <!-- cid:261015-b2-orders:build-and-test:fa259167e471066a8489d7dcbee605699c25cfaf21f13ba0920bedba14219b16 -->
+
 ## Guard Policy
 
 <!-- Project-specific. Mode: strict, relaxed, or off. Strict here holds for every intent and cannot be changed from chat. A section under the retired Change Control heading, written by an earlier release, is still read. -->
