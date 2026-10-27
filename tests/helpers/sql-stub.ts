@@ -452,7 +452,9 @@ export const makeSqlStub = (
       });
       return [];
     }
-    if (/FROM audit_log\s+WHERE business_id = \?\s+ORDER BY occurred_at DESC\s+LIMIT \?/i.test(text)) {
+    if (
+      /FROM audit_log\s+WHERE business_id = \?\s+ORDER BY occurred_at DESC\s+LIMIT \?/i.test(text)
+    ) {
       const [businessId, limit] = params as [string, number];
       return state.auditLog
         .filter((a) => a["business_id"] === businessId)

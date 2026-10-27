@@ -132,11 +132,11 @@ that layer is implemented, together with the full existing suite, before the nex
 
 ### Step 4 — Data model / database behaviour: write and run its tests
 
-- [ ] `tests/unit/migrations-u1.test.ts`: every new file is ordered 0011–0015, guarded (`IF NOT EXISTS` / `DO $$`), never grants UPDATE/DELETE on `audit_log`, revokes DELETE on `order_items` (BR9.3, BR9.4).
-- [ ] `tests/unit/declared-grants.test.ts`: the declared set matches C9 (DELETE only on `sessions`; `audit_log` INSERT+SELECT; `order_items` SELECT+INSERT).
-- [ ] `tests/realdb/migrations.realdb.test.ts`: fresh database migrated twice changes nothing; 0011 stops on a user without a business; 0013 stops on a case duplicate; 0012 re-run keeps sessions; 0015 keeps existing orders readable at revision 1 (BR2.6, BR6.10).
-- [ ] `tests/realdb/grants.realdb.test.ts`: `information_schema.role_table_grants` for `app_role` equals the declared set per table, including sequences (BR9.1, AC1.1.6, AC5.2a.3).
-- [ ] Run the step's tests plus the full suite.
+- [x] `tests/unit/migrations-u1.test.ts`: every new file is ordered 0011–0015, guarded (`IF NOT EXISTS` / `DO $$`), never grants UPDATE/DELETE on `audit_log`, revokes DELETE on `order_items` (BR9.3, BR9.4).
+- [x] `tests/unit/declared-grants.test.ts`: the declared set matches C9 (DELETE only on `sessions`; `audit_log` INSERT+SELECT; `order_items` SELECT+INSERT).
+- [x] `tests/realdb/migrations.realdb.test.ts`: fresh database migrated twice changes nothing; 0011 stops on a user without a business; 0013 stops on a case duplicate; 0012 re-run keeps sessions; 0015 keeps existing orders readable at revision 1 (BR2.6, BR6.10).
+- [x] `tests/realdb/grants.realdb.test.ts`: `information_schema.role_table_grants` for `app_role` equals the declared set per table, including sequences (BR9.1, AC1.1.6, AC5.2a.3).
+- [x] Run the step's tests plus the full suite.
 
 ### Step 5 — Repository / data access: implement (US1.1, US1.3, US2.1a; BR1.2, BR3.6, BR6.5, BR6.6, BR6.8; NFR6.2, NFR7.1)
 

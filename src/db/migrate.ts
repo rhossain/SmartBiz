@@ -51,7 +51,9 @@ export const runMigrations = async (
         applied_at TIMESTAMPTZ NOT NULL DEFAULT now()
       )
     `;
-    const done = new Set((await sql<{ id: string }[]>`SELECT id FROM _migrations`).map((r) => r.id));
+    const done = new Set(
+      (await sql<{ id: string }[]>`SELECT id FROM _migrations`).map((r) => r.id),
+    );
     const applied: string[] = [];
     const skipped: string[] = [];
     for (const file of listMigrations(dir)) {
