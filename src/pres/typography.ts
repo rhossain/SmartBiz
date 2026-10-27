@@ -1,7 +1,9 @@
 /**
- * src/pres/typography.ts — font + Intl.NumberFormat cache.
+ * src/pres/typography.ts — Intl.NumberFormat cache.
  * The Intl.NumberFormat is cached by locale so the B1 perf budget
- * (NFR2.3: L(bn, en) resolve ≤ 5 ms p95) holds.
+ * (NFR2.3: L(bn, en) resolve ≤ 5 ms p95) holds. U1 removed the hosted
+ * font link: the CSP allows only 'self', and the Bengali font comes from
+ * the local fallback chain in tokens.css (team.md Code Style).
  */
 import type { Locale } from "../data/enums.js";
 import { intlCode } from "../i18n/locale.js";
@@ -22,6 +24,3 @@ export const getNumberFormatter = (locale: Locale): Intl.NumberFormat => {
 export const formatPaise = (paise: number, locale: Locale): string => {
   return getNumberFormatter(locale).format(paise / 100);
 };
-
-export const NOTO_SANS_BENGALI_HREF =
-  "https://fonts.gstatic.com/s/notosansbengali/v20/Cn-jJsyaWQNOOFlYRqp7eA8UZjMOMyUwHNdCl9QQdj9.css";

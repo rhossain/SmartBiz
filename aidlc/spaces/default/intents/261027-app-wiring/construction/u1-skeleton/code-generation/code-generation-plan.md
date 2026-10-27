@@ -203,16 +203,16 @@ that layer is implemented, together with the full existing suite, before the nex
 
 ### Step 11 — Frontend behaviour: implement (US1.3, US1.4, US2.1b; BR8.1–BR8.6)
 
-- [ ] `src/client/http.ts`: `fetch` with `credentials: 'same-origin'`, JSON, `AbortController` 10 s, GET retried once on network error, never a write; typed `ApiResult` (`ok | http error kind | unreachable`) (BR8.4, R5).
-- [ ] `src/client/auth-api.ts`, `src/client/orders-api.ts`: typed functions per C2/C3 endpoint (types imported only with `import type`).
-- [ ] `src/client/session-store.ts`: per-feature typed store from `createStateContainer`; in-memory return route; any 401 → navigate `#/sign-in` with "আবার সাইন ইন করুন" and back after sign-in, default `#/orders` (BR8.1, W9).
-- [ ] `src/pres/RequestState.tsx`: minimal loading / empty / error banner with retry (units review R-03) (BR8.3).
-- [ ] `src/router/screens/SignIn.tsx`, `SignUp.tsx`: real forms calling the client; field errors in Bangla from the copy table; 429 message with minutes; `GET /api/setup` chooses sign-up or sign-in (W3).
-- [ ] `src/router/routes.ts`: mount U1's routes (sign-up, sign-in, order routes, lock, not-found); other routes stay stubs until U2.
-- [ ] `src/index.tsx`: remove the hard-coded email; mount the router; resolve the session on load.
-- [ ] `src/pres/Shell.tsx`: signed-in email and role; sign-out calls the API (BR8.6).
-- [ ] Order screens (`ManualOrder.tsx`, `PasteParse.tsx`, `OrdersList.tsx`, `OrderDetail.tsx`, `render-orders-route.tsx`): load and save through `orders-api`; 400 → field errors with typed values kept; saved order placed at the top of the loaded page with "সংরক্ষণ হয়েছে"; 403 → lock; 503/unreachable → banner, nothing resent (BR8.2, BR8.5); `data-testid` on every interactive element.
-- [ ] `src/i18n/` copy entries for every U1 error kind (error catalogue).
+- [x] `src/client/http.ts`: `fetch` with `credentials: 'same-origin'`, JSON, `AbortController` 10 s, GET retried once on network error, never a write; typed `ApiResult` (`ok | http error kind | unreachable`) (BR8.4, R5).
+- [x] `src/client/auth-api.ts`, `src/client/orders-api.ts`: typed functions per C2/C3 endpoint (types imported only with `import type`).
+- [x] `src/client/session-store.ts`: per-feature typed store from `createStateContainer`; in-memory return route; any 401 → navigate `#/sign-in` with "আবার সাইন ইন করুন" and back after sign-in, default `#/orders` (BR8.1, W9).
+- [x] `src/pres/RequestState.tsx`: minimal loading / empty / error banner with retry (units review R-03) (BR8.3).
+- [x] `src/router/screens/SignIn.tsx`, `SignUp.tsx`: real forms calling the client; field errors in Bangla from the copy table; 429 message with minutes; `GET /api/setup` chooses sign-up or sign-in (W3).
+- [x] `src/router/routes.ts`: mount U1's routes (sign-up, sign-in, order routes, lock, not-found); other routes stay stubs until U2.
+- [x] `src/index.tsx`: remove the hard-coded email; mount the router; resolve the session on load.
+- [x] `src/pres/Shell.tsx`: signed-in email and role; sign-out calls the API (BR8.6).
+- [x] Order screens (`ManualOrder.tsx`, `PasteParse.tsx`, `OrdersList.tsx`, `OrderDetail.tsx`, `render-orders-route.tsx`): load and save through `orders-api`; 400 → field errors with typed values kept; saved order placed at the top of the loaded page with "সংরক্ষণ হয়েছে"; 403 → lock; 503/unreachable → banner, nothing resent (BR8.2, BR8.5); `data-testid` on every interactive element.
+- [x] `src/i18n/` copy entries for every U1 error kind (error catalogue).
 
 ### Step 12 — Frontend behaviour: write and run its tests
 

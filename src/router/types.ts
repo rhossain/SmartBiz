@@ -24,7 +24,8 @@ export type RoutePath =
   | "/audit-trail"
   | "/business"
   | "/settings"
-  | "/lock";
+  | "/lock"
+  | "/not-found";
 
 /**
  * A resolved navigation: the registry key (a pattern such as

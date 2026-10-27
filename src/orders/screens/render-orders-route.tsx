@@ -13,16 +13,25 @@
  *   /orders/new/paste-parse       → PasteParse
  *   /orders/new/repeat            → RepeatFromPast (over the loaded page)
  *   /orders/:id, …/transition     → OrderDetail
+ *
+ * U1: the state now comes from the API (src/client/orders-store.ts), so it
+ * also carries each request's state — the list's loading flag, error kind
+ * and retry, the saved notice (BR8.3, BR8.5), and the open order's
+ * loading or error kind; a missing order shows "পাওয়া যায়নি". The list
+ * page holds summary rows; "repeat" needs full orders, so it uses
+ * `recent` (loaded by the app), or the page's rows when they are full.
  */
 import * as React from "react";
 import { assertNever } from "../../data/assert-never.js";
 import type { Locale, OrderStatus } from "../../data/enums.js";
+import type { ShownErrorKind } from "../../i18n/error-copy.js";
 import { LockScreen } from "../../pres/Lock.js";
+import { RequestState } from "../../pres/RequestState.js";
 import type { OrderDraftStore, SaveOrder } from "../order-draft.js";
-import type { Order, OrdersPage } from "../types.js";
+import type { Order } from "../types.js";
 import { ManualOrder } from "./ManualOrder.js";
 import { OrderDetail } from "./OrderDetail.js";
-import { OrdersList, type OrdersListFilter } from "./OrdersList.js";
+import { OrdersList, type OrderListRow, type OrdersListFilter } from "./OrdersList.js";
 import { PasteParse } from "./PasteParse.js";
 import { RepeatFromPast } from "./RepeatFromPast.js";
 
@@ -31,7 +40,10 @@ export interface OrdersRouteState {
   readonly locale: Locale;
   readonly canMutate: boolean;
   readonly draft: OrderDraftStore;
-  readonly page: OrdersPage;
+  readonly page: {
+    readonly orders: ReadonlyArray<OrderListRow | Order>;
+    readonly nextCursor: string | null;
+  };
   readonly current: Order | null;
   readonly onOpen: (orderId: string) => void;
   readonly onLoadMore: (cursor: string) => void;
@@ -39,7 +51,20 @@ export interface OrdersRouteState {
   readonly onSave: SaveOrder;
   readonly onTransition: (to: OrderStatus) => void;
   readonly onRepeat: (order: Order) => void;
+  readonly listLoading?: boolean;
+  readonly listError?: ShownErrorKind | null;
+  readonly onRetryList?: () => void;
+  readonly notice?: "saved" | null;
+  readonly currentLoading?: boolean;
+  readonly currentError?: ShownErrorKind | null;
+  readonly onRetryCurrent?: () => void;
+  readonly recent?: ReadonlyArray<Order>;
 }
+
+const isFullOrder = (o: OrderListRow | Order): o is Order => "items" in o;
+
+const pastOrders = (state: OrdersRouteState): ReadonlyArray<Order> =>
+  state.recent ?? state.page.orders.filter(isFullOrder);
 
 export const isOrdersRouteState = (state: unknown): state is OrdersRouteState =>
   typeof state === "object" && state !== null && (state as { kind?: unknown }).kind === "orders";
@@ -87,6 +112,10 @@ export const renderOrdersScreen = (
           onLoadMore={state.onLoadMore}
           onFilter={state.onFilter}
           onSave={onSave}
+          loading={state.listLoading ?? false}
+          errorKind={state.listError ?? null}
+          notice={state.notice ?? null}
+          {...(state.onRetryList ? { onRetry: state.onRetryList } : {})}
         />
       );
     case "manual":
@@ -96,22 +125,37 @@ export const renderOrdersScreen = (
     case "repeat":
       return (
         <RepeatFromPast
-          pastOrders={state.page.orders}
+          pastOrders={pastOrders(state)}
           locale={locale}
           draft={draft}
           onSave={onSave}
         />
       );
     case "detail":
-      return state.current ? (
-        <OrderDetail
-          order={state.current}
-          locale={locale}
-          canMutate={state.canMutate}
-          onTransition={state.onTransition}
-          onRepeat={state.onRepeat}
-        />
-      ) : null;
+      if (state.current) {
+        return (
+          <OrderDetail
+            order={state.current}
+            locale={locale}
+            canMutate={state.canMutate}
+            onTransition={state.onTransition}
+            onRepeat={state.onRepeat}
+          />
+        );
+      }
+      if (state.currentError) {
+        return (
+          <RequestState
+            phase="error"
+            locale={locale}
+            errorKind={state.currentError}
+            {...(state.onRetryCurrent && state.currentError !== "not_found"
+              ? { onRetry: state.onRetryCurrent }
+              : {})}
+          />
+        );
+      }
+      return state.currentLoading ? <RequestState phase="loading" locale={locale} /> : null;
     default:
       return assertNever(screen, "orders screen");
   }

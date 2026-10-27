@@ -10,7 +10,10 @@ import { L } from "../../i18n/L.js";
 
 const COPY = {
   "orders.title": L("অর্ডার", "Orders"),
-  "orders.empty": L("কোনো অর্ডার নেই", "No orders yet"),
+  "orders.empty": L("এখনো কোনো অর্ডার নেই", "No orders yet"),
+  "orders.new": L("নতুন অর্ডার", "New order"),
+  "orders.paste": L("মেসেজ থেকে", "From a message"),
+  "orders.repeat": L("আগের অর্ডার থেকে", "Repeat a past order"),
   "orders.filter.status": L("অবস্থা", "Status"),
   "orders.filter.all": L("সব", "All"),
   "orders.filter.customer": L("কাস্টমার আইডি", "Customer id"),
@@ -30,7 +33,7 @@ const COPY = {
   "orders.quick.price": L("দাম (৳)", "Price (৳)"),
   "orders.quick.delivery": L("ডেলিভারি চার্জ (৳)", "Delivery charge (৳)"),
   "orders.save": L("সংরক্ষণ", "Save"),
-  "orders.saved": L("সংরক্ষিত হয়েছে", "Saved"),
+  "orders.saved": L("সংরক্ষণ হয়েছে", "Saved"),
   "orders.invalid": L("তথ্য ঠিক নেই", "Some details are not valid"),
   "orders.save_failed": L("সংরক্ষণ হয়নি, আবার চেষ্টা করুন", "Could not save, please try again"),
   "detail.items": L("পণ্যসমূহ", "Items"),

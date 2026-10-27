@@ -7,7 +7,7 @@
  * the R1.2 absence test can walk every registered route for every role
  * without driving `window.location`. `dispatch` reads the current hash
  * and delegates, keeping its B1 signature. An unknown or malformed path
- * redirects to `/` rather than rendering anything.
+ * redirects to `/not-found` (U1) rather than rendering anything.
  */
 import type { Capability } from "../data/enums.js";
 import type { Result } from "../data/result.js";
@@ -51,7 +51,9 @@ export const dispatchPath = <State>(
 ): DispatchOutcome => {
   const match = matchRoute(rawPath);
   const route = match ? routes.get(match.path) : undefined;
-  if (!match || !route) return { kind: "redirect", to: "/", reason: { kind: "not_authenticated" } };
+  if (!match || !route) {
+    return { kind: "redirect", to: "/not-found", reason: { kind: "not_authenticated" } };
+  }
   if (route.requiredCapability === null) {
     return { kind: "render", route, path: match.path, params: match.params };
   }

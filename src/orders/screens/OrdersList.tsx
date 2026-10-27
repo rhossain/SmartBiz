@@ -13,12 +13,22 @@
  * - Quick-add builds the order into the draft store and persists only on
  *   Save. It is shown only to roles that may create orders; the route
  *   gate is the real guard, this just avoids offering a dead button.
+ * - U1: rows are the API's `OrderSummary` (C3, BR6.7) — id, number,
+ *   status, source and total are all a row needs, so a full `Order` fits
+ *   too. The request state comes from the caller (BR8.3): loading after
+ *   300 ms, an error banner with retry, and the empty state "এখনো কোনো
+ *   অর্ডার নেই" with the new-order links for roles that may create orders.
+ *   A just-saved order arrives at the top of `orders` with the "saved"
+ *   notice, without a reload (BR8.5).
  */
 import * as React from "react";
 import { ORDER_STATUSES, type Locale, type OrderStatus } from "../../data/enums.js";
+import type { ShownErrorKind } from "../../i18n/error-copy.js";
 import { MoneyCell } from "../../pres/MoneyCell.js";
+import { RequestState, type RequestPhase } from "../../pres/RequestState.js";
 import { statusText } from "../../pres/status-labels.js";
 import { Screen } from "../../pres/Screen.js";
+import { Toast } from "../../pres/Toast.js";
 import { buildQuickAddOrder } from "../input-modes.js";
 import {
   saveDraft,
@@ -30,7 +40,7 @@ import {
 import { parseTakaToPaise } from "../order-total.js";
 import { bucketTotals, orderMoneyFigure } from "../status-bucket.js";
 import { isOrderStatus } from "../status-fsm.js";
-import type { Order } from "../types.js";
+import type { OrderSummary } from "../schemas.js";
 import { tr } from "./copy.js";
 import { DraftStatus } from "./DraftStatus.js";
 
@@ -41,8 +51,14 @@ export interface OrdersListFilter {
   readonly to: string | null;
 }
 
+/** What one row shows; the API's OrderSummary and the domain Order both have it. */
+export type OrderListRow = Pick<
+  OrderSummary,
+  "id" | "orderNo" | "status" | "source" | "totalPaise"
+>;
+
 export interface OrdersListProps {
-  readonly orders: ReadonlyArray<Order>;
+  readonly orders: ReadonlyArray<OrderListRow>;
   readonly nextCursor: string | null;
   readonly locale: Locale;
   readonly canMutate: boolean;
@@ -51,7 +67,33 @@ export interface OrdersListProps {
   readonly onLoadMore: (cursor: string) => void;
   readonly onFilter: (filter: OrdersListFilter) => void;
   readonly onSave: SaveOrder;
+  /** The list request's state (BR8.3); omitted means the rows are already loaded. */
+  readonly loading?: boolean;
+  readonly errorKind?: ShownErrorKind | null;
+  readonly onRetry?: () => void;
+  /** "saved" right after an order was created (BR8.5). */
+  readonly notice?: "saved" | null;
 }
+
+const phaseOf = (props: OrdersListProps): RequestPhase => {
+  if (props.errorKind) return "error";
+  if (props.loading) return "loading";
+  return props.orders.length === 0 ? "empty" : "ready";
+};
+
+const NewOrderLinks = ({ locale }: { locale: Locale }): React.ReactElement => (
+  <nav data-testid="orders-new-links">
+    <a href="#/orders/new" data-testid="orders-new-manual">
+      {tr("orders.new", locale)}
+    </a>{" "}
+    <a href="#/orders/new/paste-parse" data-testid="orders-new-paste">
+      {tr("orders.paste", locale)}
+    </a>{" "}
+    <a href="#/orders/new/repeat" data-testid="orders-new-repeat">
+      {tr("orders.repeat", locale)}
+    </a>
+  </nav>
+);
 
 const dayStart = (date: string): string | null =>
   date ? new Date(`${date}T00:00:00Z`).toISOString() : null;
@@ -127,7 +169,8 @@ const QuickAdd = ({
   locale,
   draft,
   onSave,
-}: Pick<OrdersListProps, "locale" | "draft" | "onSave">): React.ReactElement => {
+  notice,
+}: Pick<OrdersListProps, "locale" | "draft" | "onSave" | "notice">): React.ReactElement => {
   const state = useOrderDraft(draft);
   const [description, setDescription] = React.useState("");
   const [quantity, setQuantity] = React.useState("1");
@@ -219,7 +262,7 @@ const QuickAdd = ({
       >
         {tr("orders.save", locale)}
       </button>
-      <DraftStatus draft={state} locale={locale} />
+      <DraftStatus draft={state} locale={locale} showSaved={notice !== "saved"} />
     </form>
   );
 };
@@ -227,8 +270,23 @@ const QuickAdd = ({
 export const OrdersList = (props: OrdersListProps): React.ReactElement => {
   const { orders, nextCursor, locale } = props;
   const totals = bucketTotals(orders);
+  const phase = phaseOf(props);
   return (
     <Screen title={tr("orders.title", locale)}>
+      {props.notice === "saved" ? (
+        <div data-testid="orders-saved-notice">
+          <Toast message={tr("orders.saved", locale)} tone="info" />
+        </div>
+      ) : null}
+      {props.canMutate ? <NewOrderLinks locale={locale} /> : null}
+      {phase === "error" || phase === "loading" ? (
+        <RequestState
+          phase={phase}
+          locale={locale}
+          errorKind={props.errorKind ?? null}
+          {...(props.onRetry ? { onRetry: props.onRetry } : {})}
+        />
+      ) : null}
       <div data-testid="orders-summary">
         <span>{tr("orders.earned", locale)}</span>
         <MoneyCell figure={totals.earned} locale={locale} testId="orders-summary-earned" />
@@ -238,9 +296,9 @@ export const OrdersList = (props: OrdersListProps): React.ReactElement => {
         <MoneyCell figure={totals.pipeline} locale={locale} testId="orders-summary-pipeline" />
       </div>
       <Filters locale={locale} onFilter={props.onFilter} />
-      {orders.length === 0 ? (
+      {phase === "empty" ? (
         <p data-testid="orders-empty">{tr("orders.empty", locale)}</p>
-      ) : (
+      ) : phase !== "ready" ? null : (
         <table data-testid="orders-table">
           <thead>
             <tr>
@@ -288,7 +346,12 @@ export const OrdersList = (props: OrdersListProps): React.ReactElement => {
         </button>
       ) : null}
       {props.canMutate ? (
-        <QuickAdd locale={locale} draft={props.draft} onSave={props.onSave} />
+        <QuickAdd
+          locale={locale}
+          draft={props.draft}
+          onSave={props.onSave}
+          notice={props.notice ?? null}
+        />
       ) : null}
     </Screen>
   );
