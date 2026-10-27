@@ -10640,3 +10640,115 @@
 **Details**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-requirements/security-requirements.md
 
 ---
+
+## Unit Started
+**Timestamp**: 2026-10-27T16:46:08Z
+**Event**: UNIT_STARTED
+**Stage**: nfr-requirements
+**Unit**: u2-app-shell
+**Run floor**: WORKFLOW_STARTED:2026-10-27T06:05:58Z#1
+
+---
+
+## Unit Completed
+**Timestamp**: 2026-10-27T16:46:13Z
+**Event**: UNIT_COMPLETED
+**Stage**: nfr-requirements
+**Unit**: u2-app-shell
+**Run floor**: WORKFLOW_STARTED:2026-10-27T06:05:58Z#1
+
+---
+
+## Artifact Updated
+**Timestamp**: 2026-10-27T16:47:28Z
+**Event**: ARTIFACT_UPDATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-design/nfr-design-questions.md
+**Context**: construction > u2-app-shell > nfr-design > nfr-design-questions.md
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-10-27T16:47:58Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-design/security-design.md
+**Context**: construction > u2-app-shell > nfr-design > security-design.md
+
+---
+
+## Artifact Updated
+**Timestamp**: 2026-10-27T16:48:11Z
+**Event**: ARTIFACT_UPDATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-design/performance-design.md
+**Context**: construction > u2-app-shell > nfr-design > performance-design.md
+
+---
+
+## Artifact Updated
+**Timestamp**: 2026-10-27T16:48:19Z
+**Event**: ARTIFACT_UPDATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-design/scalability-design.md
+**Context**: construction > u2-app-shell > nfr-design > scalability-design.md
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-10-27T16:48:27Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-design/reliability-design.md
+**Context**: construction > u2-app-shell > nfr-design > reliability-design.md
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-10-27T16:48:33Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-design/observability-design.md
+**Context**: construction > u2-app-shell > nfr-design > observability-design.md
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-10-27T16:48:43Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-design/logical-components.md
+**Context**: construction > u2-app-shell > nfr-design > logical-components.md
+
+---
+
+## Artifact Updated
+**Timestamp**: 2026-10-27T16:49:06Z
+**Event**: ARTIFACT_UPDATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-design/traceability.json
+**Context**: construction > u2-app-shell > nfr-design > traceability.json
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T16:49:06Z
+**Event**: SENSOR_FIRED
+**Fire id**: fccfc03a
+**Sensor ID**: traceability
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-design/traceability.json
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-27T16:49:06Z
+**Event**: SENSOR_FAILED
+**Fire id**: fccfc03a
+**Sensor ID**: traceability
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-design/traceability.json
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/traceability-fccfc03a.md
+**Findings count**: 5
+
+---
