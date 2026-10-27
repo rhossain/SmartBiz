@@ -36,6 +36,11 @@ export const insertAudit = async (
   const correlationId = input.correlationId ?? newCorrelationId();
   const occurredAt = now();
   const retentionUntil = new Date(occurredAt.getTime() + FIVE_YEARS_MS);
+  // Sent as text and cast twice on purpose. postgres.js types a `${…}::jsonb`
+  // parameter as JSON and serialises the already-stringified value again,
+  // which stores a JSON *string* (jsonb_typeof = 'string') rather than an
+  // object. `::text::jsonb` makes Postgres parse the text once. Guarded by
+  // tests/realdb (T-JSONB); the in-memory stub cannot see this.
   const payloadJson = JSON.stringify(input.payload);
   await sql`
     INSERT INTO audit_log (
@@ -44,7 +49,7 @@ export const insertAudit = async (
       occurred_at, retention_until
     ) VALUES (
       ${id}, ${input.businessId}, ${input.actorUserId}, ${correlationId}, ${input.action},
-      ${input.subjectKind}, ${input.subjectId}, ${payloadJson}::jsonb, ${input.reversesId},
+      ${input.subjectKind}, ${input.subjectId}, ${payloadJson}::text::jsonb, ${input.reversesId},
       ${occurredAt.toISOString()}, ${retentionUntil.toISOString()}
     )
   `;

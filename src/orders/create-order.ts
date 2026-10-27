@@ -129,7 +129,7 @@ export const createOrder = async (
         total_paise, created_by, created_at, updated_at
       ) VALUES (
         ${order.id}, ${order.businessId}, ${order.orderNo}, ${order.customerId},
-        ${contactJson(order.contact)}::jsonb, ${order.status}, ${order.source},
+        ${contactJson(order.contact)}::text::jsonb, ${order.status}, ${order.source},
         ${order.repeatOfOrderId}, ${order.orderDiscountPaise}, ${order.deliveryChargePaise},
         ${order.totalPaise}, ${order.createdBy}, ${order.createdAt}, ${order.updatedAt}
       )

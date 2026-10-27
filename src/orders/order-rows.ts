@@ -184,6 +184,11 @@ export const insertItems = async (sql: Queryable, order: Order): Promise<void> =
   }
 };
 
-/** JSONB parameter for the contact column; SQL NULL when there is no contact. */
+/**
+ * JSON text for the contact column; SQL NULL when there is no contact.
+ * Callers must cast it `::text::jsonb`, never `::jsonb` alone: postgres.js
+ * would serialise the string a second time and store a JSON string
+ * (see insertAudit; guarded by tests/realdb).
+ */
 export const contactJson = (contact: OrderContact | null): string | null =>
   contact === null ? null : JSON.stringify(contact);

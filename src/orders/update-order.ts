@@ -72,7 +72,7 @@ export const updateOrder = async (
     await appendOrderAudit(tx, ctx, "order.update", before.id, { before, after });
     await tx`
       UPDATE orders
-      SET customer_id = ${after.customerId}, contact = ${contactJson(after.contact)}::jsonb,
+      SET customer_id = ${after.customerId}, contact = ${contactJson(after.contact)}::text::jsonb,
           order_discount_paise = ${after.orderDiscountPaise},
           delivery_charge_paise = ${after.deliveryChargePaise},
           total_paise = ${after.totalPaise}, updated_at = ${after.updatedAt}
