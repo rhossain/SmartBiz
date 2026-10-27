@@ -13341,3 +13341,154 @@
 **Findings count**: 5
 
 ---
+
+## Subagent Completed
+**Timestamp**: 2026-10-27T18:52:30Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: a2dc695af8345b956
+**Message**: Committing G-01..G-07 review fixes
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-27T18:52:32Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: aidlc-developer-agent
+**Agent ID**: a6c5fbd57390f6ba1
+**Message**: The default gate is running on commit 1d4e820; I'll record its result line in code-summary.md when it finishes.
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-27T18:52:34Z
+**Event**: HUMAN_TURN
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-27T18:52:41Z
+**Event**: HUMAN_TURN
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+
+---
+
+## Guard Stood Aside
+**Timestamp**: 2026-10-27T18:56:10Z
+**Event**: GUARD_STOOD_ASIDE
+**Guard**: review-freeze
+**Authority**: instruction
+**Grant**: none
+**Actor**: subagent
+**Stage**: code-generation
+**Tool**: Edit
+**Details**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/code-generation/code-summary.md
+
+---
+
+## Artifact Updated
+**Timestamp**: 2026-10-27T18:56:10Z
+**Event**: ARTIFACT_UPDATED
+**Tool**: Edit
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/code-generation/code-summary.md
+**Context**: construction > u2-app-shell > code-generation > code-summary.md
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-27T18:56:16Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: a866d132acf393284
+**Message**: Updating code-summary.md gate figures
+
+---
+
+## Guard Stood Aside
+**Timestamp**: 2026-10-27T18:56:23Z
+**Event**: GUARD_STOOD_ASIDE
+**Guard**: review-freeze
+**Authority**: instruction
+**Grant**: none
+**Actor**: subagent
+**Stage**: code-generation
+**Tool**: Edit
+**Details**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/code-generation/code-summary.md
+
+---
+
+## Artifact Updated
+**Timestamp**: 2026-10-27T18:56:23Z
+**Event**: ARTIFACT_UPDATED
+**Tool**: Edit
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/code-generation/code-summary.md
+**Context**: construction > u2-app-shell > code-generation > code-summary.md
+
+---
+
+## Guard Stood Aside
+**Timestamp**: 2026-10-27T18:56:26Z
+**Event**: GUARD_STOOD_ASIDE
+**Guard**: review-freeze
+**Authority**: instruction
+**Grant**: none
+**Actor**: subagent
+**Stage**: code-generation
+**Tool**: Edit
+**Details**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/code-generation/code-summary.md
+
+---
+
+## Artifact Updated
+**Timestamp**: 2026-10-27T18:56:26Z
+**Event**: ARTIFACT_UPDATED
+**Tool**: Edit
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/code-generation/code-summary.md
+**Context**: construction > u2-app-shell > code-generation > code-summary.md
+
+---
+
+## Guard Stood Aside
+**Timestamp**: 2026-10-27T18:56:30Z
+**Event**: GUARD_STOOD_ASIDE
+**Guard**: review-freeze
+**Authority**: instruction
+**Grant**: none
+**Actor**: subagent
+**Stage**: code-generation
+**Tool**: Edit
+**Details**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/code-generation/code-summary.md
+
+---
+
+## Artifact Updated
+**Timestamp**: 2026-10-27T18:56:30Z
+**Event**: ARTIFACT_UPDATED
+**Tool**: Edit
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/code-generation/code-summary.md
+**Context**: construction > u2-app-shell > code-generation > code-summary.md
+
+---
+
+## Guard Stood Aside
+**Timestamp**: 2026-10-27T18:56:32Z
+**Event**: GUARD_STOOD_ASIDE
+**Guard**: review-freeze
+**Authority**: instruction
+**Grant**: none
+**Actor**: subagent
+**Stage**: code-generation
+**Tool**: Edit
+**Details**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/code-generation/code-summary.md
+
+---
+
+## Artifact Updated
+**Timestamp**: 2026-10-27T18:56:32Z
+**Event**: ARTIFACT_UPDATED
+**Tool**: Edit
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/code-generation/code-summary.md
+**Context**: construction > u2-app-shell > code-generation > code-summary.md
+
+---
