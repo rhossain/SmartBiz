@@ -44,5 +44,5 @@ module.exports = {
       },
     },
   ],
-  ignorePatterns: ["dist", "node_modules", "coverage", "*.cjs", "prototype/**", "_bmad/**", "_bmad-output/**", ".claude/**"],
+  ignorePatterns: ["dist", "node_modules", "coverage", "*.cjs", "prototype/**", "_bmad/**", "_bmad-output/**", ".claude/**", "aidlc/**"],
 };
