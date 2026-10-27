@@ -52,9 +52,7 @@ export const insertAudit = async (
 };
 
 /** Returns audit rows whose retention_until is strictly in the past. */
-export const auditRetentionFilter = (
-  asOf: Date = now(),
-): { readonly retentionBefore: string } => ({
+export const auditRetentionFilter = (asOf: Date = now()): { readonly retentionBefore: string } => ({
   retentionBefore: asOf.toISOString(),
 });
 

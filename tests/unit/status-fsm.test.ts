@@ -17,7 +17,15 @@ import {
 import type { OrderStatus } from "../../src/orders/types.js";
 
 const ALL: ReadonlyArray<OrderStatus> = [
-  "new", "confirmed", "packed", "shipped", "delivered", "settled", "cancelled", "returned", "partial",
+  "new",
+  "confirmed",
+  "packed",
+  "shipped",
+  "delivered",
+  "settled",
+  "cancelled",
+  "returned",
+  "partial",
 ];
 const TERMINAL: ReadonlyArray<OrderStatus> = ["cancelled", "returned"];
 const NON_TERMINAL = ALL.filter((s) => !TERMINAL.includes(s));

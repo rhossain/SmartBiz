@@ -14,7 +14,17 @@ import { isEditable, nextStatuses, statusLabel } from "../../src/orders/status-f
 import { canLinkConsignment } from "../../src/orders/consignment.js";
 import { bucketOf, orderMoneyFigure } from "../../src/orders/status-bucket.js";
 
-const NINE = ["new", "confirmed", "packed", "shipped", "delivered", "settled", "cancelled", "returned", "partial"];
+const NINE = [
+  "new",
+  "confirmed",
+  "packed",
+  "shipped",
+  "delivered",
+  "settled",
+  "cancelled",
+  "returned",
+  "partial",
+];
 
 const SWITCHES: ReadonlyArray<readonly [string, (s: OrderStatus) => unknown]> = [
   ["nextStatuses", nextStatuses],

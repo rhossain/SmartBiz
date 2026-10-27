@@ -31,7 +31,12 @@ export interface OrderDraft {
 
 export type OrderDraftStore = StateContainer<OrderDraft>;
 
-export const EMPTY_DRAFT: OrderDraft = { pending: null, status: "idle", message: null, savedOrderId: null };
+export const EMPTY_DRAFT: OrderDraft = {
+  pending: null,
+  status: "idle",
+  message: null,
+  savedOrderId: null,
+};
 
 export const createOrderDraftStore = (initial: OrderDraft = EMPTY_DRAFT): OrderDraftStore =>
   createStateContainer<OrderDraft>(initial);

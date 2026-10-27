@@ -18,7 +18,13 @@ import type { Queryable } from "../db/client.js";
 import { OrderContactSchema } from "../data/zod-schemas.js";
 import type { Uuid } from "../types/uuid.js";
 import { isOrderStatus } from "./status-fsm.js";
-import { ORDER_SOURCES, type Order, type OrderContact, type OrderItem, type OrderSource } from "./types.js";
+import {
+  ORDER_SOURCES,
+  type Order,
+  type OrderContact,
+  type OrderItem,
+  type OrderSource,
+} from "./types.js";
 
 export interface OrderRow {
   readonly id: string;
@@ -52,7 +58,9 @@ export interface OrderItemRow {
 export const toPaise = (value: string | number, column: string): number => {
   const n = typeof value === "number" ? value : Number(value);
   if (!Number.isSafeInteger(n) || n < 0) {
-    throw new Error(`corrupt order row: ${column} is not a non-negative integer (${String(value)})`);
+    throw new Error(
+      `corrupt order row: ${column} is not a non-negative integer (${String(value)})`,
+    );
   }
   return n;
 };
@@ -62,7 +70,9 @@ export const toIso = (value: Date | string): string =>
 
 const toContact = (value: unknown): OrderContact | null => {
   if (value === null || value === undefined) return null;
-  const parsed = OrderContactSchema.safeParse(typeof value === "string" ? JSON.parse(value) : value);
+  const parsed = OrderContactSchema.safeParse(
+    typeof value === "string" ? JSON.parse(value) : value,
+  );
   if (!parsed.success) throw new Error("corrupt order row: contact does not match OrderContact");
   return parsed.data;
 };
@@ -83,8 +93,10 @@ export const toOrderItem = (row: OrderItemRow): OrderItem => ({
 });
 
 export const toOrder = (row: OrderRow, items: ReadonlyArray<OrderItem>): Order => {
-  if (!isOrderStatus(row.status)) throw new Error(`corrupt order row: unknown status ${row.status}`);
-  if (!isOrderSource(row.source)) throw new Error(`corrupt order row: unknown source ${row.source}`);
+  if (!isOrderStatus(row.status))
+    throw new Error(`corrupt order row: unknown status ${row.status}`);
+  if (!isOrderSource(row.source))
+    throw new Error(`corrupt order row: unknown source ${row.source}`);
   return {
     id: row.id as Uuid,
     businessId: row.business_id as Uuid,

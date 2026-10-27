@@ -18,7 +18,8 @@ export const getOrder = async (
   ctx: OrderContext,
   orderId: string,
 ): Promise<Result<Order, NotFound | Forbidden>> => {
-  if (!canReadOrders(ctx.role)) return err({ kind: "forbidden", reason: "role cannot read orders" });
+  if (!canReadOrders(ctx.role))
+    return err({ kind: "forbidden", reason: "role cannot read orders" });
   if (!isUuid(orderId)) return err({ kind: "not_found", entity: "Order", id: orderId });
   const order = await selectOrder(sql, ctx.businessId, orderId, "no-lock");
   return order ? ok(order) : err({ kind: "not_found", entity: "Order", id: orderId });

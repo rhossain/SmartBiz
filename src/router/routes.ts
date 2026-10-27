@@ -30,16 +30,37 @@ export const routes: ReadonlyMap<RoutePath, Route> = new Map<RoutePath, Route>([
   ["/reset", { path: "/reset", requiredCapability: null, render: renderStub }],
   ["/accept", { path: "/accept", requiredCapability: null, render: renderStub }],
   ["/orders", { path: "/orders", requiredCapability: ORDER_READ_CAPABILITY, render: ordersList }],
-  ["/orders/new", { path: "/orders/new", requiredCapability: ORDER_MUTATE_CAPABILITIES, render: manualOrder }],
+  [
+    "/orders/new",
+    { path: "/orders/new", requiredCapability: ORDER_MUTATE_CAPABILITIES, render: manualOrder },
+  ],
   [
     "/orders/new/paste-parse",
-    { path: "/orders/new/paste-parse", requiredCapability: ORDER_MUTATE_CAPABILITIES, render: pasteParse },
+    {
+      path: "/orders/new/paste-parse",
+      requiredCapability: ORDER_MUTATE_CAPABILITIES,
+      render: pasteParse,
+    },
   ],
-  ["/orders/new/repeat", { path: "/orders/new/repeat", requiredCapability: ORDER_MUTATE_CAPABILITIES, render: repeatFromPast }],
-  ["/orders/:id", { path: "/orders/:id", requiredCapability: ORDER_READ_CAPABILITY, render: orderDetail }],
+  [
+    "/orders/new/repeat",
+    {
+      path: "/orders/new/repeat",
+      requiredCapability: ORDER_MUTATE_CAPABILITIES,
+      render: repeatFromPast,
+    },
+  ],
+  [
+    "/orders/:id",
+    { path: "/orders/:id", requiredCapability: ORDER_READ_CAPABILITY, render: orderDetail },
+  ],
   [
     "/orders/:id/transition",
-    { path: "/orders/:id/transition", requiredCapability: ORDER_MUTATE_CAPABILITIES, render: orderDetail },
+    {
+      path: "/orders/:id/transition",
+      requiredCapability: ORDER_MUTATE_CAPABILITIES,
+      render: orderDetail,
+    },
   ],
   ["/daily-card", { path: "/daily-card", requiredCapability: "business.view", render: renderStub }],
   ["/audit-trail", { path: "/audit-trail", requiredCapability: "audit.view", render: renderStub }],

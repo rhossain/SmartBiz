@@ -16,7 +16,13 @@ import { err, ok, type Result } from "../types/result.js";
 import { isUuid, type Uuid } from "../types/uuid.js";
 import { canReadOrders } from "./order-capability.js";
 import { selectItemsFor, toOrder, type OrderRow } from "./order-rows.js";
-import type { Forbidden, InvalidInput, ListOrdersFilter, OrderContext, OrdersPage } from "./types.js";
+import type {
+  Forbidden,
+  InvalidInput,
+  ListOrdersFilter,
+  OrderContext,
+  OrdersPage,
+} from "./types.js";
 
 export const DEFAULT_PAGE_SIZE = 50;
 export const MAX_PAGE_SIZE = 1000;
@@ -40,10 +46,14 @@ export const listOrders = async (
   ctx: OrderContext,
   filter: ListOrdersFilter = {},
 ): Promise<Result<OrdersPage, InvalidInput | Forbidden>> => {
-  if (!canReadOrders(ctx.role)) return err({ kind: "forbidden", reason: "role cannot read orders" });
+  if (!canReadOrders(ctx.role))
+    return err({ kind: "forbidden", reason: "role cannot read orders" });
   const valid = ListOrdersFilterSchema.safeParse(filter);
   if (!valid.success) {
-    return err({ kind: "invalid_input", message: valid.error.issues.map((i) => i.message).join("; ") });
+    return err({
+      kind: "invalid_input",
+      message: valid.error.issues.map((i) => i.message).join("; "),
+    });
   }
   const cursor = filter.cursor ? decodeCursor(filter.cursor) : null;
   if (filter.cursor && !cursor) return err({ kind: "invalid_input", message: "malformed cursor" });

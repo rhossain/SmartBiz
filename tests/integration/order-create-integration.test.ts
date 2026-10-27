@@ -17,7 +17,15 @@ import {
   updateOrder,
 } from "../../src/orders/index.js";
 import { makeSqlStub } from "../helpers/sql-stub.js";
-import { BUSINESS_A, BUSINESS_B, OWNER_A, OWNER_B, createInput, ctxFor, itemInput } from "../helpers/order-fixtures.js";
+import {
+  BUSINESS_A,
+  BUSINESS_B,
+  OWNER_A,
+  OWNER_B,
+  createInput,
+  ctxFor,
+  itemInput,
+} from "../helpers/order-fixtures.js";
 import { computeOrderTotal } from "../../src/orders/order-total.js";
 
 const ctxA = ctxFor(BUSINESS_A, OWNER_A);
@@ -55,7 +63,10 @@ describe("integration: order create / transition / read", () => {
     if (!created.ok) throw new Error("seed failed");
     const auditBefore = stub.state.auditLog.length;
     const r = await transitionStatus(stub.sql, ctxA, created.value.id, "delivered");
-    expect(r).toEqual({ ok: false, error: { kind: "invalid_transition", from: "new", to: "delivered" } });
+    expect(r).toEqual({
+      ok: false,
+      error: { kind: "invalid_transition", from: "new", to: "delivered" },
+    });
     expect(stub.state.orders[0]!["status"]).toBe("new");
     expect(stub.state.auditLog.length).toBe(auditBefore);
   });
@@ -82,9 +93,17 @@ describe("integration: order create / transition / read", () => {
     const stub = makeSqlStub();
     const source = await createOrder(stub.sql, ctxA, createInput());
     if (!source.ok) throw new Error("seed failed");
-    const crossRepeat = await createOrder(stub.sql, ctxB, createInput({ source: "repeat", repeatOfOrderId: source.value.id }));
+    const crossRepeat = await createOrder(
+      stub.sql,
+      ctxB,
+      createInput({ source: "repeat", repeatOfOrderId: source.value.id }),
+    );
     expect(!crossRepeat.ok && crossRepeat.error.kind).toBe("not_found");
-    const repeat = await createOrder(stub.sql, ctxA, createInput({ source: "repeat", repeatOfOrderId: source.value.id }));
+    const repeat = await createOrder(
+      stub.sql,
+      ctxA,
+      createInput({ source: "repeat", repeatOfOrderId: source.value.id }),
+    );
     expect(repeat.ok && repeat.value.repeatOfOrderId).toBe(source.value.id);
     expect((await getOrder(stub.sql, ctxA, "ORD-1001")).ok).toBe(false);
     expect((await transitionStatus(stub.sql, ctxA, "nope", "confirmed")).ok).toBe(false);
@@ -96,7 +115,12 @@ describe("integration: order create / transition / read", () => {
       const made = await createOrder(stub.sql, ctxFor(BUSINESS_A, OWNER_A, role), createInput());
       expect({ role, ok: made.ok }).toEqual({ role, ok: true });
       if (!made.ok) continue;
-      const moved = await transitionStatus(stub.sql, ctxFor(BUSINESS_A, OWNER_A, role), made.value.id, "confirmed");
+      const moved = await transitionStatus(
+        stub.sql,
+        ctxFor(BUSINESS_A, OWNER_A, role),
+        made.value.id,
+        "confirmed",
+      );
       expect({ role, ok: moved.ok }).toEqual({ role, ok: true });
     }
     const accountant = ctxFor(BUSINESS_A, OWNER_A, "accountant");
@@ -110,13 +134,25 @@ describe("integration: order create / transition / read", () => {
     const stub = makeSqlStub();
     // Each field is within its zod limit (price ≤ 10^12 paise, quantity ≤ 9 999),
     // but the line 9 999 × 10^12 is not a safe integer.
-    const hugeLine = createInput({ items: [itemInput({ quantity: 9_999, unitPricePaise: 1_000_000_000_000 })], orderDiscountPaise: 0 });
+    const hugeLine = createInput({
+      items: [itemInput({ quantity: 9_999, unitPricePaise: 1_000_000_000_000 })],
+      orderDiscountPaise: 0,
+    });
     const r = await createOrder(stub.sql, ctxA, hugeLine);
-    expect(r).toEqual({ ok: false, error: { kind: "invalid_input", message: "line 1: amount is too large to store exactly" } });
+    expect(r).toEqual({
+      ok: false,
+      error: { kind: "invalid_input", message: "line 1: amount is too large to store exactly" },
+    });
     // Each line is safe, but their sum is not.
     const big = itemInput({ quantity: 9_000, unitPricePaise: 1_000_000_000_000 }); // 9 × 10^15, safe
-    const sum = await createOrder(stub.sql, ctxA, createInput({ items: [big, big], orderDiscountPaise: 0 }));
-    expect(!sum.ok && sum.error.kind === "invalid_input" && sum.error.message).toBe("order subtotal is too large to store exactly");
+    const sum = await createOrder(
+      stub.sql,
+      ctxA,
+      createInput({ items: [big, big], orderDiscountPaise: 0 }),
+    );
+    expect(!sum.ok && sum.error.kind === "invalid_input" && sum.error.message).toBe(
+      "order subtotal is too large to store exactly",
+    );
     expect(stub.calls.length).toBe(0);
     expect(stub.state.orders.length).toBe(0);
     expect(stub.state.auditLog.length).toBe(0);
@@ -136,7 +172,11 @@ describe("integration: order create / transition / read", () => {
     const stub = makeSqlStub();
     const noItems = await createOrder(stub.sql, ctxA, createInput({ items: [] }));
     expect(!noItems.ok && noItems.error.kind).toBe("invalid_input");
-    const bigDiscount = await createOrder(stub.sql, ctxA, createInput({ orderDiscountPaise: 99_000_000 }));
+    const bigDiscount = await createOrder(
+      stub.sql,
+      ctxA,
+      createInput({ orderDiscountPaise: 99_000_000 }),
+    );
     expect(!bigDiscount.ok && bigDiscount.error.kind).toBe("invalid_input");
     expect(stub.calls.length).toBe(0);
   });
@@ -153,7 +193,8 @@ describe("integration: order create / transition / read", () => {
     const page1 = await listOrders(stub.sql, ctxA, { limit: 2 });
     expect(page1.ok).toBe(true);
     if (!page1.ok) return;
-    const idsOf = (page: Awaited<ReturnType<typeof listOrders>>): string[] => (page.ok ? page.value.orders.map((o): string => o.id) : []);
+    const idsOf = (page: Awaited<ReturnType<typeof listOrders>>): string[] =>
+      page.ok ? page.value.orders.map((o): string => o.id) : [];
     expect(idsOf(page1)).toEqual([ids[4]!, ids[3]!]);
     const page2 = await listOrders(stub.sql, ctxA, { limit: 2, cursor: page1.value.nextCursor });
     expect(idsOf(page2)).toEqual([ids[2]!, ids[1]!]);

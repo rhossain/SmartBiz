@@ -20,7 +20,10 @@ import type { Capability, Role } from "../auth/types.js";
 export const ORDER_READ_CAPABILITY: Capability = "business.view";
 
 /** Holding ANY one of these lets a role mutate orders. */
-export const ORDER_MUTATE_CAPABILITIES: ReadonlyArray<Capability> = ["money.mutate.price", "money.mutate.full"];
+export const ORDER_MUTATE_CAPABILITIES: ReadonlyArray<Capability> = [
+  "money.mutate.price",
+  "money.mutate.full",
+];
 
 export const canReadOrders = (role: Role): boolean => hasCapability(role, ORDER_READ_CAPABILITY);
 

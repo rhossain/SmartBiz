@@ -87,13 +87,22 @@ describe("B2 zod boundary validators", () => {
   test("money must be non-negative integer paise", () => {
     const float = { ...validItem, unitPricePaise: 1250.5 };
     const negative = { ...validItem, lineDiscountPaise: -1 };
-    expect(CreateOrderInputSchema.safeParse({ ...validCreate, items: [float] }).success).toBe(false);
-    expect(CreateOrderInputSchema.safeParse({ ...validCreate, items: [negative] }).success).toBe(false);
-    expect(CreateOrderInputSchema.safeParse({ ...validCreate, deliveryChargePaise: -100 }).success).toBe(false);
+    expect(CreateOrderInputSchema.safeParse({ ...validCreate, items: [float] }).success).toBe(
+      false,
+    );
+    expect(CreateOrderInputSchema.safeParse({ ...validCreate, items: [negative] }).success).toBe(
+      false,
+    );
+    expect(
+      CreateOrderInputSchema.safeParse({ ...validCreate, deliveryChargePaise: -100 }).success,
+    ).toBe(false);
   });
 
   test("quantity, phone, source and status are range-checked", () => {
-    expect(CreateOrderInputSchema.safeParse({ ...validCreate, items: [{ ...validItem, quantity: 0 }] }).success).toBe(false);
+    expect(
+      CreateOrderInputSchema.safeParse({ ...validCreate, items: [{ ...validItem, quantity: 0 }] })
+        .success,
+    ).toBe(false);
     expect(
       CreateOrderInputSchema.safeParse({
         ...validCreate,
@@ -108,10 +117,14 @@ describe("B2 zod boundary validators", () => {
   test("consignment refs follow the three courier formats only", () => {
     const orderId = "6f1c1d0e-6f1c-4d0e-8f1c-1d0e6f1c1d0e";
     for (const ref of ["PT-1234", "SF-12345", "RX-12345"]) {
-      expect(ConsignmentLinkInputSchema.safeParse({ orderId, consignmentRef: ref }).success).toBe(true);
+      expect(ConsignmentLinkInputSchema.safeParse({ orderId, consignmentRef: ref }).success).toBe(
+        true,
+      );
     }
     for (const ref of ["PT-123", "SF-1234", "XX-12345", "rx-12345", ""]) {
-      expect(ConsignmentLinkInputSchema.safeParse({ orderId, consignmentRef: ref }).success).toBe(false);
+      expect(ConsignmentLinkInputSchema.safeParse({ orderId, consignmentRef: ref }).success).toBe(
+        false,
+      );
     }
   });
 
@@ -127,14 +140,26 @@ describe("B2 zod boundary validators", () => {
 
 describe("B2 migrations 0008–0010", () => {
   test("all three files are present and sort after the B1 set", () => {
-    const files = readdirSync(migrationsDir).filter((f) => f.endsWith(".sql")).sort();
+    const files = readdirSync(migrationsDir)
+      .filter((f) => f.endsWith(".sql"))
+      .sort();
     expect(files.length).toBe(10);
     expect(files.slice(7)).toEqual([...B2_MIGRATIONS]);
   });
 
   test("the status CHECK lists exactly the nine affirmed values", () => {
     // Restated inline (team.md §TP-4), not imported from src/orders/types.ts.
-    const NINE = ["new", "confirmed", "packed", "shipped", "delivered", "settled", "cancelled", "returned", "partial"];
+    const NINE = [
+      "new",
+      "confirmed",
+      "packed",
+      "shipped",
+      "delivered",
+      "settled",
+      "cancelled",
+      "returned",
+      "partial",
+    ];
     const values = checkValues(read("0008_create_orders.sql"), "status");
     expect(values.length).toBe(9);
     expect([...values].sort()).toEqual([...NINE].sort());
@@ -180,6 +205,8 @@ describe("B2 migrations 0008–0010", () => {
     }
     const consignment = read("0010_create_consignment_link.sql");
     expect(consignment).toMatch(/GRANT SELECT, INSERT ON consignment_link TO app_role/);
-    expect(consignment).toMatch(/REVOKE UPDATE, DELETE, TRUNCATE ON consignment_link FROM app_role/);
+    expect(consignment).toMatch(
+      /REVOKE UPDATE, DELETE, TRUNCATE ON consignment_link FROM app_role/,
+    );
   });
 });

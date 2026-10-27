@@ -12,7 +12,13 @@ import type { Locale } from "../../auth/types.js";
 import { money } from "../../money/money-figure.js";
 import { Screen } from "../../pres/Screen.js";
 import { buildRepeatOrder } from "../input-modes.js";
-import { saveDraft, setPending, useOrderDraft, type OrderDraftStore, type SaveOrder } from "../order-draft.js";
+import {
+  saveDraft,
+  setPending,
+  useOrderDraft,
+  type OrderDraftStore,
+  type SaveOrder,
+} from "../order-draft.js";
 import { computeOrderTotal } from "../order-total.js";
 import { bucketOf, orderMoneyFigure } from "../status-bucket.js";
 import type { Order } from "../types.js";
@@ -27,7 +33,12 @@ export interface RepeatFromPastProps {
   readonly onSave: SaveOrder;
 }
 
-export const RepeatFromPast = ({ pastOrders, locale, draft, onSave }: RepeatFromPastProps): React.ReactElement => {
+export const RepeatFromPast = ({
+  pastOrders,
+  locale,
+  draft,
+  onSave,
+}: RepeatFromPastProps): React.ReactElement => {
   const state = useOrderDraft(draft);
   const pending = state.pending;
   const preview = pending
@@ -35,7 +46,9 @@ export const RepeatFromPast = ({ pastOrders, locale, draft, onSave }: RepeatFrom
     : null;
   return (
     <Screen title={tr("repeat.title", locale)}>
-      {pastOrders.length === 0 ? <p data-testid="repeat-none">{tr("repeat.none", locale)}</p> : null}
+      {pastOrders.length === 0 ? (
+        <p data-testid="repeat-none">{tr("repeat.none", locale)}</p>
+      ) : null}
       <ul data-testid="repeat-orders">
         {pastOrders.map((o) => (
           <li key={o.id} data-testid="repeat-order" data-order-id={o.id}>
@@ -46,7 +59,11 @@ export const RepeatFromPast = ({ pastOrders, locale, draft, onSave }: RepeatFrom
               testId="repeat-order-total"
               pipeline={bucketOf(o.status) === "pipeline"}
             />
-            <button type="button" data-testid="repeat-pick" onClick={() => setPending(draft, buildRepeatOrder(o))}>
+            <button
+              type="button"
+              data-testid="repeat-pick"
+              onClick={() => setPending(draft, buildRepeatOrder(o))}
+            >
               {tr("repeat.pick", locale)}
             </button>
           </li>
@@ -61,7 +78,12 @@ export const RepeatFromPast = ({ pastOrders, locale, draft, onSave }: RepeatFrom
               </li>
             ))}
           </ol>
-          <MoneyCell figure={money(preview.value, "earned", "partial")} locale={locale} testId="repeat-preview-total" pipeline />
+          <MoneyCell
+            figure={money(preview.value, "earned", "partial")}
+            locale={locale}
+            testId="repeat-preview-total"
+            pipeline
+          />
           <button
             type="button"
             data-testid="repeat-save"

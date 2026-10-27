@@ -31,7 +31,12 @@ describe("integration: single-tenant (BR1.4, BR3.4)", () => {
   test("one Business per deployment", async () => {
     setTestClock(FROZEN_TEST_NOW);
     const stub = makeSqlStub();
-    await signUp(stub.sql, { email: "o@e.com", password: "verysecret", businessName: "A", locale: "bn" });
+    await signUp(stub.sql, {
+      email: "o@e.com",
+      password: "verysecret",
+      businessName: "A",
+      locale: "bn",
+    });
     expect(stub.state.businesses.length).toBe(1);
     resetTestClock();
   });
@@ -39,7 +44,12 @@ describe("integration: single-tenant (BR1.4, BR3.4)", () => {
   test("cross-tenant read returns TenantViolation", async () => {
     setTestClock(FROZEN_TEST_NOW);
     const stub = makeSqlStub();
-    await signUp(stub.sql, { email: "o@e.com", password: "verysecret", businessName: "A", locale: "bn" });
+    await signUp(stub.sql, {
+      email: "o@e.com",
+      password: "verysecret",
+      businessName: "A",
+      locale: "bn",
+    });
     const otherBusinessId = "00000000-0000-4000-8000-000000000000" as Uuid;
     const userId = stub.state.users[0]!["id"] as Uuid;
     const r = readBusinessForUser(stub.state, otherBusinessId, userId);

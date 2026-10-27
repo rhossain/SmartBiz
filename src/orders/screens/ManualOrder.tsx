@@ -23,7 +23,13 @@ import { toAsciiDigits } from "../../i18n/bnDigits.js";
 import { money } from "../../money/money-figure.js";
 import { Screen } from "../../pres/Screen.js";
 import { buildManualOrder } from "../input-modes.js";
-import { saveDraft, setPending, useOrderDraft, type OrderDraftStore, type SaveOrder } from "../order-draft.js";
+import {
+  saveDraft,
+  setPending,
+  useOrderDraft,
+  type OrderDraftStore,
+  type SaveOrder,
+} from "../order-draft.js";
 import { computeOrderTotal, lineTotalPaise, parseTakaToPaise } from "../order-total.js";
 import type { OrderItemInput } from "../types.js";
 import { tr } from "./copy.js";
@@ -50,7 +56,13 @@ interface Form {
   readonly delivery: string;
 }
 
-const EMPTY_LINE: LineFields = { description: "", variantId: "", quantity: "1", price: "", discount: "0" };
+const EMPTY_LINE: LineFields = {
+  description: "",
+  variantId: "",
+  quantity: "1",
+  price: "",
+  discount: "0",
+};
 const INITIAL: Form = { lines: [EMPTY_LINE], orderDiscount: "0", delivery: "0" };
 
 /** One line's fields as an order item, or null when any field is unusable. */
@@ -60,7 +72,12 @@ export const readLine = (line: LineFields): OrderItemInput | null => {
   const quantity = /^\d{1,4}$/.test(typed) ? Number(typed) : NaN;
   const unitPricePaise = parseTakaToPaise(line.price);
   const lineDiscountPaise = parseTakaToPaise(line.discount === "" ? "0" : line.discount);
-  if (line.description.trim() === "" || !(quantity >= 1) || unitPricePaise === null || lineDiscountPaise === null) {
+  if (
+    line.description.trim() === "" ||
+    !(quantity >= 1) ||
+    unitPricePaise === null ||
+    lineDiscountPaise === null
+  ) {
     return null;
   }
   return {
@@ -87,7 +104,9 @@ const evaluate = (form: Form): Evaluation => {
     return { items, totalPaise: null, problem: null };
   }
   const total = computeOrderTotal(valid, orderDiscount, delivery);
-  return total.ok ? { items, totalPaise: total.value, problem: null } : { items, totalPaise: null, problem: total.error.message };
+  return total.ok
+    ? { items, totalPaise: total.value, problem: null }
+    : { items, totalPaise: null, problem: total.error.message };
 };
 
 const stage = (store: OrderDraftStore, form: Form): void => {
@@ -99,7 +118,16 @@ const stage = (store: OrderDraftStore, form: Form): void => {
     setPending(store, null);
     return;
   }
-  setPending(store, buildManualOrder({ customerId: null, contact: null, items, orderDiscountPaise, deliveryChargePaise }));
+  setPending(
+    store,
+    buildManualOrder({
+      customerId: null,
+      contact: null,
+      items,
+      orderDiscountPaise,
+      deliveryChargePaise,
+    }),
+  );
 };
 
 const LineEditor = (props: {
@@ -112,7 +140,11 @@ const LineEditor = (props: {
   readonly onRemove: () => void;
 }): React.ReactElement => {
   const { n, line, item, locale } = props;
-  const field = (key: keyof LineFields, label: string, inputMode?: "numeric" | "decimal"): React.ReactElement => (
+  const field = (
+    key: keyof LineFields,
+    label: string,
+    inputMode?: "numeric" | "decimal",
+  ): React.ReactElement => (
     <label>
       {label}
       <input
@@ -139,7 +171,12 @@ const LineEditor = (props: {
           {tr("manual.line_invalid", locale)}
         </span>
       ) : lineTotal !== null && lineTotal >= 0 ? (
-        <MoneyCell figure={money(lineTotal, "earned", "partial")} locale={locale} testId={`manual-line-total-${n}`} pipeline />
+        <MoneyCell
+          figure={money(lineTotal, "earned", "partial")}
+          locale={locale}
+          testId={`manual-line-total-${n}`}
+          pipeline
+        />
       ) : null}
       {props.canRemove ? (
         <button type="button" data-testid={`manual-line-remove-${n}`} onClick={props.onRemove}>
@@ -176,23 +213,37 @@ export const ManualOrder = ({ locale, draft, onSave }: ManualOrderProps): React.
               item={result.items[i] ?? null}
               locale={locale}
               canRemove={form.lines.length > 1}
-              onChange={(next) => apply({ ...form, lines: form.lines.map((l, j) => (j === i ? next : l)) })}
+              onChange={(next) =>
+                apply({ ...form, lines: form.lines.map((l, j) => (j === i ? next : l)) })
+              }
               onRemove={() => apply({ ...form, lines: form.lines.filter((_, j) => j !== i) })}
             />
           ))}
         </ol>
-        <button type="button" data-testid="manual-add-line" onClick={() => apply({ ...form, lines: [...form.lines, EMPTY_LINE] })}>
+        <button
+          type="button"
+          data-testid="manual-add-line"
+          onClick={() => apply({ ...form, lines: [...form.lines, EMPTY_LINE] })}
+        >
           {tr("manual.add_line", locale)}
         </button>
         <label>
           {tr("manual.order_discount", locale)}
-          <input data-testid="manual-order-discount" inputMode="decimal" value={form.orderDiscount}
-            onChange={(e) => apply({ ...form, orderDiscount: e.target.value })} />
+          <input
+            data-testid="manual-order-discount"
+            inputMode="decimal"
+            value={form.orderDiscount}
+            onChange={(e) => apply({ ...form, orderDiscount: e.target.value })}
+          />
         </label>
         <label>
           {tr("orders.quick.delivery", locale)}
-          <input data-testid="manual-delivery" inputMode="decimal" value={form.delivery}
-            onChange={(e) => apply({ ...form, delivery: e.target.value })} />
+          <input
+            data-testid="manual-delivery"
+            inputMode="decimal"
+            value={form.delivery}
+            onChange={(e) => apply({ ...form, delivery: e.target.value })}
+          />
         </label>
         {result.problem !== null ? (
           <p role="alert" data-testid="manual-total-error">
@@ -202,10 +253,19 @@ export const ManualOrder = ({ locale, draft, onSave }: ManualOrderProps): React.
         {result.totalPaise !== null ? (
           <div>
             <span>{tr("orders.total", locale)}</span>
-            <MoneyCell figure={money(result.totalPaise, "earned", "partial")} locale={locale} testId="manual-total" pipeline />
+            <MoneyCell
+              figure={money(result.totalPaise, "earned", "partial")}
+              locale={locale}
+              testId="manual-total"
+              pipeline
+            />
           </div>
         ) : null}
-        <button type="submit" data-testid="manual-save" disabled={state.pending === null || state.status === "saving"}>
+        <button
+          type="submit"
+          data-testid="manual-save"
+          disabled={state.pending === null || state.status === "saving"}
+        >
           {tr("orders.save", locale)}
         </button>
         <DraftStatus draft={state} locale={locale} />

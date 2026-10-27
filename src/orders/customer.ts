@@ -22,4 +22,5 @@ export interface Customer {
 export const getCustomer = async (
   _businessId: Uuid,
   customerId: string,
-): Promise<Result<Customer, NotFound>> => err({ kind: "not_found", entity: "Customer", id: customerId });
+): Promise<Result<Customer, NotFound>> =>
+  err({ kind: "not_found", entity: "Customer", id: customerId });

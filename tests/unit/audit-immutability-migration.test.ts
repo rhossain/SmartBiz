@@ -20,7 +20,9 @@ const read = (file: string): string => readFileSync(join(migrationsDir, file), "
 
 describe("R1.1 — audit_log INSERT-only invariant in the migration set", () => {
   test("(1) every required migration file is present", () => {
-    const files = readdirSync(migrationsDir).filter((f) => f.endsWith(".sql")).sort();
+    const files = readdirSync(migrationsDir)
+      .filter((f) => f.endsWith(".sql"))
+      .sort();
     expect(files).toContain("0001_create_users.sql");
     expect(files).toContain("0002_create_businesses.sql");
     expect(files).toContain("0003_create_invitations.sql");

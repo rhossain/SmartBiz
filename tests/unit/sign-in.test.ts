@@ -28,7 +28,11 @@ describe("sign-in (UC-1.2)", () => {
   test("correct credentials succeed", async () => {
     setTestClock(FROZEN_TEST_NOW);
     const { sql, state } = await seedOwner();
-    const r = await signIn(sql, { email: "owner@example.com", password: "verysecret", ip: "1.1.1.1" }, FROZEN_TEST_NOW.getTime());
+    const r = await signIn(
+      sql,
+      { email: "owner@example.com", password: "verysecret", ip: "1.1.1.1" },
+      FROZEN_TEST_NOW.getTime(),
+    );
     expect(r.ok).toBe(true);
     if (!r.ok) return;
     expect(r.value.user.email).toBe("owner@example.com");
@@ -38,7 +42,11 @@ describe("sign-in (UC-1.2)", () => {
 
   test("invalid credentials return generic 401 + audit row", async () => {
     const { sql, state } = await seedOwner();
-    const r = await signIn(sql, { email: "owner@example.com", password: "wrong", ip: "1.1.1.1" }, FROZEN_TEST_NOW.getTime());
+    const r = await signIn(
+      sql,
+      { email: "owner@example.com", password: "wrong", ip: "1.1.1.1" },
+      FROZEN_TEST_NOW.getTime(),
+    );
     expect(r.ok).toBe(false);
     if (r.ok) return;
     expect(r.error.kind).toBe("invalid_credentials");
@@ -47,7 +55,11 @@ describe("sign-in (UC-1.2)", () => {
 
   test("non-existent email returns generic 401 (no enumeration)", async () => {
     const { sql } = makeSqlStub();
-    const r = await signIn(sql, { email: "noone@example.com", password: "x", ip: "1.1.1.1" }, FROZEN_TEST_NOW.getTime());
+    const r = await signIn(
+      sql,
+      { email: "noone@example.com", password: "x", ip: "1.1.1.1" },
+      FROZEN_TEST_NOW.getTime(),
+    );
     expect(r.ok).toBe(false);
     if (r.ok) return;
     expect(r.error.kind).toBe("invalid_credentials");
@@ -56,7 +68,11 @@ describe("sign-in (UC-1.2)", () => {
   test("inactive user is rejected (BR2.1)", async () => {
     const seeded = await seedOwner();
     seeded.state.users[0]!.active = false;
-    const r = await signIn(seeded.sql, { email: "owner@example.com", password: "verysecret", ip: "1.1.1.1" }, FROZEN_TEST_NOW.getTime());
+    const r = await signIn(
+      seeded.sql,
+      { email: "owner@example.com", password: "verysecret", ip: "1.1.1.1" },
+      FROZEN_TEST_NOW.getTime(),
+    );
     expect(r.ok).toBe(false);
   });
 });

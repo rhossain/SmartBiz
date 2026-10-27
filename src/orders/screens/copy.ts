@@ -55,7 +55,10 @@ const COPY = {
   "manual.order_discount": L("অর্ডারের ছাড় (৳)", "Order discount (৳)"),
   "manual.add_line": L("লাইন যোগ করুন", "Add line"),
   "manual.remove_line": L("লাইন সরান", "Remove line"),
-  "manual.line_invalid": L("পণ্য, পরিমাণ ও দাম ঠিকভাবে লিখুন", "Enter an item, a quantity and a price"),
+  "manual.line_invalid": L(
+    "পণ্য, পরিমাণ ও দাম ঠিকভাবে লিখুন",
+    "Enter an item, a quantity and a price",
+  ),
   "manual.line_total": L("লাইনের মোট", "Line total"),
   "repeat.title": L("আগের অর্ডার আবার", "Repeat a past order"),
   "repeat.pick": L("বেছে নিন", "Pick"),
@@ -64,4 +67,5 @@ const COPY = {
 
 export type CopyKey = keyof typeof COPY;
 
-export const tr = (key: CopyKey, locale: Locale): string => (locale === "bn" ? COPY[key].bn : COPY[key].en);
+export const tr = (key: CopyKey, locale: Locale): string =>
+  locale === "bn" ? COPY[key].bn : COPY[key].en;

@@ -81,7 +81,9 @@ export const resetPassword = async (
     await tx`UPDATE password_resets SET used_at = ${now().toISOString()} WHERE id = ${row.id}`;
   });
   // Look up businessId for audit.
-  const bizRows = await sql<{ id: string }[]>`SELECT id FROM businesses WHERE owner_user_id = ${row.user_id} LIMIT 1`;
+  const bizRows = await sql<
+    { id: string }[]
+  >`SELECT id FROM businesses WHERE owner_user_id = ${row.user_id} LIMIT 1`;
   const businessId = bizRows[0]?.id ?? ("00000000-0000-0000-0000-000000000000" as Uuid);
   await auditRecoveryReset(sql, businessId as Uuid, row.user_id as Uuid, { outcome: "ok" });
   void verifyPassword; // keep import live for tests

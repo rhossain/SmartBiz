@@ -25,9 +25,24 @@ export const SignUpScreen = ({ onSubmit }: SignUpProps): React.ReactElement => {
         }}
       >
         <Field label="email" name="email" type="email" value={email} onChange={setEmail} required />
-        <Field label="password" name="password" type="password" value={password} onChange={setPassword} required />
-        <Field label="businessName" name="businessName" value={businessName} onChange={setBusinessName} required />
-        <button type="submit" data-testid="sign-up-submit">{t("common.save")}</button>
+        <Field
+          label="password"
+          name="password"
+          type="password"
+          value={password}
+          onChange={setPassword}
+          required
+        />
+        <Field
+          label="businessName"
+          name="businessName"
+          value={businessName}
+          onChange={setBusinessName}
+          required
+        />
+        <button type="submit" data-testid="sign-up-submit">
+          {t("common.save")}
+        </button>
       </form>
     </Screen>
   );

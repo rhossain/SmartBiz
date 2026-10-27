@@ -50,7 +50,11 @@ describe("US1.11 — ManualOrder screen", () => {
   test("several lines save as one manual order, only on Save", async () => {
     const stub = makeSqlStub();
     const { getByTestId } = render(
-      <ManualOrder locale="en" draft={createOrderDraftStore()} onSave={async (i) => createOrder(stub.sql, ctx, i)} />,
+      <ManualOrder
+        locale="en"
+        draft={createOrderDraftStore()}
+        onSave={async (i) => createOrder(stub.sql, ctx, i)}
+      />,
     );
     fillTwoLines(getByTestId);
     // (2 × 1 250.00 − 50.00) + 1 × 600.00 − 100.00 + 60.00, in paise.
@@ -65,7 +69,14 @@ describe("US1.11 — ManualOrder screen", () => {
     });
     expect(stub.state.orders.length).toBe(1);
     expect(stub.state.orders[0]).toMatchObject({ source: "manual", total_paise: String(expected) });
-    expect(stub.state.orderItems.map((i) => [i["line_no"], i["variant_id"], i["quantity"], i["line_discount_paise"]])).toEqual([
+    expect(
+      stub.state.orderItems.map((i) => [
+        i["line_no"],
+        i["variant_id"],
+        i["quantity"],
+        i["line_discount_paise"],
+      ]),
+    ).toEqual([
       [1, "V-12", 2, "5000"],
       [2, null, 1, "0"],
     ]);
@@ -73,12 +84,20 @@ describe("US1.11 — ManualOrder screen", () => {
 
   test("an unusable line blocks Save and says why", () => {
     const { getByTestId } = render(
-      <ManualOrder locale="en" draft={createOrderDraftStore()} onSave={async () => { throw new Error("unused"); }} />,
+      <ManualOrder
+        locale="en"
+        draft={createOrderDraftStore()}
+        onSave={async () => {
+          throw new Error("unused");
+        }}
+      />,
     );
     expect(saveButton(getByTestId).disabled).toBe(true);
     type(getByTestId, "manual-line-description-1", "নীল জিন্স");
     type(getByTestId, "manual-line-price-1", "12.345");
-    expect(getByTestId("manual-line-error-1").textContent).toBe("Enter an item, a quantity and a price");
+    expect(getByTestId("manual-line-error-1").textContent).toBe(
+      "Enter an item, a quantity and a price",
+    );
     expect(saveButton(getByTestId).disabled).toBe(true);
     type(getByTestId, "manual-line-price-1", "1800");
     type(getByTestId, "manual-line-quantity-1", "0");
@@ -89,7 +108,13 @@ describe("US1.11 — ManualOrder screen", () => {
 
   test("a quantity typed in Bangla digits is read like the price fields", () => {
     const { getByTestId, queryByTestId } = render(
-      <ManualOrder locale="en" draft={createOrderDraftStore()} onSave={async () => { throw new Error("unused"); }} />,
+      <ManualOrder
+        locale="en"
+        draft={createOrderDraftStore()}
+        onSave={async () => {
+          throw new Error("unused");
+        }}
+      />,
     );
     type(getByTestId, "manual-line-description-1", "নীল জিন্স");
     type(getByTestId, "manual-line-price-1", "1800");
@@ -102,17 +127,27 @@ describe("US1.11 — ManualOrder screen", () => {
 
   test("a discount larger than its line, or than the order, is refused, never clamped", () => {
     const { getByTestId, queryByTestId } = render(
-      <ManualOrder locale="en" draft={createOrderDraftStore()} onSave={async () => { throw new Error("unused"); }} />,
+      <ManualOrder
+        locale="en"
+        draft={createOrderDraftStore()}
+        onSave={async () => {
+          throw new Error("unused");
+        }}
+      />,
     );
     type(getByTestId, "manual-line-description-1", "স্কার্ফ");
     type(getByTestId, "manual-line-price-1", "100");
     type(getByTestId, "manual-line-discount-1", "150");
-    expect(getByTestId("manual-total-error").textContent).toContain("line 1: discount exceeds the line amount");
+    expect(getByTestId("manual-total-error").textContent).toContain(
+      "line 1: discount exceeds the line amount",
+    );
     expect(queryByTestId("manual-total")).toBeNull();
     expect(saveButton(getByTestId).disabled).toBe(true);
     type(getByTestId, "manual-line-discount-1", "0");
     type(getByTestId, "manual-order-discount", "101");
-    expect(getByTestId("manual-total-error").textContent).toContain("order discount exceeds the order subtotal");
+    expect(getByTestId("manual-total-error").textContent).toContain(
+      "order discount exceeds the order subtotal",
+    );
     expect(saveButton(getByTestId).disabled).toBe(true);
   });
 
@@ -121,11 +156,15 @@ describe("US1.11 — ManualOrder screen", () => {
     let calls = 0;
     const draft = createOrderDraftStore();
     const { getByTestId } = render(
-      <ManualOrder locale="bn" draft={draft} onSave={async (i) => {
-        calls += 1;
-        if (calls === 1) throw new Error("connection lost");
-        return createOrder(stub.sql, ctx, i);
-      }} />,
+      <ManualOrder
+        locale="bn"
+        draft={draft}
+        onSave={async (i) => {
+          calls += 1;
+          if (calls === 1) throw new Error("connection lost");
+          return createOrder(stub.sql, ctx, i);
+        }}
+      />,
     );
     fillTwoLines(getByTestId);
     await act(async () => {
@@ -143,13 +182,21 @@ describe("US1.11 — ManualOrder screen", () => {
 
   test("a line can be removed, and the total follows the remaining lines", () => {
     const { getByTestId, getAllByTestId } = render(
-      <ManualOrder locale="en" draft={createOrderDraftStore()} onSave={async () => { throw new Error("unused"); }} />,
+      <ManualOrder
+        locale="en"
+        draft={createOrderDraftStore()}
+        onSave={async () => {
+          throw new Error("unused");
+        }}
+      />,
     );
     fillTwoLines(getByTestId);
     expect(getAllByTestId("manual-line").length).toBe(2);
     fireEvent.click(getByTestId("manual-line-remove-2"));
     expect(getAllByTestId("manual-line").length).toBe(1);
     // (2 × 1 250.00 − 50.00) − 100.00 + 60.00, in paise.
-    expect(getByTestId("manual-total").textContent).toContain(`৳${((2 * 125_000 - 5_000 - 10_000 + 6_000) / 100).toFixed(2)}`);
+    expect(getByTestId("manual-total").textContent).toContain(
+      `৳${((2 * 125_000 - 5_000 - 10_000 + 6_000) / 100).toFixed(2)}`,
+    );
   });
 });

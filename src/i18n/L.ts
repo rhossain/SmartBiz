@@ -22,7 +22,10 @@ export const L_TABLE: Translations = Object.freeze({
   "common.loading": L("লোড হচ্ছে…", "Loading…"),
   "common.error": L("ত্রুটি", "Error"),
   "lock.title": L("অ্যাক্সেস সীমাবদ্ধ", "Access restricted"),
-  "lock.message": L("এই পৃষ্ঠা আপনার ভূমিকার জন্য উপলব্ধ নয়।", "This page is not available for your role."),
+  "lock.message": L(
+    "এই পৃষ্ঠা আপনার ভূমিকার জন্য উপলব্ধ নয়।",
+    "This page is not available for your role.",
+  ),
 });
 
 export type LKey = keyof typeof L_TABLE;

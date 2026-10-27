@@ -15,19 +15,32 @@ describe("integration: reversal flow (UC-1.10)", () => {
     setTestClock(FROZEN_TEST_NOW);
     const stub = makeSqlStub();
     const su = await signUp(stub.sql, {
-      email: "owner@example.com", password: "verysecret", businessName: "Acme", locale: "bn",
+      email: "owner@example.com",
+      password: "verysecret",
+      businessName: "Acme",
+      locale: "bn",
     });
     if (!su.ok) throw new Error("signup");
     const businessId = su.value.businessId as Uuid;
     const userId = su.value.user.id as Uuid;
 
     const original = await insertAudit(stub.sql, {
-      businessId, actorUserId: userId, action: "settle", subjectKind: "order", subjectId: userId,
-      payload: { amount_paise: 5000 }, reversesId: null,
+      businessId,
+      actorUserId: userId,
+      action: "settle",
+      subjectKind: "order",
+      subjectId: userId,
+      payload: { amount_paise: 5000 },
+      reversesId: null,
     });
     const reversal = await insertAudit(stub.sql, {
-      businessId, actorUserId: userId, action: "reverse.settle", subjectKind: "order", subjectId: userId,
-      payload: { reverses: original.id, amount_paise: 5000 }, reversesId: original.id,
+      businessId,
+      actorUserId: userId,
+      action: "reverse.settle",
+      subjectKind: "order",
+      subjectId: userId,
+      payload: { reverses: original.id, amount_paise: 5000 },
+      reversesId: original.id,
     });
     const orig = stub.state.auditLog.find((r) => r["id"] === original.id);
     const rev = stub.state.auditLog.find((r) => r["id"] === reversal.id);

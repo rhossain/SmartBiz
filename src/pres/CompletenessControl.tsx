@@ -17,7 +17,9 @@ export const CompletenessControl = ({
   completeness,
 }: CompletenessControlProps): React.ReactElement => (
   <Pill
-    kind={completeness === "complete" ? "success" : completeness === "partial" ? "warning" : "neutral"}
+    kind={
+      completeness === "complete" ? "success" : completeness === "partial" ? "warning" : "neutral"
+    }
     label={completeness}
   />
 );

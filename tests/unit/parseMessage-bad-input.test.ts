@@ -10,7 +10,8 @@
 import { describe, expect, test } from "bun:test";
 import { parseMessage } from "../../src/orders/parse-message.js";
 
-const lines = (n: number): string => Array.from({ length: n }, (_, i) => `লাল শাড়ি ${i + 1}টা`).join("\n");
+const lines = (n: number): string =>
+  Array.from({ length: n }, (_, i) => `লাল শাড়ি ${i + 1}টা`).join("\n");
 
 describe("NFR6.7.4 — parseMessage bad input", () => {
   test("empty and whitespace-only text is `empty`", () => {
@@ -46,7 +47,9 @@ describe("NFR6.7.4 — parseMessage bad input", () => {
       seed = (seed * 1103515245 + 12345) % 2147483648;
       return seed;
     };
-    const alphabet = [..."()[]{}*+?.^$|\\/,;+·।\n\r\t\u0000‍😀আরএবংওটাটিপিস0123456789০১২৩৪৫৬৭৮৯MLXS"];
+    const alphabet = [
+      ..."()[]{}*+?.^$|\\/,;+·।\n\r\t\u0000‍😀আরএবংওটাটিপিস0123456789০১২৩৪৫৬৭৮৯MLXS",
+    ];
     for (let i = 0; i < 1000; i += 1) {
       const len = next() % 120;
       let s = "";

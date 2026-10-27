@@ -14,5 +14,7 @@ export interface VoiceOrderInput {
   readonly mimeType: string;
 }
 
-export const voiceOrder = async (ctx: OrderContext, _input: VoiceOrderInput): Promise<DeferredInputResult> =>
-  deferInput("voice", ctx);
+export const voiceOrder = async (
+  ctx: OrderContext,
+  _input: VoiceOrderInput,
+): Promise<DeferredInputResult> => deferInput("voice", ctx);

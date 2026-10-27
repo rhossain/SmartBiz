@@ -24,8 +24,17 @@ export const AcceptScreen = ({ onSubmit }: AcceptProps): React.ReactElement => {
         }}
       >
         <Field label="token" name="token" value={token} onChange={setToken} required />
-        <Field label="password" name="password" type="password" value={password} onChange={setPassword} required />
-        <button type="submit" data-testid="accept-submit">{t("common.save")}</button>
+        <Field
+          label="password"
+          name="password"
+          type="password"
+          value={password}
+          onChange={setPassword}
+          required
+        />
+        <button type="submit" data-testid="accept-submit">
+          {t("common.save")}
+        </button>
       </form>
     </Screen>
   );

@@ -34,7 +34,13 @@ export interface OrderDetailProps {
 const label = (status: OrderStatus, locale: Locale): string =>
   locale === "bn" ? statusLabel(status).bn : statusLabel(status).en;
 
-export const OrderDetail = ({ order, locale, canMutate, onTransition, onRepeat }: OrderDetailProps): React.ReactElement => {
+export const OrderDetail = ({
+  order,
+  locale,
+  canMutate,
+  onTransition,
+  onRepeat,
+}: OrderDetailProps): React.ReactElement => {
   const basis = orderMoneyFigure(order);
   const pipeline = bucketOf(order.status) === "pipeline";
   const figure = (paise: number) => money(paise, basis.recognition, basis.completeness);
@@ -63,7 +69,12 @@ export const OrderDetail = ({ order, locale, canMutate, onTransition, onRepeat }
               <td>{item.description}</td>
               <td>{item.quantity}</td>
               <td>
-                <MoneyCell figure={figure(lineTotalPaise(item))} locale={locale} testId="order-detail-line-total" pipeline={pipeline} />
+                <MoneyCell
+                  figure={figure(lineTotalPaise(item))}
+                  locale={locale}
+                  testId="order-detail-line-total"
+                  pipeline={pipeline}
+                />
               </td>
             </tr>
           ))}
@@ -71,9 +82,19 @@ export const OrderDetail = ({ order, locale, canMutate, onTransition, onRepeat }
       </table>
       <div>
         <span>{tr("detail.discount", locale)}</span>
-        <MoneyCell figure={figure(order.orderDiscountPaise)} locale={locale} testId="order-detail-discount" pipeline={pipeline} />
+        <MoneyCell
+          figure={figure(order.orderDiscountPaise)}
+          locale={locale}
+          testId="order-detail-discount"
+          pipeline={pipeline}
+        />
         <span>{tr("detail.delivery", locale)}</span>
-        <MoneyCell figure={figure(order.deliveryChargePaise)} locale={locale} testId="order-detail-delivery" pipeline={pipeline} />
+        <MoneyCell
+          figure={figure(order.deliveryChargePaise)}
+          locale={locale}
+          testId="order-detail-delivery"
+          pipeline={pipeline}
+        />
         <span>{tr("orders.total", locale)}</span>
         <MoneyCell figure={basis} locale={locale} testId="order-detail-total" pipeline={pipeline} />
       </div>
@@ -81,7 +102,12 @@ export const OrderDetail = ({ order, locale, canMutate, onTransition, onRepeat }
         <div data-testid="order-detail-actions">
           <span>{tr("detail.move_to", locale)}</span>
           {nextStatuses(order.status).map((to) => (
-            <button key={to} type="button" data-testid={`order-detail-transition-${to}`} onClick={() => onTransition(to)}>
+            <button
+              key={to}
+              type="button"
+              data-testid={`order-detail-transition-${to}`}
+              onClick={() => onTransition(to)}
+            >
               {label(to, locale)}
             </button>
           ))}

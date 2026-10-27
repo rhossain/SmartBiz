@@ -34,7 +34,12 @@ export interface MoneyCellProps {
 export const formatMoney = (figure: MoneyFigure, locale: Locale): string =>
   locale === "bn" ? bnDigits(toTaka(figure)) : toTaka(figure);
 
-export const MoneyCell = ({ figure, locale, testId, pipeline = false }: MoneyCellProps): React.ReactElement => {
+export const MoneyCell = ({
+  figure,
+  locale,
+  testId,
+  pipeline = false,
+}: MoneyCellProps): React.ReactElement => {
   const isPipeline = pipeline && figure.recognition === "earned";
   return (
     <span
@@ -45,7 +50,11 @@ export const MoneyCell = ({ figure, locale, testId, pipeline = false }: MoneyCel
       data-completeness={figure.completeness}
     >
       <span className="money-cell__amount">{formatMoney(figure, locale)}</span>
-      {isPipeline ? <Pill kind="neutral" label="pipeline" /> : <BasisPill basis={figure.recognition} />}
+      {isPipeline ? (
+        <Pill kind="neutral" label="pipeline" />
+      ) : (
+        <BasisPill basis={figure.recognition} />
+      )}
       <CompletenessControl completeness={figure.completeness} />
     </span>
   );

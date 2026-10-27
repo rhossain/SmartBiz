@@ -16,14 +16,20 @@ import type { Locale } from "../../src/auth/types.js";
 
 describe("pres primitives", () => {
   test("Screen renders title + children", () => {
-    const { container } = render(<Screen title="Hello"><span>child</span></Screen>);
+    const { container } = render(
+      <Screen title="Hello">
+        <span>child</span>
+      </Screen>,
+    );
     expect(container.querySelector('[data-testid="screen-title"]')?.textContent).toBe("Hello");
     expect(container.textContent).toContain("child");
     cleanup();
   });
 
   test("Field emits input + label", () => {
-    const { container } = render(<Field label="Email" name="email" value="x" onChange={() => {}} />);
+    const { container } = render(
+      <Field label="Email" name="email" value="x" onChange={() => {}} />,
+    );
     expect(container.querySelector("input")).not.toBeNull();
     expect(container.querySelector("label")?.textContent).toBe("Email");
     cleanup();
@@ -31,7 +37,9 @@ describe("pres primitives", () => {
 
   test("Pill renders label + kind", () => {
     const { container } = render(<Pill kind="danger" label="warn" />);
-    expect(container.querySelector('[data-testid="pill"]')?.getAttribute("data-kind")).toBe("danger");
+    expect(container.querySelector('[data-testid="pill"]')?.getAttribute("data-kind")).toBe(
+      "danger",
+    );
     cleanup();
   });
 
@@ -55,7 +63,9 @@ describe("pres primitives", () => {
 
   test("Toast renders message + tone", () => {
     const { container } = render(<Toast message="hi" tone="warn" />);
-    expect(container.querySelector('[data-testid="toast"]')?.getAttribute("data-tone")).toBe("warn");
+    expect(container.querySelector('[data-testid="toast"]')?.getAttribute("data-tone")).toBe(
+      "warn",
+    );
     cleanup();
   });
 

@@ -66,7 +66,10 @@ export const isMutatingScreen = (screen: OrdersScreen): boolean => {
   }
 };
 
-export const renderOrdersScreen = (screen: OrdersScreen, state: unknown): React.ReactElement | null => {
+export const renderOrdersScreen = (
+  screen: OrdersScreen,
+  state: unknown,
+): React.ReactElement | null => {
   if (!isOrdersRouteState(state)) return null;
   if (isMutatingScreen(screen) && !state.canMutate) return <LockScreen />;
   const { locale, draft, onSave } = state;
@@ -90,7 +93,14 @@ export const renderOrdersScreen = (screen: OrdersScreen, state: unknown): React.
     case "paste-parse":
       return <PasteParse locale={locale} draft={draft} onSave={onSave} />;
     case "repeat":
-      return <RepeatFromPast pastOrders={state.page.orders} locale={locale} draft={draft} onSave={onSave} />;
+      return (
+        <RepeatFromPast
+          pastOrders={state.page.orders}
+          locale={locale}
+          draft={draft}
+          onSave={onSave}
+        />
+      );
     case "detail":
       return state.current ? (
         <OrderDetail

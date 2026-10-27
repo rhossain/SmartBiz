@@ -50,41 +50,79 @@ const handleOrders = (
     return [{ n: String(state.seq.n) }];
   }
   if (/INSERT INTO orders \(/i.test(text)) {
-    const [id, businessId, orderNo, customerId, contact, status, source, repeatOf, odisc, deliv, total, createdBy, createdAt, updatedAt] = params;
+    const [
+      id,
+      businessId,
+      orderNo,
+      customerId,
+      contact,
+      status,
+      source,
+      repeatOf,
+      odisc,
+      deliv,
+      total,
+      createdBy,
+      createdAt,
+      updatedAt,
+    ] = params;
     if (state.orders.some((o) => o["business_id"] === businessId && o["order_no"] === orderNo)) {
       throw dbError("duplicate key value violates unique constraint", "23505");
     }
     state.orders.push({
-      id, business_id: businessId, order_no: orderNo, customer_id: customerId,
+      id,
+      business_id: businessId,
+      order_no: orderNo,
+      customer_id: customerId,
       contact: contact === null ? null : JSON.parse(String(contact)),
-      status, source, repeat_of_order_id: repeatOf,
-      order_discount_paise: String(odisc), delivery_charge_paise: String(deliv), total_paise: String(total),
-      created_by: createdBy, created_at: new Date(String(createdAt)), updated_at: new Date(String(updatedAt)),
+      status,
+      source,
+      repeat_of_order_id: repeatOf,
+      order_discount_paise: String(odisc),
+      delivery_charge_paise: String(deliv),
+      total_paise: String(total),
+      created_by: createdBy,
+      created_at: new Date(String(createdAt)),
+      updated_at: new Date(String(updatedAt)),
     });
     return [];
   }
   if (/INSERT INTO order_items/i.test(text)) {
-    const [id, orderId, businessId, lineNo, variantId, description, quantity, unit, lineDisc] = params;
+    const [id, orderId, businessId, lineNo, variantId, description, quantity, unit, lineDisc] =
+      params;
     state.orderItems.push({
-      id, order_id: orderId, business_id: businessId, line_no: lineNo, variant_id: variantId,
-      description, quantity, unit_price_paise: String(unit), line_discount_paise: String(lineDisc),
+      id,
+      order_id: orderId,
+      business_id: businessId,
+      line_no: lineNo,
+      variant_id: variantId,
+      description,
+      quantity,
+      unit_price_paise: String(unit),
+      line_discount_paise: String(lineDisc),
     });
     return [];
   }
   if (/SELECT id FROM orders WHERE id = \? AND business_id = \?/i.test(text)) {
     const [id, businessId] = params;
-    return state.orders.filter((o) => o["id"] === id && o["business_id"] === businessId).map((o) => ({ id: o["id"] }));
+    return state.orders
+      .filter((o) => o["id"] === id && o["business_id"] === businessId)
+      .map((o) => ({ id: o["id"] }));
   }
   if (/FROM orders\s+WHERE id = \? AND business_id = \?/i.test(text)) {
     const [id, businessId] = params;
-    return state.orders.filter((o) => o["id"] === id && o["business_id"] === businessId).map((o) => ({ ...o }));
+    return state.orders
+      .filter((o) => o["id"] === id && o["business_id"] === businessId)
+      .map((o) => ({ ...o }));
   }
   if (/FROM order_items\s+WHERE business_id = \? AND order_id = ANY/i.test(text)) {
     const [businessId, ids] = params as [string, string[]];
     return state.orderItems
       .filter((i) => i["business_id"] === businessId && ids.includes(i["order_id"] as string))
-      .sort((a, b) =>
-        byteCompare(String(a["order_id"]), String(b["order_id"])) || Number(a["line_no"]) - Number(b["line_no"]),
+      .sort(
+        (a, b) =>
+          byteCompare(String(a["order_id"]), String(b["order_id"])) ||
+          Number(a["line_no"]) - Number(b["line_no"]),
       )
       .map((i) => ({ ...i }));
   }
@@ -113,31 +151,54 @@ const handleOrders = (
   }
   if (/DELETE FROM order_items WHERE order_id = \? AND business_id = \?/i.test(text)) {
     const [orderId, businessId] = params;
-    const keep = state.orderItems.filter((i) => !(i["order_id"] === orderId && i["business_id"] === businessId));
+    const keep = state.orderItems.filter(
+      (i) => !(i["order_id"] === orderId && i["business_id"] === businessId),
+    );
     state.orderItems.splice(0, state.orderItems.length, ...keep);
     return [];
   }
   if (/FROM consignment_link\s+WHERE order_id = \? AND business_id = \?/i.test(text)) {
     const [orderId, businessId] = params;
-    return state.consignmentLinks.filter((l) => l["order_id"] === orderId && l["business_id"] === businessId).map((l) => ({ ...l }));
+    return state.consignmentLinks
+      .filter((l) => l["order_id"] === orderId && l["business_id"] === businessId)
+      .map((l) => ({ ...l }));
   }
   if (/INSERT INTO consignment_link/i.test(text)) {
     const [id, businessId, orderId, courier, ref, linkedBy, linkedAt] = params;
     const clash = state.consignmentLinks.some(
-      (l) => l["order_id"] === orderId || (l["business_id"] === businessId && l["consignment_ref"] === ref),
+      (l) =>
+        l["order_id"] === orderId ||
+        (l["business_id"] === businessId && l["consignment_ref"] === ref),
     );
     if (clash) throw dbError("duplicate key value violates unique constraint", "23505");
     state.consignmentLinks.push({
-      id, business_id: businessId, order_id: orderId, courier, consignment_ref: ref,
-      linked_by: linkedBy, linked_at: new Date(String(linkedAt)),
+      id,
+      business_id: businessId,
+      order_id: orderId,
+      courier,
+      consignment_ref: ref,
+      linked_by: linkedBy,
+      linked_at: new Date(String(linkedAt)),
     });
     return [];
   }
   if (/FROM orders\s+WHERE business_id = \?[\s\S]*ORDER BY created_at DESC, id DESC/i.test(text)) {
-    const [businessId, status, , customerId, , from, , to, , cursorAt, , cursorId, limit] = params as [
-      string, string | null, unknown, string | null, unknown, string | null, unknown, string | null, unknown,
-      string | null, unknown, string | null, number,
-    ];
+    const [businessId, status, , customerId, , from, , to, , cursorAt, , cursorId, limit] =
+      params as [
+        string,
+        string | null,
+        unknown,
+        string | null,
+        unknown,
+        string | null,
+        unknown,
+        string | null,
+        unknown,
+        string | null,
+        unknown,
+        string | null,
+        number,
+      ];
     const time = (o: Row): number => (o["created_at"] as Date).getTime();
     return state.orders
       .filter((o) => o["business_id"] === businessId)
@@ -278,7 +339,13 @@ export const makeSqlStub = (
     // Simulate common patterns.
     if (/INSERT INTO users/i.test(text) && /email/i.test(text)) {
       const [id, email, passwordHash, role, locale, createdAt, updatedAt] = params as [
-        Uuid, string, string, string, string, string, string,
+        Uuid,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
       ];
       if (state.users.some((u) => (u["email"] as string).toLowerCase() === email.toLowerCase())) {
         const e: Error & { code?: string } = new Error("duplicate key");
@@ -286,49 +353,102 @@ export const makeSqlStub = (
         throw e;
       }
       state.users.push({
-        id, email, password_hash: passwordHash, role, active: true, locale,
-        created_at: createdAt, updated_at: updatedAt,
+        id,
+        email,
+        password_hash: passwordHash,
+        role,
+        active: true,
+        locale,
+        created_at: createdAt,
+        updated_at: updatedAt,
       });
       return [];
     }
     if (/INSERT INTO businesses/i.test(text)) {
       const [id, name, locale, ownerUserId, createdAt, updatedAt] = params as [
-        Uuid, string, string, Uuid, Date, Date,
+        Uuid,
+        string,
+        string,
+        Uuid,
+        Date,
+        Date,
       ];
       state.businesses.push({ id, name, locale, ownerUserId, createdAt, updatedAt });
       return [];
     }
     if (/INSERT INTO sessions/i.test(text)) return [];
     if (/INSERT INTO invitations/i.test(text)) {
-      const [id, businessId, email, role, acceptTokenHash, expiresAt, createdBy, createdAt] = params as [
-        Uuid, Uuid, string, string, string, string, Uuid, string,
-      ];
+      const [id, businessId, email, role, acceptTokenHash, expiresAt, createdBy, createdAt] =
+        params as [Uuid, Uuid, string, string, string, string, Uuid, string];
       state.invitations.push({
-        id, business_id: businessId, email, role,
-        accept_token_hash: acceptTokenHash, expires_at: expiresAt,
-        used_at: null, created_by: createdBy, created_at: createdAt,
+        id,
+        business_id: businessId,
+        email,
+        role,
+        accept_token_hash: acceptTokenHash,
+        expires_at: expiresAt,
+        used_at: null,
+        created_by: createdBy,
+        created_at: createdAt,
       });
       return [];
     }
     if (/INSERT INTO password_resets/i.test(text)) {
       const [id, userId, tokenHash, expiresAt, createdAt] = params as [
-        Uuid, Uuid, string, string, string,
+        Uuid,
+        Uuid,
+        string,
+        string,
+        string,
       ];
       state.passwordResets.push({
-        id, user_id: userId, token_hash: tokenHash,
-        expires_at: expiresAt, used_at: null, created_at: createdAt,
+        id,
+        user_id: userId,
+        token_hash: tokenHash,
+        expires_at: expiresAt,
+        used_at: null,
+        created_at: createdAt,
       });
       return [];
     }
     if (/INSERT INTO audit_log/i.test(text)) {
-      const [id, businessId, actorUserId, correlationId, action, subjectKind, subjectId, payloadJson, reversesId, occurredAt, retentionUntil] = params as [
-        Uuid, Uuid, Uuid | null, string, string, string | null, Uuid | null, string, Uuid | null, Date, Date,
+      const [
+        id,
+        businessId,
+        actorUserId,
+        correlationId,
+        action,
+        subjectKind,
+        subjectId,
+        payloadJson,
+        reversesId,
+        occurredAt,
+        retentionUntil,
+      ] = params as [
+        Uuid,
+        Uuid,
+        Uuid | null,
+        string,
+        string,
+        string | null,
+        Uuid | null,
+        string,
+        Uuid | null,
+        Date,
+        Date,
       ];
       state.auditLog.push({
-        id, business_id: businessId, actor_user_id: actorUserId,
-        correlation_id: correlationId, action, subject_kind: subjectKind,
-        subject_id: subjectId, payload: payloadJson, reverses_id: reversesId,
-        occurred_at: occurredAt, retention_until: retentionUntil,
+        id,
+        business_id: businessId,
+        actor_user_id: actorUserId,
+        correlation_id: correlationId,
+        action,
+        subject_kind: subjectKind,
+        subject_id: subjectId,
+        payload: payloadJson,
+        reverses_id: reversesId,
+        occurred_at: occurredAt,
+        retention_until: retentionUntil,
       });
       return [];
     }
@@ -336,31 +456,33 @@ export const makeSqlStub = (
       const [email] = params as [string];
       return state.users.filter((u) => (u["email"] as string) === email);
     }
-    if (/SELECT id, email, password_hash, role, active, locale, created_at, updated_at/i.test(text)) {
+    if (
+      /SELECT id, email, password_hash, role, active, locale, created_at, updated_at/i.test(text)
+    ) {
       const [email] = params as [string];
       return state.users.filter((u) => (u["email"] as string) === email);
     }
     if (/SELECT id FROM users WHERE email/i.test(text)) {
       const [email] = params as [string];
-      return state.users.filter((u) => (u["email"] as string) === email).map((u) => ({ id: u["id"] }));
+      return state.users
+        .filter((u) => (u["email"] as string) === email)
+        .map((u) => ({ id: u["id"] }));
     }
     if (/SELECT id FROM users WHERE id/i.test(text)) return [];
     if (/SELECT id FROM businesses WHERE owner_user_id/i.test(text)) {
       const [ownerUserId] = params as [string];
-      return state.businesses.filter((b) => b["ownerUserId"] === ownerUserId).map((b) => ({ id: b["id"] }));
+      return state.businesses
+        .filter((b) => b["ownerUserId"] === ownerUserId)
+        .map((b) => ({ id: b["id"] }));
     }
     if (/SELECT id FROM businesses WHERE/i.test(text)) return [];
     if (/SELECT id, business_id, email, role, expires_at, used_at\s+FROM invitations/i.test(text)) {
       const [tokenHash] = params as [string];
-      return state.invitations.filter(
-        (i) => (i["accept_token_hash"] as string) === tokenHash,
-      );
+      return state.invitations.filter((i) => (i["accept_token_hash"] as string) === tokenHash);
     }
     if (/SELECT id, user_id, expires_at, used_at FROM password_resets/i.test(text)) {
       const [tokenHash] = params as [string];
-      return state.passwordResets.filter(
-        (r) => (r["token_hash"] as string) === tokenHash,
-      );
+      return state.passwordResets.filter((r) => (r["token_hash"] as string) === tokenHash);
     }
     if (/SELECT u.id FROM users u/i.test(text)) {
       const [email] = params as [string];
@@ -368,13 +490,17 @@ export const makeSqlStub = (
     }
     if (/SELECT id FROM businesses WHERE owner_user_id = .* LIMIT 1/i.test(text)) {
       const [ownerUserId] = params as [string];
-      return state.businesses.filter((b) => b["owner_user_id"] === ownerUserId).map((b) => ({ id: b["id"] }));
+      return state.businesses
+        .filter((b) => b["owner_user_id"] === ownerUserId)
+        .map((b) => ({ id: b["id"] }));
     }
     if (/UPDATE users SET password_hash/g.test(text)) return [];
     if (/UPDATE password_resets SET used_at/g.test(text)) return [];
     if (/UPDATE invitations SET used_at/g.test(text)) return [];
     if (/DELETE FROM sessions/i.test(text)) return [];
-    if (/SELECT id, email, password_hash, role, active, locale, created_at, updated_at/i.test(text)) {
+    if (
+      /SELECT id, email, password_hash, role, active, locale, created_at, updated_at/i.test(text)
+    ) {
       const [email] = params as [string];
       return state.users.filter((u) => (u["email"] as string) === email);
     }
@@ -383,22 +509,27 @@ export const makeSqlStub = (
   // Attach begin() helper. Like Postgres, a throw inside the callback rolls
   // back every table to its state at BEGIN; a normal return commits.
   const tables = [
-    state.users, state.businesses, state.invitations, state.passwordResets,
-    state.auditLog, state.orders, state.orderItems, state.consignmentLinks,
+    state.users,
+    state.businesses,
+    state.invitations,
+    state.passwordResets,
+    state.auditLog,
+    state.orders,
+    state.orderItems,
+    state.consignmentLinks,
   ];
-  (sql as unknown as { begin: (fn: (tx: Sql) => Promise<unknown>) => Promise<unknown> }).begin = async (
-    fn: (tx: Sql) => Promise<unknown>,
-  ) => {
-    const snapshot = tables.map((t) => structuredClone(t));
-    const seqAtBegin = state.seq.n;
-    try {
-      return await fn(sql);
-    } catch (e) {
-      tables.forEach((t, i) => t.splice(0, t.length, ...(snapshot[i] ?? [])));
-      state.seq.n = seqAtBegin;
-      throw e;
-    }
-  };
+  (sql as unknown as { begin: (fn: (tx: Sql) => Promise<unknown>) => Promise<unknown> }).begin =
+    async (fn: (tx: Sql) => Promise<unknown>) => {
+      const snapshot = tables.map((t) => structuredClone(t));
+      const seqAtBegin = state.seq.n;
+      try {
+        return await fn(sql);
+      } catch (e) {
+        tables.forEach((t, i) => t.splice(0, t.length, ...(snapshot[i] ?? [])));
+        state.seq.n = seqAtBegin;
+        throw e;
+      }
+    };
   // `sql.array(...)` is a typed array parameter in postgres.js; the stub passes it through.
   (sql as unknown as { array: (v: unknown) => unknown }).array = (v: unknown) => v;
   return { sql, calls, state };

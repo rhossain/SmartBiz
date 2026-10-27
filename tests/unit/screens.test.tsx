@@ -17,7 +17,13 @@ import { setLocale } from "../../src/i18n/useTranslations.js";
 describe("screens render and submit", () => {
   test("SignInScreen submits with values", () => {
     setLocale("bn");
-    const { getByTestId } = render(<SignInScreen onSubmit={(e, p) => { (globalThis as { lastSubmit?: unknown }).lastSubmit = { e, p }; }} />);
+    const { getByTestId } = render(
+      <SignInScreen
+        onSubmit={(e, p) => {
+          (globalThis as { lastSubmit?: unknown }).lastSubmit = { e, p };
+        }}
+      />,
+    );
     act(() => {
       fireEvent.change(getByTestId("field-email"), { target: { value: "x@e.com" } });
       fireEvent.change(getByTestId("field-password"), { target: { value: "verysecret" } });
@@ -25,13 +31,22 @@ describe("screens render and submit", () => {
     act(() => {
       fireEvent.submit(getByTestId("sign-in-form"));
     });
-    expect((globalThis as { lastSubmit?: { e: string; p: string } }).lastSubmit).toEqual({ e: "x@e.com", p: "verysecret" });
+    expect((globalThis as { lastSubmit?: { e: string; p: string } }).lastSubmit).toEqual({
+      e: "x@e.com",
+      p: "verysecret",
+    });
     cleanup();
   });
 
   test("SignUpScreen submits with values", () => {
     setLocale("bn");
-    const { getByTestId } = render(<SignUpScreen onSubmit={(email, password, businessName) => { (globalThis as { lastSubmit?: unknown }).lastSubmit = { email, password, businessName }; }} />);
+    const { getByTestId } = render(
+      <SignUpScreen
+        onSubmit={(email, password, businessName) => {
+          (globalThis as { lastSubmit?: unknown }).lastSubmit = { email, password, businessName };
+        }}
+      />,
+    );
     act(() => {
       fireEvent.change(getByTestId("field-email"), { target: { value: "x@e.com" } });
       fireEvent.change(getByTestId("field-password"), { target: { value: "verysecret" } });

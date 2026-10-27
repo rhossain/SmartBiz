@@ -18,7 +18,13 @@ import * as React from "react";
 import type { Locale } from "../../auth/types.js";
 import { Screen } from "../../pres/Screen.js";
 import { buildQuickAddOrder } from "../input-modes.js";
-import { saveDraft, setPending, useOrderDraft, type OrderDraftStore, type SaveOrder } from "../order-draft.js";
+import {
+  saveDraft,
+  setPending,
+  useOrderDraft,
+  type OrderDraftStore,
+  type SaveOrder,
+} from "../order-draft.js";
 import { parseTakaToPaise } from "../order-total.js";
 import { bucketOf, bucketTotals, orderMoneyFigure } from "../status-bucket.js";
 import { isOrderStatus, statusLabel } from "../status-fsm.js";
@@ -46,10 +52,15 @@ export interface OrdersListProps {
   readonly onSave: SaveOrder;
 }
 
-const dayStart = (date: string): string | null => (date ? new Date(`${date}T00:00:00Z`).toISOString() : null);
-const dayEnd = (date: string): string | null => (date ? new Date(`${date}T23:59:59.999Z`).toISOString() : null);
+const dayStart = (date: string): string | null =>
+  date ? new Date(`${date}T00:00:00Z`).toISOString() : null;
+const dayEnd = (date: string): string | null =>
+  date ? new Date(`${date}T23:59:59.999Z`).toISOString() : null;
 
-const Filters = ({ locale, onFilter }: Pick<OrdersListProps, "locale" | "onFilter">): React.ReactElement => {
+const Filters = ({
+  locale,
+  onFilter,
+}: Pick<OrdersListProps, "locale" | "onFilter">): React.ReactElement => {
   const [status, setStatus] = React.useState("");
   const [customerId, setCustomerId] = React.useState("");
   const [from, setFrom] = React.useState("");
@@ -68,7 +79,12 @@ const Filters = ({ locale, onFilter }: Pick<OrdersListProps, "locale" | "onFilte
       }}
     >
       <label htmlFor="orders-filter-status">{tr("orders.filter.status", locale)}</label>
-      <select id="orders-filter-status" data-testid="orders-filter-status" value={status} onChange={(e) => setStatus(e.target.value)}>
+      <select
+        id="orders-filter-status"
+        data-testid="orders-filter-status"
+        value={status}
+        onChange={(e) => setStatus(e.target.value)}
+      >
         <option value="">{tr("orders.filter.all", locale)}</option>
         {ORDER_STATUSES.map((s) => (
           <option key={s} value={s}>
@@ -77,11 +93,28 @@ const Filters = ({ locale, onFilter }: Pick<OrdersListProps, "locale" | "onFilte
         ))}
       </select>
       <label htmlFor="orders-filter-customer">{tr("orders.filter.customer", locale)}</label>
-      <input id="orders-filter-customer" data-testid="orders-filter-customer" value={customerId} onChange={(e) => setCustomerId(e.target.value)} />
+      <input
+        id="orders-filter-customer"
+        data-testid="orders-filter-customer"
+        value={customerId}
+        onChange={(e) => setCustomerId(e.target.value)}
+      />
       <label htmlFor="orders-filter-from">{tr("orders.filter.from", locale)}</label>
-      <input id="orders-filter-from" data-testid="orders-filter-from" type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
+      <input
+        id="orders-filter-from"
+        data-testid="orders-filter-from"
+        type="date"
+        value={from}
+        onChange={(e) => setFrom(e.target.value)}
+      />
       <label htmlFor="orders-filter-to">{tr("orders.filter.to", locale)}</label>
-      <input id="orders-filter-to" data-testid="orders-filter-to" type="date" value={to} onChange={(e) => setTo(e.target.value)} />
+      <input
+        id="orders-filter-to"
+        data-testid="orders-filter-to"
+        type="date"
+        value={to}
+        onChange={(e) => setTo(e.target.value)}
+      />
       <button type="submit" data-testid="orders-filter-apply">
         {tr("orders.filter.apply", locale)}
       </button>
@@ -89,14 +122,23 @@ const Filters = ({ locale, onFilter }: Pick<OrdersListProps, "locale" | "onFilte
   );
 };
 
-const QuickAdd = ({ locale, draft, onSave }: Pick<OrdersListProps, "locale" | "draft" | "onSave">): React.ReactElement => {
+const QuickAdd = ({
+  locale,
+  draft,
+  onSave,
+}: Pick<OrdersListProps, "locale" | "draft" | "onSave">): React.ReactElement => {
   const state = useOrderDraft(draft);
   const [description, setDescription] = React.useState("");
   const [quantity, setQuantity] = React.useState("1");
   const [price, setPrice] = React.useState("");
   const [delivery, setDelivery] = React.useState("0");
 
-  const stage = (next: { description?: string; quantity?: string; price?: string; delivery?: string }): void => {
+  const stage = (next: {
+    description?: string;
+    quantity?: string;
+    price?: string;
+    delivery?: string;
+  }): void => {
     const d = next.description ?? description;
     const q = Number.parseInt(next.quantity ?? quantity, 10);
     const p = parseTakaToPaise(next.price ?? price);
@@ -105,7 +147,14 @@ const QuickAdd = ({ locale, draft, onSave }: Pick<OrdersListProps, "locale" | "d
     setPending(
       draft,
       valid
-        ? buildQuickAddOrder({ description: d, variantId: null, quantity: q, unitPricePaise: p, customerId: null, deliveryChargePaise: c })
+        ? buildQuickAddOrder({
+            description: d,
+            variantId: null,
+            quantity: q,
+            unitPricePaise: p,
+            customerId: null,
+            deliveryChargePaise: c,
+          })
         : null,
     );
   };
@@ -120,18 +169,53 @@ const QuickAdd = ({ locale, draft, onSave }: Pick<OrdersListProps, "locale" | "d
     >
       <h3>{tr("orders.quick.title", locale)}</h3>
       <label htmlFor="quick-add-description">{tr("orders.quick.description", locale)}</label>
-      <input id="quick-add-description" data-testid="quick-add-description" value={description}
-        onChange={(e) => { setDescription(e.target.value); stage({ description: e.target.value }); }} />
+      <input
+        id="quick-add-description"
+        data-testid="quick-add-description"
+        value={description}
+        onChange={(e) => {
+          setDescription(e.target.value);
+          stage({ description: e.target.value });
+        }}
+      />
       <label htmlFor="quick-add-quantity">{tr("orders.quick.quantity", locale)}</label>
-      <input id="quick-add-quantity" data-testid="quick-add-quantity" inputMode="numeric" value={quantity}
-        onChange={(e) => { setQuantity(e.target.value); stage({ quantity: e.target.value }); }} />
+      <input
+        id="quick-add-quantity"
+        data-testid="quick-add-quantity"
+        inputMode="numeric"
+        value={quantity}
+        onChange={(e) => {
+          setQuantity(e.target.value);
+          stage({ quantity: e.target.value });
+        }}
+      />
       <label htmlFor="quick-add-price">{tr("orders.quick.price", locale)}</label>
-      <input id="quick-add-price" data-testid="quick-add-price" inputMode="decimal" value={price}
-        onChange={(e) => { setPrice(e.target.value); stage({ price: e.target.value }); }} />
+      <input
+        id="quick-add-price"
+        data-testid="quick-add-price"
+        inputMode="decimal"
+        value={price}
+        onChange={(e) => {
+          setPrice(e.target.value);
+          stage({ price: e.target.value });
+        }}
+      />
       <label htmlFor="quick-add-delivery">{tr("orders.quick.delivery", locale)}</label>
-      <input id="quick-add-delivery" data-testid="quick-add-delivery" inputMode="decimal" value={delivery}
-        onChange={(e) => { setDelivery(e.target.value); stage({ delivery: e.target.value }); }} />
-      <button type="submit" data-testid="quick-add-save" disabled={state.pending === null || state.status === "saving"}>
+      <input
+        id="quick-add-delivery"
+        data-testid="quick-add-delivery"
+        inputMode="decimal"
+        value={delivery}
+        onChange={(e) => {
+          setDelivery(e.target.value);
+          stage({ delivery: e.target.value });
+        }}
+      />
+      <button
+        type="submit"
+        data-testid="quick-add-save"
+        disabled={state.pending === null || state.status === "saving"}
+      >
         {tr("orders.save", locale)}
       </button>
       <DraftStatus draft={state} locale={locale} />
@@ -150,7 +234,12 @@ export const OrdersList = (props: OrdersListProps): React.ReactElement => {
         <span>{tr("orders.realized", locale)}</span>
         <MoneyCell figure={totals.realized} locale={locale} testId="orders-summary-realized" />
         <span>{tr("orders.pipeline", locale)}</span>
-        <MoneyCell figure={totals.pipeline} locale={locale} testId="orders-summary-pipeline" pipeline />
+        <MoneyCell
+          figure={totals.pipeline}
+          locale={locale}
+          testId="orders-summary-pipeline"
+          pipeline
+        />
       </div>
       <Filters locale={locale} onFilter={props.onFilter} />
       {orders.length === 0 ? (
@@ -181,7 +270,11 @@ export const OrdersList = (props: OrdersListProps): React.ReactElement => {
                   />
                 </td>
                 <td>
-                  <button type="button" data-testid="orders-row-open" onClick={() => props.onOpen(o.id)}>
+                  <button
+                    type="button"
+                    data-testid="orders-row-open"
+                    onClick={() => props.onOpen(o.id)}
+                  >
                     {tr("orders.open", locale)}
                   </button>
                 </td>
@@ -191,11 +284,17 @@ export const OrdersList = (props: OrdersListProps): React.ReactElement => {
         </table>
       )}
       {nextCursor !== null ? (
-        <button type="button" data-testid="orders-load-more" onClick={() => props.onLoadMore(nextCursor)}>
+        <button
+          type="button"
+          data-testid="orders-load-more"
+          onClick={() => props.onLoadMore(nextCursor)}
+        >
           {tr("orders.more", locale)}
         </button>
       ) : null}
-      {props.canMutate ? <QuickAdd locale={locale} draft={props.draft} onSave={props.onSave} /> : null}
+      {props.canMutate ? (
+        <QuickAdd locale={locale} draft={props.draft} onSave={props.onSave} />
+      ) : null}
     </Screen>
   );
 };

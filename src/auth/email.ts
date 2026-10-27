@@ -27,7 +27,11 @@ export const sendInviteEmail = async (
   to: string,
   acceptUrl: string,
 ): Promise<Result<true, SmtpError>> => {
-  const r = await gw.send(to, "You're invited to SmartBiz", `Open this link to accept: ${acceptUrl}`);
+  const r = await gw.send(
+    to,
+    "You're invited to SmartBiz",
+    `Open this link to accept: ${acceptUrl}`,
+  );
   if (!r.ok) {
     warn("email_gateway_failure", { to: to.replace(/@.*/, "@…"), reason: r.error.reason });
   }

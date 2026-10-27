@@ -22,25 +22,40 @@ describe("integration: audit append on every mutation (UC-1.9)", () => {
     setTestClock(FROZEN_TEST_NOW);
     const stub = makeSqlStub();
     const su = await signUp(stub.sql, {
-      email: "owner@example.com", password: "verysecret", businessName: "Acme", locale: "bn",
+      email: "owner@example.com",
+      password: "verysecret",
+      businessName: "Acme",
+      locale: "bn",
     });
     if (!su.ok) throw new Error("signup");
     const ownerId = su.value.user.id;
     const businessId = su.value.businessId;
 
-    await signIn(stub.sql, {
-      email: "owner@example.com", password: "verysecret", ip: "1.1.1.1",
-    }, FROZEN_TEST_NOW.getTime() + 1000);
+    await signIn(
+      stub.sql,
+      {
+        email: "owner@example.com",
+        password: "verysecret",
+        ip: "1.1.1.1",
+      },
+      FROZEN_TEST_NOW.getTime() + 1000,
+    );
 
     const inv = await createInvite(stub.sql, {
-      businessId, actorUserId: ownerId, actorRole: "owner",
-      email: "new@example.com", role: "manager", nowMs: FROZEN_TEST_NOW.getTime() + 2000,
+      businessId,
+      actorUserId: ownerId,
+      actorRole: "owner",
+      email: "new@example.com",
+      role: "manager",
+      nowMs: FROZEN_TEST_NOW.getTime() + 2000,
     });
     if (!inv.ok) throw new Error("invite");
 
     await acceptInvite(stub.sql, {
-      token: inv.value.acceptToken, password: "newsecret1",
-      emailHint: "new@example.com", nowMs: FROZEN_TEST_NOW.getTime() + 3000,
+      token: inv.value.acceptToken,
+      password: "newsecret1",
+      emailHint: "new@example.com",
+      nowMs: FROZEN_TEST_NOW.getTime() + 3000,
     });
 
     await requestRecovery(stub.sql, "owner@example.com", FROZEN_TEST_NOW.getTime() + 4000);

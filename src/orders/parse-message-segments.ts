@@ -23,14 +23,36 @@
  */
 import { toAsciiDigits } from "../i18n/bnDigits.js";
 
-export const CONNECTORS: ReadonlyArray<string> = ["আর", "এবং", "তারপর", "এ", "ও", "ওর", "আরো", "and"];
+export const CONNECTORS: ReadonlyArray<string> = [
+  "আর",
+  "এবং",
+  "তারপর",
+  "এ",
+  "ও",
+  "ওর",
+  "আরো",
+  "and",
+];
 
 const HARD_BREAK = /\r?\n|[,;+·।]/;
 
-export const SIZES: ReadonlyArray<string> = ["XS", "S", "M", "L", "XL", "XXL", "XXXL", "2XL", "3XL"];
+export const SIZES: ReadonlyArray<string> = [
+  "XS",
+  "S",
+  "M",
+  "L",
+  "XL",
+  "XXL",
+  "XXXL",
+  "2XL",
+  "3XL",
+];
 
 /** Canonical Bangla colour name plus the spellings customers use. */
-export const COLOURS: ReadonlyArray<{ readonly bn: string; readonly aliases: ReadonlyArray<string> }> = [
+export const COLOURS: ReadonlyArray<{
+  readonly bn: string;
+  readonly aliases: ReadonlyArray<string>;
+}> = [
   { bn: "কালো", aliases: ["black"] },
   { bn: "সাদা", aliases: ["white"] },
   { bn: "লাল", aliases: ["red"] },
@@ -67,7 +89,16 @@ export interface SegmentDetails {
 /* Words that only introduce a detail. A fragment made of these plus a
    size or colour is a pure detail ("সাইজ M"); any other word means the
    fragment may name something else, so it is never folded into an item. */
-const DETAIL_LABELS: ReadonlyArray<string> = ["সাইজ", "সাইজের", "রং", "রঙ", "কালার", "SIZE", "COLOUR", "COLOR"];
+const DETAIL_LABELS: ReadonlyArray<string> = [
+  "সাইজ",
+  "সাইজের",
+  "রং",
+  "রঙ",
+  "কালার",
+  "SIZE",
+  "COLOUR",
+  "COLOR",
+];
 
 const isDetailWord = (token: string): boolean => {
   const upper = toAsciiDigits(token).toUpperCase();
@@ -86,7 +117,12 @@ const isDetailWord = (token: string): boolean => {
  * at a fraction of the cost on the 200-item hot path (NFR6.7.1).
  */
 const latinWords = (ascii: string): ReadonlySet<string> =>
-  new Set(ascii.toUpperCase().split(/[^A-Z0-9]+/).filter((w) => w.length > 0));
+  new Set(
+    ascii
+      .toUpperCase()
+      .split(/[^A-Z0-9]+/)
+      .filter((w) => w.length > 0),
+  );
 
 const isLatinWord = (value: string): boolean => /^[A-Za-z0-9]+$/.test(value);
 /* A count followed by a counter word. `টা(?!কা)` keeps a price such as
@@ -122,16 +158,23 @@ const single = <T>(hits: ReadonlyArray<T>): { value: T | null; ambiguous: boolea
 };
 
 /** Read one segment's own details. Nothing outside `segment` is consulted. */
-export const readSegment = (segment: string, catalog: ReadonlyArray<CatalogEntry>): SegmentDetails => {
+export const readSegment = (
+  segment: string,
+  catalog: ReadonlyArray<CatalogEntry>,
+): SegmentDetails => {
   const ascii = toAsciiDigits(segment);
   const words = latinWords(ascii);
   const quantities = [...ascii.matchAll(QUANTITY)].map((m) => Number(m[1]));
   const size = single(SIZES.filter((s) => words.has(s)));
   const colour = single(
-    COLOURS.filter((c) => segment.includes(c.bn) || c.aliases.some((a) => words.has(a.toUpperCase()))).map((c) => c.bn),
+    COLOURS.filter(
+      (c) => segment.includes(c.bn) || c.aliases.some((a) => words.has(a.toUpperCase())),
+    ).map((c) => c.bn),
   );
   const product = single(
-    catalog.filter((p) => p.words.some((w) => w.length > 2 && mentions(segment, words, w))).map((p) => p.productId),
+    catalog
+      .filter((p) => p.words.some((w) => w.length > 2 && mentions(segment, words, w)))
+      .map((p) => p.productId),
   );
   const qty = single(quantities);
   const isItem = quantities.length > 0 || product.value !== null || product.ambiguous;

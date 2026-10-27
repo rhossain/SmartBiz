@@ -23,7 +23,10 @@ import { OrderDetail } from "../../src/orders/screens/OrderDetail.js";
 import { OrdersList } from "../../src/orders/screens/OrdersList.js";
 import { PasteParse } from "../../src/orders/screens/PasteParse.js";
 import { RepeatFromPast } from "../../src/orders/screens/RepeatFromPast.js";
-import { renderOrdersScreen, type OrdersRouteState } from "../../src/orders/screens/render-orders-route.js";
+import {
+  renderOrdersScreen,
+  type OrdersRouteState,
+} from "../../src/orders/screens/render-orders-route.js";
 import { transitionStatus } from "../../src/orders/transition-status.js";
 import type { CreateOrderInput, Order } from "../../src/orders/types.js";
 import { routes } from "../../src/router/routes.js";
@@ -44,8 +47,13 @@ const assertEveryMoneyHasBasis = (root: HTMLElement): number => {
     if (!/৳\s*[0-9০-৯]/.test(node.textContent ?? "")) continue;
     count += 1;
     const cell = (node.parentElement as HTMLElement | null)?.closest('[data-money="true"]') ?? null;
-    expect({ text: node.textContent, inMoneyCell: cell !== null }).toEqual({ text: node.textContent, inMoneyCell: true });
-    const pills = cell ? [...cell.querySelectorAll('[data-testid="pill"]')].map((p) => p.textContent) : [];
+    expect({ text: node.textContent, inMoneyCell: cell !== null }).toEqual({
+      text: node.textContent,
+      inMoneyCell: true,
+    });
+    const pills = cell
+      ? [...cell.querySelectorAll('[data-testid="pill"]')].map((p) => p.textContent)
+      : [];
     expect(pills.some((p) => p === "earned" || p === "realized" || p === "pipeline")).toBe(true);
     // L-01: a pipeline figure never claims to be earned or realized.
     if (cell?.getAttribute("data-basis") === "pipeline") {
@@ -56,7 +64,10 @@ const assertEveryMoneyHasBasis = (root: HTMLElement): number => {
   return count;
 };
 
-const seed = async (stub: ReturnType<typeof makeSqlStub>, input: CreateOrderInput = createInput()): Promise<Order> => {
+const seed = async (
+  stub: ReturnType<typeof makeSqlStub>,
+  input: CreateOrderInput = createInput(),
+): Promise<Order> => {
   const r = await createOrder(stub.sql, ctx, input);
   if (!r.ok) throw new Error("seed failed");
   return r.value;
@@ -78,26 +89,56 @@ describe("U3 screens", () => {
     }
     const settled = { ...b, status: "settled" as const };
     const { container, getAllByTestId, getByTestId } = render(
-      <OrdersList orders={[a, settled]} nextCursor="c1" locale="en" canMutate draft={createOrderDraftStore()}
-        onOpen={noop} onLoadMore={noop} onFilter={noop} onSave={async (i) => createOrder(stub.sql, ctx, i)} />,
+      <OrdersList
+        orders={[a, settled]}
+        nextCursor="c1"
+        locale="en"
+        canMutate
+        draft={createOrderDraftStore()}
+        onOpen={noop}
+        onLoadMore={noop}
+        onFilter={noop}
+        onSave={async (i) => createOrder(stub.sql, ctx, i)}
+      />,
     );
     expect(getAllByTestId("orders-row").length).toBe(2);
-    expect(getAllByTestId("orders-row-source").map((e) => e.textContent)).toEqual(["manual", "paste-parse"]);
+    expect(getAllByTestId("orders-row-source").map((e) => e.textContent)).toEqual([
+      "manual",
+      "paste-parse",
+    ]);
     // Earned = the settled order only; realized = the same; pipeline = the new order (paise restated).
     expect(getByTestId("orders-summary-earned").getAttribute("data-basis")).toBe("earned");
-    expect(getByTestId("orders-summary-realized").textContent).toContain(`৳${(b.totalPaise / 100).toFixed(2)}`);
-    expect(getByTestId("orders-summary-pipeline").textContent).toContain(`৳${(a.totalPaise / 100).toFixed(2)}`);
+    expect(getByTestId("orders-summary-realized").textContent).toContain(
+      `৳${(b.totalPaise / 100).toFixed(2)}`,
+    );
+    expect(getByTestId("orders-summary-pipeline").textContent).toContain(
+      `৳${(a.totalPaise / 100).toFixed(2)}`,
+    );
     expect(assertEveryMoneyHasBasis(container)).toBe(5);
     // L-01: pipeline money is labelled pipeline, settled money realized.
     expect(getByTestId("orders-summary-pipeline").getAttribute("data-basis")).toBe("pipeline");
-    expect(getAllByTestId("orders-row-total").map((e) => e.getAttribute("data-basis"))).toEqual(["pipeline", "realized"]);
+    expect(getAllByTestId("orders-row-total").map((e) => e.getAttribute("data-basis"))).toEqual([
+      "pipeline",
+      "realized",
+    ]);
   });
 
   test("OrdersList: filters are handed to the caller; load more passes the cursor", () => {
     const seen: unknown[] = [];
     const { getByTestId } = render(
-      <OrdersList orders={[]} nextCursor="cursor-1" locale="bn" canMutate={false} draft={createOrderDraftStore()}
-        onOpen={noop} onLoadMore={(c) => seen.push(c)} onFilter={(f) => seen.push(f)} onSave={async () => { throw new Error("unused"); }} />,
+      <OrdersList
+        orders={[]}
+        nextCursor="cursor-1"
+        locale="bn"
+        canMutate={false}
+        draft={createOrderDraftStore()}
+        onOpen={noop}
+        onLoadMore={(c) => seen.push(c)}
+        onFilter={(f) => seen.push(f)}
+        onSave={async () => {
+          throw new Error("unused");
+        }}
+      />,
     );
     expect(getByTestId("orders-empty")).toBeDefined();
     fireEvent.change(getByTestId("orders-filter-status"), { target: { value: "shipped" } });
@@ -116,10 +157,18 @@ describe("U3 screens", () => {
     const order = await seed(stub);
     const moves: string[] = [];
     const { container, queryAllByTestId, getByTestId, rerender } = render(
-      <OrderDetail order={order} locale="bn" canMutate onTransition={(to) => moves.push(to)} onRepeat={noop} />,
+      <OrderDetail
+        order={order}
+        locale="bn"
+        canMutate
+        onTransition={(to) => moves.push(to)}
+        onRepeat={noop}
+      />,
     );
     // Restated: from `new` the machine allows confirmed, cancelled, partial.
-    const buttons = queryAllByTestId(/^order-detail-transition-/).map((b) => b.getAttribute("data-testid"));
+    const buttons = queryAllByTestId(/^order-detail-transition-/).map((b) =>
+      b.getAttribute("data-testid"),
+    );
     expect(buttons).toEqual([
       "order-detail-transition-confirmed",
       "order-detail-transition-cancelled",
@@ -131,9 +180,25 @@ describe("U3 screens", () => {
     // Bangla locale renders Bangla digits; every figure has basis + completeness.
     expect(getByTestId("order-detail-total").textContent).toMatch(/৳[০-৯]+\.[০-৯]{2}/);
     expect(assertEveryMoneyHasBasis(container)).toBe(5);
-    rerender(<OrderDetail order={{ ...order, status: "cancelled" }} locale="bn" canMutate onTransition={noop} onRepeat={noop} />);
+    rerender(
+      <OrderDetail
+        order={{ ...order, status: "cancelled" }}
+        locale="bn"
+        canMutate
+        onTransition={noop}
+        onRepeat={noop}
+      />,
+    );
     expect(queryAllByTestId(/^order-detail-transition-/).length).toBe(0);
-    rerender(<OrderDetail order={order} locale="bn" canMutate={false} onTransition={noop} onRepeat={noop} />);
+    rerender(
+      <OrderDetail
+        order={order}
+        locale="bn"
+        canMutate={false}
+        onTransition={noop}
+        onRepeat={noop}
+      />,
+    );
     expect(queryAllByTestId("order-detail-actions").length).toBe(0);
   });
 
@@ -144,10 +209,15 @@ describe("U3 screens", () => {
       <PasteParse locale="en" draft={draft} onSave={async (i) => createOrder(stub.sql, ctx, i)} />,
     );
     fireEvent.change(getByTestId("paste-box"), {
-      target: { value: "কালো কুর্তি M ১টা আর গোলাপি ওড়না ২টা\nফারজানা\n01711234567\nউত্তরা, ঢাকা" },
+      target: {
+        value: "কালো কুর্তি M ১টা আর গোলাপি ওড়না ২টা\nফারজানা\n01711234567\nউত্তরা, ঢাকা",
+      },
     });
     fireEvent.click(getByTestId("paste-parse"));
-    expect(getAllByTestId("paste-item-colour").map((e) => e.textContent)).toEqual(["কালো", "গোলাপি"]);
+    expect(getAllByTestId("paste-item-colour").map((e) => e.textContent)).toEqual([
+      "কালো",
+      "গোলাপি",
+    ]);
     expect(getAllByTestId("paste-item-size").map((e) => e.textContent)).toEqual(["M", "—"]);
     expect(getByTestId("paste-contact").textContent).toContain("01711234567");
     expect((getByTestId("paste-save") as HTMLButtonElement).disabled).toBe(true);
@@ -167,7 +237,13 @@ describe("U3 screens", () => {
 
   test("PasteParse: an incomplete item blocks Save until its words are fixed; a bad paste shows its reason", () => {
     const { getByTestId, getAllByTestId } = render(
-      <PasteParse locale="en" draft={createOrderDraftStore()} onSave={async () => { throw new Error("unused"); }} />,
+      <PasteParse
+        locale="en"
+        draft={createOrderDraftStore()}
+        onSave={async () => {
+          throw new Error("unused");
+        }}
+      />,
     );
     fireEvent.change(getByTestId("paste-box"), { target: { value: "কালো সাদা কুর্তি M ১টা" } });
     fireEvent.click(getByTestId("paste-parse"));
@@ -190,12 +266,21 @@ describe("U3 screens", () => {
     let calls = 0;
     const draft = createOrderDraftStore();
     const { getByTestId } = render(
-      <OrdersList orders={[]} nextCursor={null} locale="en" canMutate draft={draft} onOpen={noop} onLoadMore={noop} onFilter={noop}
+      <OrdersList
+        orders={[]}
+        nextCursor={null}
+        locale="en"
+        canMutate
+        draft={draft}
+        onOpen={noop}
+        onLoadMore={noop}
+        onFilter={noop}
         onSave={async (i) => {
           calls += 1;
           if (calls === 1) throw new Error("connection lost");
           return createOrder(stub.sql, ctx, i);
-        }} />,
+        }}
+      />,
     );
     fireEvent.change(getByTestId("quick-add-description"), { target: { value: "নীল জিন্স" } });
     fireEvent.change(getByTestId("quick-add-price"), { target: { value: "1800" } });
@@ -217,11 +302,18 @@ describe("U3 screens", () => {
     const stub = makeSqlStub();
     const past = await seed(stub);
     const { container, getByTestId, getAllByTestId } = render(
-      <RepeatFromPast pastOrders={[past]} locale="en" draft={createOrderDraftStore()} onSave={async (i) => createOrder(stub.sql, ctx, i)} />,
+      <RepeatFromPast
+        pastOrders={[past]}
+        locale="en"
+        draft={createOrderDraftStore()}
+        onSave={async (i) => createOrder(stub.sql, ctx, i)}
+      />,
     );
     fireEvent.click(getByTestId("repeat-pick"));
     expect(getAllByTestId("repeat-preview-item").length).toBe(2);
-    expect(getByTestId("repeat-preview-total").textContent).toContain(`৳${(past.totalPaise / 100).toFixed(2)}`);
+    expect(getByTestId("repeat-preview-total").textContent).toContain(
+      `৳${(past.totalPaise / 100).toFixed(2)}`,
+    );
     expect(assertEveryMoneyHasBasis(container)).toBe(2);
     await act(async () => {
       fireEvent.click(getByTestId("repeat-save"));
@@ -234,10 +326,18 @@ describe("U3 screens", () => {
     const stub = makeSqlStub();
     const order = await seed(stub);
     const state: OrdersRouteState = {
-      kind: "orders", locale: "en", canMutate: true, draft: createOrderDraftStore(),
-      page: { orders: [order], nextCursor: null }, current: order,
-      onOpen: noop, onLoadMore: noop, onFilter: noop, onSave: async (i) => createOrder(stub.sql, ctx, i),
-      onTransition: noop, onRepeat: noop,
+      kind: "orders",
+      locale: "en",
+      canMutate: true,
+      draft: createOrderDraftStore(),
+      page: { orders: [order], nextCursor: null },
+      current: order,
+      onOpen: noop,
+      onLoadMore: noop,
+      onFilter: noop,
+      onSave: async (i) => createOrder(stub.sql, ctx, i),
+      onTransition: noop,
+      onRepeat: noop,
     };
     const expectations: ReadonlyArray<readonly [string, string]> = [
       ["/orders", "orders-summary"],
@@ -261,24 +361,56 @@ describe("U3 screens", () => {
     const stub = makeSqlStub();
     const order = await seed(stub);
     const readOnly: OrdersRouteState = {
-      kind: "orders", locale: "en", canMutate: false, draft: createOrderDraftStore(),
-      page: { orders: [order], nextCursor: null }, current: order,
-      onOpen: noop, onLoadMore: noop, onFilter: noop, onSave: async () => { throw new Error("must not save"); },
-      onTransition: noop, onRepeat: noop,
+      kind: "orders",
+      locale: "en",
+      canMutate: false,
+      draft: createOrderDraftStore(),
+      page: { orders: [order], nextCursor: null },
+      current: order,
+      onOpen: noop,
+      onLoadMore: noop,
+      onFilter: noop,
+      onSave: async () => {
+        throw new Error("must not save");
+      },
+      onTransition: noop,
+      onRepeat: noop,
     };
-    const SAVE_IDS = ["manual-save", "paste-save", "paste-box", "repeat-save", "repeat-pick", "quick-add-save", "order-detail-actions"];
+    const SAVE_IDS = [
+      "manual-save",
+      "paste-save",
+      "paste-box",
+      "repeat-save",
+      "repeat-pick",
+      "quick-add-save",
+      "order-detail-actions",
+    ];
     for (const path of ["/orders/new", "/orders/new/paste-parse", "/orders/new/repeat"]) {
-      const { container, queryByTestId } = render(routes.get(path as never)!.render(readOnly) as React.ReactElement);
+      const { container, queryByTestId } = render(
+        routes.get(path as never)!.render(readOnly) as React.ReactElement,
+      );
       expect({ path, lock: queryByTestId("lock-sheet") !== null }).toEqual({ path, lock: true });
-      for (const id of SAVE_IDS) expect({ path, id, present: queryByTestId(id) !== null }).toEqual({ path, id, present: false });
+      for (const id of SAVE_IDS)
+        expect({ path, id, present: queryByTestId(id) !== null }).toEqual({
+          path,
+          id,
+          present: false,
+        });
       expect(container.querySelector("button[type=submit], form")).toBeNull();
       cleanup();
     }
     // List and detail stay readable but carry no mutating control.
     for (const path of ["/orders", "/orders/:id", "/orders/:id/transition"]) {
-      const { queryByTestId } = render(routes.get(path as never)!.render(readOnly) as React.ReactElement);
+      const { queryByTestId } = render(
+        routes.get(path as never)!.render(readOnly) as React.ReactElement,
+      );
       expect(queryByTestId("lock-sheet")).toBeNull();
-      for (const id of SAVE_IDS) expect({ path, id, present: queryByTestId(id) !== null }).toEqual({ path, id, present: false });
+      for (const id of SAVE_IDS)
+        expect({ path, id, present: queryByTestId(id) !== null }).toEqual({
+          path,
+          id,
+          present: false,
+        });
       cleanup();
     }
   });

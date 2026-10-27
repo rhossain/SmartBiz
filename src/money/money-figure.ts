@@ -26,7 +26,8 @@ export const add = (a: MoneyFigure, b: MoneyFigure): MoneyFigure => {
   if (a.recognition !== b.recognition) {
     throw new Error(`Cannot add earned and realized (${a.recognition} vs ${b.recognition})`);
   }
-  const c: Completeness = a.completeness === "complete" && b.completeness === "complete" ? "complete" : "partial";
+  const c: Completeness =
+    a.completeness === "complete" && b.completeness === "complete" ? "complete" : "partial";
   return { paise: a.paise + b.paise, recognition: a.recognition, completeness: c };
 };
 
@@ -34,7 +35,8 @@ export const subtract = (a: MoneyFigure, b: MoneyFigure): MoneyFigure => {
   if (a.recognition !== b.recognition) {
     throw new Error(`Cannot subtract across recognition (${a.recognition} vs ${b.recognition})`);
   }
-  const c: Completeness = a.completeness === "complete" && b.completeness === "complete" ? "complete" : "partial";
+  const c: Completeness =
+    a.completeness === "complete" && b.completeness === "complete" ? "complete" : "partial";
   return { paise: a.paise - b.paise, recognition: a.recognition, completeness: c };
 };
 

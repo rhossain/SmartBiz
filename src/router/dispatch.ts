@@ -56,7 +56,13 @@ export const dispatchPath = <State>(
     return { kind: "render", route, path: match.path, params: match.params };
   }
   const rule = (route as unknown as { businessRule?: BusinessRule<State> }).businessRule ?? null;
-  const r: Result<true, GateError> = evaluateGate(session, nowMs, gateCapability(route, session), rule, state);
+  const r: Result<true, GateError> = evaluateGate(
+    session,
+    nowMs,
+    gateCapability(route, session),
+    rule,
+    state,
+  );
   if (r.ok) return { kind: "render", route, path: match.path, params: match.params };
   if (r.error.kind === "not_authenticated" || r.error.kind === "session_expired") {
     return { kind: "redirect", to: "/sign-in", reason: r.error };

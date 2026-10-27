@@ -15,7 +15,9 @@ import { spreadsheetOrder } from "../../src/orders/deferred/spreadsheet-order.js
 import { voiceOrder } from "../../src/orders/deferred/voice-order.js";
 import { BUSINESS_A, OWNER_A, ctxFor } from "../helpers/order-fixtures.js";
 
-const captureStdout = async (fn: () => Promise<unknown>): Promise<Array<Record<string, unknown>>> => {
+const captureStdout = async (
+  fn: () => Promise<unknown>,
+): Promise<Array<Record<string, unknown>>> => {
   const original = process.stdout.write.bind(process.stdout);
   const lines: string[] = [];
   process.stdout.write = ((chunk: string | Uint8Array) => {
@@ -64,7 +66,11 @@ describe("R2.5 — deferred input modes log and decline", () => {
     });
     expect(result).toEqual({ ok: false, reason: "deferred", source: "spreadsheet" });
     expect(logged.length).toBe(1);
-    expect(logged[0]).toMatchObject({ event: "deferred_input_invoked", source: "spreadsheet", business_id: BUSINESS_A });
+    expect(logged[0]).toMatchObject({
+      event: "deferred_input_invoked",
+      source: "spreadsheet",
+      business_id: BUSINESS_A,
+    });
   });
 
   test("voice returns deferred and logs source voice", async () => {
@@ -73,7 +79,11 @@ describe("R2.5 — deferred input modes log and decline", () => {
       result = await voiceOrder(ctx, { audio: bytes, mimeType: "audio/webm" });
     });
     expect(result).toEqual({ ok: false, reason: "deferred", source: "voice" });
-    expect(logged[0]).toMatchObject({ event: "deferred_input_invoked", source: "voice", actor_id: OWNER_A });
+    expect(logged[0]).toMatchObject({
+      event: "deferred_input_invoked",
+      source: "voice",
+      actor_id: OWNER_A,
+    });
   });
 
   test("a correlation id is generated when the context has none", async () => {
@@ -93,8 +103,18 @@ describe("R2.5 — deferred input modes log and decline", () => {
     });
     expect(logged.map((l) => l["source"])).toEqual(["photo", "spreadsheet", "voice"]);
     for (const l of logged) {
-      for (const key of ["event", "source", "actor_id", "business_id", "occurred_at", "correlation_id"]) {
-        expect({ key, present: l[key] !== undefined && l[key] !== null }).toEqual({ key, present: true });
+      for (const key of [
+        "event",
+        "source",
+        "actor_id",
+        "business_id",
+        "occurred_at",
+        "correlation_id",
+      ]) {
+        expect({ key, present: l[key] !== undefined && l[key] !== null }).toEqual({
+          key,
+          present: true,
+        });
       }
     }
   });

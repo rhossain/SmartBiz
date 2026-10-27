@@ -25,9 +25,11 @@ export const transitionStatus = async (
   orderId: string,
   to: OrderStatus,
 ): Promise<Result<Order, OrderError>> => {
-  if (!canMutateOrders(ctx.role)) return err({ kind: "forbidden", reason: "role cannot change order status" });
+  if (!canMutateOrders(ctx.role))
+    return err({ kind: "forbidden", reason: "role cannot change order status" });
   if (!isUuid(orderId)) return err({ kind: "not_found", entity: "Order", id: orderId });
-  if (!isOrderStatus(to)) return err({ kind: "invalid_input", message: `unknown status ${String(to)}` });
+  if (!isOrderStatus(to))
+    return err({ kind: "invalid_input", message: `unknown status ${String(to)}` });
 
   return sql.begin(async (tx): Promise<Result<Order, OrderError>> => {
     const before = await selectOrder(tx, ctx.businessId, orderId, "lock");

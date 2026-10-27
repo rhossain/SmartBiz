@@ -15,7 +15,11 @@ export const BUSINESS_B = "b0000000-0000-4000-8000-00000000000b" as Uuid;
 export const OWNER_A = "a1000000-0000-4000-8000-0000000000a1" as Uuid;
 export const OWNER_B = "b1000000-0000-4000-8000-0000000000b1" as Uuid;
 
-export const ctxFor = (businessId: Uuid, actorUserId: Uuid, role: Role = "owner"): OrderContext => ({
+export const ctxFor = (
+  businessId: Uuid,
+  actorUserId: Uuid,
+  role: Role = "owner",
+): OrderContext => ({
   businessId,
   actorUserId,
   role,
@@ -36,7 +40,10 @@ export const createInput = (overrides: Partial<CreateOrderInput> = {}): CreateOr
   customerId: null,
   contact: { name: "ফারজানা আক্তার", phone: "01711234567", address: "উত্তরা, ঢাকা" },
   repeatOfOrderId: null,
-  items: [itemInput(), itemInput({ description: "গোলাপি ওড়না", quantity: 1, unitPricePaise: 60_000 })],
+  items: [
+    itemInput(),
+    itemInput({ description: "গোলাপি ওড়না", quantity: 1, unitPricePaise: 60_000 }),
+  ],
   orderDiscountPaise: 10_000,
   deliveryChargePaise: 6_000,
   ...overrides,

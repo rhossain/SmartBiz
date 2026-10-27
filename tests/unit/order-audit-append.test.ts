@@ -15,11 +15,19 @@ import { transitionStatus } from "../../src/orders/transition-status.js";
 import { linkConsignment } from "../../src/orders/consignment.js";
 import type { Order } from "../../src/orders/types.js";
 import { makeSqlStub, type RecordedCall } from "../helpers/sql-stub.js";
-import { BUSINESS_A, OWNER_A, auditPayload, createInput, ctxFor, itemInput } from "../helpers/order-fixtures.js";
+import {
+  BUSINESS_A,
+  OWNER_A,
+  auditPayload,
+  createInput,
+  ctxFor,
+  itemInput,
+} from "../helpers/order-fixtures.js";
 
 const ctx = ctxFor(BUSINESS_A, OWNER_A);
 
-const indexOf = (calls: ReadonlyArray<RecordedCall>, re: RegExp): number => calls.findIndex((c) => re.test(c.text));
+const indexOf = (calls: ReadonlyArray<RecordedCall>, re: RegExp): number =>
+  calls.findIndex((c) => re.test(c.text));
 
 const seedOrder = async (stub: ReturnType<typeof makeSqlStub>): Promise<Order> => {
   const r = await createOrder(stub.sql, ctx, createInput());
@@ -46,8 +54,12 @@ describe("R2.1 — order audit append per action", () => {
     expect(payload.before).toBeNull();
     expect((payload.after as Order).totalPaise).toBe(order.totalPaise);
     expect((payload.after as Order).items.length).toBe(2);
-    expect(indexOf(stub.calls, /INSERT INTO audit_log/)).toBeLessThan(indexOf(stub.calls, /INSERT INTO orders \(/));
-    expect(indexOf(stub.calls, /INSERT INTO audit_log/)).toBeLessThan(indexOf(stub.calls, /INSERT INTO order_items/));
+    expect(indexOf(stub.calls, /INSERT INTO audit_log/)).toBeLessThan(
+      indexOf(stub.calls, /INSERT INTO orders \(/),
+    );
+    expect(indexOf(stub.calls, /INSERT INTO audit_log/)).toBeLessThan(
+      indexOf(stub.calls, /INSERT INTO order_items/),
+    );
   });
 
   test("updateOrder: one row, action order.update, before and after totals differ; audit first", async () => {
@@ -64,8 +76,12 @@ describe("R2.1 — order audit append per action", () => {
     expect((payload.before as Order).totalPaise).toBe(order.totalPaise);
     // 5 × 1 250.00 − 100.00 discount + 60.00 delivery, restated in paise.
     expect((payload.after as Order).totalPaise).toBe(5 * 125_000 - 10_000 + 6_000);
-    expect(indexOf(stub.calls, /INSERT INTO audit_log/)).toBeLessThan(indexOf(stub.calls, /UPDATE orders/));
-    expect(indexOf(stub.calls, /INSERT INTO audit_log/)).toBeLessThan(indexOf(stub.calls, /DELETE FROM order_items/));
+    expect(indexOf(stub.calls, /INSERT INTO audit_log/)).toBeLessThan(
+      indexOf(stub.calls, /UPDATE orders/),
+    );
+    expect(indexOf(stub.calls, /INSERT INTO audit_log/)).toBeLessThan(
+      indexOf(stub.calls, /DELETE FROM order_items/),
+    );
   });
 
   test("transitionStatus: one row with before/after status; audit first", async () => {
@@ -76,23 +92,34 @@ describe("R2.1 — order audit append per action", () => {
     expect(r.ok).toBe(true);
     const row = stub.state.auditLog[1]!;
     expect(row["action"]).toBe("order.status.transition");
-    expect(auditPayload(row)).toEqual({ before: { status: "new" }, after: { status: "confirmed" } });
-    expect(indexOf(stub.calls, /INSERT INTO audit_log/)).toBeLessThan(indexOf(stub.calls, /UPDATE orders SET status/));
+    expect(auditPayload(row)).toEqual({
+      before: { status: "new" },
+      after: { status: "confirmed" },
+    });
+    expect(indexOf(stub.calls, /INSERT INTO audit_log/)).toBeLessThan(
+      indexOf(stub.calls, /UPDATE orders SET status/),
+    );
     expect(stub.state.orders[0]!["status"]).toBe("confirmed");
   });
 
   test("linkConsignment: one row with the link as after; audit first", async () => {
     const stub = makeSqlStub();
     const order = await seedOrder(stub);
-    for (const to of ["confirmed", "packed"] as const) await transitionStatus(stub.sql, ctx, order.id, to);
+    for (const to of ["confirmed", "packed"] as const)
+      await transitionStatus(stub.sql, ctx, order.id, to);
     stub.calls.length = 0;
-    const r = await linkConsignment(stub.sql, ctx, { orderId: order.id, consignmentRef: "PT-1234" });
+    const r = await linkConsignment(stub.sql, ctx, {
+      orderId: order.id,
+      consignmentRef: "PT-1234",
+    });
     expect(r.ok).toBe(true);
     expect(stub.state.auditLog.length).toBe(4);
     const row = stub.state.auditLog[3]!;
     expect(row["action"]).toBe("order.consignment.link");
     expect((auditPayload(row).after as { consignmentRef: string }).consignmentRef).toBe("PT-1234");
-    expect(indexOf(stub.calls, /INSERT INTO audit_log/)).toBeLessThan(indexOf(stub.calls, /INSERT INTO consignment_link/));
+    expect(indexOf(stub.calls, /INSERT INTO audit_log/)).toBeLessThan(
+      indexOf(stub.calls, /INSERT INTO consignment_link/),
+    );
   });
 
   test("a refused mutation writes no audit row (forbidden transition, not editable, wrong role)", async () => {
@@ -100,11 +127,16 @@ describe("R2.1 — order audit append per action", () => {
     const order = await seedOrder(stub);
     const bad = await transitionStatus(stub.sql, ctx, order.id, "settled");
     expect(bad.ok).toBe(false);
-    for (const to of ["confirmed", "packed"] as const) await transitionStatus(stub.sql, ctx, order.id, to);
+    for (const to of ["confirmed", "packed"] as const)
+      await transitionStatus(stub.sql, ctx, order.id, to);
     const locked = await updateOrder(stub.sql, ctx, order.id, { deliveryChargePaise: 0 });
     expect(locked.ok).toBe(false);
     if (!locked.ok) expect(locked.error.kind).toBe("not_editable");
-    const accountant = await createOrder(stub.sql, ctxFor(BUSINESS_A, OWNER_A, "accountant"), createInput());
+    const accountant = await createOrder(
+      stub.sql,
+      ctxFor(BUSINESS_A, OWNER_A, "accountant"),
+      createInput(),
+    );
     expect(accountant.ok).toBe(false);
     if (!accountant.ok) expect(accountant.error.kind).toBe("forbidden");
     // create + confirmed + packed only.
@@ -117,7 +149,9 @@ describe("R2.1 — order audit append per action", () => {
 
   test("a failed entity write rolls the audit row back with it", async () => {
     const stub = makeSqlStub({ failOn: /INSERT INTO orders \(/ });
-    await expect(createOrder(stub.sql, ctx, createInput())).rejects.toThrow("simulated database failure");
+    await expect(createOrder(stub.sql, ctx, createInput())).rejects.toThrow(
+      "simulated database failure",
+    );
     expect(stub.state.auditLog.length).toBe(0);
     expect(stub.state.orders.length).toBe(0);
   });
@@ -125,12 +159,12 @@ describe("R2.1 — order audit append per action", () => {
   test("the application role cannot rewrite audit_log (UPDATE and DELETE are refused)", async () => {
     const stub = makeSqlStub();
     await seedOrder(stub);
-    await expect(Promise.resolve().then(() => stub.sql`UPDATE audit_log SET action = ${"x"}`)).rejects.toThrow(
-      "permission denied",
-    );
-    await expect(Promise.resolve().then(() => stub.sql`DELETE FROM audit_log WHERE id = ${"y"}`)).rejects.toThrow(
-      "permission denied",
-    );
+    await expect(
+      Promise.resolve().then(() => stub.sql`UPDATE audit_log SET action = ${"x"}`),
+    ).rejects.toThrow("permission denied");
+    await expect(
+      Promise.resolve().then(() => stub.sql`DELETE FROM audit_log WHERE id = ${"y"}`),
+    ).rejects.toThrow("permission denied");
     expect(stub.state.auditLog.length).toBe(1);
   });
 });

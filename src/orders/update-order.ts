@@ -31,11 +31,15 @@ export const updateOrder = async (
   orderId: string,
   raw: UpdateOrderInput,
 ): Promise<Result<Order, OrderError>> => {
-  if (!canMutateOrders(ctx.role)) return err({ kind: "forbidden", reason: "role cannot edit orders" });
+  if (!canMutateOrders(ctx.role))
+    return err({ kind: "forbidden", reason: "role cannot edit orders" });
   if (!isUuid(orderId)) return err({ kind: "not_found", entity: "Order", id: orderId });
   const valid = UpdateOrderInputSchema.safeParse(raw);
   if (!valid.success) {
-    return err({ kind: "invalid_input", message: valid.error.issues.map((i) => i.message).join("; ") });
+    return err({
+      kind: "invalid_input",
+      message: valid.error.issues.map((i) => i.message).join("; "),
+    });
   }
   // Use the parsed patch only: unknown keys are stripped before anything
   // reaches the stored row or the audit payload.
@@ -46,7 +50,9 @@ export const updateOrder = async (
     if (!before) return err({ kind: "not_found", entity: "Order", id: orderId });
     if (!isEditable(before.status)) return err({ kind: "not_editable", status: before.status });
 
-    const items = patch.items ? materialiseItems(before.id, before.businessId, patch.items) : before.items;
+    const items = patch.items
+      ? materialiseItems(before.id, before.businessId, patch.items)
+      : before.items;
     const orderDiscountPaise = patch.orderDiscountPaise ?? before.orderDiscountPaise;
     const deliveryChargePaise = patch.deliveryChargePaise ?? before.deliveryChargePaise;
     const total = computeOrderTotal(items, orderDiscountPaise, deliveryChargePaise);

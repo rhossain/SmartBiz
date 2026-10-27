@@ -8,7 +8,20 @@ import { isOk } from "../../src/types/result.js";
 
 describe("router coverage", () => {
   test("every public route is registered", () => {
-    const expected = ["/", "/sign-in", "/sign-up", "/recover", "/reset", "/accept", "/orders", "/daily-card", "/audit-trail", "/business", "/settings", "/lock"];
+    const expected = [
+      "/",
+      "/sign-in",
+      "/sign-up",
+      "/recover",
+      "/reset",
+      "/accept",
+      "/orders",
+      "/daily-card",
+      "/audit-trail",
+      "/business",
+      "/settings",
+      "/lock",
+    ];
     for (const p of expected) expect(routes.has(p as never)).toBe(true);
   });
 
@@ -25,8 +38,18 @@ describe("router coverage", () => {
     // routes map.
     const protectedRoute = routes.get("/audit-trail");
     expect(protectedRoute).toBeDefined();
-    const ownerSession = { userId: "u", businessId: "b", role: "owner" as const, expiresAt: 1_000_000 };
-    const salesSession = { userId: "u", businessId: "b", role: "sales_staff" as const, expiresAt: 1_000_000 };
+    const ownerSession = {
+      userId: "u",
+      businessId: "b",
+      role: "owner" as const,
+      expiresAt: 1_000_000,
+    };
+    const salesSession = {
+      userId: "u",
+      businessId: "b",
+      role: "sales_staff" as const,
+      expiresAt: 1_000_000,
+    };
     // Direct dispatch on a protected route requires the route to be the
     // current path; we evaluate the gate directly to confirm.
     void ownerSession;

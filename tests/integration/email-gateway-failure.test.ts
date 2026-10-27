@@ -34,7 +34,12 @@ describe("integration: email gateway failure (graceful degradation)", () => {
     resetBuckets();
     setTestClock(FROZEN_TEST_NOW);
     const stub = makeSqlStub();
-    const su = await signUp(stub.sql, { email: "o@e.com", password: "verysecret", businessName: "A", locale: "bn" });
+    const su = await signUp(stub.sql, {
+      email: "o@e.com",
+      password: "verysecret",
+      businessName: "A",
+      locale: "bn",
+    });
     if (!su.ok) throw new Error("signup");
     const r = await createInvite(stub.sql, {
       businessId: su.value.businessId as Uuid,
@@ -47,7 +52,11 @@ describe("integration: email gateway failure (graceful degradation)", () => {
     expect(r.ok).toBe(true);
     if (!r.ok) return;
     expect(stub.state.invitations.length).toBe(1);
-    const send = await sendInviteEmail(failingEmailGateway, "new@example.com", `https://app/accept/${r.value.acceptToken}`);
+    const send = await sendInviteEmail(
+      failingEmailGateway,
+      "new@example.com",
+      `https://app/accept/${r.value.acceptToken}`,
+    );
     expect(send.ok).toBe(false);
     resetTestClock();
   });

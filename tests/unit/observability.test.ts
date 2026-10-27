@@ -44,7 +44,12 @@ describe("observability + audit read paths", () => {
   test("listAuditForBusiness returns rows", async () => {
     setTestClock(FROZEN_TEST_NOW);
     const stub = makeSqlStub();
-    await signUp(stub.sql, { email: "o@e.com", password: "verysecret", businessName: "A", locale: "bn" });
+    await signUp(stub.sql, {
+      email: "o@e.com",
+      password: "verysecret",
+      businessName: "A",
+      locale: "bn",
+    });
     const businessId = stub.state.businesses[0]!["id"] as never;
     const rows = await listAuditForBusiness(stub.sql, businessId);
     expect(Array.isArray(rows)).toBe(true);
@@ -54,7 +59,12 @@ describe("observability + audit read paths", () => {
   test("exportAudit delegates to listAuditForBusiness", async () => {
     setTestClock(FROZEN_TEST_NOW);
     const stub = makeSqlStub();
-    await signUp(stub.sql, { email: "o@e.com", password: "verysecret", businessName: "A", locale: "bn" });
+    await signUp(stub.sql, {
+      email: "o@e.com",
+      password: "verysecret",
+      businessName: "A",
+      locale: "bn",
+    });
     const businessId = stub.state.businesses[0]!["id"] as never;
     const rows = await exportAudit(stub.sql, businessId);
     expect(Array.isArray(rows)).toBe(true);

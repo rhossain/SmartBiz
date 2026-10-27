@@ -14,7 +14,10 @@ const percentile = (sorted: ReadonlyArray<number>, p: number): number => {
 describe("NFR2.c — three-layer gate micro-bench", () => {
   test("p95 of three-layer gate dispatch ≤ 2 ms over 10 000 iterations", () => {
     const session = {
-      userId: "u", businessId: "b", role: "owner" as const, expiresAt: 1_000_000,
+      userId: "u",
+      businessId: "b",
+      role: "owner" as const,
+      expiresAt: 1_000_000,
     };
     const samples: number[] = [];
     for (let i = 0; i < 10_000; i++) {
@@ -33,7 +36,14 @@ describe("NFR2.c — three-layer gate micro-bench", () => {
   // plus the gate) over every U3 route, for an allowed and a refused role.
   test("p95 of U3 route dispatch ≤ 2 ms over 10 000 iterations", () => {
     const id = "0f0f0f0f-0f0f-4f0f-8f0f-0f0f0f0f0f0f";
-    const u3 = ["/orders", "/orders/new", "/orders/new/paste-parse", "/orders/new/repeat", `/orders/${id}`, `/orders/${id}/transition`];
+    const u3 = [
+      "/orders",
+      "/orders/new",
+      "/orders/new/paste-parse",
+      "/orders/new/repeat",
+      `/orders/${id}`,
+      `/orders/${id}/transition`,
+    ];
     const sessions = [
       { userId: "u", businessId: "b", role: "sales_staff" as const, expiresAt: 1_000_000 },
       { userId: "u", businessId: "b", role: "accountant" as const, expiresAt: 1_000_000 },

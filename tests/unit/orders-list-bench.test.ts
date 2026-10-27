@@ -12,7 +12,17 @@ import { listOrders } from "../../src/orders/list-orders.js";
 import { makeSqlStub } from "../helpers/sql-stub.js";
 import { BUSINESS_A, OWNER_A, ctxFor } from "../helpers/order-fixtures.js";
 
-const NINE = ["new", "confirmed", "packed", "shipped", "delivered", "settled", "cancelled", "returned", "partial"];
+const NINE = [
+  "new",
+  "confirmed",
+  "packed",
+  "shipped",
+  "delivered",
+  "settled",
+  "cancelled",
+  "returned",
+  "partial",
+];
 const BUDGET_MS = 1_000;
 const limitMs = process.env["CI"] ? BUDGET_MS * 10 : BUDGET_MS;
 

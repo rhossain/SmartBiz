@@ -12,10 +12,21 @@ import type { OrderStatus } from "../../src/orders/types.js";
 const BUDGET_MS = 1;
 const limitMs = process.env["CI"] ? BUDGET_MS * 10 : BUDGET_MS;
 const NINE: ReadonlyArray<OrderStatus> = [
-  "new", "confirmed", "packed", "shipped", "delivered", "settled", "cancelled", "returned", "partial",
+  "new",
+  "confirmed",
+  "packed",
+  "shipped",
+  "delivered",
+  "settled",
+  "cancelled",
+  "returned",
+  "partial",
 ];
 
-const orders = Array.from({ length: 1000 }, (_, i) => ({ status: NINE[i % 9]!, totalPaise: 50_000 + i * 37 }));
+const orders = Array.from({ length: 1000 }, (_, i) => ({
+  status: NINE[i % 9]!,
+  totalPaise: 50_000 + i * 37,
+}));
 
 describe("NFR2.5 — status-bucket micro-benchmark", () => {
   test(`p95 ≤ ${BUDGET_MS} ms for 1 000 orders (CI gate ${limitMs} ms)`, () => {

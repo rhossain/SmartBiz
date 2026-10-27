@@ -23,7 +23,15 @@ import { isUuid, uuid, type Uuid } from "../types/uuid.js";
 import { appendOrderAudit } from "./order-audit.js";
 import { canMutateOrders } from "./order-capability.js";
 import { selectOrder, toIso } from "./order-rows.js";
-import { assertNever, type ConsignmentLink, type Courier, type LinkError, type NotFound, type OrderContext, type OrderStatus } from "./types.js";
+import {
+  assertNever,
+  type ConsignmentLink,
+  type Courier,
+  type LinkError,
+  type NotFound,
+  type OrderContext,
+  type OrderStatus,
+} from "./types.js";
 
 export interface LinkConsignmentInput {
   readonly orderId: string;
@@ -78,7 +86,11 @@ interface LinkRow {
   readonly linked_at: Date | string;
 }
 
-const selectLink = async (tx: Queryable, businessId: Uuid, orderId: Uuid): Promise<LinkRow | null> => {
+const selectLink = async (
+  tx: Queryable,
+  businessId: Uuid,
+  orderId: Uuid,
+): Promise<LinkRow | null> => {
   const rows = await tx<LinkRow[]>`
     SELECT id, business_id, order_id, courier, consignment_ref, linked_by, linked_at
     FROM consignment_link
@@ -92,10 +104,14 @@ export const linkConsignment = async (
   ctx: OrderContext,
   raw: LinkConsignmentInput,
 ): Promise<Result<ConsignmentLink, LinkError>> => {
-  if (!canMutateOrders(ctx.role)) return err({ kind: "forbidden", reason: "role cannot link consignments" });
+  if (!canMutateOrders(ctx.role))
+    return err({ kind: "forbidden", reason: "role cannot link consignments" });
   const valid = ConsignmentLinkInputSchema.safeParse(raw);
   if (!valid.success) {
-    return err({ kind: "invalid_input", message: valid.error.issues.map((i) => i.message).join("; ") });
+    return err({
+      kind: "invalid_input",
+      message: valid.error.issues.map((i) => i.message).join("; "),
+    });
   }
   // The parsed value only, so an unvalidated key never reaches the audit row.
   const input = valid.data;
@@ -108,9 +124,13 @@ export const linkConsignment = async (
       const order = await selectOrder(tx, ctx.businessId, orderId, "lock");
       if (!order) return err({ kind: "not_found", entity: "Order", id: orderId });
       if (!canLinkConsignment(order.status)) {
-        return err({ kind: "invalid_input", message: `an order that is ${order.status} cannot take a consignment` });
+        return err({
+          kind: "invalid_input",
+          message: `an order that is ${order.status} cannot take a consignment`,
+        });
       }
-      if (await selectLink(tx, ctx.businessId, orderId)) return err({ kind: "already_linked", orderId });
+      if (await selectLink(tx, ctx.businessId, orderId))
+        return err({ kind: "already_linked", orderId });
 
       const link: ConsignmentLink = {
         id: uuid(),
@@ -121,7 +141,10 @@ export const linkConsignment = async (
         linkedBy: ctx.actorUserId,
         linkedAt: now().toISOString(),
       };
-      await appendOrderAudit(tx, ctx, "order.consignment.link", orderId, { before: null, after: link });
+      await appendOrderAudit(tx, ctx, "order.consignment.link", orderId, {
+        before: null,
+        after: link,
+      });
       await tx`
         INSERT INTO consignment_link (id, business_id, order_id, courier, consignment_ref, linked_by, linked_at)
         VALUES (${link.id}, ${link.businessId}, ${link.orderId}, ${link.courier},
@@ -160,4 +183,5 @@ export const getConsignmentLink = async (
 export const getConsignmentByOrderId = async (
   _businessId: Uuid,
   orderId: string,
-): Promise<Result<Consignment, NotFound>> => err({ kind: "not_found", entity: "Consignment", id: orderId });
+): Promise<Result<Consignment, NotFound>> =>
+  err({ kind: "not_found", entity: "Consignment", id: orderId });

@@ -45,7 +45,12 @@ describe("password recovery (UC-1.3)", () => {
     const stub = await setup();
     const r = await requestRecovery(stub.sql, "owner@example.com", FROZEN_TEST_NOW.getTime());
     if (!r.ok || !r.value.token) throw new Error("no token");
-    const reset = await resetPassword(stub.sql, r.value.token, "newsecret1", FROZEN_TEST_NOW.getTime() + 1000);
+    const reset = await resetPassword(
+      stub.sql,
+      r.value.token,
+      "newsecret1",
+      FROZEN_TEST_NOW.getTime() + 1000,
+    );
     expect(reset.ok).toBe(true);
   });
 

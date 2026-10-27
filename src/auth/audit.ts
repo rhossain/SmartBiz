@@ -9,7 +9,12 @@ import type { Sql } from "../db/client.js";
 import { insertAudit, type AuditInsertInput } from "../audit/audit-service.js";
 import type { Uuid } from "../types/uuid.js";
 
-export const auditSignUp = (sql: Sql, businessId: Uuid, actor: Uuid, payload: Record<string, unknown>) =>
+export const auditSignUp = (
+  sql: Sql,
+  businessId: Uuid,
+  actor: Uuid,
+  payload: Record<string, unknown>,
+) =>
   insertAudit(sql, {
     businessId,
     actorUserId: actor,
@@ -20,7 +25,12 @@ export const auditSignUp = (sql: Sql, businessId: Uuid, actor: Uuid, payload: Re
     reversesId: null,
   });
 
-export const auditSignIn = (sql: Sql, businessId: Uuid, actor: Uuid, payload: Record<string, unknown>) =>
+export const auditSignIn = (
+  sql: Sql,
+  businessId: Uuid,
+  actor: Uuid,
+  payload: Record<string, unknown>,
+) =>
   insertAudit(sql, {
     businessId,
     actorUserId: actor,
@@ -42,7 +52,11 @@ export const auditSignInFailure = (sql: Sql, businessId: Uuid, payload: Record<s
     reversesId: null,
   });
 
-export const auditRecoveryRequest = (sql: Sql, businessId: Uuid, payload: Record<string, unknown>) =>
+export const auditRecoveryRequest = (
+  sql: Sql,
+  businessId: Uuid,
+  payload: Record<string, unknown>,
+) =>
   insertAudit(sql, {
     businessId,
     actorUserId: null,
@@ -53,7 +67,12 @@ export const auditRecoveryRequest = (sql: Sql, businessId: Uuid, payload: Record
     reversesId: null,
   });
 
-export const auditRecoveryReset = (sql: Sql, businessId: Uuid, actor: Uuid, payload: Record<string, unknown>) =>
+export const auditRecoveryReset = (
+  sql: Sql,
+  businessId: Uuid,
+  actor: Uuid,
+  payload: Record<string, unknown>,
+) =>
   insertAudit(sql, {
     businessId,
     actorUserId: actor,
@@ -114,7 +133,12 @@ export const auditBusinessProfileChange = (
     reversesId: null,
   });
 
-export const auditSettingsChange = (sql: Sql, businessId: Uuid, actor: Uuid, payload: Record<string, unknown>) =>
+export const auditSettingsChange = (
+  sql: Sql,
+  businessId: Uuid,
+  actor: Uuid,
+  payload: Record<string, unknown>,
+) =>
   insertAudit(sql, {
     businessId,
     actorUserId: actor,

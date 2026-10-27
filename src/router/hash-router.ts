@@ -49,7 +49,8 @@ export const matchRoute = (raw: string): RouteMatch | null => {
   return null;
 };
 
-const parseHash = (hash: string): RouteMatch => matchRoute(hash.replace(/^#/, "")) ?? { path: "/", params: {} };
+const parseHash = (hash: string): RouteMatch =>
+  matchRoute(hash.replace(/^#/, "")) ?? { path: "/", params: {} };
 
 export const currentMatch = (): RouteMatch => parseHash(window.location.hash);
 

@@ -10,12 +10,40 @@ export { signIn, type SignInInput, type SignInOutput, type SignInError } from ".
 export { signOut } from "./sign-out.js";
 export { requestRecovery, resetPassword, type RecoveryError } from "./recover.js";
 export { createInvite, type InviteInput, type InviteOutput, type InviteError } from "./invite.js";
-export { acceptInvite, type AcceptInviteInput, type AcceptInviteOutput, type AcceptInviteError } from "./accept-invite.js";
+export {
+  acceptInvite,
+  type AcceptInviteInput,
+  type AcceptInviteOutput,
+  type AcceptInviteError,
+} from "./accept-invite.js";
 export { buildSession, buildSetCookie, cookieOptions } from "./session.js";
-export { auditSignUp, auditSignIn, auditSignInFailure, auditRecoveryRequest, auditRecoveryReset, auditInvite, auditAcceptInvite, auditBusinessProfileChange, auditSettingsChange } from "./audit.js";
+export {
+  auditSignUp,
+  auditSignIn,
+  auditSignInFailure,
+  auditRecoveryRequest,
+  auditRecoveryReset,
+  auditInvite,
+  auditAcceptInvite,
+  auditBusinessProfileChange,
+  auditSettingsChange,
+} from "./audit.js";
 export { capabilitiesFor, hasCapability, type Capability } from "./capability.js";
 export { ROLE_CAPABILITY_MATRIX } from "./role-matrix.js";
 export { evaluateGate, type GateError, type GateSession } from "./three-layer-gate.js";
 export { hashPassword, verifyPassword, PASSWORD_MIN_LENGTH } from "./argon2.js";
-export { sendInviteEmail, noopEmailGateway, failingEmailGateway, type EmailGateway, type SmtpError } from "./email.js";
-export { checkRateLimit, resetBuckets, LIMIT_SIGN_IN, LIMIT_RECOVERY, LIMIT_INVITE, LIMIT_ACCEPT } from "./rate-limit.js";
+export {
+  sendInviteEmail,
+  noopEmailGateway,
+  failingEmailGateway,
+  type EmailGateway,
+  type SmtpError,
+} from "./email.js";
+export {
+  checkRateLimit,
+  resetBuckets,
+  LIMIT_SIGN_IN,
+  LIMIT_RECOVERY,
+  LIMIT_INVITE,
+  LIMIT_ACCEPT,
+} from "./rate-limit.js";

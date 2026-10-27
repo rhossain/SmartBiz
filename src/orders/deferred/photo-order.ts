@@ -14,5 +14,7 @@ export interface PhotoOrderInput {
   readonly mimeType: string;
 }
 
-export const photoOrder = async (ctx: OrderContext, _input: PhotoOrderInput): Promise<DeferredInputResult> =>
-  deferInput("photo", ctx);
+export const photoOrder = async (
+  ctx: OrderContext,
+  _input: PhotoOrderInput,
+): Promise<DeferredInputResult> => deferInput("photo", ctx);

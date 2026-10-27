@@ -11,7 +11,13 @@ import { Toast } from "../../pres/Toast.js";
 import type { OrderDraft } from "../order-draft.js";
 import { tr } from "./copy.js";
 
-export const DraftStatus = ({ draft, locale }: { draft: OrderDraft; locale: Locale }): React.ReactElement | null => {
+export const DraftStatus = ({
+  draft,
+  locale,
+}: {
+  draft: OrderDraft;
+  locale: Locale;
+}): React.ReactElement | null => {
   if (draft.status === "saved") return <Toast message={tr("orders.saved", locale)} tone="info" />;
   if (draft.status !== "error") return null;
   const message =

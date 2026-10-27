@@ -13,7 +13,12 @@ describe("audit (BR3.1, BR3.2, BR3.3)", () => {
   test("audit insert succeeds (BR3.1)", async () => {
     setTestClock(FROZEN_TEST_NOW);
     const { sql, state } = makeSqlStub();
-    await signUp(sql, { email: "o@e.com", password: "verysecret", businessName: "A", locale: "bn" });
+    await signUp(sql, {
+      email: "o@e.com",
+      password: "verysecret",
+      businessName: "A",
+      locale: "bn",
+    });
     const businessId = state.businesses[0]!["id"] as Uuid;
     const userId = state.users[0]!["id"] as Uuid;
     const r = await insertAudit(sql, {
@@ -40,16 +45,31 @@ describe("audit (BR3.1, BR3.2, BR3.3)", () => {
   test("reversal is a NEW row with reverses_id (BR3.3, A-84-reverses-E-199 pattern)", async () => {
     setTestClock(FROZEN_TEST_NOW);
     const { sql, state } = makeSqlStub();
-    await signUp(sql, { email: "o@e.com", password: "verysecret", businessName: "A", locale: "bn" });
+    await signUp(sql, {
+      email: "o@e.com",
+      password: "verysecret",
+      businessName: "A",
+      locale: "bn",
+    });
     const businessId = state.businesses[0]!["id"] as Uuid;
     const userId = state.users[0]!["id"] as Uuid;
     const original = await insertAudit(sql, {
-      businessId, actorUserId: userId, action: "E-199", subjectKind: "test", subjectId: userId,
-      payload: {}, reversesId: null,
+      businessId,
+      actorUserId: userId,
+      action: "E-199",
+      subjectKind: "test",
+      subjectId: userId,
+      payload: {},
+      reversesId: null,
     });
     const reversal = await insertAudit(sql, {
-      businessId, actorUserId: userId, action: "A-84-reverses-E-199", subjectKind: "test", subjectId: userId,
-      payload: { reverses: original.id }, reversesId: original.id,
+      businessId,
+      actorUserId: userId,
+      action: "A-84-reverses-E-199",
+      subjectKind: "test",
+      subjectId: userId,
+      payload: { reverses: original.id },
+      reversesId: original.id,
     });
     const revRow = state.auditLog.find((r) => r["id"] === reversal.id);
     expect(revRow).toBeDefined();

@@ -23,7 +23,9 @@ import type { InvalidInput, OrderItemInput } from "./types.js";
  * screen refuses to save rather than guessing.
  */
 export const parseTakaToPaise = (raw: string): number | null => {
-  const m = toAsciiDigits(raw.trim()).replace(/,/g, "").match(/^(\d{1,10})(?:\.(\d{1,2}))?$/);
+  const m = toAsciiDigits(raw.trim())
+    .replace(/,/g, "")
+    .match(/^(\d{1,10})(?:\.(\d{1,2}))?$/);
   if (!m || m[1] === undefined) return null;
   return Number(m[1]) * 100 + Number((m[2] ?? "").padEnd(2, "0"));
 };
@@ -40,14 +42,23 @@ export const computeOrderTotal = (
   for (const [index, item] of items.entries()) {
     const line = lineTotalPaise(item);
     if (!Number.isSafeInteger(line)) {
-      return err({ kind: "invalid_input", message: `line ${index + 1}: amount is too large to store exactly` });
+      return err({
+        kind: "invalid_input",
+        message: `line ${index + 1}: amount is too large to store exactly`,
+      });
     }
     if (line < 0) {
-      return err({ kind: "invalid_input", message: `line ${index + 1}: discount exceeds the line amount` });
+      return err({
+        kind: "invalid_input",
+        message: `line ${index + 1}: discount exceeds the line amount`,
+      });
     }
     subtotal += line;
     if (!Number.isSafeInteger(subtotal)) {
-      return err({ kind: "invalid_input", message: "order subtotal is too large to store exactly" });
+      return err({
+        kind: "invalid_input",
+        message: "order subtotal is too large to store exactly",
+      });
     }
   }
   if (orderDiscountPaise > subtotal) {

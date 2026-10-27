@@ -17,7 +17,11 @@ const store = createStateContainer<LocaleState>(initial);
 const subscribe = (cb: () => void): (() => void) => store.subscribe(() => cb());
 
 export const useLocale = (): Locale => {
-  return useSyncExternalStore(subscribe, () => store.get().locale, () => "bn" as Locale);
+  return useSyncExternalStore(
+    subscribe,
+    () => store.get().locale,
+    () => "bn" as Locale,
+  );
 };
 
 export const setLocale = (l: Locale): void => store.set({ locale: l });

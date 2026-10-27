@@ -4,6 +4,4 @@
 import * as React from "react";
 import { LockSheet } from "../../pres/LockSheet.js";
 
-export const LockScreen = (): React.ReactElement => (
-  <LockSheet messageKey="lock.message" />
-);
+export const LockScreen = (): React.ReactElement => <LockSheet messageKey="lock.message" />;

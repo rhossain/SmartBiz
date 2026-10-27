@@ -9,7 +9,10 @@ import type { Uuid } from "../../src/types/uuid.js";
 describe("session + cookie helpers", () => {
   test("buildSession returns a session id and expiry", () => {
     setTestClock(FROZEN_TEST_NOW);
-    const s = buildSession({ userId: "00000000-0000-4000-8000-000000000001" as Uuid, businessId: "00000000-0000-4000-8000-000000000002" as Uuid });
+    const s = buildSession({
+      userId: "00000000-0000-4000-8000-000000000001" as Uuid,
+      businessId: "00000000-0000-4000-8000-000000000002" as Uuid,
+    });
     expect(s.id).toMatch(/^[0-9a-f-]{36}$/);
     expect(s.expiresAt.getTime()).toBe(FROZEN_TEST_NOW.getTime() + 30 * 24 * 60 * 60 * 1000);
     resetTestClock();

@@ -9,7 +9,7 @@
     "migrate": "bun run src/db/migrate.ts",
     "test": "bun test tests/unit tests/integration",
     "lint": "eslint .",
-    "format": "prettier --check .",
+    "format": "prettier --check src tests",
     "type-check": "tsc --noEmit",
     "coverage": "bun test tests/unit tests/integration --coverage --coverage-reporter=text"
   },

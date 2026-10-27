@@ -20,7 +20,14 @@ import { appendOrderAudit } from "./order-audit.js";
 import { canMutateOrders } from "./order-capability.js";
 import { contactJson, insertItems } from "./order-rows.js";
 import { computeOrderTotal } from "./order-total.js";
-import type { CreateOrderInput, Order, OrderContext, OrderError, OrderItem, OrderItemInput } from "./types.js";
+import type {
+  CreateOrderInput,
+  Order,
+  OrderContext,
+  OrderError,
+  OrderItem,
+  OrderItemInput,
+} from "./types.js";
 
 /** Give each input line its id and 1-based line number under `orderId`. */
 export const materialiseItems = (
@@ -45,11 +52,16 @@ export const formatOrderNo = (n: number): string => `ORD-${String(n).padStart(4,
 const nextOrderNumber = async (tx: Queryable): Promise<number> => {
   const rows = await tx<{ n: string | number }[]>`SELECT nextval('orders_order_no_seq') AS n`;
   const n = Number(rows[0]?.n);
-  if (!Number.isSafeInteger(n) || n < 1) throw new Error("orders_order_no_seq returned no usable value");
+  if (!Number.isSafeInteger(n) || n < 1)
+    throw new Error("orders_order_no_seq returned no usable value");
   return n;
 };
 
-const orderExistsInBusiness = async (tx: Queryable, businessId: Uuid, orderId: Uuid): Promise<boolean> => {
+const orderExistsInBusiness = async (
+  tx: Queryable,
+  businessId: Uuid,
+  orderId: Uuid,
+): Promise<boolean> => {
   const rows = await tx<{ id: string }[]>`
     SELECT id FROM orders WHERE id = ${orderId} AND business_id = ${businessId}
   `;
@@ -61,21 +73,31 @@ export const createOrder = async (
   ctx: OrderContext,
   raw: CreateOrderInput,
 ): Promise<Result<Order, OrderError>> => {
-  if (!canMutateOrders(ctx.role)) return err({ kind: "forbidden", reason: "role cannot create orders" });
+  if (!canMutateOrders(ctx.role))
+    return err({ kind: "forbidden", reason: "role cannot create orders" });
   const valid = CreateOrderInputSchema.safeParse(raw);
   if (!valid.success) {
-    return err({ kind: "invalid_input", message: valid.error.issues.map((i) => i.message).join("; ") });
+    return err({
+      kind: "invalid_input",
+      message: valid.error.issues.map((i) => i.message).join("; "),
+    });
   }
   // Only the parsed value is used from here on: zod strips keys the
   // schema does not name, so nothing unvalidated reaches the contact
   // JSONB or the permanent audit payload.
   // UuidSchema has just checked repeatOfOrderId, so the brand is earned.
-  const input = { ...valid.data, repeatOfOrderId: valid.data.repeatOfOrderId as Uuid | null } satisfies CreateOrderInput;
+  const input = {
+    ...valid.data,
+    repeatOfOrderId: valid.data.repeatOfOrderId as Uuid | null,
+  } satisfies CreateOrderInput;
   const total = computeOrderTotal(input.items, input.orderDiscountPaise, input.deliveryChargePaise);
   if (!total.ok) return total;
 
   return sql.begin(async (tx): Promise<Result<Order, OrderError>> => {
-    if (input.repeatOfOrderId !== null && !(await orderExistsInBusiness(tx, ctx.businessId, input.repeatOfOrderId))) {
+    if (
+      input.repeatOfOrderId !== null &&
+      !(await orderExistsInBusiness(tx, ctx.businessId, input.repeatOfOrderId))
+    ) {
       return err({ kind: "not_found", entity: "Order", id: input.repeatOfOrderId });
     }
     const orderNo = formatOrderNo(await nextOrderNumber(tx));

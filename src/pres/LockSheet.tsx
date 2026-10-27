@@ -14,7 +14,13 @@ export interface LockSheetProps {
 export const LockSheet = ({ messageKey, onDismiss }: LockSheetProps): React.ReactElement => {
   const { locale } = useTranslations();
   return (
-    <div role="dialog" aria-modal="true" aria-labelledby="lock-title" data-testid="lock-sheet" tabIndex={-1}>
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="lock-title"
+      data-testid="lock-sheet"
+      tabIndex={-1}
+    >
       <h2 id="lock-title" data-testid="lock-title">
         {lookup("lock.title", locale)}
       </h2>

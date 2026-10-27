@@ -24,10 +24,18 @@ const walk = (dir: string): string[] =>
 
 describe("NFR5.4 — PCI deny-list over src/orders/", () => {
   test("the deny-list pattern catches what it is meant to catch", () => {
-    for (const bad of ["const cardNumber = x", "cvv: string", "{ pan }", "bankAccount", "accountNumber", "card"]) {
+    for (const bad of [
+      "const cardNumber = x",
+      "cvv: string",
+      "{ pan }",
+      "bankAccount",
+      "accountNumber",
+      "card",
+    ]) {
       expect(DENY.test(bad)).toBe(true);
     }
-    for (const fine of ["span", "panel", "discard", "cardinal", "Pathao"]) expect(DENY.test(fine)).toBe(false);
+    for (const fine of ["span", "panel", "discard", "cardinal", "Pathao"])
+      expect(DENY.test(fine)).toBe(false);
   });
 
   test("no file under src/orders/ contains a denied identifier", () => {

@@ -23,7 +23,10 @@ import { money, type MoneyFigure } from "../money/money-figure.js";
 import type { Completeness } from "../money/types.js";
 import type { Order, OrderBucket, OrderStatus } from "./types.js";
 
-export const EARNED_STATUSES: ReadonlySet<OrderStatus> = new Set<OrderStatus>(["delivered", "settled"]);
+export const EARNED_STATUSES: ReadonlySet<OrderStatus> = new Set<OrderStatus>([
+  "delivered",
+  "settled",
+]);
 export const REALIZED_STATUSES: ReadonlySet<OrderStatus> = new Set<OrderStatus>(["settled"]);
 export const PIPELINE_STATUSES: ReadonlySet<OrderStatus> = new Set<OrderStatus>([
   "new",
@@ -80,7 +83,8 @@ export const bucketTotals = (orders: ReadonlyArray<Priced>): BucketTotals => {
     }
   }
   const earnedCompleteness: Completeness = pipelineCount > 0 ? "partial" : "complete";
-  const realizedCompleteness: Completeness = pipelineCount > 0 || earnedCount > realizedCount ? "partial" : "complete";
+  const realizedCompleteness: Completeness =
+    pipelineCount > 0 || earnedCount > realizedCount ? "partial" : "complete";
   return {
     earned: money(earned, "earned", earnedCompleteness),
     realized: money(realized, "realized", realizedCompleteness),
@@ -106,5 +110,9 @@ export const orderMoneyFigure = (order: Priced): MoneyFigure => {
     : PIPELINE_STATUSES.has(order.status)
       ? "partial"
       : "unknown";
-  return money(order.totalPaise, REALIZED_STATUSES.has(order.status) ? "realized" : "earned", completeness);
+  return money(
+    order.totalPaise,
+    REALIZED_STATUSES.has(order.status) ? "realized" : "earned",
+    completeness,
+  );
 };

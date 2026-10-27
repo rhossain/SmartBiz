@@ -106,7 +106,10 @@ export const buildPasteParseOrder = (
   }
   const incomplete = parsed.items.find((i) => i.incomplete);
   if (incomplete) {
-    return err({ kind: "invalid_input", message: `item ${incomplete.lineNo} is incomplete: pick its details first` });
+    return err({
+      kind: "invalid_input",
+      message: `item ${incomplete.lineNo} is incomplete: pick its details first`,
+    });
   }
   return ok({
     source: "paste-parse",

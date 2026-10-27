@@ -22,4 +22,5 @@ export interface Variant {
 export const getVariant = async (
   _businessId: Uuid,
   variantId: string,
-): Promise<Result<Variant, NotFound>> => err({ kind: "not_found", entity: "Variant", id: variantId });
+): Promise<Result<Variant, NotFound>> =>
+  err({ kind: "not_found", entity: "Variant", id: variantId });

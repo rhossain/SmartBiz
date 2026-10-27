@@ -15,7 +15,13 @@ describe("R1.2 — three-layer gate absence", () => {
     for (const [path, route] of routes) {
       // Public routes: /, /sign-in, /sign-up, /recover, /reset, /accept, /lock.
       const isPublic = [
-        "/", "/sign-in", "/sign-up", "/recover", "/reset", "/accept", "/lock",
+        "/",
+        "/sign-in",
+        "/sign-up",
+        "/recover",
+        "/reset",
+        "/accept",
+        "/lock",
       ].includes(path);
       if (isPublic) {
         expect(route.requiredCapability).toBeNull();
@@ -40,7 +46,12 @@ describe("R1.2 — three-layer gate absence", () => {
 
   test("(2) Owner reaches audit trail + daily card (inverse)", () => {
     expect(capabilitiesFor("owner").has("audit.view")).toBe(true);
-    const ownerSession = { userId: "u", businessId: "b", role: "owner" as const, expiresAt: 1_000_000 };
+    const ownerSession = {
+      userId: "u",
+      businessId: "b",
+      role: "owner" as const,
+      expiresAt: 1_000_000,
+    };
     for (const path of ["/audit-trail", "/daily-card"] as const) {
       const o = atHash(`#${path}`, () => dispatch(ownerSession, 1, undefined));
       expect(o.kind === "render" && o.path).toBe(path);
@@ -48,10 +59,19 @@ describe("R1.2 — three-layer gate absence", () => {
   });
 
   test("(3) a role without the route's capability is redirected to /lock, not rendered", () => {
-    const salesStaffSession = { userId: "u", businessId: "b", role: "sales_staff" as const, expiresAt: 1_000_000 };
+    const salesStaffSession = {
+      userId: "u",
+      businessId: "b",
+      role: "sales_staff" as const,
+      expiresAt: 1_000_000,
+    };
     expect(capabilitiesFor("sales_staff").has("business.edit")).toBe(false);
     const o = atHash("#/business", () => dispatch(salesStaffSession, 1, undefined));
-    expect(o).toMatchObject({ kind: "redirect", to: "/lock", reason: { kind: "forbidden", capability: "business.edit" } });
+    expect(o).toMatchObject({
+      kind: "redirect",
+      to: "/lock",
+      reason: { kind: "forbidden", capability: "business.edit" },
+    });
     const anon = atHash("#/audit-trail", () => dispatch(null, 1, undefined));
     expect(anon).toMatchObject({ kind: "redirect", to: "/sign-in" });
   });
@@ -106,7 +126,11 @@ describe("R1.2 extended (B2) — every U1 + U3 route gated by absence", () => {
         const o = dispatchPath(concrete(path), session(role), 1, undefined);
         const allowed = reach === PUBLIC || (reach ?? []).includes(role);
         const got = o.kind === "render" ? "render" : `redirect:${o.to}`;
-        expect({ path, role, got }).toEqual({ path, role, got: allowed ? "render" : "redirect:/lock" });
+        expect({ path, role, got }).toEqual({
+          path,
+          role,
+          got: allowed ? "render" : "redirect:/lock",
+        });
       }
     }
   });
@@ -115,14 +139,30 @@ describe("R1.2 extended (B2) — every U1 + U3 route gated by absence", () => {
     for (const path of routes.keys()) {
       if (REACH[path] === PUBLIC) continue;
       const anon = dispatchPath(concrete(path), null, 1, undefined);
-      const expired = dispatchPath(concrete(path), { ...session("owner"), expiresAt: 0 }, 1, undefined);
-      expect({ path, anon: anon.kind === "redirect" && anon.to }).toEqual({ path, anon: "/sign-in" });
-      expect({ path, expired: expired.kind === "redirect" && expired.to }).toEqual({ path, expired: "/sign-in" });
+      const expired = dispatchPath(
+        concrete(path),
+        { ...session("owner"), expiresAt: 0 },
+        1,
+        undefined,
+      );
+      expect({ path, anon: anon.kind === "redirect" && anon.to }).toEqual({
+        path,
+        anon: "/sign-in",
+      });
+      expect({ path, expired: expired.kind === "redirect" && expired.to }).toEqual({
+        path,
+        expired: "/sign-in",
+      });
     }
   });
 
   test("inverse: the Owner still reaches order detail, the audit trail and the daily card", () => {
-    for (const raw of [`/orders/${ORDER_ID}`, "/audit-trail", "/daily-card", `/orders/${ORDER_ID}/transition`]) {
+    for (const raw of [
+      `/orders/${ORDER_ID}`,
+      "/audit-trail",
+      "/daily-card",
+      `/orders/${ORDER_ID}/transition`,
+    ]) {
       const o = dispatchPath(raw, session("owner"), 1, undefined);
       expect({ raw, kind: o.kind }).toEqual({ raw, kind: "render" });
     }
@@ -131,7 +171,13 @@ describe("R1.2 extended (B2) — every U1 + U3 route gated by absence", () => {
   });
 
   test("a malformed or unknown order path never reaches a screen", () => {
-    for (const raw of ["/orders/not-a-uuid", "/orders/ORD-1001", "/orders//transition", "/orders/x/y/z", "/nope"]) {
+    for (const raw of [
+      "/orders/not-a-uuid",
+      "/orders/ORD-1001",
+      "/orders//transition",
+      "/orders/x/y/z",
+      "/nope",
+    ]) {
       const o = dispatchPath(raw, session("owner"), 1, undefined);
       expect({ raw, o: o.kind === "redirect" && o.to }).toEqual({ raw, o: "/" });
     }

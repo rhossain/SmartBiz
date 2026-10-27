@@ -24,8 +24,17 @@ export const ResetScreen = ({ onSubmit }: ResetProps): React.ReactElement => {
         }}
       >
         <Field label="token" name="token" value={token} onChange={setToken} required />
-        <Field label="password" name="password" type="password" value={password} onChange={setPassword} required />
-        <button type="submit" data-testid="reset-submit">{t("common.save")}</button>
+        <Field
+          label="password"
+          name="password"
+          type="password"
+          value={password}
+          onChange={setPassword}
+          required
+        />
+        <button type="submit" data-testid="reset-submit">
+          {t("common.save")}
+        </button>
       </form>
     </Screen>
   );

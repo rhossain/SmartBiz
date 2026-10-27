@@ -31,4 +31,5 @@ const BN_TO_ASCII: Record<string, string> = Object.fromEntries(
  * mixed in one message; the parser normalises to ASCII before reading
  * a number. Built from the same table, so the two cannot drift.
  */
-export const toAsciiDigits = (input: string): string => input.replace(/[০-৯]/g, (c) => BN_TO_ASCII[c] ?? c);
+export const toAsciiDigits = (input: string): string =>
+  input.replace(/[০-৯]/g, (c) => BN_TO_ASCII[c] ?? c);

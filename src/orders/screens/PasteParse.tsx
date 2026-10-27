@@ -22,10 +22,21 @@ import { Pill } from "../../pres/Pill.js";
 import { Screen } from "../../pres/Screen.js";
 import { Toast } from "../../pres/Toast.js";
 import { buildPasteParseOrder } from "../input-modes.js";
-import { saveDraft, setPending, useOrderDraft, type OrderDraftStore, type SaveOrder } from "../order-draft.js";
+import {
+  saveDraft,
+  setPending,
+  useOrderDraft,
+  type OrderDraftStore,
+  type SaveOrder,
+} from "../order-draft.js";
 import { parseTakaToPaise } from "../order-total.js";
 import { parseMessage, reparseItem } from "../parse-message.js";
-import { assertNever, type ParsedItem, type ParsedMessage, type ParseFailureReason } from "../types.js";
+import {
+  assertNever,
+  type ParsedItem,
+  type ParsedMessage,
+  type ParseFailureReason,
+} from "../types.js";
 import { tr } from "./copy.js";
 import { DraftStatus } from "./DraftStatus.js";
 
@@ -48,11 +59,17 @@ const stagePending = (store: OrderDraftStore, edits: Edits): void => {
     setPending(store, null);
     return;
   }
-  const r = buildPasteParseOrder(edits.parsed, prices.map((p) => p ?? 0), delivery);
+  const r = buildPasteParseOrder(
+    edits.parsed,
+    prices.map((p) => p ?? 0),
+    delivery,
+  );
   setPending(store, r.ok ? r.value : null);
 };
 
-const reasonKey = (reason: ParseFailureReason): "paste.empty" | "paste.malformed" | "paste.too_large" => {
+const reasonKey = (
+  reason: ParseFailureReason,
+): "paste.empty" | "paste.malformed" | "paste.too_large" => {
   switch (reason) {
     case "empty":
       return "paste.empty";
@@ -123,7 +140,13 @@ export const PasteParse = ({ locale, draft, onSave }: PasteParseProps): React.Re
   return (
     <Screen title={tr("paste.title", locale)}>
       <label htmlFor="paste-box">{tr("paste.box", locale)}</label>
-      <textarea id="paste-box" data-testid="paste-box" rows={7} value={text} onChange={(e) => setText(e.target.value)} />
+      <textarea
+        id="paste-box"
+        data-testid="paste-box"
+        rows={7}
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+      />
       <button type="button" data-testid="paste-parse" onClick={read}>
         {tr("paste.parse", locale)}
       </button>
@@ -131,9 +154,13 @@ export const PasteParse = ({ locale, draft, onSave }: PasteParseProps): React.Re
       {edits !== null ? (
         <div data-testid="paste-result">
           <p data-testid="paste-contact">
-            {[edits.parsed.contact.name, edits.parsed.contact.phone, edits.parsed.contact.address].filter(Boolean).join(" · ")}
+            {[edits.parsed.contact.name, edits.parsed.contact.phone, edits.parsed.contact.address]
+              .filter(Boolean)
+              .join(" · ")}
           </p>
-          {edits.parsed.cashOnDelivery ? <Pill kind="neutral" label={tr("paste.cod", locale)} /> : null}
+          {edits.parsed.cashOnDelivery ? (
+            <Pill kind="neutral" label={tr("paste.cod", locale)} />
+          ) : null}
           {edits.parsed.unattached.length > 0 ? (
             <p role="alert" data-testid="paste-unattached">
               {`${tr("paste.unattached", locale)}: ${edits.parsed.unattached.join(" · ")}`}
@@ -151,11 +178,15 @@ export const PasteParse = ({ locale, draft, onSave }: PasteParseProps): React.Re
                     ...edits,
                     parsed: {
                       ...edits.parsed,
-                      items: edits.parsed.items.map((it, i) => (i === index ? reparseItem(it.lineNo, t) : it)),
+                      items: edits.parsed.items.map((it, i) =>
+                        i === index ? reparseItem(it.lineNo, t) : it,
+                      ),
                     },
                   })
                 }
-                onPrice={(p) => apply({ ...edits, prices: edits.prices.map((old, i) => (i === index ? p : old)) })}
+                onPrice={(p) =>
+                  apply({ ...edits, prices: edits.prices.map((old, i) => (i === index ? p : old)) })
+                }
               />
             ))}
           </ol>

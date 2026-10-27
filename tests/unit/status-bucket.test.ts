@@ -34,9 +34,15 @@ describe("R2.3 — status-bucket math", () => {
 
   test("bucketOf names the narrowest bucket", () => {
     expect(ALL.map((s) => [s, bucketOf(s)])).toEqual([
-      ["new", "pipeline"], ["confirmed", "pipeline"], ["packed", "pipeline"], ["shipped", "pipeline"],
-      ["partial", "pipeline"], ["delivered", "earned"], ["settled", "realized"],
-      ["cancelled", "none"], ["returned", "none"],
+      ["new", "pipeline"],
+      ["confirmed", "pipeline"],
+      ["packed", "pipeline"],
+      ["shipped", "pipeline"],
+      ["partial", "pipeline"],
+      ["delivered", "earned"],
+      ["settled", "realized"],
+      ["cancelled", "none"],
+      ["returned", "none"],
     ]);
   });
 
@@ -59,12 +65,16 @@ describe("R2.3 — status-bucket math", () => {
     expect(t.earned.paise).toBe(sum(EARNED));
     expect(t.realized.paise).toBe(sum(REALIZED));
     expect(t.pipeline.paise).toBe(sum(PIPELINE));
-    for (const f of [t.earned, t.realized, t.pipeline]) expect(Number.isInteger(f.paise)).toBe(true);
+    for (const f of [t.earned, t.realized, t.pipeline])
+      expect(Number.isInteger(f.paise)).toBe(true);
     expect(t.counts).toEqual({ earned: 2, realized: 1, pipeline: 5, none: 2, total: 9 });
   });
 
   test("every figure carries its basis and completeness", () => {
-    const mixed = bucketTotals([{ status: "new", totalPaise: 1 }, { status: "delivered", totalPaise: 2 }]);
+    const mixed = bucketTotals([
+      { status: "new", totalPaise: 1 },
+      { status: "delivered", totalPaise: 2 },
+    ]);
     expect(mixed.earned).toMatchObject({ recognition: "earned", completeness: "partial" });
     expect(mixed.realized).toMatchObject({ recognition: "realized", completeness: "partial" });
     expect(mixed.pipeline).toMatchObject({ recognition: "earned", completeness: "partial" });
@@ -76,9 +86,25 @@ describe("R2.3 — status-bucket math", () => {
   });
 
   test("one order's figure: realized only when settled; unknown completeness out of every bucket", () => {
-    expect(orderMoneyFigure({ status: "settled", totalPaise: 7 })).toEqual({ paise: 7, recognition: "realized", completeness: "complete" });
-    expect(orderMoneyFigure({ status: "delivered", totalPaise: 7 })).toEqual({ paise: 7, recognition: "earned", completeness: "complete" });
-    expect(orderMoneyFigure({ status: "shipped", totalPaise: 7 })).toEqual({ paise: 7, recognition: "earned", completeness: "partial" });
-    expect(orderMoneyFigure({ status: "cancelled", totalPaise: 7 })).toEqual({ paise: 7, recognition: "earned", completeness: "unknown" });
+    expect(orderMoneyFigure({ status: "settled", totalPaise: 7 })).toEqual({
+      paise: 7,
+      recognition: "realized",
+      completeness: "complete",
+    });
+    expect(orderMoneyFigure({ status: "delivered", totalPaise: 7 })).toEqual({
+      paise: 7,
+      recognition: "earned",
+      completeness: "complete",
+    });
+    expect(orderMoneyFigure({ status: "shipped", totalPaise: 7 })).toEqual({
+      paise: 7,
+      recognition: "earned",
+      completeness: "partial",
+    });
+    expect(orderMoneyFigure({ status: "cancelled", totalPaise: 7 })).toEqual({
+      paise: 7,
+      recognition: "earned",
+      completeness: "unknown",
+    });
   });
 });

@@ -23,7 +23,9 @@ export const RecoverScreen = ({ onSubmit }: RecoverProps): React.ReactElement =>
         }}
       >
         <Field label="email" name="email" type="email" value={email} onChange={setEmail} required />
-        <button type="submit" data-testid="recover-submit">{t("common.save")}</button>
+        <button type="submit" data-testid="recover-submit">
+          {t("common.save")}
+        </button>
       </form>
     </Screen>
   );

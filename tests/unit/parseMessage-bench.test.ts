@@ -15,10 +15,10 @@ const COLOURS = ["কালো", "সাদা", "লাল", "নীল", "স�
 const SIZES = ["S", "M", "L", "XL", "XXL"];
 const JOIN = ["\n", " আর ", " এবং ", ", ", " তারপর "];
 
-const message = Array.from({ length: 200 }, (_, i) => `${COLOURS[i % 7]} কুর্তি ${SIZES[i % 5]} ${(i % 9) + 1}টা`).reduce(
-  (acc, line, i) => (i === 0 ? line : `${acc}${JOIN[i % 5]}${line}`),
-  "",
-);
+const message = Array.from(
+  { length: 200 },
+  (_, i) => `${COLOURS[i % 7]} কুর্তি ${SIZES[i % 5]} ${(i % 9) + 1}টা`,
+).reduce((acc, line, i) => (i === 0 ? line : `${acc}${JOIN[i % 5]}${line}`), "");
 
 describe("NFR6.7.1 — parseMessage micro-benchmark", () => {
   test(`p95 ≤ ${BUDGET_MS} ms for 200 items (CI gate ${limitMs} ms)`, () => {

@@ -30,12 +30,19 @@ describe("input-mode builders", () => {
     const draft = {
       customerId: "C-07",
       contact: null,
-      items: [itemInput({ lineDiscountPaise: 5_000 }), itemInput({ description: "ওড়না", quantity: 1 })],
+      items: [
+        itemInput({ lineDiscountPaise: 5_000 }),
+        itemInput({ description: "ওড়না", quantity: 1 }),
+      ],
       orderDiscountPaise: 2_000,
       deliveryChargePaise: 12_000,
     };
     const input = buildManualOrder(draft);
-    expect(input).toMatchObject({ source: "manual", repeatOfOrderId: null, orderDiscountPaise: 2_000 });
+    expect(input).toMatchObject({
+      source: "manual",
+      repeatOfOrderId: null,
+      orderDiscountPaise: 2_000,
+    });
     expect(input.items).toEqual(draft.items);
     const saved = await createOrder(makeSqlStub().sql, ctx, input);
     // (2 × 1 250.00 − 50.00) + 1 × 1 250.00 − 20.00 + 120.00, in paise.
@@ -53,7 +60,13 @@ describe("input-mode builders", () => {
     });
     expect(input.source).toBe("quick-add");
     expect(input.items).toEqual([
-      { variantId: "V-12", description: "নীল জিন্স", quantity: 1, unitPricePaise: 180_000, lineDiscountPaise: 0 },
+      {
+        variantId: "V-12",
+        description: "নীল জিন্স",
+        quantity: 1,
+        unitPricePaise: 180_000,
+        lineDiscountPaise: 0,
+      },
     ]);
     expect(input.orderDiscountPaise).toBe(0);
   });
@@ -79,7 +92,9 @@ describe("input-mode builders", () => {
     expect(again.value.status).toBe("new");
     expect(again.value.totalPaise).toBe(past.value.totalPaise);
     const pastIds = new Set(past.value.items.map((i) => i.id));
-    expect(again.value.items.every((i) => !pastIds.has(i.id) && i.orderId === again.value.id)).toBe(true);
+    expect(again.value.items.every((i) => !pastIds.has(i.id) && i.orderId === again.value.id)).toBe(
+      true,
+    );
   });
 
   test("paste-parse: a clean parse becomes an order with source paste-parse and the parsed contact", () => {
@@ -90,7 +105,10 @@ describe("input-mode builders", () => {
     if (!r.ok) return;
     expect(r.value.source).toBe("paste-parse");
     expect(r.value.contact?.phone).toBe("01711234567");
-    expect(r.value.items.map((i) => [i.quantity, i.unitPricePaise])).toEqual([[1, 125_000], [2, 60_000]]);
+    expect(r.value.items.map((i) => [i.quantity, i.unitPricePaise])).toEqual([
+      [1, 125_000],
+      [2, 60_000],
+    ]);
   });
 
   test("paste-parse: an incomplete item must be fixed before save", () => {
