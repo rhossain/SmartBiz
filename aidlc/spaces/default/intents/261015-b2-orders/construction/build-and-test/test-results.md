@@ -164,6 +164,12 @@ Final verdicts for this run. `build-and-test-summary.md` carries the same matrix
     to the operation phase.
 - **Rung 3 (automatic loop-back):** not taken. Construction autonomy is `gated`, so the decision goes
   to the Owner (rung 4).
+- **Rung 4 (halt-and-ask), 2026-10-27:** the Owner chose **"Accept failure"** (Q2). T-JSONB and
+  T-DEPS stay **Not Met** and are carried as open defects with the impact-estimated fixes above. They
+  must be fixed before any production deploy, and the double-encoded audit rows before the first
+  real business uses the system. NFR2.1, NFR1.4 and NFR3.2 stay **Unverified** (Q3, recorded as
+  "Accept as Unverified for this Bolt" on the Owner's "Decide for me") and carry to the operation
+  phase. No targets were weakened.
 
 ## Loop-Back Log
 

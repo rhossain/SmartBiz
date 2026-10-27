@@ -14,6 +14,9 @@
   - T-DEPS: dependency advisories.
   - NFR2.1, NFR1.4, NFR3.2: Unverified, because no stage in this workflow owns them.
 
+**Owner decision (2026-10-27):** "Accept failure". T-JSONB and T-DEPS are carried as open defects.
+NFR2.1, NFR1.4 and NFR3.2 are accepted as Unverified for this Bolt. No target was weakened.
+
 ## Test type inventory
 
 | Type | Instruction file | Status |
