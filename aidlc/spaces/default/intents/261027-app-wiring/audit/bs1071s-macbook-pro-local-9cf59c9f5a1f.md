@@ -4412,3 +4412,102 @@
 **Details**: Q1-Q7 all A (see domain-design-questions.md)
 
 ---
+
+## Review Requested
+**Timestamp**: 2026-10-27T11:12:52Z
+**Event**: REVIEW_REQUESTED
+**Stage**: domain-design
+**Reviewer**: aidlc-architecture-reviewer-agent
+**Iteration**: 1
+**Artifact Fingerprint**: sha256:2ba8cf29220d4f7afbae8a550a57d20e09866a735a9b788d7f347487b50b4d95
+**Request Id**: review:fb2bf8c557f9b27cf37cf394fafc3380
+**Review File**: .aidlc-engine/reviews/domain-design/stage/3b4d6d2a68054b28/1.fb2bf8c557f9b27cf37cf394fafc3380.review.md
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-27T11:13:38Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: a5bd6e71aa7d29b39
+**Message**: Reading domain-design traceability.json
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-27T11:14:13Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: afc2607c100f9a110
+**Message**: Checking zod-schemas.ts imports
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-10-27T11:14:19Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/reviews/domain-design/stage/3b4d6d2a68054b28/1.fb2bf8c557f9b27cf37cf394fafc3380.review.md
+**Context**: .aidlc-engine > reviews > domain-design > stage > 3b4d6d2a68054b28 > 1.fb2bf8c557f9b27cf37cf394fafc3380.review.md
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-27T11:14:30Z
+**Event**: HUMAN_TURN
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-27T11:14:30Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: aidlc-architecture-reviewer-agent
+**Agent ID**: ae187f454443e364a
+
+---
+
+## Review Completed
+**Timestamp**: 2026-10-27T11:14:39Z
+**Event**: REVIEW_COMPLETED
+**Stage**: domain-design
+**Reviewer**: aidlc-architecture-reviewer-agent
+**Iteration**: 1
+**Verdict**: READY
+**Request Fingerprint**: sha256:2ba8cf29220d4f7afbae8a550a57d20e09866a735a9b788d7f347487b50b4d95
+**Artifact Fingerprint**: sha256:2ba8cf29220d4f7afbae8a550a57d20e09866a735a9b788d7f347487b50b4d95
+**Request Id**: review:fb2bf8c557f9b27cf37cf394fafc3380
+**Review Record**: .aidlc-engine/reviews/domain-design/stage/3b4d6d2a68054b28/1.json
+**Review Record Digest**: sha256:9d252da555b114a65c41184414805a00e68bf17af61c19a20b41cff44db7ca04
+
+---
+
+## Decision Recorded
+**Timestamp**: 2026-10-27T11:14:39Z
+**Event**: DECISION_RECORDED
+**Stage**: domain-design
+**Decision**: Domain Design review READY (advisory). Follow-ups recorded in components.md 'Review follow-ups': R-01 domain enums move to DataComponent and each feature owns its schemas; R-02 lock screen and shared order display pieces (MoneyCell, status labels) move to PresentationComponent so imports stay one-way; R-03 order-draft drops the logger; R-04 src/types joins DataComponent with sha256 moving server-side; R-05 migration impacts listed for Functional Design; R-06 order_items DELETE vs team.md carried to Functional Design (same as requirements R-01).
+
+---
+
+## Guard Stood Aside
+**Timestamp**: 2026-10-27T11:14:49Z
+**Event**: GUARD_STOOD_ASIDE
+**Guard**: review-freeze
+**Authority**: grant
+**Grant**: turn-marker
+**Actor**: main
+**Stage**: domain-design
+**Tool**: Edit
+**Details**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/inception/domain-design/components.md
+
+---
+
+## Artifact Updated
+**Timestamp**: 2026-10-27T11:14:49Z
+**Event**: ARTIFACT_UPDATED
+**Tool**: Edit
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/inception/domain-design/components.md
+**Context**: inception > domain-design > components.md
+
+---

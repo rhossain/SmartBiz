@@ -674,6 +674,19 @@ All are free and run on this machine (project.md Forbidden; NFR10).
 
 **Alternatives Rejected** (detail in `decisions.md`): handlers per feature directory (ADR-001); screens calling `fetch` directly (ADR-002); orders reading catalog tables (ADR-003); separate Customer and Product components, and keeping `lowVariants` in MoneyEngine (ADR-004); a separate Staff component (ADR-005).
 
+## Review follow-ups (architecture review, iteration 1, READY)
+
+Decided on the Owner's standing instruction; each is a constraint on the first Unit's Functional Design.
+
+| Finding | Decision |
+|---------|----------|
+| R-01 `data/zod-schemas.ts` imports enums from `orders/types.ts`, and orders imports the schemas back (a hidden Data ↔ Orders cycle) | Domain enums and literal unions shared by both sides (order status, source, role) move into `DataComponent`; each feature owns its own request and response schemas in its directory (`orders/schemas.ts`, `catalog/schemas.ts`), importing only from `DataComponent`. DataComponent keeps no feature imports, and a lint rule (`no-restricted-imports` in `src/data/**`) enforces it. |
+| R-02 `orders/screens/render-orders-route.tsx` imports `router/screens/Lock`; customer history would need Orders' `MoneyCell` and status labels in Catalog screens | The lock screen moves to `PresentationComponent` (beside `LockSheet`). Display pieces that both features show (`MoneyCell`, status-bucket labels) move to `PresentationComponent` as props-only components. Import rule: feature screens import Presentation, I18n, ApiClient and Data only; never another feature or the router. The customer order history gets its data from `ApiClientComponent.listOrders({customerId})`. |
+| R-03 `orders/order-draft.ts` imports the server-only logger | The draft store logs nothing; it returns errors to the screen. The Orders → Observability edge stays undeclared because it is removed. |
+| R-04 `src/types/` has no owner, and `uuid`/`sha256` use `node:crypto` | `src/types/` (Result, Uuid, isUuid) joins `DataComponent`, with `uuid()` on Web Crypto. `sha256` moves to `AuthComponent` (server only), its only user. |
+| R-05 migration impact understated | Functional Design lists: `orders.customer_id` and `order_items.variant_id` change from TEXT to UUID references (Bolt 2; Bolt 1 keeps TEXT and the UUID-only id rule); `sessions.token_hash` is added beside the existing `id` key; `users.business_id` and `businesses.owner_user_id` form a circular pair, so the foreign key is `DEFERRABLE INITIALLY DEFERRED` and both rows are written in one sign-up transaction. |
+| R-06 `order_items` DELETE (migration 0009) versus team.md "DELETE only on sessions" | Not decided here: carried, with requirements review R-01, to Functional Design, which either removes the DELETE (order edits replace items by a new version) or records a sourced team.md amendment. Until then the realdb grant gate declares the 0009 grant explicitly so it stays red-visible, not silently allowed. |
+
 ## Sources
 
 - Requirements FR1–FR7, NFR1–NFR10: `../requirements-analysis/requirements.md`
