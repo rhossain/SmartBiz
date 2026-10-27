@@ -4693,3 +4693,55 @@
 **Agent**: aidlc-architect-agent
 
 ---
+
+## Artifact Created
+**Timestamp**: 2026-10-27T11:16:08Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/inception/units-generation/units-generation-questions.md
+**Context**: inception > units-generation > units-generation-questions.md
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-10-27T11:16:31Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/inception/units-generation/unit-of-work.md
+**Context**: inception > units-generation > unit-of-work.md
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-10-27T11:16:43Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/inception/units-generation/unit-of-work-dependency.md
+**Context**: inception > units-generation > unit-of-work-dependency.md
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-10-27T11:16:55Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/inception/units-generation/unit-of-work-story-map.md
+**Context**: inception > units-generation > unit-of-work-story-map.md
+
+---
+
+## Decision Recorded
+**Timestamp**: 2026-10-27T11:17:08Z
+**Event**: DECISION_RECORDED
+**Stage**: units-generation
+**Decision**: Units Generation Q1-Q6 answered A and the decomposition plan approved by the assistant on the Owner's standing instruction: 5 delivery-slice Units (u1-skeleton service, u2-app-shell ui, u3-staff service, u4-catalog service, u5-orders-catalog service); DAG U1->U2->{U3,U4}, U4->U5.
+
+---
+
+## Question Answered
+**Timestamp**: 2026-10-27T11:17:08Z
+**Event**: QUESTION_ANSWERED
+**Stage**: units-generation
+**Details**: Q1-Q6 all A; plan approved (see units-generation-questions.md)
+
+---
