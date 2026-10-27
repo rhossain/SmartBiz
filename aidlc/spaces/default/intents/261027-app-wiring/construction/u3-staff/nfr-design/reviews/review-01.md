@@ -1,0 +1,38 @@
+## Review
+
+**Verdict:** NOT-READY
+**Reviewer:** aidlc-architecture-reviewer-agent
+**Iteration:** 1
+
+### Prior findings
+
+| ID | Severity | Location | Finding | Required action | Status |
+|---|---|---|---|---|---|
+| - | - | - | No prior findings | No action required | Resolved |
+
+### New findings
+
+| ID | Severity | Location | Finding | Required action | Status |
+|---|---|---|---|---|---|
+| D-01 | Major | construction/u3-staff/nfr-design/security-design.md > S21; logical-components.md (no row for src/auth/hash-gate.ts) | S21 calls `deps.hashGate.tryOccupy()`, but the shipped `HashGate` (src/auth/hash-gate.ts) exposes only `run`, `inFlight` and `waiting`, and `run` blocks (queues up to 20) when the permits are taken. No non-blocking acquire exists. The design does not add it, and the logical-components inventory does not list a change to hash-gate.ts. S21 also says the slot is held "for 0 ms of work", which is a synchronous acquire and release. That has no effect, so it cannot meet the stated purpose in N-02 (a recover flood must not run faster than sign-in attempts). The "identical gate calls for any email" spy test has nothing real to spy on. | Specify the HashGate change: the `tryOccupy(): boolean` signature, its behaviour at 0 free permits and with waiters queued (it must not jump the queue), and whether it holds the permit for any time. Either give it an observable effect (for example a minimum hold, or counting against the queue) or drop the claim and the N-02 purpose. List hash-gate.ts and its unit test in logical-components. | Open |
+| D-02 | Major | construction/u3-staff/nfr-design/logical-components.md > "Staff client and screens" row; nfr-design-questions.md Q3; security-design.md S24 | The design places the screens in `src/auth/screens/{Staff,AcceptInvite,Reset,Recover}.tsx`. That directory does not exist. The shipped accept, reset and recover screens are `src/router/screens/{Accept,Reset,Recover}.tsx`, routed through `render-auth-route.tsx`. The routes `/accept-invite`, `/reset` and `/recover` are currently `renderNotAvailable` stubs in `src/router/routes.ts`. Q3 says brownfield means change in place with no duplicates, which contradicts adding parallel files. The lint rules also matter: `src/**/screens/**` forbids imports of `**/client/*` and `**/auth/*` (SCREEN_PATTERNS), and `src/pres/**` forbids client and router imports. So StaffScreen cannot call `staff-api.ts`, and the Accept/Reset screens cannot do their own fetch. The functional design says StaffScreen "loads GET /api/staff", and S24's "first effect, before any fetch" assumes the screen fetches. The design never says where the data loading, token handling and navigation container lives (App.tsx or a render-*-route in the U2 style), or that routes.ts, App.tsx, the Shell nav entry for "কর্মী" and the new `staff-api` factory are modified. | Decide the screen paths. Either rewrite the router/screens files in place or move them deliberately and delete the old ones. State the container pattern: screens take data and callbacks as props, and App or a route renderer owns `staff-api`, `history.replaceState`, token-in-ref and navigation. Add the routes.ts, App.tsx, dispatch/render route and Shell changes to logical-components, and state that LinkSheet takes only props. | Open |
+| D-03 | Major | construction/u3-staff/nfr-design/security-design.md > S19 step 5 and S22; reliability-design.md R14 | Lock orders conflict between invite and accept. Invite locks the business row `FOR UPDATE` first, then supersedes the pending invitation (an UPDATE of the invitation row). Accept locks the invitation row `FOR UPDATE`, then inserts into `users`, whose business foreign key takes `FOR KEY SHARE` on the business row (the audit insert does the same earlier). `FOR UPDATE` conflicts with `FOR KEY SHARE`. So invite A (business lock held, wants invitation X) and accept of X (invitation X held, wants the business row) deadlock. The documented lock-order discipline (users → resets; business first for invites) does not cover this pair. Accept has one retry. Invite and reset-link are not wrapped in `withRetry`, so the invite side can surface a 500 from 40P01. No test exercises this pair. | Make the order uniform: accept takes the business row lock first (`FOR SHARE` or `FOR NO KEY UPDATE`), then the invitation row. Alternatively remove the business lock from the supersede path and use an advisory lock keyed on the business. State the order for every transaction in one table. Decide whether `withRetry` also wraps invite and reset-link. Add a realdb test that runs invite-supersede against accept of the same invitation. | Open |
+| D-04 | Minor | construction/u3-staff/nfr-design/security-design.md > S24 | The claim that "U1's static handler already sends Referrer-Policy: no-referrer" is imprecise. static.ts sets only Content-Type and Cache-Control. The header comes from `withHeaders` in pipeline.ts, which wraps every static and API response (SECURITY_HEADERS includes it). `Cache-Control: no-store` on `/api/` also comes from `withHeaders({api:true})`. The behaviour is correct, so no design change is needed. | Reword S24 to name `withHeaders` in headers.ts as the source of both headers. | Open |
+| D-05 | Minor | construction/u3-staff/nfr-design/security-design.md > S18 and S25 | `linkFor(kind, token, port)` needs the server port. The terminal script runs outside the server, and the design does not say where it reads the port (`PORT` env, default 3000 in config.ts). S18 also specifies `crypto.subtle` SHA-256 beside the existing `src/auth/sha256.ts`, so there would be two hashers. Q1 says the module "reuses" U1's helpers, which is inconsistent. | State that the script reads the port through the same config loader (or `PORT` with default 3000), and that `hashToken` delegates to `sha256.ts`. | Open |
+| D-06 | Minor | construction/u3-staff/nfr-design/logical-components.md | The inventory omits files the design changes: `src/server/routes.ts` (PUBLIC_ALLOW_LIST and the new routes), `src/server/types.ts` (deps.hooks), `src/auth/audit.ts`, `src/auth/hash-gate.ts`, `src/router/*`, and the deletion of `attempt-limiter.ts` flowLimiters usage. The inventory is therefore not a reliable work list for Code Generation or for the import-all and coverage gates. | Add the missing rows, or state that the inventory lists only new modules and give a separate changed-files list. | Open |
+
+### Validation Tool Results
+
+| Tool | Result | Interpretation |
+|---|---|---|
+| Manual checks against shipped code | HashGate has no `tryOccupy`; `src/auth/screens` absent; the router screens exist; the pipeline `withHeaders` sets no-store on `/api/` and `Referrer-Policy: no-referrer` on all responses; `gone` and `rate_limited` are already in status-map; the race-test design (B paused inside its transaction after `FOR UPDATE`, A blocking, mutant without `FOR UPDATE` fails) is sound; traceability targets all resolve to existing sections; no new dependency or spend. | Confirms D-01, D-02 and D-03; the remaining items passed. |
+
+### Summary
+
+The security design is largely sound: the token path, the race-test mechanism, the headers, the zero-dependency posture and the traceability all hold up against the shipped code. Three Major gaps block it. The hash gate needs a method that does not exist and would do nothing as described. The screen locations and wiring contradict the shipped router layout and the browser lint rules. The invite and accept lock orders form a real deadlock that the documented ordering does not cover.
+
+### Findings
+
+| ID | Severity | Location | Finding | Required action | Status |
+|---|---|---|---|---|---|
+| - | - | - | No findings | No action required | Resolved |

@@ -22,3 +22,34 @@
 | bun process | invitations and resets unavailable; the terminal command still works | everyone until restart |
 | Postgres | 503 on every U3 route; no token consumed | every data operation |
 | The Owner's terminal | no recovery path for the Owner | the Owner only; staff still have staff reset links |
+
+## Changed files (added after review iteration 1, D-02 and D-06)
+
+The "Staff client and screens" row above is replaced by the screens and containers below. Every listed
+file is new (N), rewritten in place (R) or modified (M); the old files are not duplicated.
+
+| File | Change | Why |
+|------|--------|-----|
+| `src/auth/one-time-token.ts` | N | S18 (hashing via `sha256.ts`) |
+| `src/auth/delegation.ts` | N | S20 |
+| `src/auth/invite.ts`, `src/auth/accept-invite.ts`, `src/auth/password-reset.ts`, `src/auth/recover.ts` | R | S19, S21 (revised), S22, S23 |
+| `src/auth/audit.ts` | M | four new helpers; four retired helpers deleted |
+| `src/auth/schemas.ts` | M | C6 request and response schemas (B1–B5) |
+| `src/auth/attempt-limiter.ts` and callers | M | `flowLimiters` (invite, accept, recovery) removed; the sign-in limiter stays |
+| `src/db/retry.ts` | N | `withRetry` |
+| `src/db/migrations/0017_unique_token_hashes.sql` | N | SC6 |
+| `src/server/handlers/staff.ts` | N | staff routes |
+| `src/server/handlers/auth.ts` | M | accept, recover, reset |
+| `src/server/routes.ts` | M | six routes; `PUBLIC_ALLOW_LIST` + three |
+| `src/server/types.ts` | M | optional `deps.hooks` (tests only) |
+| `src/client/staff-api.ts` | N | the staff client |
+| `src/router/screens/Accept.tsx`, `Reset.tsx`, `Recover.tsx` | R | props-only screens |
+| `src/router/screens/Staff.tsx` | N | props-only screen |
+| `src/router/render-staff-route.tsx` | N | container for `/staff` |
+| `src/router/screens/render-auth-route.tsx` | M | containers for accept, reset, recover |
+| `src/router/routes.ts`, `src/router/App.tsx` | M | routes, nav item, client wiring |
+| `src/pres/LinkSheet.tsx` | N | props-only link sheet |
+| `src/i18n/*` | M | U3 copy and audit action labels |
+| `src/audit/screens/AuditTrail.tsx` (label map) | M | O15 |
+| `scripts/reset-password.ts`, `package.json` (script only) | N/M | S25 |
+| `tests/spec/role-table.ts`, `tests/spec/fixtures.ts` | M | U3 rows, fixtures, link allow-list |
