@@ -4369,3 +4369,46 @@
 **Agent**: aidlc-architect-agent
 
 ---
+
+## Artifact Created
+**Timestamp**: 2026-10-27T11:09:52Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/inception/domain-design/domain-design-questions.md
+**Context**: inception > domain-design > domain-design-questions.md
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-10-27T11:11:47Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/inception/domain-design/components.md
+**Context**: inception > domain-design > components.md
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-10-27T11:12:33Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/inception/domain-design/decisions.md
+**Context**: inception > domain-design > decisions.md
+
+---
+
+## Decision Recorded
+**Timestamp**: 2026-10-27T11:12:50Z
+**Event**: DECISION_RECORDED
+**Stage**: domain-design
+**Decision**: Domain design Q1-Q7 answered A by the assistant on the Owner's standing instruction: ApiServerComponent, ApiClientComponent, one CatalogComponent, orders read catalog via its functions, low stock moves to Catalog, Auth owns staff and resets, src/db is PersistenceComponent.
+
+---
+
+## Question Answered
+**Timestamp**: 2026-10-27T11:12:50Z
+**Event**: QUESTION_ANSWERED
+**Stage**: domain-design
+**Details**: Q1-Q7 all A (see domain-design-questions.md)
+
+---
