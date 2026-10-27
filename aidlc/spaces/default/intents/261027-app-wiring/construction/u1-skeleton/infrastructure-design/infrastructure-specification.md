@@ -58,6 +58,6 @@ If free space drops below 2 GiB the gate runner stops before starting a containe
 | `README.md` | prerequisites, `docker compose up -d`, `bun run start`, backup and restore commands, FileVault note |
 | `package.json` scripts | `start` (build only when `dist/` is missing → migrate with `.env.migrate` → serve, appending logs), `build`, `serve`, `migrate`, `test:realdb`, `test:e2e`, `bench`, `check:bundle`, `check:secrets`, `mutants`, `smoke`, `gate`, `logs:summary` |
 | `.github/workflows/ci.yml` | trigger branches corrected; new gate steps (see `cicd-pipeline.md`) |
-| `.gitignore` | adds `backups/`, `.env.migrate`, `logs/` (already ignored by the `logs` pattern) |
+| `.gitignore` | adds `backups/` and the exception `!.env.migrate.example` (the existing `.env.*` pattern already ignores `.env.migrate`; `logs/` is already ignored by the `logs` pattern) |
 | `scripts/gate.ts` | the one-command local gate runner (see `cicd-pipeline.md`), written in U1 Code Generation with the file tool |
 | `scripts/smoke.ts`, `scripts/mutants.ts` + `tests/mutants.json`, `scripts/log-summary.ts`, `scripts/check-bundle.ts`, `scripts/secret-scan.ts` + `secret-scan.allow` | the commands the pipeline calls |
