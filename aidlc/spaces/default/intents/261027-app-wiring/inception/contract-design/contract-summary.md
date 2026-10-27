@@ -39,6 +39,10 @@ headers_on_every_response:
   Content-Security-Policy: "default-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'"
   X-Content-Type-Options: nosniff
   Referrer-Policy: no-referrer
+  X-Frame-Options: DENY                      # NFR4; frame-ancestors covers modern browsers, this covers older ones
+origin_rule: >
+  Every POST, PATCH and DELETE, public routes included, must carry an Origin header exactly equal to the
+  origin above; a missing Origin header is refused with 403 forbidden. GET and HEAD are not checked.
 headers_on_api_responses:
   Cache-Control: no-store
   X-Correlation-Id: <id>                     # same id as the server log line and audit rows
@@ -294,6 +298,11 @@ x-terminal-command:
   output: one line on stdout with the reset link (30 minutes); exit 0; unknown email -> exit 1 with a message, no link
   note: runs on this machine only, with DATABASE_URL from .env
 link_format: "http://127.0.0.1:${PORT}/#/accept-invite?t=<token>  |  /#/reset?t=<token>"   # client reads t, then history.replaceState to drop it before any request
+token_outcomes: "an unknown, used or expired token all return 410 with the identical body {error: gone}, so a guess cannot learn whether a token exists"
+link_carve_out: >
+  FR2.8, NFR3 and team.md's no-secret test forbid tokens in responses. The two `link` responses above are
+  the only, recorded exception (user-stories Q8): the raw token is returned once to the Owner or Manager who
+  created it, stored only as a hash, never logged. The logger deny-list adds the keys `link` and `t`.
 ```
 
 ## C7 — Catalog endpoints (U4)
@@ -419,6 +428,20 @@ declared_set:                     # the realdb gate compares pg_catalog with thi
 5. C8 is owned by U4; U5 may not query catalog tables directly. Adding a field to `CustomerRef` or `VariantRef` is additive; removing one is breaking.
 6. C9's declared set is the source of truth for the realdb grant gate; a Unit that adds a table adds its row in the same commit.
 
+## Review follow-ups (architecture review, iteration 1, READY)
+
+| Finding | Decision (Owner's standing instruction) | Owner |
+|---------|------------------------------------------|-------|
+| R-01 C9's set does not match the migrations (0001–0005 grant nothing; 0009 grants `order_items` SELECT, INSERT, DELETE, not UPDATE) | U1 Functional Design writes the grants migration for the auth tables and corrects C9 to the real `order_items` grants; the DELETE question below is settled there, before U1 Code Generation | U1 |
+| R-02 auth domain kinds (`invalid_credentials`, `email_taken`, `invalid_token`, `expired_token`, `already_used`, …) have no wire mapping | U1 and U3 Functional Design map each domain kind to one C1 kind (for example `invalid_credentials` → `unauthenticated`; `invalid_token`/`expired_token`/`already_used` → `gone`; `email_taken` → `conflict`, never returned for a DB error); the server mapping is a total `switch`, so an unmapped kind fails the type-check | U1, U3 |
+| R-03 catalog writes and staff reset links name no capability | U4 and U3 Functional Design name the capability for every route (reusing `business.view`, `money.mutate.*`, `staff.invite` where they fit) and add C5 rows before U2's role table is final | U4, U3 |
+| R-04 `link` versus no-secret rules | Fixed in C6 (`link_carve_out`) | — |
+| R-05 `X-Frame-Options` missing | Fixed in C1 | — |
+| R-06 cookie value and `maxAge` differ from `session.ts` | U1 Functional Design aligns `session.ts` with C1 (random 32-byte value, hash stored); the session-cookie lifetime choice is recorded there | U1 |
+| R-07 unknown token outcome | Fixed in C6 (`token_outcomes`) | — |
+| R-08 Origin rule, unbounded lists, non-UUID `customerId` filter | Origin fixed in C1. `/api/staff`, `/api/suppliers` and `/api/low-stock` return at most 200 rows in this intent and say `truncated: true` beyond that; U1 answers a non-UUID `customerId` filter with an empty page until U5 | U1, U3, U4 |
+| R-09 questions answered by the code | C4 closed below; the `order_items` question stays open (migration 0009 grants DELETE, team.md forbids it — a conflict, not an answer) | — |
+
 ## Open questions
 
 | Contract | Question | Blocks |
@@ -426,5 +449,5 @@ declared_set:                     # the realdb gate compares pg_catalog with thi
 | C9 | Does `order_items` keep DELETE (B2 migration 0009), or does an order edit replace items another way? (domain-design R-06, requirements R-01) | U1 |
 | C6 | Delegation matrix: may a Manager invite or reset another Manager? (user-stories R-05) | U3 |
 | C7 | Do Sales Staff see purchase cost on product reads? (refined-mockups R-04) | U4 |
-| C4 | Does the Manager keep `audit.view`? (code finding P-18) | U2 |
+| C4 | ~~Does the Manager keep `audit.view`?~~ Closed: `capability.ts` grants it and the approved role table (US5.1) keeps it | — |
 | C1 | Body size limit of 64 KiB: enough for the largest paste-parse order? Confirmed in NFR Requirements | U1 |

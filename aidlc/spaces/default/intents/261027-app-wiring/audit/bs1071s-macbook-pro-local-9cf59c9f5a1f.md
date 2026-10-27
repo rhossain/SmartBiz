@@ -5195,3 +5195,200 @@
 **Details**: Q1-Q6 all A (see contract-design-questions.md)
 
 ---
+
+## Review Requested
+**Timestamp**: 2026-10-27T11:23:29Z
+**Event**: REVIEW_REQUESTED
+**Stage**: contract-design
+**Reviewer**: aidlc-architecture-reviewer-agent
+**Iteration**: 1
+**Artifact Fingerprint**: sha256:a2c3df44e9a740cab1a5cf981cbec55d2961ba4568e4ba35182f13acbbc7150a
+**Request Id**: review:6d05a15478bcd08f7a3ef21746e79f19
+**Replaces Request Id**: review:12be3a4fcb475a3318422a23ce6ac98d
+**Review File**: .aidlc-engine/reviews/contract-design/stage/2b7cfd3ea8a47ef0/1.6d05a15478bcd08f7a3ef21746e79f19.review.md
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-27T11:24:26Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: a768cbea6d48c6629
+**Message**: Checking contract-summary.md against migrations
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-27T11:25:00Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: abb6979f6a1d8497e
+**Message**: Grepping requirements.md FR3–FR7 lines
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-27T11:25:35Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: a51a2414df72d20a9
+**Message**: Creating review directory for contract-design
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-10-27T11:25:38Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/reviews/contract-design/stage/2b7cfd3ea8a47ef0/1.6d05a15478bcd08f7a3ef21746e79f19.review.md
+**Context**: .aidlc-engine > reviews > contract-design > stage > 2b7cfd3ea8a47ef0 > 1.6d05a15478bcd08f7a3ef21746e79f19.review.md
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-27T11:25:52Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: aidlc-architecture-reviewer-agent
+**Agent ID**: a2b1c4331b5cd3722
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-27T11:25:52Z
+**Event**: HUMAN_TURN
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+
+---
+
+## Review Completed
+**Timestamp**: 2026-10-27T11:26:02Z
+**Event**: REVIEW_COMPLETED
+**Stage**: contract-design
+**Reviewer**: aidlc-architecture-reviewer-agent
+**Iteration**: 1
+**Verdict**: READY
+**Request Fingerprint**: sha256:a2c3df44e9a740cab1a5cf981cbec55d2961ba4568e4ba35182f13acbbc7150a
+**Artifact Fingerprint**: sha256:a2c3df44e9a740cab1a5cf981cbec55d2961ba4568e4ba35182f13acbbc7150a
+**Request Id**: review:6d05a15478bcd08f7a3ef21746e79f19
+**Review Record**: .aidlc-engine/reviews/contract-design/stage/2b7cfd3ea8a47ef0/1.json
+**Review Record Digest**: sha256:422a33dcf7826e2ed24d3a20bf39500d6f5795e6ce25274456af6baf109cd786
+
+---
+
+## Decision Recorded
+**Timestamp**: 2026-10-27T11:26:03Z
+**Event**: DECISION_RECORDED
+**Stage**: contract-design
+**Decision**: Contract Design review READY (advisory). Fixed after review: R-05 X-Frame-Options DENY in C1; R-07 unknown, used and expired tokens all 410 with identical body; R-08 Origin rule for missing header and public POSTs, list bounds, non-UUID customerId filter; R-04 link carve-out recorded and link/t added to the redaction deny-list; R-09 Manager audit.view closed (code and role table agree). Carried to Functional Design: R-01 grants migration and order_items DELETE (U1, before Code Generation), R-02 auth kind wire mapping (U1, U3), R-03 catalog and reset-link capabilities (U4, U3), R-06 cookie value and maxAge alignment (U1).
+
+---
+
+## Guard Stood Aside
+**Timestamp**: 2026-10-27T11:26:05Z
+**Event**: GUARD_STOOD_ASIDE
+**Guard**: review-freeze
+**Authority**: grant
+**Grant**: turn-marker
+**Actor**: main
+**Stage**: contract-design
+**Tool**: Edit
+**Details**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/inception/contract-design/contract-summary.md
+
+---
+
+## Artifact Updated
+**Timestamp**: 2026-10-27T11:26:06Z
+**Event**: ARTIFACT_UPDATED
+**Tool**: Edit
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/inception/contract-design/contract-summary.md
+**Context**: inception > contract-design > contract-summary.md
+
+---
+
+## Guard Stood Aside
+**Timestamp**: 2026-10-27T11:26:10Z
+**Event**: GUARD_STOOD_ASIDE
+**Guard**: review-freeze
+**Authority**: grant
+**Grant**: turn-marker
+**Actor**: main
+**Stage**: contract-design
+**Tool**: Edit
+**Details**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/inception/contract-design/contract-summary.md
+
+---
+
+## Artifact Updated
+**Timestamp**: 2026-10-27T11:26:12Z
+**Event**: ARTIFACT_UPDATED
+**Tool**: Edit
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/inception/contract-design/contract-summary.md
+**Context**: inception > contract-design > contract-summary.md
+
+---
+
+## Guard Stood Aside
+**Timestamp**: 2026-10-27T11:26:14Z
+**Event**: GUARD_STOOD_ASIDE
+**Guard**: review-freeze
+**Authority**: grant
+**Grant**: turn-marker
+**Actor**: main
+**Stage**: contract-design
+**Tool**: Edit
+**Details**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/inception/contract-design/contract-summary.md
+
+---
+
+## Artifact Updated
+**Timestamp**: 2026-10-27T11:26:17Z
+**Event**: ARTIFACT_UPDATED
+**Tool**: Edit
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/inception/contract-design/contract-summary.md
+**Context**: inception > contract-design > contract-summary.md
+
+---
+
+## Guard Stood Aside
+**Timestamp**: 2026-10-27T11:26:24Z
+**Event**: GUARD_STOOD_ASIDE
+**Guard**: review-freeze
+**Authority**: grant
+**Grant**: turn-marker
+**Actor**: main
+**Stage**: contract-design
+**Tool**: Edit
+**Details**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/inception/contract-design/contract-summary.md
+
+---
+
+## Artifact Updated
+**Timestamp**: 2026-10-27T11:26:28Z
+**Event**: ARTIFACT_UPDATED
+**Tool**: Edit
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/inception/contract-design/contract-summary.md
+**Context**: inception > contract-design > contract-summary.md
+
+---
+
+## Guard Stood Aside
+**Timestamp**: 2026-10-27T11:26:57Z
+**Event**: GUARD_STOOD_ASIDE
+**Guard**: review-freeze
+**Authority**: grant
+**Grant**: turn-marker
+**Actor**: main
+**Stage**: contract-design
+**Tool**: Edit
+**Details**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/inception/contract-design/contract-summary.md
+
+---
+
+## Artifact Updated
+**Timestamp**: 2026-10-27T11:26:59Z
+**Event**: ARTIFACT_UPDATED
+**Tool**: Edit
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/inception/contract-design/contract-summary.md
+**Context**: inception > contract-design > contract-summary.md
+
+---
