@@ -88,3 +88,17 @@ The audit payload is not returned at all in this intent (U2 Q3), so no customer 
 ## Anti-requirements
 
 No new authentication method, no MFA and no CSRF token beyond the Origin rule in this intent (requirements: CSRF hardening beyond NFR5 was deferred to NFR Design and settled there by U1). No static application scanner (team.md: no Semgrep for now).
+
+## Review follow-ups (architecture review, iteration 1, READY)
+
+Decided on the Owner's standing instruction; each binds U2's NFR Design and Code Generation. Where this
+section and an earlier paragraph disagree, this section wins.
+
+| Finding | Decision |
+|---------|----------|
+| N-01 Audit read input and failure edges | New **NFR3.15**: `GET /api/audit` parses its query with a `.strict()` zod schema before any SQL; `limit` 0, 51, negative, non-integer or non-numeric, an unknown query key, and a cursor that is malformed, truncated or not decodable to (ISO time, UUID) each give 400 `invalid_input`, never 500, and the body echoes no cursor or SQL text. The business id comes only from the session, so a well-formed cursor built from another business's row returns only the caller's rows. Verified by handler tests on the SQL stub and a realdb test with a foreign-business cursor. New **NFR7.14**: with the database down, `GET /api/audit` answers 503 `db_unavailable` with a coded body and the process stays up; verified by adding the audit route to U1's outage realdb test. The STRIDE "Denial of service" and "Information disclosure" rows point to NFR3.15. |
+| N-02 Contrast and colour-only meaning | New **NFR9.9**: every colour in U2's new and changed CSS (audit table, `ApiState` views, lock and not-available screens, toast) comes from `tokens.css`; no state is shown by colour alone (each error, warning and success view carries text and an icon or label); the existing `tests/unit/contrast.test.ts` harness runs over the whole stylesheet's token pairs, and a stylesheet test fails on any literal colour outside `tokens.css`. |
+| N-03 Audit index | NFR6.17's index is a new migration (`0016_add_audit_log_keyset_idx.sql`): an index on `audit_log (business_id, occurred_at DESC, id DESC)`; grants are unaffected (an index needs no grant). The `EXPLAIN` assertion runs only on the 20 000-row large profile and names that index. The older `audit_log_business_idx` stays. |
+| N-04 Log line of the audit read | NFR3.13 and NFR8.11 are verified by a log-capture test: `GET /api/audit?cursor=…` with an actor email in the rows; no log line contains the cursor, the query string or any email; the request line logs the route pattern only (as U1's NFR8.1 already requires). |
+| N-05 Real-browser checks | NFR6.14 measures `loadEventEnd` minus `navigationStart` (`performance.timing`) and closes U1's NFR6.7. The 360 px check (NFR9.6) signs in as the Owner on a seeded base profile through the real sign-in screen, sets the viewport with `Emulation.setDeviceMetricsOverride` (360 × 740, scale 1), and visits every screen route in the role table that the Owner can open plus sign-in and not-found. With Chrome absent, both NFR6.14 and NFR9.6 are recorded as known deviations for the Owner to decide (F-10), never as passed or Deferred. |
+| N-06 Walk budget and row counts | NFR6.16 allows one rerun when the first run exceeds 60 s, and fails if the rerun also exceeds it (the result line names both times). The hard row counts in NFR6.18 are descriptive only; the walks print the counts they actually checked (NFR8.12). |
