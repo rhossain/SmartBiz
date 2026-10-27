@@ -141,11 +141,11 @@ layer is implemented, together with the full existing suite, before the next lay
 
 ### Step 8 — Business logic: write and run its tests
 
-- [ ] `tests/unit/view-for-kind.test.ts`: every kind maps to exactly one behaviour; the key set equals `error-copy.ts`'s key set (D-07).
-- [ ] `tests/unit/submit-guard.test.tsx`: two `submit()` calls in one tick send one request; states move idle → saving → saved/failed; fields untouched on failure.
-- [ ] `tests/unit/session-return.test.ts` (extend): `#/accept-invite?t=abc` signed out stores `null`; `#/orders?x=1` stores `/orders`; no later request URL contains `t=` or `x=` (S16, NFR5.7).
-- [ ] `tests/unit/router.test.ts` (extend): query ignored in matching; `/orders/not-a-uuid` resolves to not-found and no fetch is made.
-- [ ] Add mutants to `tests/mutants.json`: return route keeps the query (→ `session-return.test.ts`); save guard drops the latch (→ `submit-guard.test.tsx`).
+- [x] `tests/unit/view-for-kind.test.ts`: every kind maps to exactly one behaviour; the key set equals `error-copy.ts`'s key set (D-07).
+- [x] `tests/unit/submit-guard.test.tsx`: two `submit()` calls in one tick send one request; states move idle → saving → saved/failed; fields untouched on failure.
+- [x] `tests/unit/session-return.test.ts` (extend): `#/accept-invite?t=abc` signed out stores `null`; `#/orders?x=1` stores `/orders`; no later request URL contains `t=` or `x=` (S16, NFR5.7).
+- [x] `tests/unit/router.test.ts` (extend): query ignored in matching; `/orders/not-a-uuid` resolves to not-found and no fetch is made.
+- [x] Add mutants to `tests/mutants.json`: return route keeps the query (→ `session-return.test.ts`); save guard drops the latch (→ `submit-guard.test.tsx`).
 
 ### Step 9 — API / endpoint: implement (C4; BR7.5; S13, R11, O11; NFR3.15)
 

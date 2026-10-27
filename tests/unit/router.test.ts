@@ -1,10 +1,25 @@
 /**
  * Coverage booster — router + dispatch tests.
  */
-import { describe, expect, test } from "bun:test";
+import { afterEach, describe, expect, test } from "bun:test";
+import * as React from "react";
+import { act, cleanup, render, waitFor } from "@testing-library/react";
 import { routes } from "../../src/router/routes.js";
-import { dispatch } from "../../src/router/dispatch.js";
+import { dispatch, dispatchPath } from "../../src/router/dispatch.js";
+import {
+  assertParamParsers,
+  matchRoute,
+  pathOf,
+  ROUTE_PARAMS,
+} from "../../src/router/hash-router.js";
+import { App } from "../../src/router/App.js";
+import { createOrdersStore } from "../../src/client/orders-store.js";
+import { createSessionStore } from "../../src/client/session-store.js";
+import { createOrderDraftStore } from "../../src/orders/order-draft.js";
 import { isOk } from "../../src/data/result.js";
+import { browserClient } from "../helpers/browser-fetch.js";
+import { makeSqlStub } from "../helpers/sql-stub.js";
+import { harness } from "../helpers/server-harness.js";
 
 describe("router coverage", () => {
   test("every public route is registered", () => {
@@ -82,5 +97,73 @@ describe("router coverage", () => {
     for (const [, route] of routes) {
       expect(typeof route.render).toBe("function");
     }
+  });
+});
+
+/*
+ * U2 (W1 step 2; BR1.3, BR1.4; F-06): the query never takes part in matching; every `:id`
+ * is parsed by its route's own parser before any screen sees it; a value that fails goes to
+ * the not-found screen and no request is sent for it.
+ */
+const ID = "0f0f0f0f-0f0f-4f0f-8f0f-0f0f0f0f0f0f";
+const owner = { userId: "u", businessId: "b", role: "owner" as const, expiresAt: 1_000_000 };
+
+describe("U2 route parameters and queries", () => {
+  test("the query after ? is ignored in matching", () => {
+    expect(matchRoute("/orders?x=1")).toEqual({ path: "/orders", params: {} });
+    expect(matchRoute(`/orders/${ID}?t=abc`)).toEqual({ path: "/orders/:id", params: { id: ID } });
+    expect(matchRoute(`/orders/${ID}/transition?x=1`)?.path).toBe("/orders/:id/transition");
+    expect(pathOf("/sign-in?t=1")).toBe("/sign-in");
+    expect(pathOf("?t=1")).toBe("/");
+  });
+
+  test("each :id route has its own UUID parser; a failure matches nothing", () => {
+    expect(Object.keys(ROUTE_PARAMS).sort()).toEqual(["/orders/:id", "/orders/:id/transition"]);
+    for (const raw of ["/orders/not-a-uuid", "/orders/ORD-1001", `/orders/${ID}x/transition`]) {
+      expect({ raw, m: matchRoute(raw) }).toEqual({ raw, m: null });
+      const o = dispatchPath(raw, owner, 1, undefined);
+      expect({ raw, to: o.kind === "redirect" && o.to }).toEqual({ raw, to: "/not-found" });
+    }
+    // The parser hands the screen a normalised value.
+    expect(matchRoute(`/orders/${ID.toUpperCase()}`)?.params).toEqual({ id: ID });
+  });
+
+  test("a parameterised route without a parser fails at load", () => {
+    expect(() => assertParamParsers(["/orders/:id"])).not.toThrow();
+    expect(() => assertParamParsers(["/orders/:orderId" as never])).toThrow(
+      /route \/orders\/:orderId has no parser for :orderId/,
+    );
+  });
+});
+
+describe("U2 a bad :id sends no request (BR1.3)", () => {
+  afterEach(() => cleanup());
+
+  test("/orders/not-a-uuid as the Owner lands on not-found and fetches no order", async () => {
+    const h = harness(makeSqlStub());
+    const client = browserClient(h);
+    expect(
+      (
+        await client.auth.signUp({
+          businessName: "Acme",
+          email: "owner@acme.test",
+          password: "correct-horse-1",
+        })
+      ).ok,
+    ).toBe(true);
+    await act(async () => {
+      window.location.hash = "/orders/not-a-uuid";
+    });
+    const deps = {
+      http: client.http,
+      auth: client.auth,
+      orders: client.orders,
+      sessions: createSessionStore(),
+      ordersStore: createOrdersStore(),
+      draft: createOrderDraftStore(),
+    };
+    render(React.createElement(App, { deps }));
+    await waitFor(() => expect(window.location.hash).toBe("#/not-found"));
+    expect(client.net.calls.filter((c) => c.path.startsWith("/api/orders"))).toEqual([]);
   });
 });

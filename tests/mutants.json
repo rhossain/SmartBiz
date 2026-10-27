@@ -112,6 +112,22 @@
       "find": "    hostname: BIND_HOST,",
       "replace": "    hostname: \"0.0.0.0\",",
       "test": "tests/unit/server-bind.test.ts"
+    },
+    {
+      "id": "return-route-keeps-query",
+      "why": "The remembered route is the path only (U2 S16, D-01, NFR5.7); keeping the query would store and resend a token from #/accept-invite?t=…",
+      "file": "src/client/session-store.ts",
+      "find": "  return NOT_A_RETURN_TARGET.has(path) ? null : path;",
+      "replace": "  return NOT_A_RETURN_TARGET.has(path) ? null : route;",
+      "test": "tests/unit/session-return.test.ts"
+    },
+    {
+      "id": "save-guard-drops-latch",
+      "why": "A submit while saving is ignored (U2 BR6.1, D-08); without the latch a double click sends two writes.",
+      "file": "src/pres/use-submit-guard.ts",
+      "find": "    if (latch.current) return; // BR6.1: a submit while saving is ignored.\n",
+      "replace": "",
+      "test": "tests/unit/submit-guard.test.tsx"
     }
   ]
 }
