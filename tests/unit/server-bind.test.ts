@@ -28,7 +28,7 @@ afterEach(async () => {
 describe("server listener", () => {
   test("binds 127.0.0.1 and answers there", async () => {
     running = await startServer(
-      { port: 0, databaseUrl: "postgres://smartbiz_app:x@127.0.0.1:5432/smartbiz" },
+      { port: 0, databaseUrl: "postgres://smartbiz_app@127.0.0.1:5432/smartbiz" },
       { sql: stubSql(), distDir: null },
     );
     expect(running.hostname).toBe("127.0.0.1");
@@ -44,7 +44,7 @@ describe("server listener", () => {
     ) as unknown as Sql;
     await expect(
       startServer(
-        { port: 0, databaseUrl: "postgres://p:x@127.0.0.1/s" },
+        { port: 0, databaseUrl: "postgres://postgres@127.0.0.1/s" },
         { sql: su, distDir: null },
       ),
     ).rejects.toThrow("superuser");

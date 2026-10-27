@@ -9964,3 +9964,175 @@
 **Details**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/code-generation/code-summary.md
 
 ---
+
+## Unit Started
+**Timestamp**: 2026-10-27T16:09:30Z
+**Event**: UNIT_STARTED
+**Stage**: code-generation
+**Unit**: u1-skeleton
+**Run floor**: WORKFLOW_STARTED:2026-10-27T06:05:58Z#1
+
+---
+
+## Unit Completed
+**Timestamp**: 2026-10-27T16:09:35Z
+**Event**: UNIT_COMPLETED
+**Stage**: code-generation
+**Unit**: u1-skeleton
+**Run floor**: WORKFLOW_STARTED:2026-10-27T06:05:58Z#1
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-10-27T16:10:16Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/verification-command.txt
+**Context**: verification-command.txt
+
+---
+
+## Decision Recorded
+**Timestamp**: 2026-10-27T16:10:18Z
+**Event**: DECISION_RECORDED
+**Stage**: code-generation
+**Decision**: Use this command to verify each completed Unit?
+**Options**: Approve,Request Changes
+**Checkpoint**: Construction Verification Command
+**Command SHA-256**: b6e2e214dd780220b0f72a9f2d906f0fad0d62e37afd018fae65289dd1f65122
+**Command Label**: bun run gate
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-27T16:10:24Z
+**Event**: HUMAN_TURN
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+**Picked**: ["Approve"]
+
+---
+
+## Question Replied
+**Timestamp**: 2026-10-27T16:10:24Z
+**Event**: QUESTION_REPLIED
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+**Question**: Use this command to verify each completed Unit? `bun run gate`
+**Reply**: Approve
+
+---
+
+## Verification Command Recorded
+**Timestamp**: 2026-10-27T16:10:33Z
+**Event**: VERIFICATION_COMMAND_RECORDED
+**Stage**: code-generation
+**Details**: Approve
+**Checkpoint**: Construction Verification Command
+**Command SHA-256**: b6e2e214dd780220b0f72a9f2d906f0fad0d62e37afd018fae65289dd1f65122
+**Command Label**: bun run gate
+**User Input**: Approve
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+**Person Reply**: Approve
+
+---
+
+## Change Accepted
+**Timestamp**: 2026-10-27T16:10:58Z
+**Event**: CHANGE_ACCEPTED
+**Stage**: functional-design
+**Unit**: u1-skeleton
+**Checkpoint**: review-receipt
+**Changed**: (paths unavailable)
+**Recorded**: sha256:2f0b49160ebdee4324914ef9d02958c8a7e9b49ffa7cb5d352587bcf9adf8c4b
+**Current**: sha256:3139b3e293356d4005fdd0c4a962b3369d450c4c7b6e34dcc216d44003203cd6
+**Details**: The skeleton Unit's Functional Design documents changed after they were reviewed; carrying on.
+
+---
+
+## Change Accepted
+**Timestamp**: 2026-10-27T16:10:58Z
+**Event**: CHANGE_ACCEPTED
+**Stage**: nfr-requirements
+**Unit**: u1-skeleton
+**Checkpoint**: review-receipt
+**Changed**: (paths unavailable)
+**Recorded**: sha256:0e04a717bf897dcc41be55639217c6d17b35447365e53a566b0fa424bd5aedfc
+**Current**: sha256:316e168476f2bf0f68aab09ed8755d9a5c934efabe8ca443929adad7e94c2c91
+**Details**: The skeleton Unit's NFR Requirements documents changed after they were reviewed; carrying on.
+
+---
+
+## Change Accepted
+**Timestamp**: 2026-10-27T16:10:58Z
+**Event**: CHANGE_ACCEPTED
+**Stage**: nfr-design
+**Unit**: u1-skeleton
+**Checkpoint**: review-receipt
+**Changed**: (paths unavailable)
+**Recorded**: sha256:cc58e612567f9090fd190449f7677b60e25a6ab68b4ee2e6e6583cc9daec8c42
+**Current**: sha256:b68ed91587a7498ebf1d5bf76ce96e50c8e84678babb5784c4601aa724c6bf52
+**Details**: The skeleton Unit's NFR Design documents changed after they were reviewed; carrying on.
+
+---
+
+## Change Accepted
+**Timestamp**: 2026-10-27T16:10:58Z
+**Event**: CHANGE_ACCEPTED
+**Stage**: infrastructure-design
+**Unit**: u1-skeleton
+**Checkpoint**: review-receipt
+**Changed**: (paths unavailable)
+**Recorded**: sha256:1331235dcdb8dee23206fb6c596527b628565b79c6ea146e60c971381d781d25
+**Current**: sha256:825a4ab80f0729745be69a98cc44ef4ce3e5e4ef2c6298dcde1ad0aad55b185b
+**Details**: The skeleton Unit's Infrastructure Design documents changed after they were reviewed; carrying on.
+
+---
+
+## Change Accepted
+**Timestamp**: 2026-10-27T16:10:58Z
+**Event**: CHANGE_ACCEPTED
+**Stage**: code-generation
+**Unit**: u1-skeleton
+**Checkpoint**: review-receipt
+**Changed**: (paths unavailable)
+**Recorded**: sha256:7c8769de9f8ab3fdbbcdf608612922170145240452a70be7e86e16af29383a80
+**Current**: sha256:eebfaeb52e0ae4e0304bdb10607ecb47e6c5ea9f1062cb6d045f9fb2e7c50bfa
+**Details**: The skeleton Unit's Code Generation documents changed after they were reviewed; carrying on.
+
+---
+
+## Change Accepted
+**Timestamp**: 2026-10-27T16:10:58Z
+**Event**: CHANGE_ACCEPTED
+**Stage**: code-generation
+**Unit**: u1-skeleton
+**Checkpoint**: review-receipt
+**Changed**: (paths unavailable)
+**Recorded**: sha256:48c0af8670e9ba43b55b8708ab833e7549ffdef4115bab43e893d376a1e4bd1c
+**Current**: sha256:ce17738d42f3b23bb28c8b26f723f2b3530f80929524e2cdaee412bc2ab048e0
+**Details**: The skeleton Unit's list of files changed after it was reviewed; carrying on.
+
+---
+
+## Checkpoint Verification Recorded
+**Timestamp**: 2026-10-27T16:12:31Z
+**Event**: CHECKPOINT_VERIFICATION_RECORDED
+**Unit**: u1-skeleton
+**Kind**: skeleton
+**Stage**: code-generation
+**Stages**: functional-design, nfr-requirements, nfr-design, infrastructure-design, code-generation
+**Verification Id**: b317bf34-2464-4bd2-b563-895e2308e14e
+**Fingerprint**: sha256:2028d6b0c74e074de6d154864c813e27a0a3a2b21e2f8747daf2eadaac2ad649
+**Command SHA-256**: b6e2e214dd780220b0f72a9f2d906f0fad0d62e37afd018fae65289dd1f65122
+**Exit Code**: 1
+**Verified**: false
+**Run floor**: WORKFLOW_STARTED:2026-10-27T06:05:58Z#1
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-27T16:12:33Z
+**Event**: HUMAN_TURN
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+
+---
