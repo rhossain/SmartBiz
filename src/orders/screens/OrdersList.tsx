@@ -290,7 +290,8 @@ export const OrdersList = (props: OrdersListProps): React.ReactElement => {
           {...(props.onRetry ? { onRetry: props.onRetry } : {})}
         />
       ) : null}
-      <div data-testid="orders-summary">
+      {/* U2 (BR9.1): the three figures wrap at 360 px instead of pushing the page sideways. */}
+      <div data-testid="orders-summary" className="summary">
         <span>{tr("orders.earned", locale)}</span>
         <MoneyCell figure={totals.earned} locale={locale} testId="orders-summary-earned" />
         <span>{tr("orders.realized", locale)}</span>

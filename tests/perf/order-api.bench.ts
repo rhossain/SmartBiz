@@ -15,6 +15,12 @@
  *   NFR6.8  5 signed-in clients in parallel, 50 calls each: zero errors, p95 still ≤ 300 ms;
  *   NFR6.9  (`large`) 10 % of the 10 000 orders carry 10 line revisions, and the first and a
  *           cursor page still meet NFR6.1.
+ * U2 (P9, D-10, I-04; NFR6.13, NFR6.17): `GET /api/audit`, first page and a cursor page
+ * (limit 50), p95 ≤ 300 ms each, after seeding audit rows straight into `audit_log` with the
+ * admin login: `base` adds 2 000 rows for the business (the small default check); `large`
+ * adds 20 000 for the business spread over 2 years, 2 000 for a second business and 1 000
+ * past retention, runs `ANALYZE audit_log`, and asserts that the `EXPLAIN` plan of both
+ * page queries names `audit_log_business_keyset_idx` (migration 0016).
  * Prints p50/p95/max per route and one result line; exits 1 when any target is missed.
  */
 import postgres from "postgres";
@@ -42,6 +48,42 @@ const ADMIN = process.env["REALDB_ADMIN_URL"];
 const APP = process.env["REALDB_APP_URL"];
 const large = process.argv.includes("--profile=large");
 const ORDERS = large ? 10_000 : 1_000;
+/** U2 (NFR6.13, D-10): audit rows seeded for the business, a second business, past retention. */
+const AUDIT_ROWS = large ? 20_000 : 2_000;
+const AUDIT_FOREIGN = large ? 2_000 : 0;
+const AUDIT_EXPIRED = large ? 1_000 : 0;
+export const AUDIT_INDEX = "audit_log_business_keyset_idx";
+
+/** Seed `count` audit rows in one statement (admin login; FK triggers off for a foreign id). */
+const seedAudit = async (
+  admin: postgres.Sql,
+  opts: {
+    readonly businessId: string;
+    readonly actor: string | null;
+    readonly count: number;
+    readonly expired: boolean;
+    readonly foreign: boolean;
+  },
+): Promise<void> => {
+  if (opts.count === 0) return;
+  // Spread over 2 years before the bench start; expired rows are 6 years old with retention gone.
+  const start = opts.expired ? "2020-01-01T00:00:00Z" : "2024-01-01T00:00:00Z";
+  const step = Math.max(1, Math.floor((2 * 365 * 24 * 3600) / opts.count));
+  await admin.begin(async (tx) => {
+    if (opts.foreign) await tx`SET LOCAL session_replication_role = replica`;
+    await tx`
+      INSERT INTO audit_log (id, business_id, actor_user_id, correlation_id, action,
+                             subject_kind, subject_id, payload, reverses_id,
+                             occurred_at, retention_until)
+      SELECT gen_random_uuid(), ${opts.businessId}::uuid, ${opts.actor}::uuid,
+             'bench' || g, 'order.update', 'order', NULL, '{}'::jsonb, NULL,
+             ${start}::timestamptz + (g * ${step}) * interval '1 second' + (g % 1000) * interval '1 millisecond',
+             CASE WHEN ${opts.expired} THEN now() - interval '1 day'
+                  ELSE ${start}::timestamptz + (g * ${step}) * interval '1 second' + interval '5 years' END
+      FROM generate_series(1, ${opts.count}) AS g
+    `;
+  });
+};
 
 const say = (line: string): void => {
   process.stdout.write(`${line}\n`);
@@ -158,6 +200,57 @@ const main = async (): Promise<void> => {
     };
     const anyId = firstPage.orders[0]?.id ?? "";
 
+    // U2 (P9): the audit trail at this profile's size, then its first page's cursor.
+    const admin = postgres(withDb(ADMIN, dbName), { max: 1, onnotice: () => undefined });
+    try {
+      const mine = { businessId: session.businessId, actor: session.user.id };
+      await seedAudit(admin, { ...mine, count: AUDIT_ROWS, expired: false, foreign: false });
+      await seedAudit(admin, { ...mine, count: AUDIT_EXPIRED, expired: true, foreign: false });
+      await seedAudit(admin, {
+        businessId: crypto.randomUUID(),
+        actor: null,
+        count: AUDIT_FOREIGN,
+        expired: false,
+        foreign: true,
+      });
+      if (large) {
+        await admin`ANALYZE audit_log`;
+        const nowIso = new Date().toISOString();
+        const plans: string[] = [];
+        for (const cursorAt of [null, "2025-01-01T00:00:00.000Z"]) {
+          const cursorId = cursorAt === null ? null : "ffffffff-ffff-4fff-bfff-ffffffffffff";
+          // The same statement as src/audit/audit-read.ts, under EXPLAIN (I-04).
+          const rows = await admin<{ "QUERY PLAN": string }[]>`
+            EXPLAIN SELECT a.id, a.occurred_at, a.action, a.subject_kind, a.subject_id,
+                   a.correlation_id, a.reverses_id, u.email AS actor_email
+            FROM audit_log a
+            LEFT JOIN users u ON u.id = a.actor_user_id
+            WHERE a.business_id = ${session.businessId}
+              AND a.retention_until > ${nowIso}::timestamptz
+              AND (${cursorAt}::timestamptz IS NULL OR (a.occurred_at, a.id) < (${cursorAt}::timestamptz, ${cursorId}::uuid))
+            ORDER BY a.occurred_at DESC, a.id DESC
+            LIMIT ${51}
+          `;
+          plans.push(rows.map((r) => r["QUERY PLAN"]).join("\n"));
+        }
+        const usesIndex = plans.every((p) => p.includes(AUDIT_INDEX));
+        say(
+          `EXPLAIN audit page (first, cursor): ${usesIndex ? AUDIT_INDEX : "NOT the keyset index"}`,
+        );
+        if (!usesIndex)
+          misses.push(`the audit page plan does not use ${AUDIT_INDEX}:\n${plans.join("\n---\n")}`);
+      }
+    } finally {
+      await admin.end({ timeout: 5 });
+    }
+    const auditFirst = (await (
+      await fetch(`${base}/api/audit`, { headers: { Cookie: cookie } })
+    ).json()) as { entries: unknown[]; nextCursor: string | null };
+    if (auditFirst.entries.length !== 50 || auditFirst.nextCursor === null) {
+      throw new Error("the audit trail did not answer a full first page");
+    }
+    const auditCursor = auditFirst.nextCursor;
+
     let k = 0;
     const timed: Array<{ route: string; make: (i: number) => Promise<Response> }> = [
       { route: "GET /api/health", make: () => fetch(`${base}/api/health`) },
@@ -180,6 +273,18 @@ const main = async (): Promise<void> => {
       {
         route: "GET /api/orders/:id",
         make: () => fetch(`${base}/api/orders/${anyId}`, { headers: { Cookie: cookie } }),
+      },
+      // U2 (NFR6.13): the audit trail's first page and a cursor page, limit 50.
+      {
+        route: "GET /api/audit",
+        make: () => fetch(`${base}/api/audit`, { headers: { Cookie: cookie } }),
+      },
+      {
+        route: "GET /api/audit (cursor page)",
+        make: () =>
+          fetch(`${base}/api/audit?cursor=${encodeURIComponent(auditCursor)}`, {
+            headers: { Cookie: cookie },
+          }),
       },
       {
         route: "POST /api/orders",
@@ -234,7 +339,7 @@ const main = async (): Promise<void> => {
       },
     ];
     say(
-      `profile ${large ? "large" : "base"}: ${ORDERS} orders; ${SAMPLES} timed calls per route after ${WARMUP} warm-up`,
+      `profile ${large ? "large" : "base"}: ${ORDERS} orders; audit +${AUDIT_ROWS} rows (+${AUDIT_FOREIGN} foreign, +${AUDIT_EXPIRED} expired); ${SAMPLES} timed calls per route after ${WARMUP} warm-up`,
     );
     say("route | p50 ms | p95 ms | max ms");
     for (const t of timed) {

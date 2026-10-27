@@ -17,6 +17,14 @@
  * 6. A cross-origin POST and a non-JSON POST answer 403.
  * 7. In happy-dom, the real App, talking to the real server, renders every U1 route for the
  *    Owner (orders list, the three create screens, detail, lock, not-found).
+ * U2 (AC5.2a.2 widened by units R-01; NFR4.2; S11):
+ *   - step 5 walks the API rows of tests/spec/role-table.ts (the one role table), not a
+ *     hand-kept list, and first checks they equal the registered route table both ways;
+ *   - step 7 walks EVERY screen row of the role table for the Owner and waits for the row's
+ *     heading (the detail rows use this run's real order number); the public entry routes
+ *     (`/`, `/sign-in`, `/sign-up`) send a signed-in Owner on to the orders list;
+ *   - one `GET /api/audit` as the Owner is read for the C1 headers, `Cache-Control:
+ *     no-store` and `X-Correlation-Id` included.
  * The child server and the database are always removed. One result line; exit 1 on failure.
  */
 import postgres from "postgres";
@@ -25,6 +33,7 @@ import type { Role } from "../../src/data/enums.js";
 import { APP_ROLE, declaredGrantMap } from "../../src/db/declared-grants.js";
 import { runMigrations } from "../../src/db/migrate.js";
 import { routeKey, routes } from "../../src/server/routes.js";
+import { API_ROWS, apiKey, isAllowed, SCREEN_ROWS } from "../spec/role-table.js";
 
 const ADMIN = process.env["REALDB_ADMIN_URL"];
 const APP = process.env["REALDB_APP_URL"];
@@ -53,22 +62,6 @@ const S5: Readonly<Record<string, string>> = {
 };
 
 const ALL: ReadonlyArray<Role> = ["owner", "manager", "sales_staff", "accountant"];
-const MUTATE: ReadonlyArray<Role> = ["owner", "manager", "sales_staff"];
-/** Restated reach (C5 shape), as in tests/integration/server-gate-absence.test.ts. */
-const REACH: Readonly<Record<string, ReadonlyArray<Role> | "public">> = {
-  "GET /api/health": "public",
-  "GET /api/setup": "public",
-  "POST /api/auth/sign-up": "public",
-  "POST /api/auth/sign-in": "public",
-  "POST /api/auth/sign-out": "public",
-  "GET /api/session": ALL,
-  "GET /api/orders": ALL,
-  "POST /api/orders": MUTATE,
-  "GET /api/orders/:id": ALL,
-  "PATCH /api/orders/:id": MUTATE,
-  "POST /api/orders/:id/status": MUTATE,
-  "POST /api/orders/:id/consignment": MUTATE,
-};
 
 const ORDER = {
   source: "manual",
@@ -211,7 +204,7 @@ const main = async (): Promise<void> => {
     );
     const created = await call("POST", "/api/orders", { cookie: owner, body: ORDER });
     check(created.status === 201, `create order answered ${created.status}`);
-    const order = (await created.json()) as { id: string; totalPaise: number };
+    const order = (await created.json()) as { id: string; orderNo: string; totalPaise: number };
     check(order.totalPaise === 2 * 55_000 + 6_000, `order total ${order.totalPaise}`);
     const listed = (await (await call("GET", "/api/orders", { cookie: owner })).json()) as {
       orders: Array<{ id: string }>;
@@ -233,19 +226,19 @@ const main = async (): Promise<void> => {
       tokens[role] = cookieOf(r);
     }
     check(
-      JSON.stringify(routes.map(routeKey).sort()) === JSON.stringify(Object.keys(REACH).sort()),
-      "the registered route table differs from the restated reach table",
+      JSON.stringify(routes.map(routeKey).sort()) === JSON.stringify(API_ROWS.map(apiKey).sort()),
+      "the registered route table differs from the role table's API rows",
     );
     let walked = 0;
     for (const route of routes) {
-      const reach = REACH[routeKey(route)];
-      if (reach === "public" || reach === undefined) continue;
+      const row = API_ROWS.find((r) => apiKey(r) === routeKey(route));
+      if (row === undefined || row.allowed === "public") continue;
       for (const role of ALL) {
         const r = await call(route.method, route.path.replace(":id", order.id), {
           cookie: tokens[role] ?? "",
           body: {},
         });
-        const allowed = reach.includes(role);
+        const allowed = isAllowed(row.allowed, role);
         check(
           allowed ? r.status !== 401 && r.status !== 403 : r.status === 403,
           `${role} on ${routeKey(route)} answered ${r.status}`,
@@ -272,8 +265,23 @@ const main = async (): Promise<void> => {
       "non-JSON POST was not refused",
     );
 
+    // U2 (NFR4.2): the audit read carries the C1 headers like every API answer.
+    const audit = await call("GET", "/api/audit?limit=5", { cookie: owner });
+    check(audit.status === 200, `GET /api/audit answered ${audit.status}`);
+    check(audit.headers.get("cache-control") === "no-store", "audit answer is cacheable");
+    check(
+      /^[0-9a-f]{16}$/.test(audit.headers.get("x-correlation-id") ?? ""),
+      "audit answer has no correlation id",
+    );
+    const page = (await audit.json()) as { entries: Array<{ action: string }> };
+    check(
+      page.entries.some((e) => e.action === "order.create"),
+      "the audit trail does not show the order",
+    );
+    facts.push("audit read with C1 headers");
+
     // 7. the real App in happy-dom against the real server, as the Owner.
-    const rendered = await renderAllRoutes(base, order.id);
+    const rendered = await renderAllRoutes(base, order.id, order.orderNo);
     facts.push(`${rendered} screens rendered`);
 
     // 4 (end). sign out; the old cookie is dead.
@@ -295,7 +303,7 @@ const main = async (): Promise<void> => {
 };
 
 /** Mount the App in happy-dom with a fetch that behaves like the browser on `base`. */
-const renderAllRoutes = async (base: string, orderId: string): Promise<number> => {
+const renderAllRoutes = async (base: string, orderId: string, orderNo: string): Promise<number> => {
   const { Window } = await import("happy-dom");
   const window = new Window({ url: `${base}/` });
   for (const [key, value] of [
@@ -362,23 +370,51 @@ const renderAllRoutes = async (base: string, orderId: string): Promise<number> =
     ["/lock", "lock-sheet"],
     ["/nowhere", "not-found-home"],
   ];
-  for (const [path, testId] of expectations) {
-    await go(path);
+  const until = async (what: string, probe: () => boolean): Promise<void> => {
     try {
       await waitFor(
         () => {
-          if (view.queryByTestId(testId) === null) throw new Error("not yet");
+          if (!probe()) throw new Error("not yet");
         },
         { timeout: 3_000 },
       );
     } catch {
-      throw new CheckFailed(`the App did not render ${testId} at #${path}`);
+      throw new CheckFailed(what);
     }
+  };
+  for (const [path, testId] of expectations) {
+    await go(path);
+    await until(
+      `the App did not render ${testId} at #${path}`,
+      () => view.queryByTestId(testId) !== null,
+    );
+  }
+  // U2 (AC5.2a.2 widened, AC1.7.1): every screen row of the role table, as the Owner.
+  const ENTRY = new Set(["/", "/sign-in", "/sign-up"]);
+  let screens = 0;
+  for (const row of SCREEN_ROWS) {
+    if (row.allowed !== "public" && !isAllowed(row.allowed, "owner")) continue;
+    const path = row.path.replace(":id", orderId);
+    await go(path);
+    if (ENTRY.has(row.path)) {
+      await until(
+        `a signed-in Owner at #${path} did not go on to #/orders`,
+        () => window.location.hash === "#/orders",
+      );
+    } else {
+      const heading = row.path.includes(":id") ? orderNo : row.heading;
+      await until(
+        `#${path}: ${row.headingTestId} is not "${heading}"`,
+        () => view.queryByTestId(row.headingTestId)?.textContent === heading,
+      );
+      check(view.queryByTestId("error-banner") === null, `#${path} shows an error banner`);
+    }
+    screens += 1;
   }
   const email = view.queryByTestId("user-email")?.textContent;
   check(email === "owner@wiring.test", `the header shows ${email ?? "no email"}`);
   cleanup();
-  return expectations.length;
+  return expectations.length + screens;
 };
 
 if (import.meta.main) {

@@ -8,6 +8,7 @@
  * - `childEnv` is the environment for child processes with `CI` removed, so a local run can
  *   never relax a benchmark budget meant for slow hosted runners (team.md Way of Working).
  * - `gitHead` / `gitDirty` read the commit the build and smoke check compare.
+ * - U2: `runningChildren` / `forwardSignal` let a caller pass Ctrl-C on to the running child.
  */
 export const say = (line: string): void => {
   process.stdout.write(`${line}\n`);
@@ -45,6 +46,17 @@ export interface RunResult {
   readonly out: string;
 }
 
+/**
+ * U2 (I-02): the child processes `run` has started and not yet seen exit, so a caller's
+ * SIGINT/SIGTERM handler can forward the signal (the gate does, before it removes its
+ * container), and a child such as the browser check gets to clean up its own resources.
+ */
+export const runningChildren: Set<ReturnType<typeof Bun.spawn>> = new Set();
+
+export const forwardSignal = (signal: "SIGINT" | "SIGTERM"): void => {
+  for (const child of runningChildren) child.kill(signal);
+};
+
 export interface RunOptions {
   readonly cwd?: string;
   readonly env?: Record<string, string>;
@@ -67,6 +79,8 @@ export const run = async (
     stderr: keep ? "pipe" : "inherit",
     stdin: "ignore",
   });
+  runningChildren.add(proc);
+  void proc.exited.then(() => runningChildren.delete(proc));
   let out = "";
   if (keep) {
     const pump = async (stream: ReadableStream<Uint8Array>, sink: NodeJS.WriteStream) => {

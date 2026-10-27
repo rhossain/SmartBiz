@@ -60,6 +60,24 @@ jobs:
       - name: "4. unit test (bun test)"
         run: bun run test
 
+      # Build stage 4b — U2 gate step 5b: the three role walks on their own, timed. A test
+      # failure fails at once; only a wall time over 60 s is run once more (NFR6.16, I-05).
+      - name: "4b. role walks (server, client, no-secret; <= 60 s, one rerun on overrun)"
+        run: |
+          set -e
+          walks="tests/integration/server-gate-absence.test.ts tests/unit/three-layer-gate-absence.test.ts tests/integration/no-secret-responses.test.ts"
+          start=$(date +%s)
+          bun test --timeout 60000 $walks
+          took=$(( $(date +%s) - start ))
+          echo "walks took ${took} s"
+          if [ "$took" -gt 60 ]; then
+            start=$(date +%s)
+            bun test --timeout 60000 $walks
+            again=$(( $(date +%s) - start ))
+            echo "walks rerun took ${again} s"
+            if [ "$again" -gt 60 ]; then echo "::error::walks took ${took} s then ${again} s (budget 60 s)"; exit 1; fi
+          fi
+
       # Build stage 5 — Coverage
       - name: "5. coverage (>= 80% line coverage)"
         run: bun run coverage
@@ -104,6 +122,10 @@ jobs:
       # add --ignore here to make the step pass; fix the dependency.
       - name: "11. dependency audit (no High/Critical advisories)"
         run: bun audit --audit-level=high
+
+      # Build stage 11a — U2 (S17, NFR10.2): package.json equals tests/spec/dependencies.json.
+      - name: "11a. dependency list (no unreviewed dependency)"
+        run: bun scripts/check-dependencies.ts
 
       # Build stage 11b — secret scan (U1; team.md Code Style). Allowed entries live in
       # secret-scan.allow, each with its reason.
@@ -310,6 +332,22 @@ jobs:
       # U1 — W10 wiring check on its own fresh, empty database (from businessExists: false).
       - name: "6. wiring check (W10, BR10.1-BR10.3)"
         run: bun run test:e2e
+
+      # U2 gate step 14b — the real-browser check (first load <= 2 s, no sideways scroll at
+      # 360 px). Exit 2 means no Chrome at CHROME_PATH and is reported "not run", never a pass;
+      # any other non-zero exit fails (I-01).
+      - name: "6a. build for the browser check"
+        run: bun run build
+
+      - name: "6b. real-browser check (NFR6.14, NFR9.6)"
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+        run: |
+          set +e
+          bun scripts/browser-check.ts
+          code=$?
+          if [ "$code" -eq 2 ]; then echo "browser: not run (no Chrome)"; exit 0; fi
+          exit $code
 
       # U1 — API latency (NFR6.1-NFR6.3); budgets are constants and never relaxed by CI.
       - name: "7. API benchmark (p95 <= 300 ms per route, session <= 20 ms, sign-in <= 1.5 s)"

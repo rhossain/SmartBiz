@@ -47,15 +47,31 @@ decision.
 ## The gate (before every merge to `main`)
 
 ```bash
-bun run gate          # add --large before a Bolt merge for the 10 000-order benchmark
+bun run gate          # every merge
+bun run gate --large  # every Bolt merge: the 10 000-order and 20 000-row audit benchmarks,
+                      # and the browser check must say "browser: ok"
 ```
 
 It needs Docker and ≥ 2 GiB free. It starts one throwaway `postgres:18.6` container with random
-passwords, runs install, lint, type-check, format, tests, coverage, the named invariant tests,
-build, bundle check, mutants, `bun audit`, secret scan, `tests/realdb`, the wiring check and the
-benchmark in that order, stops at the first failure, always removes the container, and prints
-one line for the squash commit body. `.github/workflows/ci.yml` lists the same gates; hosted
-Actions stay disabled (zero spend).
+passwords, runs install, lint, type-check, format, tests, the timed role walks (step 5b),
+coverage, the named invariant tests, build, bundle check, mutants, `bun audit` and the
+dependency list, secret scan, `tests/realdb`, the wiring check, the real-browser check (step
+14b) and the benchmark in that order, stops at the first failure, always removes the container
+(Ctrl-C is passed on to the running step first), and prints one line for the squash commit
+body. `.github/workflows/ci.yml` lists the same gates; hosted Actions stay disabled (zero
+spend).
+
+### The real-browser check (step 14b)
+
+`bun scripts/browser-check.ts` drives the Google Chrome already installed on this machine,
+headless, over the DevTools protocol (no extra dependency). It creates its own throwaway
+database, starts the server on the built `dist/`, signs up a throwaway Owner, times 5 cold
+loads of the first page (median ≤ 2 s) and opens every screen the Owner can reach at 360 px
+wide, failing if any of them scrolls sideways. Chrome is found at `CHROME_PATH`, by default
+`/Applications/Google Chrome.app/Contents/MacOS/Google Chrome`; set it in your shell (see
+`.env.example`) if Chrome lives elsewhere. When no Chrome exists there, the gate line says
+`browser: not run (no Chrome)` — never a pass — and `bun run gate --large`, the Bolt merge run,
+fails on it.
 
 ## Backup and restore
 

@@ -18,13 +18,24 @@
  *   15 benchmark (`base`; `--large` adds the 10 000-order profile) and 15b the round-trip
  *   16 artifact: `dist/` copied to `.ci-artifacts/smartbiz-dist-<sha>/` (5 newest kept)
  *   17 clean-up: the container is always removed (finally, SIGINT, SIGTERM).
+ * U2 (u2-app-shell; cicd-pipeline.md, review I-01, I-05; P12, O12, O14, S17):
+ *   5b the three role walks on their own, timed: any test failure fails the gate at once and
+ *      is never rerun; only a wall time over 60 s earns ONE rerun, and the gate fails if the
+ *      rerun is over 60 s too; the result line carries the checks and both times (NFR6.16);
+ *   11 also runs scripts/check-dependencies.ts (package.json equals the committed list);
+ *   14b the real-browser check through its OWN exit-code branch, not `step()`: 0 → `browser:
+ *      ok (<median> ms, <n> screens)`; 2 → `browser: not run (no Chrome)`, which `--large`
+ *      (the Bolt merge run) treats as a failure; anything else fails the gate (I-01);
+ *   SIGINT/SIGTERM are forwarded to the running child before the container is removed, so
+ *   the browser check can stop Chrome and drop its database (I-02).
  * The last line is the one-line result for the squash commit body. A dirty working tree is
  * reported in that line (the gate should run on a clean checkout of the branch tip).
  */
 import { cpSync, existsSync, readdirSync, rmSync, statSync } from "node:fs";
 import { join } from "node:path";
 import postgres from "postgres";
-import { childEnv, gitDirty, gitHead, run, say } from "./lib/run.js";
+import { browserFact, WALK_BUDGET_MS, WALK_FILES, walkChecks } from "./lib/gate-facts.js";
+import { childEnv, forwardSignal, gitDirty, gitHead, run, say } from "./lib/run.js";
 
 const ROOT = join(import.meta.dir, "..");
 export const IMAGE =
@@ -55,7 +66,11 @@ const removeContainer = async (): Promise<void> => {
 };
 for (const signal of ["SIGINT", "SIGTERM"] as const) {
   process.on(signal, () => {
-    void removeContainer().then(() => process.exit(130));
+    // I-02: the running child (e.g. the browser check) cleans up its own resources first.
+    forwardSignal(signal);
+    void Bun.sleep(4_000)
+      .then(removeContainer)
+      .then(() => process.exit(130));
   });
 }
 
@@ -149,6 +164,25 @@ const main = async (): Promise<void> => {
   facts.push(
     `${passCount(await step("5", "unit + integration", ["bun", "run", "test"]))} tests pass`,
   );
+  // 5b. the walks, timed (I-05): a failure fails now; only an overrun is run once more.
+  const walkCmd = ["bun", "test", "--timeout", "60000", ...WALK_FILES];
+  const timedWalks = async (pass: string): Promise<{ ms: number; checks: number }> => {
+    const t0 = performance.now();
+    const out = await step("5b", `walks (${pass})`, walkCmd);
+    return { ms: Math.round(performance.now() - t0), checks: walkChecks(out) };
+  };
+  const firstWalk = await timedWalks("first");
+  let walkFact = `walks ${firstWalk.checks} checks ${(firstWalk.ms / 1000).toFixed(1)} s`;
+  if (firstWalk.ms > WALK_BUDGET_MS) {
+    const rerun = await timedWalks("rerun after overrun");
+    walkFact += ` (rerun ${(rerun.ms / 1000).toFixed(1)} s)`;
+    if (rerun.ms > WALK_BUDGET_MS) {
+      throw new GateFailed(
+        `gate 5b: walks took ${firstWalk.ms} ms then ${rerun.ms} ms (budget ${WALK_BUDGET_MS} ms)`,
+      );
+    }
+  }
+  facts.push(walkFact);
   const cov = await step("6", "coverage", ["bun", "scripts/check-coverage.ts"]);
   facts.push(`lines ${/coverage ok: ([\d.]+) %/.exec(cov)?.[1] ?? "?"} %`);
   await step("7", "named invariants", [
@@ -164,7 +198,8 @@ const main = async (): Promise<void> => {
   const mutants = await step("10", "mutants", ["bun", "scripts/mutants.ts"]);
   facts.push(`mutants ${/mutants ok: (\d+\/\d+)/.exec(mutants)?.[1] ?? "?"}`);
   await step("11", "dependency audit", ["bun", "audit", "--audit-level=high"]);
-  facts.push("bun audit clean");
+  await step("11", "dependency list", ["bun", "scripts/check-dependencies.ts"]);
+  facts.push("bun audit clean, dependencies unchanged");
   await step("12", "secret scan", ["bun", "scripts/secret-scan.ts"]);
   facts.push("secrets clean");
   for (const pass of ["first", "second"]) {
@@ -179,6 +214,22 @@ const main = async (): Promise<void> => {
   );
   await step("14", "wiring check", ["bun", "tests/e2e/wiring-check.ts"], realdb);
   facts.push("wiring-check ok");
+  // 14b. the real browser, through its own exit-code branch (I-01; not `step()`).
+  say("\n== 14b browser: bun scripts/browser-check.ts");
+  const browser = await run(["bun", "scripts/browser-check.ts"], {
+    cwd: ROOT,
+    env: { ...env, ...realdb },
+    tee: true,
+  });
+  const browserLine = browserFact(browser.code, browser.out, large);
+  if (browserLine === null) {
+    throw new GateFailed(
+      browser.code === 2
+        ? "gate 14b: no Chrome, and --large (a Bolt merge) needs browser: ok"
+        : `gate 14b (browser) failed with exit ${browser.code}`,
+    );
+  }
+  facts.push(browserLine);
   await step("15", "benchmark (base)", ["bun", "tests/perf/order-api.bench.ts"], realdb);
   if (large)
     await step(

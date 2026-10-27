@@ -42,6 +42,22 @@ a {
 .shell__main {
   padding: var(--space-4);
   max-width: 100%;
+  /* BR9.1: a long unbroken string (an email, an id) breaks instead of widening the page. */
+  overflow-wrap: anywhere;
+}
+
+/* A row of labelled figures (the order list's summary) that wraps on a narrow window. */
+.summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-3);
+}
+
+.money-cell {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
 }
 
 .shell__toast {
