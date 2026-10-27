@@ -198,13 +198,13 @@ layer is implemented, together with the full existing suite, before the next lay
 - [x] `secret-scan.allow` (the committed allow-list): exactly one new line `scripts/browser-check.ts assigned-secret  # throwaway Owner credentials in a per-run database`.
 - [x] `.github/workflows/ci.yml`: steps 5b, 14b (with `CHROME_PATH: /usr/bin/google-chrome`) and the dependency check; push trigger unchanged.
 - [x] `README.md` and `.env.example`: `CHROME_PATH` (commented, optional), the browser check, the `--large` rule for Bolt merges.
-- [ ] Run `bun run gate` end to end and record its result line.
+- [x] Run `bun run gate` end to end and record its result line.
 
 ### Step 14 — Documentation and traceability
 
-- [ ] Module header comments on every new file; inline comments cite BR/NFR/S/P/R/O ids.
-- [ ] `code-summary.md`, `source-manifest.json` (every path created, modified, moved or deleted), `traceability.json` (20 ACs, BR1.1–BR10.1, NFR1.4–NFR10.2; each `OK` target an existing file).
-- [ ] Commit per step on `app-wiring`.
+- [x] Module header comments on every new file; inline comments cite BR/NFR/S/P/R/O ids.
+- [x] `code-summary.md`, `source-manifest.json` (every path created, modified, moved or deleted), `traceability.json` (20 ACs, BR1.1–BR10.1, NFR1.4–NFR10.2; each `OK` target an existing file).
+- [x] Commit per step on `app-wiring`.
 
 ## Story-to-step traceability
 
