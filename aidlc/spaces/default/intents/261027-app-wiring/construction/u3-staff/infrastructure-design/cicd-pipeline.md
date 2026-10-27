@@ -37,3 +37,15 @@ U3 completes Bolt 1 (`app-wiring`: U1, U2, U3). The squash merge to `main` needs
 ## Secrets in the pipeline
 
 Unchanged. Tests create tokens in throwaway databases; no raw token is committed or logged. The secret scan needs no new allow-list entry (no fixed credentials in U3's code).
+
+## Review follow-ups (architecture review, iteration 1, READY)
+
+Decided on the Owner's standing instruction; each binds Code Generation and wins over earlier text in this folder.
+
+| Finding | Decision |
+|---------|----------|
+| I-01 Index drop and the migration ledger | The optional index drop is removed from the rollback: after a revert the two unique indexes simply stay (they are harmless to older code). If they must ever be dropped, the same admin session must also run `DELETE FROM _migrations WHERE id = '0017_unique_token_hashes.sql'` so a later `bun run migrate` re-creates them; the README states both commands together. |
+| I-02 Duplicate stop is tested | Gate 13 gains a realdb case: a database migrated to 0016, two rows with the same hash seeded in each table, `runMigrations` fails naming `duplicate_token_hash` with no 0017 ledger row and no index; after deleting the duplicate, 0017 applies. |
+| I-03 Secret scan in U3 tests | U3 tests build database URLs from the realdb environment variables or use a password-less placeholder (`postgres://admin@127.0.0.1/x`), so no `url-password` literal is committed and no allow-list line is added. |
+| I-04 Post-merge smoke | `scripts/smoke.ts` is modified for U3: after sign-in it calls `GET /api/staff` as the Owner and expects 200; its existing test covers the new step. |
+| I-05 Bolt 1 merge and rollback | The Bolt 1 merge steps are: (1) take and verify the `pg_dump` of the live database (README "Backup and restore"); (2) `bun run gate --large` green with `browser: ok`; (3) squash-merge with the result line in the body; (4) `bun run migrate` (0011–0017); (5) `bun run start` and the post-merge smoke. Rollback for the whole Bolt: stop the server, restore that dump, `git revert` the squash commit, `bun run start`. A code revert alone leaves 0011–0017 applied (all additive or already-guarded), which older code tolerates. |
