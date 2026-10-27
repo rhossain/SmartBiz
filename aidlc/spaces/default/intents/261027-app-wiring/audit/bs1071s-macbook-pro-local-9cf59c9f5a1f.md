@@ -492,3 +492,255 @@
 **Source**: orchestrator
 
 ---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T07:08:41Z
+**Event**: SENSOR_FIRED
+**Fire id**: 2a45f58e
+**Sensor ID**: claim-sources
+**Stage slug**: intent-capture
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/intent-capture/intent-statement.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-27T07:08:41Z
+**Event**: SENSOR_FAILED
+**Fire id**: 2a45f58e
+**Sensor ID**: claim-sources
+**Stage slug**: intent-capture
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/intent-capture/intent-statement.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/intent-capture/claim-sources-2a45f58e.md
+**Findings count**: 6
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T07:08:42Z
+**Event**: SENSOR_FIRED
+**Fire id**: 0d3787ab
+**Sensor ID**: claim-sources
+**Stage slug**: intent-capture
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/intent-capture/stakeholder-map.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-27T07:08:42Z
+**Event**: SENSOR_FAILED
+**Fire id**: 0d3787ab
+**Sensor ID**: claim-sources
+**Stage slug**: intent-capture
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/intent-capture/stakeholder-map.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/intent-capture/claim-sources-0d3787ab.md
+**Findings count**: 6
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T07:08:42Z
+**Event**: SENSOR_FIRED
+**Fire id**: 35e9634a
+**Sensor ID**: claim-sources
+**Stage slug**: intent-capture
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/intent-capture/intent-capture-questions.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-27T07:08:43Z
+**Event**: SENSOR_FAILED
+**Fire id**: 35e9634a
+**Sensor ID**: claim-sources
+**Stage slug**: intent-capture
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/intent-capture/intent-capture-questions.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/intent-capture/claim-sources-35e9634a.md
+**Findings count**: 6
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T07:08:43Z
+**Event**: SENSOR_FIRED
+**Fire id**: 1743484f
+**Sensor ID**: required-sections
+**Stage slug**: intent-capture
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/intent-capture/intent-statement.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T07:08:43Z
+**Event**: SENSOR_PASSED
+**Fire id**: 1743484f
+**Sensor ID**: required-sections
+**Stage slug**: intent-capture
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/intent-capture/intent-statement.md
+**Duration ms**: 146
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T07:08:43Z
+**Event**: SENSOR_FIRED
+**Fire id**: 1bf19a6d
+**Sensor ID**: required-sections
+**Stage slug**: intent-capture
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/intent-capture/stakeholder-map.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T07:08:43Z
+**Event**: SENSOR_PASSED
+**Fire id**: 1bf19a6d
+**Sensor ID**: required-sections
+**Stage slug**: intent-capture
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/intent-capture/stakeholder-map.md
+**Duration ms**: 136
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T07:08:44Z
+**Event**: SENSOR_FIRED
+**Fire id**: 238d66e7
+**Sensor ID**: required-sections
+**Stage slug**: intent-capture
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/intent-capture/intent-capture-questions.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T07:08:44Z
+**Event**: SENSOR_PASSED
+**Fire id**: 238d66e7
+**Sensor ID**: required-sections
+**Stage slug**: intent-capture
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/intent-capture/intent-capture-questions.md
+**Duration ms**: 130
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T07:08:44Z
+**Event**: SENSOR_FIRED
+**Fire id**: 03e42515
+**Sensor ID**: upstream-coverage
+**Stage slug**: intent-capture
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/intent-capture/intent-statement.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T07:08:44Z
+**Event**: SENSOR_PASSED
+**Fire id**: 03e42515
+**Sensor ID**: upstream-coverage
+**Stage slug**: intent-capture
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/intent-capture/intent-statement.md
+**Duration ms**: 155
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T07:08:45Z
+**Event**: SENSOR_FIRED
+**Fire id**: 7b08ce4b
+**Sensor ID**: upstream-coverage
+**Stage slug**: intent-capture
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/intent-capture/stakeholder-map.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T07:08:45Z
+**Event**: SENSOR_PASSED
+**Fire id**: 7b08ce4b
+**Sensor ID**: upstream-coverage
+**Stage slug**: intent-capture
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/intent-capture/stakeholder-map.md
+**Duration ms**: 111
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T07:08:45Z
+**Event**: SENSOR_FIRED
+**Fire id**: 89777bb3
+**Sensor ID**: upstream-coverage
+**Stage slug**: intent-capture
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/intent-capture/intent-capture-questions.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T07:08:45Z
+**Event**: SENSOR_PASSED
+**Fire id**: 89777bb3
+**Sensor ID**: upstream-coverage
+**Stage slug**: intent-capture
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/intent-capture/intent-capture-questions.md
+**Duration ms**: 114
+
+---
+
+## Stage Awaiting Approval
+**Timestamp**: 2026-10-27T07:08:45Z
+**Event**: STAGE_AWAITING_APPROVAL
+**Stage**: intent-capture
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-27T08:59:25Z
+**Event**: HUMAN_TURN
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+**Picked**: ["Approve"]
+
+---
+
+## Question Replied
+**Timestamp**: 2026-10-27T08:59:26Z
+**Event**: QUESTION_REPLIED
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+**Question**: Approve Intent Capture, with the review's points carried forward to Scope Definition?
+**Reply**: Approve
+
+---
+
+## Gate Approved
+**Timestamp**: 2026-10-27T08:59:45Z
+**Event**: GATE_APPROVED
+**Stage**: intent-capture
+**User Input**: Approve
+**Person Reply**: Approve
+**Review Finding Dispositions**: {"version":1,"dispositions":[{"artifact":"aidlc/spaces/default/intents/261027-app-wiring/ideation/intent-capture/intent-statement.md","id":"R-01","fingerprint":"sha256:ff4db00cf0e137383469697cdcbe2f29df39567edb305fd951eb13b0729569b8","status":"Accepted risk","decided_at_severity":"Major","reviewed_record":{"path":".aidlc-engine/reviews/intent-capture/stage/9a335e09db04e8a7/1.json","digest":"sha256:1c216cd1b0ae97c2e380abf8e84966c9efc145d3b70058171589dd9659c979b0"}},{"artifact":"aidlc/spaces/default/intents/261027-app-wiring/ideation/intent-capture/intent-statement.md","id":"R-02","fingerprint":"sha256:6dff2c534fa351b358be3a174124dad7f03ed57ff651ab5a26e58e8a425e5dd5","status":"Accepted risk","decided_at_severity":"Major","reviewed_record":{"path":".aidlc-engine/reviews/intent-capture/stage/9a335e09db04e8a7/1.json","digest":"sha256:1c216cd1b0ae97c2e380abf8e84966c9efc145d3b70058171589dd9659c979b0"}},{"artifact":"aidlc/spaces/default/intents/261027-app-wiring/ideation/intent-capture/intent-statement.md","id":"R-03","fingerprint":"sha256:598f62cb109957ae74fa6560ea9ba9c1039be3c96e366e31bc07d5b98abb397e","status":"Accepted risk","decided_at_severity":"Minor","reviewed_record":{"path":".aidlc-engine/reviews/intent-capture/stage/9a335e09db04e8a7/1.json","digest":"sha256:1c216cd1b0ae97c2e380abf8e84966c9efc145d3b70058171589dd9659c979b0"}},{"artifact":"aidlc/spaces/default/intents/261027-app-wiring/ideation/intent-capture/intent-statement.md","id":"R-04","fingerprint":"sha256:a066053ad6a496bb86504d6b7d628200d2198c60ff2e7f4569e369817788f52c","status":"Accepted risk","decided_at_severity":"Minor","reviewed_record":{"path":".aidlc-engine/reviews/intent-capture/stage/9a335e09db04e8a7/1.json","digest":"sha256:1c216cd1b0ae97c2e380abf8e84966c9efc145d3b70058171589dd9659c979b0"}},{"artifact":"aidlc/spaces/default/intents/261027-app-wiring/ideation/intent-capture/intent-statement.md","id":"R-05","fingerprint":"sha256:471e51122113db4c096c9edac577ae904e5044132c5351e9d91f1aaab48e5169","status":"Accepted risk","decided_at_severity":"Minor","reviewed_record":{"path":".aidlc-engine/reviews/intent-capture/stage/9a335e09db04e8a7/1.json","digest":"sha256:1c216cd1b0ae97c2e380abf8e84966c9efc145d3b70058171589dd9659c979b0"}},{"artifact":"aidlc/spaces/default/intents/261027-app-wiring/ideation/intent-capture/intent-statement.md","id":"R-06","fingerprint":"sha256:138dea4f87d1513d1b13a1da2500c4409c38f395eb398bbdad43cf7cd54bd146","status":"Accepted risk","decided_at_severity":"Minor","reviewed_record":{"path":".aidlc-engine/reviews/intent-capture/stage/9a335e09db04e8a7/1.json","digest":"sha256:1c216cd1b0ae97c2e380abf8e84966c9efc145d3b70058171589dd9659c979b0"}}]}
+
+---
+
+## Stage Completion
+**Timestamp**: 2026-10-27T08:59:45Z
+**Event**: STAGE_COMPLETED
+**Stage**: intent-capture
+**Validation Basis**: {"graphContract":"sha256:a2667bc36979eded33d5632e32a90dcf92e51265610d1ca27064a44384271e07","inputs":[],"outputs":[{"artifact":"intent-capture-questions","contentHash":"sha256:3d1a19a60433f6e04787ec273bdf4ca44ee9ddeddb8346b67a20daa0e55c627f","instanceCount":1,"presentCount":1,"producer":"intent-capture","required":true,"structureHash":"sha256:a190c7ecfd30c45711184c78bdddde8625f9c1443899cfb292f8cd9d6e0659ab"},{"artifact":"intent-statement","contentHash":"sha256:02d1bbd4ffbc7b1ad522d03fc2734ae98e364fa3f7f8acc6b7c7754cff412e38","instanceCount":1,"presentCount":1,"producer":"intent-capture","required":true,"structureHash":"sha256:44fa7c47fac660308028f42d353b9dbd07da6caca247ae0f0841199ce7cdbadc"},{"artifact":"stakeholder-map","contentHash":"sha256:66605e4b31d61ce16369a8c66327d1ed2ce893d484dff3faaaaef83a5b3086a7","instanceCount":1,"presentCount":1,"producer":"intent-capture","required":true,"structureHash":"sha256:76429d53e06427e6090bd75f4c79dc6106c1594a690318aed842a84c10770baa"}],"projectType":"brownfield","schema":3}
+**Details**: Stage Intent Capture & Framing approved by gate
+**Tokens In**: 82
+**Tokens Out**: 19470
+**Cache Read**: 19935376
+**Cache Write**: 170975
+**Cost USD**: 5.25
+**By Model**: opus-5-5=4.98; sonnet-5-5=0.27
+**By Agent**: main=4.98; aidlc-product-lead-agent=0.27
+**Tokens By Model**: opus-5-5=76/15.8k/19.8M/88.4k; sonnet-5-5=6/3.7k/155.9k/82.6k
+**Tokens By Agent**: main=76/15.8k/19.8M/88.4k; aidlc-product-lead-agent=6/3.7k/155.9k/82.6k
+
+---
+
+## Stage Start
+**Timestamp**: 2026-10-27T08:59:45Z
+**Event**: STAGE_STARTED
+**Stage**: market-research
+**Agent**: aidlc-product-agent
+
+---
