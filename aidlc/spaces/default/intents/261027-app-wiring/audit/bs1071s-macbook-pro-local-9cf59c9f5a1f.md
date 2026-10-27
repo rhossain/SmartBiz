@@ -2720,3 +2720,222 @@
 **Drafts**: team-practices.md, discovered-rules.md
 
 ---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T10:36:23Z
+**Event**: SENSOR_FIRED
+**Fire id**: ca185b72
+**Sensor ID**: required-sections
+**Stage slug**: practices-discovery
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/practices-discovery/team-practices.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T10:36:23Z
+**Event**: SENSOR_PASSED
+**Fire id**: ca185b72
+**Sensor ID**: required-sections
+**Stage slug**: practices-discovery
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/practices-discovery/team-practices.md
+**Duration ms**: 374
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T10:36:23Z
+**Event**: SENSOR_FIRED
+**Fire id**: 4ed7b34a
+**Sensor ID**: required-sections
+**Stage slug**: practices-discovery
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/practices-discovery/discovered-rules.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T10:36:24Z
+**Event**: SENSOR_PASSED
+**Fire id**: 4ed7b34a
+**Sensor ID**: required-sections
+**Stage slug**: practices-discovery
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/practices-discovery/discovered-rules.md
+**Duration ms**: 456
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T10:36:24Z
+**Event**: SENSOR_FIRED
+**Fire id**: 128d459e
+**Sensor ID**: required-sections
+**Stage slug**: practices-discovery
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/practices-discovery/evidence.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T10:36:25Z
+**Event**: SENSOR_PASSED
+**Fire id**: 128d459e
+**Sensor ID**: required-sections
+**Stage slug**: practices-discovery
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/practices-discovery/evidence.md
+**Duration ms**: 252
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T10:36:25Z
+**Event**: SENSOR_FIRED
+**Fire id**: 4f928a0c
+**Sensor ID**: required-sections
+**Stage slug**: practices-discovery
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/practices-discovery/practices-discovery-timestamp.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T10:36:25Z
+**Event**: SENSOR_PASSED
+**Fire id**: 4f928a0c
+**Sensor ID**: required-sections
+**Stage slug**: practices-discovery
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/practices-discovery/practices-discovery-timestamp.md
+**Duration ms**: 180
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T10:36:25Z
+**Event**: SENSOR_FIRED
+**Fire id**: 3101b929
+**Sensor ID**: upstream-coverage
+**Stage slug**: practices-discovery
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/practices-discovery/team-practices.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T10:36:26Z
+**Event**: SENSOR_PASSED
+**Fire id**: 3101b929
+**Sensor ID**: upstream-coverage
+**Stage slug**: practices-discovery
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/practices-discovery/team-practices.md
+**Duration ms**: 713
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T10:36:27Z
+**Event**: SENSOR_FIRED
+**Fire id**: 0aa9a716
+**Sensor ID**: upstream-coverage
+**Stage slug**: practices-discovery
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/practices-discovery/discovered-rules.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T10:36:28Z
+**Event**: SENSOR_PASSED
+**Fire id**: 0aa9a716
+**Sensor ID**: upstream-coverage
+**Stage slug**: practices-discovery
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/practices-discovery/discovered-rules.md
+**Duration ms**: 228
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T10:36:28Z
+**Event**: SENSOR_FIRED
+**Fire id**: 00556167
+**Sensor ID**: upstream-coverage
+**Stage slug**: practices-discovery
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/practices-discovery/evidence.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T10:36:29Z
+**Event**: SENSOR_PASSED
+**Fire id**: 00556167
+**Sensor ID**: upstream-coverage
+**Stage slug**: practices-discovery
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/practices-discovery/evidence.md
+**Duration ms**: 603
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T10:36:29Z
+**Event**: SENSOR_FIRED
+**Fire id**: 045a16ca
+**Sensor ID**: upstream-coverage
+**Stage slug**: practices-discovery
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/practices-discovery/practices-discovery-timestamp.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T10:36:29Z
+**Event**: SENSOR_PASSED
+**Fire id**: 045a16ca
+**Sensor ID**: upstream-coverage
+**Stage slug**: practices-discovery
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/practices-discovery/practices-discovery-timestamp.md
+**Duration ms**: 158
+
+---
+
+## Stage Awaiting Approval
+**Timestamp**: 2026-10-27T10:36:29Z
+**Event**: STAGE_AWAITING_APPROVAL
+**Stage**: practices-discovery
+
+---
+
+## Practices Affirmed
+**Timestamp**: 2026-10-27T10:36:30Z
+**Event**: PRACTICES_AFFIRMED
+**Affirming User**: rhossain (Owner; standing instruction 2026-10-27 to decide and approve)
+**Sections Written**: Way of Working, Walking Skeleton, Testing Posture, Deployment, Code Style
+**Mandated Rules Appended**: 1
+**Forbidden Rules Appended**: 1
+
+---
+
+## Gate Approved
+**Timestamp**: 2026-10-27T10:36:54Z
+**Event**: GATE_APPROVED
+**Stage**: practices-discovery
+**User Input**: Approve
+
+---
+
+## Stage Completion
+**Timestamp**: 2026-10-27T10:36:54Z
+**Event**: STAGE_COMPLETED
+**Stage**: practices-discovery
+**Validation Basis**: {"graphContract":"sha256:886af627a0fea6d271a662e4a54b4c5993ecee715d6144d46d4a58c2bc3d19bb","inputs":[{"artifact":"architecture","contentHash":"sha256:a8c1b87552a623a8ba7eb1563411ca1f2143270bef409f0d83d117014f8928d6","instanceCount":1,"presentCount":1,"producer":"reverse-engineering","required":false,"structureHash":"sha256:497d35376a6af2003f95b7d9af26b0452d905c5f111891904d6863cec2c19486"},{"artifact":"business-overview","contentHash":"sha256:a4085aafd7a813f8d5bf1fe7e80801446da7a117c7f7bdded0d1be04b9a81ee7","instanceCount":1,"presentCount":1,"producer":"reverse-engineering","required":false,"structureHash":"sha256:d70b08a93f1a0163fea4c995ce401850fd67f54f064f5700d2c5c21982663d09"},{"artifact":"code-quality-assessment","contentHash":"sha256:1d6d86ba808b2422908f0e65ea3b1fb18f21f9e33b30d62558b2ebf4ebb3a948","instanceCount":1,"presentCount":1,"producer":"reverse-engineering","required":false,"structureHash":"sha256:a30a2ec5cfd01960971296692d9c1d6b8ce4de8bba27a14d796cbb19281fac25"},{"artifact":"code-structure","contentHash":"sha256:a89eba01387386922676d57da3a1b4ec85c2963689b776fe4bfe1b25841aea63","instanceCount":1,"presentCount":1,"producer":"reverse-engineering","required":false,"structureHash":"sha256:fe7442302753abfd5eb0ae677a6b1f378f39b35340250aa2d23203329812816c"},{"artifact":"dependencies","contentHash":"sha256:2577c9a2ac8ace1eb94bcb56c4d61a73ceecac1ccff7cd60fad5b218abbd40f0","instanceCount":1,"presentCount":1,"producer":"reverse-engineering","required":false,"structureHash":"sha256:7c09268b895f28ece1a627b1bab8593fdfc2dd3fa6737c58b2a9ccea439ee3e1"},{"artifact":"technology-stack","contentHash":"sha256:dec144971d9023d39bd1111d90a07fd3c6ceb40e964a90d9876424f7a894ad43","instanceCount":1,"presentCount":1,"producer":"reverse-engineering","required":false,"structureHash":"sha256:ba7e3a2f7ea275f1e0cc5d9e185ee1c31122bf21924508d9a11aa92150ad15bb"}],"outputs":[{"artifact":"discovered-rules","contentHash":"sha256:f9ff467a33c6584422f4f7dd44d5399faa44ee4c6a276cd349426ef216c74a96","instanceCount":1,"presentCount":1,"producer":"practices-discovery","required":true,"structureHash":"sha256:f62c08277a617c879b6eceb7acef4cd9afe7b716866083acc3317f21049c6153"},{"artifact":"evidence","contentHash":"sha256:f0d8179433822b5f4062335d80f90b83f80228ffbf68f03d2c117ad212645855","instanceCount":1,"presentCount":1,"producer":"practices-discovery","required":true,"structureHash":"sha256:0295693d0aca53b440b829e0b44a7f01ee1c25cb8ec79c98a2e1232af9c6b846"},{"artifact":"practices-discovery-timestamp","contentHash":"sha256:24b24edc1acaf4ee29f3658f7db5e42832d4c7b16e8aa96462cdb4731054b410","instanceCount":1,"presentCount":1,"producer":"practices-discovery","required":true,"structureHash":"sha256:3374c1a3b4307c9a7dfbcf9a2680beee8c3ab8c52fe94fd8c549e3185d5963a2"},{"artifact":"team-practices","contentHash":"sha256:92177ec6929be7f01e88786e9a1cd53fc06e7ea09306cad0e8916b77f7b6de18","instanceCount":1,"presentCount":1,"producer":"practices-discovery","required":true,"structureHash":"sha256:fa129b8f120e57efabb7ce801acb87461f7329b9b6aa803c6fb9fc234a542219"}],"projectType":"brownfield","schema":3}
+**Details**: Stage Practices Discovery approved by gate
+**Tokens In**: 180
+**Tokens Out**: 98239
+**Cache Read**: 20029461
+**Cache Write**: 666152
+**Cost USD**: 9.43
+**By Model**: opus-5-5=9.43
+**By Agent**: main=3.24; aidlc-pipeline-deploy-agent=2.95; aidlc-quality-agent=1.03; aidlc-developer-agent=1.21; aidlc-devsecops-agent=1.00
+**Tokens By Model**: opus-5-5=180/98.2k/20M/666.2k
+**Tokens By Agent**: main=48/13.8k/13.1M/42.5k; aidlc-pipeline-deploy-agent=54/42.3k/3.1M/295.7k; aidlc-quality-agent=26/12.7k/1.2M/106.6k; aidlc-developer-agent=34/15.6k/1.7M/109.7k; aidlc-devsecops-agent=18/13.8k/826k/111.6k
+
+---
+
+## Stage Start
+**Timestamp**: 2026-10-27T10:36:54Z
+**Event**: STAGE_STARTED
+**Stage**: requirements-analysis
+**Agent**: aidlc-product-agent
+
+---

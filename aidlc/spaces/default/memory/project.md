@@ -72,11 +72,15 @@
 <!-- Format: NEVER [behavior] (affirmed [date]) -->
 <!-- Example: NEVER throw exceptions across service layer boundaries (affirmed 2026-05-17) -->
 
+- NEVER add a paid hosted service, database, CI runner or provider to SmartBiz; a free hosted service is allowed only when optional and the app degrades gracefully without it. (affirmed 2026-10-27)
+
 ## Mandated
 
 <!-- Populated by practices-discovery affirmation gate. -->
 <!-- Format: ALWAYS [behavior] (affirmed [date]) -->
 <!-- Example: ALWAYS use Result<T,E> for fallible operations in service layer (affirmed 2026-05-17) -->
+
+None. (affirmed 2026-10-27)
 
 ## Corrections
 
