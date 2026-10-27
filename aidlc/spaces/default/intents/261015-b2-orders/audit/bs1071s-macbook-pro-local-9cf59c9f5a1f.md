@@ -4169,3 +4169,617 @@
 **Stage**: code-generation
 
 ---
+
+## Sensor Fired
+**Timestamp**: 2026-10-26T17:48:30Z
+**Event**: SENSOR_FIRED
+**Fire id**: a74a4c34
+**Sensor ID**: type-check
+**Stage slug**: build-and-test
+**Output path**: /private/tmp/claude-501/-Users-bs1071-Downloads-Temp-E2E-SmartBiz/f6486091-0b09-46cb-a3b1-e0938660d7d0/scratchpad/realdb-smoke.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-26T17:48:30Z
+**Event**: SENSOR_PASSED
+**Fire id**: a74a4c34
+**Sensor ID**: type-check
+**Stage slug**: build-and-test
+**Output path**: /private/tmp/claude-501/-Users-bs1071-Downloads-Temp-E2E-SmartBiz/f6486091-0b09-46cb-a3b1-e0938660d7d0/scratchpad/realdb-smoke.ts
+**Duration ms**: 75
+**Note**: script-error: exit-1
+
+---
+
+## Artifact Updated
+**Timestamp**: 2026-10-26T17:51:50Z
+**Event**: ARTIFACT_UPDATED
+**Tool**: Edit
+**File**: <project-dir>/aidlc/spaces/default/intents/261015-b2-orders/construction/build-and-test/build-instructions.md
+**Context**: construction > build-and-test > build-instructions.md
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-10-26T17:53:18Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261015-b2-orders/construction/build-and-test/test-results.md
+**Context**: construction > build-and-test > test-results.md
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-10-26T17:53:57Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261015-b2-orders/construction/build-and-test/build-and-test-summary.md
+**Context**: construction > build-and-test > build-and-test-summary.md
+
+---
+
+## Artifact Updated
+**Timestamp**: 2026-10-26T17:54:13Z
+**Event**: ARTIFACT_UPDATED
+**Tool**: Edit
+**File**: <project-dir>/aidlc/spaces/default/intents/261015-b2-orders/construction/build-and-test/memory.md
+**Context**: construction > build-and-test > memory.md
+
+---
+
+## Decision Recorded
+**Timestamp**: 2026-10-26T17:54:41Z
+**Event**: DECISION_RECORDED
+**Stage**: build-and-test
+**Decision**: Build and Test run 2 failed (T-JSONB, T-DEPS Not Met; NFR2.1, NFR1.4, NFR3.2 Unverified with no owning stage). Rung 4 halt-and-ask: Q2 (Retry with fix / Accept failure / Abort) and Q3 (accept the three Unverified targets or add owning stages), in build-and-test-questions.md.
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-27T05:02:21Z
+**Event**: HUMAN_TURN
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+**Picked**: ["Accept failure","Decide for me"]
+
+---
+
+## Question Replied
+**Timestamp**: 2026-10-27T05:02:21Z
+**Event**: QUESTION_REPLIED
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+**Question**: Build and Test still failed, but only just: 217/217 tests pass and the order code works on a real Postgres. Two fixes are needed, both in the code: (1) customer contact and audit-log details are saved as quoted text instead of structured data, about 1 hour, low risk; (2) security upgrades for zod, vite and happy-dom, already tried on a copy: no advisories left and all tests pass, about 30 minutes. How should I proceed?
+**Reply**: Accept failure
+
+---
+
+## Question Replied
+**Timestamp**: 2026-10-27T05:02:21Z
+**Event**: QUESTION_REPLIED
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+**Question**: Three speed and monitoring targets need a deployed environment: 3G page load under 3 s, the order flow under 3 s, and a slow-query dashboard. No step in this workflow checks them, so Build and Test can't pass while they're open. What should happen to them?
+**Reply**: Decide for me
+
+---
+
+## Artifact Updated
+**Timestamp**: 2026-10-27T05:02:27Z
+**Event**: ARTIFACT_UPDATED
+**Tool**: Edit
+**File**: <project-dir>/aidlc/spaces/default/intents/261015-b2-orders/construction/build-and-test/build-and-test-questions.md
+**Context**: construction > build-and-test > build-and-test-questions.md
+
+---
+
+## Question Answered
+**Timestamp**: 2026-10-27T05:02:29Z
+**Event**: QUESTION_ANSWERED
+**Stage**: build-and-test
+**Details**: Q2 Build failure (run 2) = Accept failure
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-27T05:02:49Z
+**Event**: HUMAN_TURN
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+**Picked**: ["Decide for me"]
+
+---
+
+## Question Replied
+**Timestamp**: 2026-10-27T05:02:50Z
+**Event**: QUESTION_REPLIED
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+**Question**: I need your own pick on this one, since it changes what the workflow checks. I recommend "Accept as Unverified for this Bolt": this is MVP scope, no staging environment exists yet, and adding the two steps would block B2 on infrastructure you don't have. The three targets are 3G page load, order-flow speed and the slow-query dashboard. Which do you want?
+**Reply**: Decide for me
+
+---
+
+## Artifact Updated
+**Timestamp**: 2026-10-27T05:02:57Z
+**Event**: ARTIFACT_UPDATED
+**Tool**: Edit
+**File**: <project-dir>/aidlc/spaces/default/intents/261015-b2-orders/construction/build-and-test/build-and-test-questions.md
+**Context**: construction > build-and-test > build-and-test-questions.md
+
+---
+
+## Question Answered
+**Timestamp**: 2026-10-27T05:02:58Z
+**Event**: QUESTION_ANSWERED
+**Stage**: build-and-test
+**Details**: Q3 Unverified targets = Decide for me (twice); recorded as A. Accept as Unverified for this Bolt, chosen on the Owner's instruction
+**Person Reply**: Decide for me
+
+---
+
+## Artifact Updated
+**Timestamp**: 2026-10-27T05:03:05Z
+**Event**: ARTIFACT_UPDATED
+**Tool**: Edit
+**File**: <project-dir>/aidlc/spaces/default/intents/261015-b2-orders/construction/build-and-test/test-results.md
+**Context**: construction > build-and-test > test-results.md
+
+---
+
+## Artifact Updated
+**Timestamp**: 2026-10-27T05:03:07Z
+**Event**: ARTIFACT_UPDATED
+**Tool**: Edit
+**File**: <project-dir>/aidlc/spaces/default/intents/261015-b2-orders/construction/build-and-test/build-and-test-summary.md
+**Context**: construction > build-and-test > build-and-test-summary.md
+
+---
+
+## Decision Recorded
+**Timestamp**: 2026-10-27T05:03:14Z
+**Event**: DECISION_RECORDED
+**Stage**: build-and-test
+**Decision**: Build-and-test §13 learnings: surface returned 6 candidates (c1-c6). Present c3, c4, c5, c6 as keep-for-next-time choices (c1 and c2 are run-specific), plus the mandatory 'Anything to add for next time?' question with Nothing to add + Add a note.
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-27T05:04:26Z
+**Event**: HUMAN_TURN
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+**Picked**: ["Verify files on disk, Test on real Postgres, Trial upgrades first, Runtime advisories count, Decide for me","Nothing to add"]
+
+---
+
+## Question Replied
+**Timestamp**: 2026-10-27T05:04:27Z
+**Event**: QUESTION_REPLIED
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+**Question**: Which lessons from Build and Test should become project rules for next time? Pick any, or none.
+**Reply**: Verify files on disk, Test on real Postgres, Trial upgrades first, Runtime advisories count, Decide for me
+
+---
+
+## Question Replied
+**Timestamp**: 2026-10-27T05:04:27Z
+**Event**: QUESTION_REPLIED
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+**Question**: Anything else to add for next time?
+**Reply**: Nothing to add
+
+---
+
+## Question Answered
+**Timestamp**: 2026-10-27T05:04:33Z
+**Event**: QUESTION_ANSWERED
+**Stage**: build-and-test
+**Details**: Learnings = c3 Verify files on disk, c4 Test on real Postgres, c5 Trial upgrades first, c6 Runtime advisories count (plus 'Decide for me'); Anything to add = Nothing to add
+
+---
+
+## Rule Learned
+**Timestamp**: 2026-10-27T05:04:41Z
+**Event**: RULE_LEARNED
+**Stage**: build-and-test
+**Candidate-ID**: c3
+**Content-Hash**: 52576271a8619ddb66b9743b980d27f5301d98fd400950b5fa4e97f2baf5d5f4
+**Destination**: <project-dir>/aidlc/spaces/default/memory/project.md
+**Heading**: ## Testing Posture
+**Source**: orchestrator
+
+---
+
+## Rule Learned
+**Timestamp**: 2026-10-27T05:04:41Z
+**Event**: RULE_LEARNED
+**Stage**: build-and-test
+**Candidate-ID**: c4
+**Content-Hash**: 32c64aad272da50e75296a39d048bd8d91382ce10bf0446b37cad4dfc9aca2b5
+**Destination**: <project-dir>/aidlc/spaces/default/memory/project.md
+**Heading**: ## Testing Posture
+**Source**: orchestrator
+
+---
+
+## Rule Learned
+**Timestamp**: 2026-10-27T05:04:41Z
+**Event**: RULE_LEARNED
+**Stage**: build-and-test
+**Candidate-ID**: c5
+**Content-Hash**: 13aa557fd0a32174f80142f6d8b7f13b058d7940132f5f0b13757ce2e8400f3f
+**Destination**: <project-dir>/aidlc/spaces/default/memory/project.md
+**Heading**: ## Testing Posture
+**Source**: orchestrator
+
+---
+
+## Rule Learned
+**Timestamp**: 2026-10-27T05:04:41Z
+**Event**: RULE_LEARNED
+**Stage**: build-and-test
+**Candidate-ID**: c6
+**Content-Hash**: fa259167e471066a8489d7dcbee605699c25cfaf21f13ba0920bedba14219b16
+**Destination**: <project-dir>/aidlc/spaces/default/memory/project.md
+**Heading**: ## Testing Posture
+**Source**: orchestrator
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-27T05:05:01Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: a5a23791bbd9573e6
+**Message**: go ahead with the sign-off
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T05:05:08Z
+**Event**: SENSOR_FIRED
+**Fire id**: 1dc4fbf2
+**Sensor ID**: required-sections
+**Stage slug**: build-and-test
+**Output path**: aidlc/spaces/default/intents/261015-b2-orders/construction/build-and-test/build-instructions.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T05:05:08Z
+**Event**: SENSOR_PASSED
+**Fire id**: 1dc4fbf2
+**Sensor ID**: required-sections
+**Stage slug**: build-and-test
+**Output path**: aidlc/spaces/default/intents/261015-b2-orders/construction/build-and-test/build-instructions.md
+**Duration ms**: 73
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T05:05:08Z
+**Event**: SENSOR_FIRED
+**Fire id**: 078e7313
+**Sensor ID**: required-sections
+**Stage slug**: build-and-test
+**Output path**: aidlc/spaces/default/intents/261015-b2-orders/construction/build-and-test/integration-test-instructions.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T05:05:08Z
+**Event**: SENSOR_PASSED
+**Fire id**: 078e7313
+**Sensor ID**: required-sections
+**Stage slug**: build-and-test
+**Output path**: aidlc/spaces/default/intents/261015-b2-orders/construction/build-and-test/integration-test-instructions.md
+**Duration ms**: 68
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T05:05:08Z
+**Event**: SENSOR_FIRED
+**Fire id**: 62770a4e
+**Sensor ID**: required-sections
+**Stage slug**: build-and-test
+**Output path**: aidlc/spaces/default/intents/261015-b2-orders/construction/build-and-test/performance-test-instructions.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T05:05:08Z
+**Event**: SENSOR_PASSED
+**Fire id**: 62770a4e
+**Sensor ID**: required-sections
+**Stage slug**: build-and-test
+**Output path**: aidlc/spaces/default/intents/261015-b2-orders/construction/build-and-test/performance-test-instructions.md
+**Duration ms**: 78
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T05:05:08Z
+**Event**: SENSOR_FIRED
+**Fire id**: abae42e9
+**Sensor ID**: required-sections
+**Stage slug**: build-and-test
+**Output path**: aidlc/spaces/default/intents/261015-b2-orders/construction/build-and-test/security-test-instructions.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T05:05:09Z
+**Event**: SENSOR_PASSED
+**Fire id**: abae42e9
+**Sensor ID**: required-sections
+**Stage slug**: build-and-test
+**Output path**: aidlc/spaces/default/intents/261015-b2-orders/construction/build-and-test/security-test-instructions.md
+**Duration ms**: 71
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T05:05:09Z
+**Event**: SENSOR_FIRED
+**Fire id**: 891cee5c
+**Sensor ID**: required-sections
+**Stage slug**: build-and-test
+**Output path**: aidlc/spaces/default/intents/261015-b2-orders/construction/build-and-test/build-and-test-summary.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T05:05:09Z
+**Event**: SENSOR_PASSED
+**Fire id**: 891cee5c
+**Sensor ID**: required-sections
+**Stage slug**: build-and-test
+**Output path**: aidlc/spaces/default/intents/261015-b2-orders/construction/build-and-test/build-and-test-summary.md
+**Duration ms**: 70
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T05:05:09Z
+**Event**: SENSOR_FIRED
+**Fire id**: 72312b5c
+**Sensor ID**: required-sections
+**Stage slug**: build-and-test
+**Output path**: aidlc/spaces/default/intents/261015-b2-orders/construction/build-and-test/test-results.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T05:05:09Z
+**Event**: SENSOR_PASSED
+**Fire id**: 72312b5c
+**Sensor ID**: required-sections
+**Stage slug**: build-and-test
+**Output path**: aidlc/spaces/default/intents/261015-b2-orders/construction/build-and-test/test-results.md
+**Duration ms**: 69
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T05:05:09Z
+**Event**: SENSOR_FIRED
+**Fire id**: 9019713f
+**Sensor ID**: required-sections
+**Stage slug**: build-and-test
+**Output path**: aidlc/spaces/default/intents/261015-b2-orders/construction/build-and-test/cross-unit-traceability.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T05:05:09Z
+**Event**: SENSOR_PASSED
+**Fire id**: 9019713f
+**Sensor ID**: required-sections
+**Stage slug**: build-and-test
+**Output path**: aidlc/spaces/default/intents/261015-b2-orders/construction/build-and-test/cross-unit-traceability.md
+**Duration ms**: 68
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T05:05:09Z
+**Event**: SENSOR_FIRED
+**Fire id**: 1c35eaef
+**Sensor ID**: upstream-coverage
+**Stage slug**: build-and-test
+**Output path**: aidlc/spaces/default/intents/261015-b2-orders/construction/build-and-test/build-instructions.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T05:05:10Z
+**Event**: SENSOR_PASSED
+**Fire id**: 1c35eaef
+**Sensor ID**: upstream-coverage
+**Stage slug**: build-and-test
+**Output path**: aidlc/spaces/default/intents/261015-b2-orders/construction/build-and-test/build-instructions.md
+**Duration ms**: 70
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T05:05:10Z
+**Event**: SENSOR_FIRED
+**Fire id**: c23c9394
+**Sensor ID**: upstream-coverage
+**Stage slug**: build-and-test
+**Output path**: aidlc/spaces/default/intents/261015-b2-orders/construction/build-and-test/integration-test-instructions.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T05:05:10Z
+**Event**: SENSOR_PASSED
+**Fire id**: c23c9394
+**Sensor ID**: upstream-coverage
+**Stage slug**: build-and-test
+**Output path**: aidlc/spaces/default/intents/261015-b2-orders/construction/build-and-test/integration-test-instructions.md
+**Duration ms**: 69
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T05:05:10Z
+**Event**: SENSOR_FIRED
+**Fire id**: f02aacd2
+**Sensor ID**: upstream-coverage
+**Stage slug**: build-and-test
+**Output path**: aidlc/spaces/default/intents/261015-b2-orders/construction/build-and-test/performance-test-instructions.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T05:05:10Z
+**Event**: SENSOR_PASSED
+**Fire id**: f02aacd2
+**Sensor ID**: upstream-coverage
+**Stage slug**: build-and-test
+**Output path**: aidlc/spaces/default/intents/261015-b2-orders/construction/build-and-test/performance-test-instructions.md
+**Duration ms**: 68
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T05:05:10Z
+**Event**: SENSOR_FIRED
+**Fire id**: a1c6375f
+**Sensor ID**: upstream-coverage
+**Stage slug**: build-and-test
+**Output path**: aidlc/spaces/default/intents/261015-b2-orders/construction/build-and-test/security-test-instructions.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T05:05:10Z
+**Event**: SENSOR_PASSED
+**Fire id**: a1c6375f
+**Sensor ID**: upstream-coverage
+**Stage slug**: build-and-test
+**Output path**: aidlc/spaces/default/intents/261015-b2-orders/construction/build-and-test/security-test-instructions.md
+**Duration ms**: 66
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T05:05:11Z
+**Event**: SENSOR_FIRED
+**Fire id**: eceda8ad
+**Sensor ID**: upstream-coverage
+**Stage slug**: build-and-test
+**Output path**: aidlc/spaces/default/intents/261015-b2-orders/construction/build-and-test/build-and-test-summary.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T05:05:11Z
+**Event**: SENSOR_PASSED
+**Fire id**: eceda8ad
+**Sensor ID**: upstream-coverage
+**Stage slug**: build-and-test
+**Output path**: aidlc/spaces/default/intents/261015-b2-orders/construction/build-and-test/build-and-test-summary.md
+**Duration ms**: 81
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T05:05:11Z
+**Event**: SENSOR_FIRED
+**Fire id**: 890291a3
+**Sensor ID**: upstream-coverage
+**Stage slug**: build-and-test
+**Output path**: aidlc/spaces/default/intents/261015-b2-orders/construction/build-and-test/test-results.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T05:05:11Z
+**Event**: SENSOR_PASSED
+**Fire id**: 890291a3
+**Sensor ID**: upstream-coverage
+**Stage slug**: build-and-test
+**Output path**: aidlc/spaces/default/intents/261015-b2-orders/construction/build-and-test/test-results.md
+**Duration ms**: 67
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T05:05:11Z
+**Event**: SENSOR_FIRED
+**Fire id**: 5395a0f6
+**Sensor ID**: upstream-coverage
+**Stage slug**: build-and-test
+**Output path**: aidlc/spaces/default/intents/261015-b2-orders/construction/build-and-test/cross-unit-traceability.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T05:05:11Z
+**Event**: SENSOR_PASSED
+**Fire id**: 5395a0f6
+**Sensor ID**: upstream-coverage
+**Stage slug**: build-and-test
+**Output path**: aidlc/spaces/default/intents/261015-b2-orders/construction/build-and-test/cross-unit-traceability.md
+**Duration ms**: 70
+
+---
+
+## Stage Awaiting Approval
+**Timestamp**: 2026-10-27T05:05:11Z
+**Event**: STAGE_AWAITING_APPROVAL
+**Stage**: build-and-test
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-27T05:05:20Z
+**Event**: HUMAN_TURN
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+**Picked**: ["Approve"]
+
+---
+
+## Question Replied
+**Timestamp**: 2026-10-27T05:05:20Z
+**Event**: QUESTION_REPLIED
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+**Question**: Do you approve Build and Test for B2 Orders, with the two open defects and three unchecked targets carried forward? Next is CI Pipeline.
+**Reply**: Approve
+
+---
+
+## Gate Approved
+**Timestamp**: 2026-10-27T05:05:23Z
+**Event**: GATE_APPROVED
+**Stage**: build-and-test
+**User Input**: Approve
+**Person Reply**: Approve
+
+---
+
+## Stage Completion
+**Timestamp**: 2026-10-27T05:05:23Z
+**Event**: STAGE_COMPLETED
+**Stage**: build-and-test
+**Validation Basis**: {"graphContract":"sha256:96b8f13dd5dc4ed374a013c67c59513754aa4e6f9c23c96a9953c7cb00d73f5c","inputs":[{"artifact":"code-generation-plan","contentHash":"sha256:f9d6a1f4cded1cf9c4a96fc07b734033393ee4e2aaccd3dca2e2a885f64bdd11","instanceCount":1,"presentCount":1,"producer":"code-generation","required":true,"structureHash":"sha256:b778daa2500e0449c4a19c0b502e13949f1e2ead6c884f7e7528c7b4c449d3fe"},{"artifact":"code-summary","contentHash":"sha256:dd42f17c3e1aecaee5438b8d2c9bed64875b58d2835e6facd41590f99ab949dc","instanceCount":1,"presentCount":1,"producer":"code-generation","required":true,"structureHash":"sha256:43854326fb182bf984e20ea2b15fcec2fa935bcce7f684e735faa0e64e120948"},{"artifact":"unit-test-instructions","contentHash":"sha256:a36248231ec03f45ae509bbd25fe1de4c99ebdd242dce1d90d96428f1ddac3d7","instanceCount":1,"presentCount":1,"producer":"code-generation","required":true,"structureHash":"sha256:fb778d256692ff11c2ab66a202efebda515a334212a48c8d50eb2af7a799d978"}],"outputs":[{"artifact":"build-and-test-summary","contentHash":"sha256:d47c67e40bc663bb2de447a6d6bb30af9263a6ca8d326df06c535eeef2386861","instanceCount":1,"presentCount":1,"producer":"build-and-test","required":true,"structureHash":"sha256:5c46c5d509146d7117ae61b6323514296d68f642809fdf6024b910ec05e03af9"},{"artifact":"build-instructions","contentHash":"sha256:562872dbed788a3dbccea4860e88e288cff562030f06c6f140d8f11ac2e05c2d","instanceCount":1,"presentCount":1,"producer":"build-and-test","required":true,"structureHash":"sha256:a685d68143d7e65611e5e44b11d6846904a2faa88e0ae3d64a7d95dee2e0720d"},{"artifact":"build-test-results","contentHash":"sha256:f469967af7496ed4b3bf27e74eb110cc7c80e9c30ed94109410932eb9a69a3f6","instanceCount":1,"presentCount":1,"producer":"build-and-test","required":true,"structureHash":"sha256:5a87e01ba9c2e98680c7f115fa1d37c3125699c711e1cd4764089e5b984ff58f"},{"artifact":"cross-unit-traceability","contentHash":"sha256:786f3c976d86012e133eced3d2e80d95957e045715611294dd33dad5667ea119","instanceCount":1,"presentCount":1,"producer":"build-and-test","required":true,"structureHash":"sha256:6b3176b7c3ecdae7c65f26aa47021e39976d34a870c54199c58c9f42954932ce"},{"artifact":"integration-test-instructions","contentHash":"sha256:1ea947bbc30872773ed3c34b3133cf93b31a32f11c662d5e122fd6403020d7cf","instanceCount":1,"presentCount":1,"producer":"build-and-test","required":true,"structureHash":"sha256:2bda7f181f8f45377b38b25b7715914b16be5514d4ccd696b315049b3c21c3c0"},{"artifact":"performance-test-instructions","contentHash":"sha256:cfe8405e3391f2ce3de090451bb4063b9309ec34e5214622f86dbd2ee335c6f9","instanceCount":1,"presentCount":1,"producer":"build-and-test","required":true,"structureHash":"sha256:ed9753cbecc0ca41b7b89bf42e822be9cad8111323311ed60801931ef6d6a39f"},{"artifact":"security-test-instructions","contentHash":"sha256:56e9c052247a35ed70e3c68f56d517472a530550ee67bf020b4b3535f53fd0bf","instanceCount":1,"presentCount":1,"producer":"build-and-test","required":true,"structureHash":"sha256:06643912ca0e03c590198a83c3386855434f82a0550a4ac96f96b3070f295e10"}],"projectType":"brownfield","schema":3}
+**Details**: Stage Build and Test approved by gate
+**Tokens In**: 192
+**Tokens Out**: 71844
+**Cache Read**: 22300833
+**Cache Write**: 614848
+**Cost USD**: 10.82
+**By Model**: opus-5-5=10.82
+**By Agent**: main=10.82
+**Tokens By Model**: opus-5-5=192/71.8k/22.3M/614.8k
+**Tokens By Agent**: main=192/71.8k/22.3M/614.8k
+
+---
+
+## Stage Start
+**Timestamp**: 2026-10-27T05:05:23Z
+**Event**: STAGE_STARTED
+**Stage**: ci-pipeline
+**Agent**: aidlc-pipeline-deploy-agent
+
+---
