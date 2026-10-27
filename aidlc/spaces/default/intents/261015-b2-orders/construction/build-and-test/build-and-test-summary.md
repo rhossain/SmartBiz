@@ -17,6 +17,10 @@
 **Owner decision (2026-10-27):** "Accept failure". T-JSONB and T-DEPS are carried as open defects.
 NFR2.1, NFR1.4 and NFR3.2 are accepted as Unverified for this Bolt. No target was weakened.
 
+**Follow-up (2026-10-27, after the workflow closed):** T-JSONB is fixed in `f5144d8` and T-DEPS in
+`640cac9`. Both were verified locally: `tests/realdb` 5/5, `bun audit` clean, 217/217. The matrix
+below records the run as approved and is left unchanged.
+
 ## Test type inventory
 
 | Type | Instruction file | Status |

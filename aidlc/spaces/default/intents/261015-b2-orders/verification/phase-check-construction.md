@@ -23,6 +23,19 @@ the cross-Unit gate passes. Three things still block the transition:
 | CI green | **no, by design.** `bun audit` and `realdb` step 5 fail on T-DEPS and T-JSONB (Owner, Q4 = blocking) | `ci-config.md` §Expected status |
 | Code-generation review findings | R-03 (screens unmounted, M-05), R-04 (pipeline money still labelled `earned` in data) and R-05 (customer PII in the 5-year audit payload) remain open | `construction/code-generation/reviews/review-01.md` |
 
+## Update 2026-10-27, after the workflow closed
+
+At the Owner's request, items 1 and 2 below are now fixed on `b2-orders`:
+- **T-JSONB**, fixed in `f5144d8`: JSONB values are cast `::text::jsonb`. `tests/realdb` passes 5/5 on
+  a fresh Postgres 18, and `jsonb_typeof` is `object`.
+- **T-DEPS**, fixed in `640cac9`: zod 4.6.7, vite 6.4.5 and happy-dom 21.0.4. `bun audit` finds no
+  vulnerabilities.
+
+After both fixes, unit and integration are 217/217 at 96.76 % lines; type-check, lint, format and
+build are clean (JS 47.68 KB gzip). CI's two blocking gates should now pass. This is unconfirmed
+until the branch is pushed and the workflow runs on GitHub. Items 3–5 remain open, so the verdict
+stays **not ready**.
+
 ## What must happen before Operation
 
 1. **Fix T-JSONB.** Use `sql.json(...)` in `insertAudit` and the order writes. The realdb job then
