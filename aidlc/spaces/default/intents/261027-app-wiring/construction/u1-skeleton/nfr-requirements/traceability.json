@@ -22,7 +22,7 @@
     {
       "id": "NFR2",
       "status": "OK",
-      "target": "NFR2.1, NFR2.2, NFR2.3, NFR2.4"
+      "target": "NFR2.1, NFR2.2, NFR2.3"
     },
     {
       "id": "NFR3",
@@ -37,17 +37,17 @@
     {
       "id": "NFR5",
       "status": "OK",
-      "target": "NFR5.1, NFR5.2, NFR5.3"
+      "target": "NFR5.1, NFR5.2, NFR5.3, NFR5.4, NFR5.5"
     },
     {
       "id": "NFR6",
       "status": "OK",
-      "target": "NFR6.1, NFR6.2, NFR6.3, NFR6.4, NFR6.5, NFR6.6, NFR6.7, NFR6.8, NFR6.9, NFR6.10, NFR6.11"
+      "target": "NFR6.1, NFR6.2, NFR6.3, NFR6.4, NFR6.5, NFR6.6, NFR6.7, NFR6.8, NFR6.9, NFR6.10, NFR6.11, NFR6.12"
     },
     {
       "id": "NFR7",
       "status": "OK",
-      "target": "NFR7.1, NFR7.2, NFR7.3, NFR7.4, NFR7.5, NFR7.6, NFR7.7"
+      "target": "NFR7.1, NFR7.2, NFR7.3, NFR7.4, NFR7.5, NFR7.6, NFR7.7, NFR7.8"
     },
     {
       "id": "NFR8",
@@ -56,8 +56,8 @@
     },
     {
       "id": "NFR9",
-      "status": "N/A",
-      "target": "U1 adds no new screen beyond sign-up/sign-in already built in B1 with Bangla copy; the Bangla, keyboard and contrast requirements for every screen are U2's (US1.7, US5.4)"
+      "status": "OK",
+      "target": "NFR9.1, NFR9.2, NFR9.3, NFR9.4"
     },
     {
       "id": "NFR10",

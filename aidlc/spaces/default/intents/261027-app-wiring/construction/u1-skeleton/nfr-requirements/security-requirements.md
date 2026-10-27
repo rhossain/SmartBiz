@@ -33,7 +33,7 @@ Text fallback: three boundaries — the browser to the server (untrusted input, 
 | NFR3.2 | Session cookie `__Host-sb_session`: `Secure`, `HttpOnly`, `SameSite=Lax`, `Path=/`, no `Domain`; value = 32 random bytes (Web Crypto); only its SHA-256 stored | header test; realdb test reads `sessions` and finds no raw value |
 | NFR3.3 | Session validity: absolute 30 days from issue, idle 12 hours, user active; resolved on the server for every request; role and business taken only from the session row | frozen-clock boundary tests at 11 h 59 m / 12 h / 30 d; handler tests ignore body-supplied ids |
 | NFR3.4 | Re-sign-in in the same browser ends the previous session (fixation defence); sign-out deletes the row | realdb test |
-| NFR3.5 | Failed sign-ins answer a byte-identical 401; at most 5 attempts per typed email per 15-minute fixed window, 429 with `Retry-After`, never locking the account; counted for unknown emails too | unit tests incl. parallel attempts; byte comparison test |
+| NFR3.5 | Failed sign-ins answer a byte-identical 401; at most 5 attempts per typed email per 15-minute fixed window, 429 with `Retry-After`, never locking the account; counted for unknown emails too. An unknown email still runs one argon2 verify against a fixed dummy hash, so its timing matches a wrong password | unit tests incl. parallel attempts; byte comparison test; a timing test asserts unknown-email and wrong-password medians differ by < 20 % over 20 tries |
 | NFR3.6 | No response body contains `passwordHash`, `password_hash`, `token_hash` or the session value; domain functions return the public User | serialisation test over every U1 route (extended to all routes in U2) |
 | NFR3.7 | Logs redact `password`, `passwordHash`, `password_hash`, `token`, `token_hash`, `cookie`, `authorization`, `sessionId`, `link`, `t`; full request bodies are never logged | logger unit test |
 | NFR3.8 | A blocking secret pattern scan in the local gate (keys, tokens, passwords, committed `.env`), with a committed allow-list carrying reasons | gate step |
@@ -63,6 +63,8 @@ Text fallback: three boundaries — the browser to the server (untrusted input, 
 | NFR5.1 | Every POST, PATCH and DELETE requires `Content-Type: application/json` and an `Origin` exactly `http://127.0.0.1:PORT`; a missing or different Origin (including `localhost`) is 403 | handler-pipeline tests |
 | NFR5.2 | Bodies over 64 KiB are refused (413) before parsing; every body, param and query is parsed with a strict schema | pipeline tests |
 | NFR5.3 | The server binds 127.0.0.1 only | start-up test |
+| NFR5.4 | Static files are served only from the resolved `dist/` directory: the decoded request path is normalised, any path containing `..`, a NUL byte, a backslash or an encoded slash is 404, the resolved real path must stay inside `dist/` (symlinks resolved), and dotfiles and source maps are not served; unknown non-API paths get `index.html` | static-handler tests with traversal, encoded-traversal, symlink and dotfile requests |
+| NFR5.5 | Every request's `Host` header must be exactly `127.0.0.1:PORT`; anything else (including `localhost` or a rebinding hostname) is 403 before routing — this defends against DNS rebinding | pipeline tests with forged Host values |
 
 ### Zero spend (NFR10)
 
@@ -82,7 +84,10 @@ Text fallback: three boundaries — the browser to the server (untrusted input, 
 | T6 | Order lines | **R**epudiation: edits hide earlier lines | Low × Medium = Low | append-only revisions and audit-first writes (BR6.8) |
 | T7 | Responses and logs | **I**nformation disclosure: hashes, tokens, emails, stack traces | Medium × High = High | public User only; redaction; 500 body = code + correlation id; no-secret test |
 | T8 | Sign-in responses | **I**nformation disclosure: account existence | Medium × Medium = Medium | identical 401; limit counts unknown emails; no typed text in audit |
-| T9 | Server | **D**enial of service: large bodies, request floods | Low × Medium = Low | 64 KiB cap; loopback only; pool max 5 with timeouts |
+| T9 | Server | **D**enial of service: large bodies, request floods | Low × Medium = Low | 64 KiB cap; loopback only; pool max 5 with timeouts; at most 2 concurrent argon2 operations (NFR6.12) |
+| T13 | Static file handler | **I**nformation disclosure: path traversal reads `.env` or source | Medium × High = High | NFR5.4 normalisation, real-path containment in `dist/`, no dotfiles or maps |
+| T14 | Any request | **S**poofing via DNS rebinding: a remote page reaches 127.0.0.1 through its own hostname | Low × High = Medium | NFR5.5 exact Host check; Origin check on writes |
+| T15 | Sign-in | **I**nformation disclosure: timing reveals unknown emails | Medium × Low = Low | dummy-hash verify for unknown emails (NFR3.5) |
 | T10 | Rate limiter | **D**enial of service: an attacker locks the Owner out by typing her email | Medium × Low = Low | limit only delays (≤ 15 min), never disables; the Owner can restart the server (SEC-R1) |
 | T11 | Database role | **E**levation: app connects with excess privilege | Low × High = Medium | start-up role check; exact-grant gate; admin URL only for migrations |
 | T12 | Browser bundle | **E**levation / disclosure: server modules or env in the bundle | Medium × Medium = Medium | browser import rules; build gate scanning for `process.env`, `postgres`, `argon2`, `node:` |
