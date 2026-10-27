@@ -927,3 +927,222 @@
 **Source**: orchestrator
 
 ---
+
+## Subagent Completed
+**Timestamp**: 2026-10-27T09:30:27Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: ae953c167585a95ef
+**Message**: proceed
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T09:30:32Z
+**Event**: SENSOR_FIRED
+**Fire id**: 084a2f76
+**Sensor ID**: required-sections
+**Stage slug**: feasibility
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/feasibility/feasibility-assessment.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T09:30:32Z
+**Event**: SENSOR_PASSED
+**Fire id**: 084a2f76
+**Sensor ID**: required-sections
+**Stage slug**: feasibility
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/feasibility/feasibility-assessment.md
+**Duration ms**: 212
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T09:30:32Z
+**Event**: SENSOR_FIRED
+**Fire id**: a5a93799
+**Sensor ID**: required-sections
+**Stage slug**: feasibility
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/feasibility/constraint-register.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-27T09:30:33Z
+**Event**: SENSOR_FAILED
+**Fire id**: a5a93799
+**Sensor ID**: required-sections
+**Stage slug**: feasibility
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/feasibility/constraint-register.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/feasibility/required-sections-a5a93799.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T09:30:33Z
+**Event**: SENSOR_FIRED
+**Fire id**: 8cb155f4
+**Sensor ID**: required-sections
+**Stage slug**: feasibility
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/feasibility/raid-log.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T09:30:33Z
+**Event**: SENSOR_PASSED
+**Fire id**: 8cb155f4
+**Sensor ID**: required-sections
+**Stage slug**: feasibility
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/feasibility/raid-log.md
+**Duration ms**: 171
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T09:30:33Z
+**Event**: SENSOR_FIRED
+**Fire id**: 30c564fd
+**Sensor ID**: required-sections
+**Stage slug**: feasibility
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/feasibility/feasibility-questions.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T09:30:34Z
+**Event**: SENSOR_PASSED
+**Fire id**: 30c564fd
+**Sensor ID**: required-sections
+**Stage slug**: feasibility
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/feasibility/feasibility-questions.md
+**Duration ms**: 349
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T09:30:34Z
+**Event**: SENSOR_FIRED
+**Fire id**: 1a16eb98
+**Sensor ID**: upstream-coverage
+**Stage slug**: feasibility
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/feasibility/feasibility-assessment.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T09:30:35Z
+**Event**: SENSOR_PASSED
+**Fire id**: 1a16eb98
+**Sensor ID**: upstream-coverage
+**Stage slug**: feasibility
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/feasibility/feasibility-assessment.md
+**Duration ms**: 216
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T09:30:35Z
+**Event**: SENSOR_FIRED
+**Fire id**: c8440a71
+**Sensor ID**: upstream-coverage
+**Stage slug**: feasibility
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/feasibility/constraint-register.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T09:30:35Z
+**Event**: SENSOR_PASSED
+**Fire id**: c8440a71
+**Sensor ID**: upstream-coverage
+**Stage slug**: feasibility
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/feasibility/constraint-register.md
+**Duration ms**: 152
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T09:30:35Z
+**Event**: SENSOR_FIRED
+**Fire id**: c2847e5f
+**Sensor ID**: upstream-coverage
+**Stage slug**: feasibility
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/feasibility/raid-log.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T09:30:36Z
+**Event**: SENSOR_PASSED
+**Fire id**: c2847e5f
+**Sensor ID**: upstream-coverage
+**Stage slug**: feasibility
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/feasibility/raid-log.md
+**Duration ms**: 258
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T09:30:36Z
+**Event**: SENSOR_FIRED
+**Fire id**: f5884d89
+**Sensor ID**: upstream-coverage
+**Stage slug**: feasibility
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/feasibility/feasibility-questions.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T09:30:36Z
+**Event**: SENSOR_PASSED
+**Fire id**: f5884d89
+**Sensor ID**: upstream-coverage
+**Stage slug**: feasibility
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/ideation/feasibility/feasibility-questions.md
+**Duration ms**: 161
+
+---
+
+## Stage Awaiting Approval
+**Timestamp**: 2026-10-27T09:30:36Z
+**Event**: STAGE_AWAITING_APPROVAL
+**Stage**: feasibility
+
+---
+
+## Gate Approved
+**Timestamp**: 2026-10-27T09:30:38Z
+**Event**: GATE_APPROVED
+**Stage**: feasibility
+**User Input**: Approve (Owner standing instruction 2026-10-27: don't stop for approval; decide the right options)
+
+---
+
+## Stage Completion
+**Timestamp**: 2026-10-27T09:30:38Z
+**Event**: STAGE_COMPLETED
+**Stage**: feasibility
+**Validation Basis**: {"graphContract":"sha256:543912e848784f58af817ec322275022445da586f78256c281d1c37d967b15aa","inputs":[{"artifact":"intent-statement","contentHash":"sha256:02d1bbd4ffbc7b1ad522d03fc2734ae98e364fa3f7f8acc6b7c7754cff412e38","instanceCount":1,"presentCount":1,"producer":"intent-capture","required":true,"structureHash":"sha256:44fa7c47fac660308028f42d353b9dbd07da6caca247ae0f0841199ce7cdbadc"}],"outputs":[{"artifact":"constraint-register","contentHash":"sha256:4ad159bd15bbc23803010349278d361c4b7c15beea6cd1a0f2ab29fc247a8e56","instanceCount":1,"presentCount":1,"producer":"feasibility","required":true,"structureHash":"sha256:23b94d4fcbbc25bc9ea5f0c402dada9d340417aed323c1d29dfdb851b407a82f"},{"artifact":"feasibility-assessment","contentHash":"sha256:d2b48fb4b5e02509f628c7228f9c2a44add36bc0f2216d157d6346666a6bc58d","instanceCount":1,"presentCount":1,"producer":"feasibility","required":true,"structureHash":"sha256:be95ae454ac1527826878b840cd07d5a926a52655909583779a21d97a83bd1f0"},{"artifact":"feasibility-questions","contentHash":"sha256:7bb35f334bda324b4d09d26df231e9209da95453a41e563ac64f0390b9dcd21e","instanceCount":1,"presentCount":1,"producer":"feasibility","required":true,"structureHash":"sha256:32438af11d271fc0c44db0fa0c9ba78bc0c5398f980165c25a8a056ac1920329"},{"artifact":"raid-log","contentHash":"sha256:f19794bdced3c2dd92c7fe5ae2f5868f2c31126de3dfd56b615d6edd6997fa80","instanceCount":1,"presentCount":1,"producer":"feasibility","required":true,"structureHash":"sha256:5a5172936c43aa0620bb8bd988f863709e7a64f94f4eb4464c24a54f8735a0fe"}],"projectType":"brownfield","schema":3}
+**Details**: Stage Feasibility & Constraints approved by gate
+**Tokens In**: 30
+**Tokens Out**: 11364
+**Cache Read**: 8861381
+**Cache Write**: 27718
+**Cost USD**: 2.22
+**By Model**: opus-5-5=2.22
+**By Agent**: main=2.22
+**Tokens By Model**: opus-5-5=30/11.4k/8.9M/27.7k
+**Tokens By Agent**: main=30/11.4k/8.9M/27.7k
+
+---
+
+## Stage Start
+**Timestamp**: 2026-10-27T09:30:38Z
+**Event**: STAGE_STARTED
+**Stage**: scope-definition
+**Agent**: aidlc-product-agent
+
+---
