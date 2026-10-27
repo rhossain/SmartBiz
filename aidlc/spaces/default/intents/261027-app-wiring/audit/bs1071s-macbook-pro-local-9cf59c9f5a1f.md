@@ -5839,3 +5839,75 @@
 **Agent**: aidlc-architect-agent
 
 ---
+
+## Unit Started
+**Timestamp**: 2026-10-27T11:32:54Z
+**Event**: UNIT_STARTED
+**Stage**: functional-design
+**Unit**: u1-skeleton
+**Run floor**: WORKFLOW_STARTED:2026-10-27T06:05:58Z#1
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-10-27T11:34:45Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/functional-design/functional-design-questions.md
+**Context**: construction > u1-skeleton > functional-design > functional-design-questions.md
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-10-27T11:35:11Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/functional-design/entities.md
+**Context**: construction > u1-skeleton > functional-design > entities.md
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-10-27T11:36:34Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/functional-design/rules.md
+**Context**: construction > u1-skeleton > functional-design > rules.md
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-10-27T11:37:29Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/functional-design/functional-spec.md
+**Context**: construction > u1-skeleton > functional-design > functional-spec.md
+
+---
+
+## Unit Completed
+**Timestamp**: 2026-10-27T11:37:54Z
+**Event**: UNIT_COMPLETED
+**Stage**: functional-design
+**Unit**: u1-skeleton
+**Run floor**: WORKFLOW_STARTED:2026-10-27T06:05:58Z#1
+
+---
+
+## Decision Recorded
+**Timestamp**: 2026-10-27T11:38:21Z
+**Event**: DECISION_RECORDED
+**Stage**: functional-design
+**Decision**: U1 functional design Q1-Q12 answered A by the assistant on the Owner's standing instruction: order_items append-only revisions (DELETE revoked); total auth-kind mapping; random session token with hash, 30-day cap and 12-hour idle; replace this browser's session on re-sign-in; users.business_id deferrable FK and singleton business; per-email sign-in limit; no typed text in auth audit; password minimum 10; 127.0.0.1 server with start-up role check; U1 order list; minimal request-state component; wiring-check script.
+**Unit**: u1-skeleton
+
+---
+
+## Question Answered
+**Timestamp**: 2026-10-27T11:38:21Z
+**Event**: QUESTION_ANSWERED
+**Stage**: functional-design
+**Details**: Q1-Q12 all A (see functional-design-questions.md)
+**Unit**: u1-skeleton
+
+---
