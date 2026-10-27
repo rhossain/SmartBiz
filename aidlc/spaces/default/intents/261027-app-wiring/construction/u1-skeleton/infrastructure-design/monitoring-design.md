@@ -39,9 +39,9 @@ No paging or notification channel exists in this intent; operation-phase monitor
 
 | Aspect | Design |
 |--------|--------|
-| Destination | stdout of `bun run start`; the Owner may redirect to `logs/smartbiz-<date>.log` (gitignored `logs`) |
+| Destination | stdout of the server, and `bun run start` also appends every line to `logs/smartbiz-<YYYY-MM-DD>.log` (gitignored), so the 5xx/503/429 counts survive the terminal |
 | Format | one JSON object per line (O1); redacted (O7); no error text from Postgres (O3) |
 | Correlation | `X-Correlation-Id` on every API response, the same id on audit rows and 500 bodies (O2) |
 | Retention | logs: none promised (Q4 of NFR Requirements); audit trail: 5 years in the database |
 | Tracing | single process — the correlation id is the trace; no tracing system |
-| Dashboard | none; `scripts/log-summary.ts` prints per-route counts, 5xx and p95 from a log file |
+| Dashboard | none; `bun run logs:summary` (`scripts/log-summary.ts`, delivered in U1) prints per-route counts, 5xx, 503, 429 and p95 from a day's log file; the Owner runs it after a busy day or any banner |

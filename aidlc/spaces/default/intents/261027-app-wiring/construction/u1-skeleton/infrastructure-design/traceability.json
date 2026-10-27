@@ -22,13 +22,18 @@
     "NFR8.6",
     "NFR8.8",
     "NFR8.9",
-    "NFR10.1"
+    "NFR10.1",
+    "NFR6.2",
+    "NFR6.3",
+    "NFR6.9",
+    "NFR7.3",
+    "NFR7.4"
   ],
   "coverage": [
     {
       "id": "NFR2.1",
       "status": "OK",
-      "target": "infrastructure-specification: roles smartbiz_app (not superuser, member of app_role)"
+      "target": "infrastructure-specification roles (smartbiz_app not superuser, member of app_role); verified by the server start-up check in gate 14"
     },
     {
       "id": "NFR2.2",
@@ -88,7 +93,7 @@
     {
       "id": "NFR7.1",
       "status": "OK",
-      "target": "infrastructure-specification Connection settings: statement and idle timeouts"
+      "target": "cicd-pipeline gate 13 realdb outage test (docker restart); infrastructure-specification connection timeouts"
     },
     {
       "id": "NFR7.2",
@@ -129,6 +134,31 @@
       "id": "NFR10.1",
       "status": "OK",
       "target": "infrastructure-specification: Docker, bun and local scripts only; hosted Actions disabled"
+    },
+    {
+      "id": "NFR6.2",
+      "status": "OK",
+      "target": "monitoring-design Metrics: session resolve p95 (benchmark gate 15)"
+    },
+    {
+      "id": "NFR6.3",
+      "status": "OK",
+      "target": "monitoring-design Metrics: sign-in max (benchmark gate 15)"
+    },
+    {
+      "id": "NFR6.9",
+      "status": "OK",
+      "target": "cicd-pipeline gate 15 large profile on gate_bench before a Bolt merge"
+    },
+    {
+      "id": "NFR7.3",
+      "status": "OK",
+      "target": "cicd-pipeline gate 14 wiring check restarts the child server"
+    },
+    {
+      "id": "NFR7.4",
+      "status": "OK",
+      "target": "infrastructure-specification Configuration: server refuses MIGRATE_DATABASE_URL in its env; start-up role check against smartbiz_app"
     }
   ]
 }
