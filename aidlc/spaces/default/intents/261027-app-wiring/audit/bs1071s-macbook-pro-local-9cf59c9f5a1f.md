@@ -4745,3 +4745,168 @@
 **Details**: Q1-Q6 all A; plan approved (see units-generation-questions.md)
 
 ---
+
+## Review Requested
+**Timestamp**: 2026-10-27T11:17:09Z
+**Event**: REVIEW_REQUESTED
+**Stage**: units-generation
+**Reviewer**: aidlc-architecture-reviewer-agent
+**Iteration**: 1
+**Artifact Fingerprint**: sha256:bb1764a15ab959537252be2c4442be6ce3a678dbde8782f1513d3b2e08c48ca8
+**Request Id**: review:075ca4e9ddb68b27c79264bf8b62a4ab
+**Review File**: .aidlc-engine/reviews/units-generation/stage/f50cf3ebd9e25d16/1.075ca4e9ddb68b27c79264bf8b62a4ab.review.md
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-27T11:17:59Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: a4cfd791b2f51c786
+**Message**: Checking story ACs in stories.md
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-27T11:18:34Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: ac5b0abea0bd1a2fb
+**Message**: Locating the review output directory
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-10-27T11:18:47Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/reviews/units-generation/stage/f50cf3ebd9e25d16/1.075ca4e9ddb68b27c79264bf8b62a4ab.review.md
+**Context**: .aidlc-engine > reviews > units-generation > stage > f50cf3ebd9e25d16 > 1.075ca4e9ddb68b27c79264bf8b62a4ab.review.md
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-27T11:18:58Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: aidlc-architecture-reviewer-agent
+**Agent ID**: a7f02ed9f7bbb4264
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-27T11:18:58Z
+**Event**: HUMAN_TURN
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+
+---
+
+## Review Completed
+**Timestamp**: 2026-10-27T11:19:06Z
+**Event**: REVIEW_COMPLETED
+**Stage**: units-generation
+**Reviewer**: aidlc-architecture-reviewer-agent
+**Iteration**: 1
+**Verdict**: READY
+**Request Fingerprint**: sha256:bb1764a15ab959537252be2c4442be6ce3a678dbde8782f1513d3b2e08c48ca8
+**Artifact Fingerprint**: sha256:bb1764a15ab959537252be2c4442be6ce3a678dbde8782f1513d3b2e08c48ca8
+**Request Id**: review:075ca4e9ddb68b27c79264bf8b62a4ab
+**Review Record**: .aidlc-engine/reviews/units-generation/stage/f50cf3ebd9e25d16/1.json
+**Review Record Digest**: sha256:9dbe91ccb636ddcdbf59b2e0a5f48f694391b4a26f3b526f043918e8168a5a1f
+
+---
+
+## Decision Recorded
+**Timestamp**: 2026-10-27T11:19:06Z
+**Event**: DECISION_RECORDED
+**Stage**: units-generation
+**Decision**: Units review READY (advisory). Applied: R-06 u2-app-shell kind dropped so it gets the full design-artifact matrix. Recorded as constraints: R-01 AC5.2a.2 narrowed to routes mounted in U1; R-02 AC1.7.1/AC5.1.4 built in U2 and extended by U3/U4; R-03 U1 ships a minimal request-state component that U2 generalises into ApiState; R-05 AC3.3.2 order history verified in U5. Carried to Delivery Planning: R-04 create and list first inside U1.
+
+---
+
+## Guard Stood Aside
+**Timestamp**: 2026-10-27T11:19:08Z
+**Event**: GUARD_STOOD_ASIDE
+**Guard**: review-freeze
+**Authority**: grant
+**Grant**: turn-marker
+**Actor**: main
+**Stage**: units-generation
+**Tool**: Edit
+**Details**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/inception/units-generation/unit-of-work-dependency.md
+
+---
+
+## Artifact Updated
+**Timestamp**: 2026-10-27T11:19:08Z
+**Event**: ARTIFACT_UPDATED
+**Tool**: Edit
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/inception/units-generation/unit-of-work-dependency.md
+**Context**: inception > units-generation > unit-of-work-dependency.md
+
+---
+
+## Guard Stood Aside
+**Timestamp**: 2026-10-27T11:19:09Z
+**Event**: GUARD_STOOD_ASIDE
+**Guard**: review-freeze
+**Authority**: grant
+**Grant**: turn-marker
+**Actor**: main
+**Stage**: units-generation
+**Tool**: Edit
+**Details**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/inception/units-generation/unit-of-work.md
+
+---
+
+## Artifact Updated
+**Timestamp**: 2026-10-27T11:19:09Z
+**Event**: ARTIFACT_UPDATED
+**Tool**: Edit
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/inception/units-generation/unit-of-work.md
+**Context**: inception > units-generation > unit-of-work.md
+
+---
+
+## Guard Stood Aside
+**Timestamp**: 2026-10-27T11:19:16Z
+**Event**: GUARD_STOOD_ASIDE
+**Guard**: review-freeze
+**Authority**: grant
+**Grant**: turn-marker
+**Actor**: main
+**Stage**: units-generation
+**Tool**: Edit
+**Details**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/inception/units-generation/unit-of-work.md
+
+---
+
+## Artifact Updated
+**Timestamp**: 2026-10-27T11:19:17Z
+**Event**: ARTIFACT_UPDATED
+**Tool**: Edit
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/inception/units-generation/unit-of-work.md
+**Context**: inception > units-generation > unit-of-work.md
+
+---
+
+## Guard Stood Aside
+**Timestamp**: 2026-10-27T11:19:18Z
+**Event**: GUARD_STOOD_ASIDE
+**Guard**: review-freeze
+**Authority**: grant
+**Grant**: turn-marker
+**Actor**: main
+**Stage**: units-generation
+**Tool**: Edit
+**Details**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/inception/units-generation/unit-of-work.md
+
+---
+
+## Artifact Updated
+**Timestamp**: 2026-10-27T11:19:18Z
+**Event**: ARTIFACT_UPDATED
+**Tool**: Edit
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/inception/units-generation/unit-of-work.md
+**Context**: inception > units-generation > unit-of-work.md
+
+---

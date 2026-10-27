@@ -11,13 +11,26 @@
 | Unit ID | Directory | Name | Kind | Complexity | Deployment |
 |---------|-----------|------|------|------------|------------|
 | U1 | `u1-skeleton` | Walking skeleton: server, sign-in, mounted app, orders end to end | service | L | embedded in the one bun server and Vite build |
-| U2 | `u2-app-shell` | Every screen mounted, role walk, no-secret check, screen states | ui | M | embedded |
+| U2 | `u2-app-shell` | Every screen mounted, role walk, no-secret check, screen states | (untagged; see review R-06) | M | embedded |
 | U3 | `u3-staff` | Invitations, staff reset links, terminal reset, staff screen | service | M | embedded |
 | U4 | `u4-catalog` | Customers, notes, products, variants, stock, suppliers, low stock | service | L | embedded |
 | U5 | `u5-orders-catalog` | Orders use real customers and variants; paste-parse matches the catalog | service | S | embedded |
 
 All five ship into one process on `127.0.0.1` and one Docker `postgres:18` (Q5, Q6). There is one
 deployable; "Unit" is a build and test slice, not a service.
+
+## Review follow-ups (architecture review, iteration 1, READY)
+
+Decided on the Owner's standing instruction; each binds the named Unit's Functional Design.
+
+| Finding | Decision |
+|---------|----------|
+| R-01 AC5.2a.2 says every U1 and U3 route renders, but U1 mounts only its own routes | In U1, AC5.2a.2 covers the routes U1 mounts (sign-up, sign-in, the order routes, lock, not-found); U2 widens the happy-dom walk to every mounted route, and U3 and U4 add theirs. |
+| R-02 AC1.7.1 and AC5.1.4 (in U2) name routes built in U3 and U4 | U2 builds the mechanism and passes these ACs for every route that exists when U2 ships; U3 adds `/staff`, `/accept-invite`, `/reset`, `/recover`, and U4 adds the catalog routes, each re-running the same walks. |
+| R-03 U1's order screens need loading, empty and error states, but `ApiState` is U2's | U1 ships a minimal request-state component in PresentationComponent (loading, empty, error banner) for the order screens; U2 generalises it into the full `ApiState` (401, 403, 404, 409, 503, unreachable) without changing its props for the order screens. |
+| R-04 U1 is large | Kept as one Unit; Delivery Planning orders create and list ahead of edit, status, consignment and paging inside U1. |
+| R-05 AC3.3.2 (customer order history) needs UUID customer ids, which arrive in U5 | U4 builds the history section and its empty state; AC3.3.2's order rows are verified in U5's tests. |
+| R-06 U2 tagged `ui` would skip entities and rules | U2's kind is dropped, so it gets the full design-artifact matrix: the role table, the `link` allow-list and the `UserRecord` versus public `User` split are rules. |
 
 ## U1 — `u1-skeleton` (service, L)
 
@@ -47,7 +60,7 @@ other U1/U3 screens remain stubs until U2.
 - The skeleton is proven by the Construction verification command chosen at the checkpoint (org.md):
   start on a fresh Docker Postgres, sign up, sign in, create an order, list it, sign out.
 
-## U2 — `u2-app-shell` (ui, M)
+## U2 — `u2-app-shell` (untagged, M)
 
 **Delivers:** every U1 and U3 screen route mounted with typed parameters and the not-found screen; the
 Shell navigation filtered by capability with Bangla labels; the lock screen with a way home; the shared

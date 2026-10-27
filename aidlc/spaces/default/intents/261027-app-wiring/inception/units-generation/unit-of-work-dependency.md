@@ -10,7 +10,6 @@ units:
     kind: service
     depends_on: []
   - name: u2-app-shell
-    kind: ui
     depends_on: [u1-skeleton]
   - name: u3-staff
     kind: service
