@@ -68,9 +68,8 @@
     },
     {
       "id": "FR1.2",
-      "status": "PARTIAL",
-      "target": "AC1.1.1",
-      "note": "env config and .env.example documentation carried to NFR Design / Build and Test (secret scan)"
+      "status": "Deferred",
+      "target": "AC1.1.1 (rest deferred: env config and .env.example documentation carried to NFR Design / Build and Test (secret scan))"
     },
     {
       "id": "FR1.3",
@@ -284,9 +283,8 @@
     },
     {
       "id": "NFR3",
-      "status": "PARTIAL",
-      "target": "AC1.3.1, AC5.3.1-AC5.3.4",
-      "note": "secret pattern scan step carried to Build and Test"
+      "status": "Deferred",
+      "target": "AC1.3.1, AC5.3.1-AC5.3.4 (rest deferred: secret pattern scan step carried to Build and Test)"
     },
     {
       "id": "NFR4",
@@ -300,9 +298,8 @@
     },
     {
       "id": "NFR6",
-      "status": "PARTIAL",
-      "target": "AC1.7a.2, AC2.1a.6, AC1.7.4",
-      "note": "AC1.7.4 Deferred when no headless Chrome; catalog p95 carried to NFR Design"
+      "status": "Deferred",
+      "target": "AC1.7a.2, AC2.1a.6, AC1.7.4 (rest deferred: AC1.7.4 Deferred when no headless Chrome; catalog p95 carried to NFR Design)"
     },
     {
       "id": "NFR7",
@@ -311,9 +308,8 @@
     },
     {
       "id": "NFR8",
-      "status": "PARTIAL",
-      "target": "AC5.2a.1, AC5.2b.1",
-      "note": "80 % coverage floor carried to Build and Test"
+      "status": "Deferred",
+      "target": "AC5.2a.1, AC5.2b.1 (rest deferred: 80 % coverage floor carried to Build and Test)"
     },
     {
       "id": "NFR9",
@@ -322,9 +318,8 @@
     },
     {
       "id": "NFR10",
-      "status": "PARTIAL",
-      "target": "AC1.1.1 (local only); zero-spend gate carried to Build and Test",
-      "note": "no AC can prove zero spend; carried to Build and Test as a dependency check"
+      "status": "Deferred",
+      "target": "AC1.1.1 (local only); zero-spend gate carried to Build and Test (rest deferred: no AC can prove zero spend; carried to Build and Test as a dependency check)"
     }
   ]
 }
