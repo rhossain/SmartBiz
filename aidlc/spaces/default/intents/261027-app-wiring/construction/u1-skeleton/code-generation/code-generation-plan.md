@@ -177,17 +177,17 @@ that layer is implemented, together with the full existing suite, before the nex
 
 ### Step 9 — API / endpoint: implement (US1.1, US1.3, US1.4, US2.1a; BR1.1–BR1.11, BR3.2, BR3.8, BR6.1–BR6.4; S1–S9, O1–O7)
 
-- [ ] `src/server/config.ts`: read `PORT` (default 3000), `DATABASE_URL`; refuse to start if `MIGRATE_DATABASE_URL` is present; fail fast with one line (BR1.3).
-- [ ] `src/server/routes.ts`: route table as data `{ method, path, access, schemas, handler }`; public allow-list exactly health, setup, sign-up, sign-in, sign-out; start-up fails on a missing `access` (BR1.6).
-- [ ] `src/server/pipeline.ts`: correlation id → Host check → body cap (declared `Content-Length` > 65536 → 413) → static vs API → Origin exact + JSON for writes → match → session resolve → capability → strict zod parse (400 with field paths) → one domain call → kind→status table (total; C1 + A2) → headers + no-store + `X-Correlation-Id` → one request log line (BR1.7–BR1.11, BR3.8).
-- [ ] `src/server/status-map.ts`: the total `Result` kind → HTTP status map; `rate_limited` adds `Retry-After`.
-- [ ] `src/server/db-errors.ts`: availability classification → 503 `db_unavailable` at `warn`; otherwise 500 `internal` logging only error class, SQLSTATE and constraint (R1, BR1.5, BR1.11).
-- [ ] `src/server/cookies.ts`: `__Host-sb_session` set (Max-Age = seconds to `expires_at`) and clear (BR3.2, A1).
-- [ ] `src/server/headers.ts`: frozen S5 header map.
-- [ ] `src/server/static.ts`: S6 traversal defence on the raw and decoded path, `realpath` under `dist/`, SPA fallback, immutable caching for hashed assets, 405 for non-GET/HEAD.
-- [ ] `src/server/handlers/` (`health.ts`, `setup.ts`, `auth.ts`, `session.ts`, `orders.ts`): each parses with `.strict()` schemas, takes `{businessId, userId, role}` from the session only, calls one domain function; sign-out answers 503 and still clears the cookie when the database is down.
-- [ ] `src/server/main.ts`: config → route table → connect + role check → `Bun.serve({ hostname: '127.0.0.1', port, maxRequestBodySize: 65536 })`; `/build-sha` from `dist/BUILD_SHA`; SIGINT/SIGTERM graceful shutdown ≤ 5 s; start-up behind `if (import.meta.main)` (BR1.1, BR1.2, R2).
-- [ ] `src/observability/log.ts`: recursive case-insensitive redaction deny-list (O7).
+- [x] `src/server/config.ts`: read `PORT` (default 3000), `DATABASE_URL`; refuse to start if `MIGRATE_DATABASE_URL` is present; fail fast with one line (BR1.3).
+- [x] `src/server/routes.ts`: route table as data `{ method, path, access, schemas, handler }`; public allow-list exactly health, setup, sign-up, sign-in, sign-out; start-up fails on a missing `access` (BR1.6).
+- [x] `src/server/pipeline.ts`: correlation id → Host check → body cap (declared `Content-Length` > 65536 → 413) → static vs API → Origin exact + JSON for writes → match → session resolve → capability → strict zod parse (400 with field paths) → one domain call → kind→status table (total; C1 + A2) → headers + no-store + `X-Correlation-Id` → one request log line (BR1.7–BR1.11, BR3.8).
+- [x] `src/server/status-map.ts`: the total `Result` kind → HTTP status map; `rate_limited` adds `Retry-After`.
+- [x] `src/server/db-errors.ts`: availability classification → 503 `db_unavailable` at `warn`; otherwise 500 `internal` logging only error class, SQLSTATE and constraint (R1, BR1.5, BR1.11).
+- [x] `src/server/cookies.ts`: `__Host-sb_session` set (Max-Age = seconds to `expires_at`) and clear (BR3.2, A1).
+- [x] `src/server/headers.ts`: frozen S5 header map.
+- [x] `src/server/static.ts`: S6 traversal defence on the raw and decoded path, `realpath` under `dist/`, SPA fallback, immutable caching for hashed assets, 405 for non-GET/HEAD.
+- [x] `src/server/handlers/` (`health.ts`, `setup.ts`, `auth.ts`, `session.ts`, `orders.ts`): each parses with `.strict()` schemas, takes `{businessId, userId, role}` from the session only, calls one domain function; sign-out answers 503 and still clears the cookie when the database is down.
+- [x] `src/server/main.ts`: config → route table → connect + role check → `Bun.serve({ hostname: '127.0.0.1', port, maxRequestBodySize: 65536 })`; `/build-sha` from `dist/BUILD_SHA`; SIGINT/SIGTERM graceful shutdown ≤ 5 s; start-up behind `if (import.meta.main)` (BR1.1, BR1.2, R2).
+- [x] `src/observability/log.ts`: recursive case-insensitive redaction deny-list (O7).
 
 ### Step 10 — API / endpoint: write and run its tests
 
