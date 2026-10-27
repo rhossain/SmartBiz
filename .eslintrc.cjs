@@ -8,6 +8,8 @@
  *     import no other feature, the router, the API client or server code.
  *   - team.md Testing Posture: no argument-less `new Date()` or `Date.now()` in src outside
  *     src/data/clock.ts, where every live "now" goes.
+ * U2 (u2-app-shell) adds one more: PresentationComponent (src/pres/**) imports neither the
+ * router nor the API client (review F-01).
  * ESLint overrides replace a rule's options rather than merging them, so each override
  * below restates the full option list for the files it matches.
  */
@@ -86,6 +88,16 @@ const KERNEL_PATTERNS = [
   },
 ];
 
+// U2 (review F-01): PresentationComponent receives data and callbacks as props; it never
+// reaches into the router or the API client, not even for a type. App (src/router) wires them.
+const PRES_PATTERNS = [
+  {
+    group: ["**/router/*", "**/router/**", "**/client/*", "**/client/**"],
+    message:
+      "PresentationComponent (src/pres/**) imports neither the router nor the API client; App passes what it needs as props (U2 F-01).",
+  },
+];
+
 const BROWSER_FILES = [
   "src/index.tsx",
   "src/pres/**",
@@ -93,6 +105,8 @@ const BROWSER_FILES = [
   "src/i18n/**",
   "src/client/**",
   "src/**/screens/**",
+  // U2: the audit trail screen (already matched by the line above; named so it is reviewed).
+  "src/audit/screens/**",
 ];
 
 module.exports = {
@@ -151,6 +165,15 @@ module.exports = {
           "error",
           { name: "process", message: SERVER_ONLY_MESSAGE },
           { name: "Bun", message: SERVER_ONLY_MESSAGE },
+        ],
+      },
+    },
+    {
+      files: ["src/pres/**"],
+      rules: {
+        "@typescript-eslint/no-restricted-imports": [
+          "error",
+          { paths: BROWSER_PATHS, patterns: [...BROWSER_PATTERNS, ...PRES_PATTERNS] },
         ],
       },
     },

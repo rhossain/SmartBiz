@@ -99,10 +99,10 @@ layer is implemented, together with the full existing suite, before the next lay
 
 ### Step 1 — Project structure and production configuration skeleton (US1.7, US5.1)
 
-- [ ] Create `tests/spec/` with `role-table.ts` (header comment only until Step 10), `fixtures.ts` (header only) and `dependencies.json` (the current `dependencies` and `devDependencies` of `package.json`, exactly).
-- [ ] Create the new module files with header comments: `src/audit/audit-read.ts`, `src/audit/schemas.ts`, `src/server/handlers/audit.ts`, `src/client/audit-api.ts`, `src/audit/screens/AuditTrail.tsx`, `src/pres/ApiState.tsx`, `src/pres/view-for-kind.ts`, `src/pres/use-submit-guard.ts`, `src/pres/NotAvailable.tsx`.
-- [ ] `.eslintrc.cjs`: add `src/audit/screens/**` to the browser-file override; PresentationComponent (`src/pres/**`) may not import `src/router/**` or `src/client/**` (F-01).
-- [ ] Run `bun run type-check`, `bun run lint` and the existing suite.
+- [x] Create `tests/spec/` with `role-table.ts` (header comment only until Step 10), `fixtures.ts` (header only) and `dependencies.json` (the current `dependencies` and `devDependencies` of `package.json`, exactly).
+- [x] Create the new module files with header comments: `src/audit/audit-read.ts`, `src/audit/schemas.ts`, `src/server/handlers/audit.ts`, `src/client/audit-api.ts`, `src/audit/screens/AuditTrail.tsx`, `src/pres/ApiState.tsx`, `src/pres/view-for-kind.ts`, `src/pres/use-submit-guard.ts`, `src/pres/NotAvailable.tsx`.
+- [x] `.eslintrc.cjs`: add `src/audit/screens/**` to the browser-file override; PresentationComponent (`src/pres/**`) may not import `src/router/**` or `src/client/**` (F-01).
+- [x] Run `bun run type-check`, `bun run lint` and the existing suite.
 
 ### Step 2 — Verify the test runner and record the unit-scoped command
 
