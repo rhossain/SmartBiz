@@ -480,7 +480,7 @@ rules:
     category: constraint
     applies_to: "src/db/migrations"
     trigger: "migrate"
-    logic: "0011 users.business_id (BR2.6; nullable, filled from businesses.owner_user_id, then NOT NULL with a DEFERRABLE INITIALLY DEFERRED reference) and businesses_singleton_idx. 0012 sessions: delete every existing session row (none was ever usable — there was no read path, P-4), then add token_hash text NOT NULL with a unique index. 0013 email ignoring case: stop with the named error users_email_case_duplicate if two emails differ only by case, else replace users_email_lower_idx with a unique index on lower(email). 0014 grants on the auth tables (BR9.2). 0015 order line revisions and the DELETE revoke (BR6.10). Each opens with a comment naming its owning component and U1."
+    logic: "0011 users.business_id (BR2.6; nullable, filled from businesses.owner_user_id, then NOT NULL with a DEFERRABLE INITIALLY DEFERRED reference) and businesses_singleton_idx. 0012 sessions: only when token_hash does not exist yet, delete every existing session row (none was ever usable — there was no read path, P-4) and add token_hash text NOT NULL with a unique index; a re-run changes nothing and signs nobody out (the _migrations ledger also applies it once). 0013 email ignoring case: stop with the named error users_email_case_duplicate if two emails differ only by case, else replace users_email_lower_idx with a unique index on lower(email). 0014 grants on the auth tables (BR9.2). 0015 order line revisions and the DELETE revoke (BR6.10). Each opens with a comment naming its owning component and U1."
     violation: "migrate fails at the first broken step and leaves earlier steps applied but consistent"
     source: [P-2, P-3, P-4, P-5, AC1.1.6, AC1.2.6, C9]
 

@@ -109,7 +109,7 @@ No line row is updated or deleted; every earlier revision stays readable for the
 | # | Migration | Steps | Fails when |
 |---|-----------|-------|-----------|
 | 0011 | `users_business_link` | add `users.business_id` nullable; fill from `businesses.owner_user_id`; set NOT NULL; add the deferrable reference; add `businesses_singleton_idx` | any user has no business (`users_without_business`) |
-| 0012 | `sessions_token_hash` | delete every session row (none was ever usable); add `token_hash` NOT NULL; unique index | — |
+| 0012 | `sessions_token_hash` | only if `token_hash` is absent: delete every session row (none was ever usable), add `token_hash` NOT NULL and its unique index; a re-run signs nobody out | — |
 | 0013 | `users_email_ci_unique` | check for emails equal ignoring case; drop `users_email_lower_idx`; add unique index on lower(email) | a case duplicate exists (`users_email_case_duplicate`) |
 | 0014 | `auth_grants` | exact grants on users, businesses, invitations, password_resets, sessions | — |
 | 0015 | `order_item_revisions` | add `orders.items_revision` and `order_items.revision` (default 1); drop `UNIQUE(order_id, line_no)`; add `UNIQUE(order_id, revision, line_no)` and an index on (order_id, revision); revoke DELETE on order_items | — |
