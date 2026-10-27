@@ -1,0 +1,32 @@
+{
+  "stage": "infrastructure-design",
+  "unit": "u2-app-shell",
+  "upstream_ids": [
+    "NFR2.4",
+    "NFR4.2",
+    "NFR6.13",
+    "NFR6.14",
+    "NFR6.15",
+    "NFR6.16",
+    "NFR6.17",
+    "NFR7.14",
+    "NFR8.12",
+    "NFR8.15",
+    "NFR9.6",
+    "NFR10.2"
+  ],
+  "coverage": [
+    { "id": "NFR2.4", "status": "OK", "target": "infrastructure-specification Infrastructure Services: index needs no grant; gate 13 grants test unchanged" },
+    { "id": "NFR4.2", "status": "OK", "target": "cicd-pipeline gate 14: the wiring check reads one audit call's headers" },
+    { "id": "NFR6.13", "status": "OK", "target": "migration 0016 audit_log_business_keyset_idx; cicd-pipeline gate 15 audit timings" },
+    { "id": "NFR6.14", "status": "OK", "target": "installed Chrome via CHROME_PATH; cicd-pipeline gate 14b" },
+    { "id": "NFR6.15", "status": "OK", "target": "U1 gate 9 bundle check unchanged" },
+    { "id": "NFR6.16", "status": "OK", "target": "cicd-pipeline gate 5b timed walks" },
+    { "id": "NFR6.17", "status": "OK", "target": "migration 0016; cicd-pipeline gate 15 EXPLAIN check with --large; Bolt 1 merge runs --large" },
+    { "id": "NFR7.14", "status": "OK", "target": "cicd-pipeline gate 13 outage test adds GET /api/audit" },
+    { "id": "NFR8.12", "status": "OK", "target": "monitoring-design gate result line walks field" },
+    { "id": "NFR8.15", "status": "OK", "target": "monitoring-design gate result line browser field; gate 14b exit 2" },
+    { "id": "NFR9.6", "status": "OK", "target": "cicd-pipeline gate 14b at 360 x 740" },
+    { "id": "NFR10.2", "status": "OK", "target": "cicd-pipeline gate 11 dependency check against tests/spec/dependencies.json" }
+  ]
+}
