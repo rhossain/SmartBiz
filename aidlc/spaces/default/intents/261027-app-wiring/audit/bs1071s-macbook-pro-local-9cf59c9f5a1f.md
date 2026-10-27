@@ -4100,3 +4100,272 @@
 **Context**: inception > refined-mockups > mockups.md
 
 ---
+
+## Change Accepted
+**Timestamp**: 2026-10-27T11:08:03Z
+**Event**: CHANGE_ACCEPTED
+**Stage**: refined-mockups
+**Checkpoint**: review-receipt
+**Changed**: aidlc/spaces/default/intents/261027-app-wiring/inception/refined-mockups/mockups.md
+**Recorded**: sha256:9c155cd11c325a91f7e8caa18cc1f18eeaf86dce874dfbdfeab93e8a11561ed9
+**Current**: sha256:315e74e3d590900a5bfead9d760f3d0346c78d918bc61111fe9885ccb3fb814b
+**Details**: aidlc/spaces/default/intents/261027-app-wiring/inception/refined-mockups/mockups.md changed after the Refined Mockups review; carrying on.
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T11:08:04Z
+**Event**: SENSOR_FIRED
+**Fire id**: c91b111a
+**Sensor ID**: required-sections
+**Stage slug**: refined-mockups
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/refined-mockups/mockups.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T11:08:04Z
+**Event**: SENSOR_PASSED
+**Fire id**: c91b111a
+**Sensor ID**: required-sections
+**Stage slug**: refined-mockups
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/refined-mockups/mockups.md
+**Duration ms**: 92
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T11:08:04Z
+**Event**: SENSOR_FIRED
+**Fire id**: 26ee2b3b
+**Sensor ID**: required-sections
+**Stage slug**: refined-mockups
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/refined-mockups/interaction-spec.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T11:08:04Z
+**Event**: SENSOR_PASSED
+**Fire id**: 26ee2b3b
+**Sensor ID**: required-sections
+**Stage slug**: refined-mockups
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/refined-mockups/interaction-spec.md
+**Duration ms**: 83
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T11:08:04Z
+**Event**: SENSOR_FIRED
+**Fire id**: 92db3943
+**Sensor ID**: required-sections
+**Stage slug**: refined-mockups
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/refined-mockups/design-system-mapping.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T11:08:04Z
+**Event**: SENSOR_PASSED
+**Fire id**: 92db3943
+**Sensor ID**: required-sections
+**Stage slug**: refined-mockups
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/refined-mockups/design-system-mapping.md
+**Duration ms**: 82
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T11:08:04Z
+**Event**: SENSOR_FIRED
+**Fire id**: bf33266f
+**Sensor ID**: required-sections
+**Stage slug**: refined-mockups
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/refined-mockups/accessibility-checklist.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-27T11:08:05Z
+**Event**: SENSOR_FAILED
+**Fire id**: bf33266f
+**Sensor ID**: required-sections
+**Stage slug**: refined-mockups
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/refined-mockups/accessibility-checklist.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/refined-mockups/required-sections-bf33266f.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T11:08:05Z
+**Event**: SENSOR_FIRED
+**Fire id**: cd2b7c09
+**Sensor ID**: required-sections
+**Stage slug**: refined-mockups
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/refined-mockups/refined-mockups-questions.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T11:08:05Z
+**Event**: SENSOR_PASSED
+**Fire id**: cd2b7c09
+**Sensor ID**: required-sections
+**Stage slug**: refined-mockups
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/refined-mockups/refined-mockups-questions.md
+**Duration ms**: 88
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T11:08:05Z
+**Event**: SENSOR_FIRED
+**Fire id**: 78b1a2b6
+**Sensor ID**: upstream-coverage
+**Stage slug**: refined-mockups
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/refined-mockups/mockups.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-27T11:08:05Z
+**Event**: SENSOR_FAILED
+**Fire id**: 78b1a2b6
+**Sensor ID**: upstream-coverage
+**Stage slug**: refined-mockups
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/refined-mockups/mockups.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/refined-mockups/upstream-coverage-78b1a2b6.md
+**Findings count**: 1
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T11:08:05Z
+**Event**: SENSOR_FIRED
+**Fire id**: 42a9dc09
+**Sensor ID**: upstream-coverage
+**Stage slug**: refined-mockups
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/refined-mockups/interaction-spec.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-27T11:08:06Z
+**Event**: SENSOR_FAILED
+**Fire id**: 42a9dc09
+**Sensor ID**: upstream-coverage
+**Stage slug**: refined-mockups
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/refined-mockups/interaction-spec.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/refined-mockups/upstream-coverage-42a9dc09.md
+**Findings count**: 1
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T11:08:06Z
+**Event**: SENSOR_FIRED
+**Fire id**: ac785e1d
+**Sensor ID**: upstream-coverage
+**Stage slug**: refined-mockups
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/refined-mockups/design-system-mapping.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-27T11:08:06Z
+**Event**: SENSOR_FAILED
+**Fire id**: ac785e1d
+**Sensor ID**: upstream-coverage
+**Stage slug**: refined-mockups
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/refined-mockups/design-system-mapping.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/refined-mockups/upstream-coverage-ac785e1d.md
+**Findings count**: 1
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T11:08:06Z
+**Event**: SENSOR_FIRED
+**Fire id**: 587db6c5
+**Sensor ID**: upstream-coverage
+**Stage slug**: refined-mockups
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/refined-mockups/accessibility-checklist.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-27T11:08:06Z
+**Event**: SENSOR_FAILED
+**Fire id**: 587db6c5
+**Sensor ID**: upstream-coverage
+**Stage slug**: refined-mockups
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/refined-mockups/accessibility-checklist.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/refined-mockups/upstream-coverage-587db6c5.md
+**Findings count**: 1
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T11:08:07Z
+**Event**: SENSOR_FIRED
+**Fire id**: ae096517
+**Sensor ID**: upstream-coverage
+**Stage slug**: refined-mockups
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/refined-mockups/refined-mockups-questions.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-27T11:08:07Z
+**Event**: SENSOR_FAILED
+**Fire id**: ae096517
+**Sensor ID**: upstream-coverage
+**Stage slug**: refined-mockups
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/refined-mockups/refined-mockups-questions.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/refined-mockups/upstream-coverage-ae096517.md
+**Findings count**: 1
+
+---
+
+## Stage Awaiting Approval
+**Timestamp**: 2026-10-27T11:08:07Z
+**Event**: STAGE_AWAITING_APPROVAL
+**Stage**: refined-mockups
+
+---
+
+## Gate Approved
+**Timestamp**: 2026-10-27T11:08:14Z
+**Event**: GATE_APPROVED
+**Stage**: refined-mockups
+**User Input**: Approve (Owner standing instruction 2026-10-27: don't stop for approval; decide the right options)
+
+---
+
+## Stage Completion
+**Timestamp**: 2026-10-27T11:08:14Z
+**Event**: STAGE_COMPLETED
+**Stage**: refined-mockups
+**Validation Basis**: {"graphContract":"sha256:a24fe5e76e30a54250dff6f40ed7dd073597cbf8edbc2b452e33e3c0f0dcfd03","inputs":[{"artifact":"requirements","contentHash":"sha256:91596afb4361696fc6dfebc1fb0aa510db6a3aaccc85c91e4e38d12a760e1716","instanceCount":1,"presentCount":1,"producer":"requirements-analysis","required":true,"structureHash":"sha256:4505671a40e951a46be027fcf40da539cee3d7d128be48e674cb3005a5fe48bc"},{"artifact":"stories","contentHash":"sha256:20c930ae0799389d1fa5b4d900788f1e55e0f44bec0a256ab030cb2116ebdb79","instanceCount":1,"presentCount":1,"producer":"user-stories","required":false,"structureHash":"sha256:7138ad0225d1534181c69d37839e9988c837211669e34b9ab946405dbd7a7190"},{"artifact":"team-practices","contentHash":"sha256:92177ec6929be7f01e88786e9a1cd53fc06e7ea09306cad0e8916b77f7b6de18","instanceCount":1,"presentCount":1,"producer":"practices-discovery","required":false,"structureHash":"sha256:fa129b8f120e57efabb7ce801acb87461f7329b9b6aa803c6fb9fc234a542219"},{"artifact":"user-flow","contentHash":"sha256:ac709ba366242b62926d6b11edc2d3aebb5e6a8cb922818722affcf5a67808e3","instanceCount":1,"presentCount":0,"producer":"rough-mockups","required":true,"structureHash":"sha256:af0b072f945e508adce3483929298c4dfffd0463bfbcdff755891b4084b36e0b"},{"artifact":"wireframes","contentHash":"sha256:73622ea2dca000e773d7a9dadfe36bf51e71bff9385ab9954a5de0e762b018ff","instanceCount":1,"presentCount":0,"producer":"rough-mockups","required":true,"structureHash":"sha256:72cb62fdf28a1eb69c9f65aba560d4bd4a804b4ebf926a6e9b741035738327b1"}],"outputs":[{"artifact":"accessibility-checklist","contentHash":"sha256:b5ce78a338bc0058d0f35d43fd53332af1663f9164c826a1bef65ba197022b33","instanceCount":1,"presentCount":1,"producer":"refined-mockups","required":true,"structureHash":"sha256:9dac2e7eba824e93a1c5693887a4affdb9b113232f042901d4adb185cfa0be5f"},{"artifact":"design-system-mapping","contentHash":"sha256:290c78ff3b1382a0f3201571b466bfb326086c9da81f852a629b2295a21e8fd9","instanceCount":1,"presentCount":1,"producer":"refined-mockups","required":true,"structureHash":"sha256:1c039a39ac81b20569497d5f091ae70c37e2c66988e4f551d1fc52a4c95338ee"},{"artifact":"interaction-spec","contentHash":"sha256:df941a1ba9b271d4b7b86bf91a3b3a6fc1830756036145425c1307ee0ba2586d","instanceCount":1,"presentCount":1,"producer":"refined-mockups","required":true,"structureHash":"sha256:7b2ca0749587e11b637cdd0c94c550eab138603e467e5c95d7570b1e7f6beae0"},{"artifact":"mockups","contentHash":"sha256:b912f84ca45a8244191981dab1690580aab7d541a93bb4a1570e905a50ccedbf","instanceCount":1,"presentCount":1,"producer":"refined-mockups","required":true,"structureHash":"sha256:cc8e3ab5aa89b25b39fa7ace5c3eddada26de747c7a9dfcee211bd716d0977c8"},{"artifact":"refined-mockups-questions","contentHash":"sha256:d0b9fd8dc9dfb59d573981bf502fdd53f983327757a440c1eb29b54e17903c2c","instanceCount":1,"presentCount":1,"producer":"refined-mockups","required":true,"structureHash":"sha256:9e48130478766a3fba2166bc75d6a71e23b36c31eff58a2ed272061dfd4f14cb"}],"projectType":"brownfield","schema":3}
+**Details**: Stage Refined Mockups approved by gate
+**Tokens In**: 78
+**Tokens Out**: 40976
+**Cache Read**: 6403041
+**Cache Write**: 187593
+**Cost USD**: 2.89
+**By Model**: opus-5-5=2.35; sonnet-5-5=0.54
+**By Agent**: main=2.35; aidlc-product-lead-agent=0.54
+**Tokens By Model**: opus-5-5=60/28.4k/5.7M/81.1k; sonnet-5-5=18/12.6k/751.7k/106.5k
+**Tokens By Agent**: main=60/28.4k/5.7M/81.1k; aidlc-product-lead-agent=18/12.6k/751.7k/106.5k
+
+---
+
+## Stage Start
+**Timestamp**: 2026-10-27T11:08:14Z
+**Event**: STAGE_STARTED
+**Stage**: domain-design
+**Agent**: aidlc-architect-agent
+
+---
