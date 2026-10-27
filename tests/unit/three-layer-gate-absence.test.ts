@@ -1,190 +1,293 @@
 /**
- * tests/unit/three-layer-gate-absence.test.ts — R1.2 CI gate.
- * Asserts the three-layer gate is present on EVERY U1 route,
- * the Owner reaches audit trail + daily card (inverse), and
- * the absence of a gate on a route causes a redirect to /lock.
- */
-import { describe, expect, test } from "bun:test";
-import { routes } from "../../src/router/routes.js";
-import { dispatch, dispatchPath } from "../../src/router/dispatch.js";
-import { capabilitiesFor } from "../../src/auth/capability.js";
-import type { Role } from "../../src/data/enums.js";
-
-describe("R1.2 — three-layer gate absence", () => {
-  test("(1) every U1 route has a gate (or is explicitly public)", () => {
-    for (const [path, route] of routes) {
-      // Public routes: /, /sign-in, /sign-up, /recover, /reset, /accept, /lock, /not-found (U1).
-      const isPublic = [
-        "/",
-        "/sign-in",
-        "/sign-up",
-        "/recover",
-        "/reset",
-        "/accept",
-        "/lock",
-        "/not-found",
-      ].includes(path);
-      if (isPublic) {
-        expect(route.requiredCapability).toBeNull();
-      } else {
-        expect(route.requiredCapability).not.toBeNull();
-      }
-    }
-  });
-
-  // (2) and (3) drive the real `dispatch()` through window.location.hash
-  // (happy-dom), so the hash-reading path is exercised, not just the gate.
-  // Review L-03: they previously discarded the outcome (`void o`).
-  const atHash = <T>(hash: string, fn: () => T): T => {
-    const before = window.location.hash;
-    window.location.hash = hash;
-    try {
-      return fn();
-    } finally {
-      window.location.hash = before;
-    }
-  };
-
-  test("(2) Owner reaches audit trail + daily card (inverse)", () => {
-    expect(capabilitiesFor("owner").has("audit.view")).toBe(true);
-    const ownerSession = {
-      userId: "u",
-      businessId: "b",
-      role: "owner" as const,
-      expiresAt: 1_000_000,
-    };
-    for (const path of ["/audit-trail", "/daily-card"] as const) {
-      const o = atHash(`#${path}`, () => dispatch(ownerSession, 1, undefined));
-      expect(o.kind === "render" && o.path).toBe(path);
-    }
-  });
-
-  test("(3) a role without the route's capability is redirected to /lock, not rendered", () => {
-    const salesStaffSession = {
-      userId: "u",
-      businessId: "b",
-      role: "sales_staff" as const,
-      expiresAt: 1_000_000,
-    };
-    expect(capabilitiesFor("sales_staff").has("business.edit")).toBe(false);
-    const o = atHash("#/business", () => dispatch(salesStaffSession, 1, undefined));
-    expect(o).toMatchObject({
-      kind: "redirect",
-      to: "/lock",
-      reason: { kind: "forbidden", capability: "business.edit" },
-    });
-    const anon = atHash("#/audit-trail", () => dispatch(null, 1, undefined));
-    expect(anon).toMatchObject({ kind: "redirect", to: "/sign-in" });
-  });
-});
-
-/*
- * B2 extension: gating by ABSENCE over every U1 + U3 route (NFR6.6, FR12.4).
+ * tests/unit/three-layer-gate-absence.test.ts — the client role walk, driven by the inline
+ * role table (W6; BR1.1, BR1.2, BR2.1, BR3.2, BR3.4, BR3.5, BR4.1; S11, S12; NFR1.5–NFR1.8;
+ * AC1.7.1, AC5.1.1, AC5.1.2, AC5.1.4, AC5.1.5; review D-04; R1.2 CI gate).
  *
- * The expected reach of every role is restated inline below and every
- * registered route is walked through the real dispatcher. A route that
- * exists in the registry but not in this table fails the test, so a new
- * route cannot ship ungated or unreviewed; a role that reaches a route
- * the table says it must not reach fails it too.
+ * The whole App is mounted in happy-dom for every screen row of tests/spec/role-table.ts and
+ * every role (and with no session), on a stubbed `fetch` that answers from
+ * tests/spec/fixtures.ts — each body parsed with its route's shared schema first — and that
+ * applies the role table's API rows, as the server would. Restated:
+ *   - the screen route map and the screen rows match exactly, both ways (BR3.2);
+ *   - a role OUTSIDE a row sees the lock screen (`lock-sheet`) naming the row's feature, and
+ *     no gated API path is requested while the route resolves (the client gate refuses
+ *     before any call; the boot session probe `GET /api/session` is not the route's data);
+ *   - a role INSIDE a row sees the row's heading and no error banner (never a blank screen);
+ *   - with no session, every public row renders its heading (a redirecting row lands where
+ *     the row says) and every gated row goes to sign-in;
+ *   - the Owner never sees the lock screen (BR3.5), the audit trail and daily card included;
+ *   - each role's navigation links are exactly the rows it may open that have a nav item, in
+ *     order (BR2.1).
+ * Failures name the role and the route (NFR8.14). It prints rows, roles, checks and its
+ * duration (O12); gate step 5b times it (NFR6.16).
  */
-const ORDER_ID = "0f0f0f0f-0f0f-4f0f-8f0f-0f0f0f0f0f0f";
-const ROLES: ReadonlyArray<Role> = ["owner", "manager", "sales_staff", "accountant"];
-const PUBLIC = "public";
-const REACH: Readonly<Record<string, ReadonlyArray<Role> | typeof PUBLIC>> = {
-  "/": PUBLIC,
-  "/sign-in": PUBLIC,
-  "/sign-up": PUBLIC,
-  "/recover": PUBLIC,
-  "/reset": PUBLIC,
-  "/accept": PUBLIC,
-  "/lock": PUBLIC,
-  "/not-found": PUBLIC,
-  "/orders": ["owner", "manager", "sales_staff", "accountant"],
-  "/orders/:id": ["owner", "manager", "sales_staff", "accountant"],
-  // Owner decision 2026-10-26 (M-07): Owner, Manager and Sales Staff mutate orders; Accountant reads only.
-  "/orders/new": ["owner", "manager", "sales_staff"],
-  "/orders/new/paste-parse": ["owner", "manager", "sales_staff"],
-  "/orders/new/repeat": ["owner", "manager", "sales_staff"],
-  "/orders/:id/transition": ["owner", "manager", "sales_staff"],
-  "/daily-card": ["owner", "manager", "sales_staff", "accountant"],
-  "/audit-trail": ["owner", "manager", "accountant"],
-  "/business": ["owner"],
-  "/settings": ["owner", "manager", "sales_staff", "accountant"],
+import { afterAll, afterEach, describe, expect, test } from "bun:test";
+import * as React from "react";
+import { act, cleanup, render, waitFor } from "@testing-library/react";
+import { createAuthApi } from "../../src/client/auth-api.js";
+import { createHttpClient } from "../../src/client/http.js";
+import { createOrdersApi } from "../../src/client/orders-api.js";
+import { createOrdersStore } from "../../src/client/orders-store.js";
+import { createSessionStore } from "../../src/client/session-store.js";
+import { setLocale } from "../../src/i18n/useTranslations.js";
+import { createOrderDraftStore } from "../../src/orders/order-draft.js";
+import { App } from "../../src/router/App.js";
+import { routes } from "../../src/router/routes.js";
+import { FIXTURE_ORDER_ID, parsedFixture, sessionBody } from "../spec/fixtures.js";
+import {
+  API_ROWS,
+  apiKey,
+  diffKeys,
+  isAllowed,
+  reportWalk,
+  ROLES,
+  SCREEN_ROWS,
+  type Role,
+  type ScreenRow,
+} from "../spec/role-table.js";
+import { SessionResponseSchema } from "../../src/auth/schemas.js";
+
+const WALK = { timeout: 60_000 };
+const WAIT = { timeout: 3_000 };
+const started = performance.now();
+let checks = 0;
+const check = (): void => {
+  checks += 1;
 };
 
-const session = (role: Role) => ({ userId: "u", businessId: "b", role, expiresAt: 1_000_000 });
-const concrete = (pattern: string): string => pattern.replace(":id", ORDER_ID);
-
-describe("R1.2 extended (B2) — every U1 + U3 route gated by absence", () => {
-  test("every registered route has an entry in the restated reach table", () => {
-    const registered: string[] = [...routes.keys()].sort();
-    expect(registered).toEqual(Object.keys(REACH).sort());
+const json = (status: number, body: unknown): Response =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { "Content-Type": "application/json; charset=utf-8" },
   });
 
-  test("each role reaches exactly the routes the table allows, and is sent to /lock elsewhere", () => {
-    for (const path of routes.keys()) {
-      const reach = REACH[path];
-      for (const role of ROLES) {
-        const o = dispatchPath(concrete(path), session(role), 1, undefined);
-        const allowed = reach === PUBLIC || (reach ?? []).includes(role);
-        const got = o.kind === "render" ? "render" : `redirect:${o.to}`;
-        expect({ path, role, got }).toEqual({
-          path,
-          role,
-          got: allowed ? "render" : "redirect:/lock",
-        });
+const API_PATTERNS = API_ROWS.map((row) => ({
+  row,
+  re: new RegExp(`^${row.path.replace(/:[a-zA-Z]+/g, "[^/]+")}$`),
+}));
+
+/** A browser `fetch` answered from the fixtures, gated by the role table's API rows. */
+const stubFetch = (role: Role | null, calls: string[]): typeof fetch =>
+  (async (input: string | URL | Request, init: RequestInit = {}) => {
+    const url = String(input);
+    const method = init.method ?? "GET";
+    calls.push(`${method} ${url}`);
+    const path = url.split("?")[0] ?? "";
+    const hit = API_PATTERNS.find((p) => p.row.method === method && p.re.test(path));
+    if (hit === undefined) return json(404, { error: "not_found" });
+    if (hit.row.allowed !== "public") {
+      if (role === null) return json(401, { error: "unauthenticated" });
+      if (!isAllowed(hit.row.allowed, role)) return json(403, { error: "forbidden" });
+    }
+    const key = apiKey(hit.row);
+    if (key === "GET /api/session" && role !== null) {
+      return json(200, SessionResponseSchema.parse(sessionBody(role)));
+    }
+    const f = parsedFixture(key);
+    return f.body === null ? new Response(null, { status: f.status }) : json(f.status, f.body);
+  }) as typeof fetch;
+
+const concrete = (path: string): string => path.replace(":id", FIXTURE_ORDER_ID);
+const hash = (): string => window.location.hash.replace(/^#/, "");
+
+/** Mount the App at `path` for `role` (null: no session); returns the view and the calls. */
+const mount = async (path: string, role: Role | null) => {
+  await act(async () => {
+    window.location.hash = concrete(path);
+  });
+  const calls: string[] = [];
+  const http = createHttpClient({ fetch: stubFetch(role, calls) });
+  const deps = {
+    http,
+    auth: createAuthApi(http),
+    orders: createOrdersApi(http),
+    sessions: createSessionStore(),
+    ordersStore: createOrdersStore(),
+    draft: createOrderDraftStore(),
+  };
+  const view = render(React.createElement(App, { deps }));
+  return { view, calls };
+};
+
+const gatedApi = (call: string): boolean => {
+  const [method, url] = call.split(" ");
+  const path = (url ?? "").split("?")[0] ?? "";
+  const row = API_PATTERNS.find((p) => p.row.method === method && p.re.test(path))?.row;
+  return row !== undefined && row.allowed !== "public" && apiKey(row) !== "GET /api/session";
+};
+
+const headingOf = (view: ReturnType<typeof render>, row: ScreenRow): string | null =>
+  view.queryByTestId(row.headingTestId)?.textContent ?? null;
+
+afterEach(() => {
+  cleanup();
+  window.location.hash = "";
+});
+
+afterAll(() => {
+  reportWalk("client", SCREEN_ROWS.length, ROLES.length, checks, performance.now() - started);
+});
+
+describe("client role walk over the screen route map (role table, C5)", () => {
+  test("the screen route map and the role table's screen rows match exactly (BR3.2)", () => {
+    const d = diffKeys(
+      [...routes.keys()],
+      SCREEN_ROWS.map((r) => r.path),
+    );
+    check();
+    expect(d).toEqual({ missingRow: [], notRegistered: [] });
+    for (const row of SCREEN_ROWS) {
+      const route = routes.get(row.path as never);
+      check();
+      expect({ path: row.path, public: route?.requiredCapability === null }).toEqual({
+        path: row.path,
+        public: row.allowed === "public",
+      });
+    }
+  });
+
+  test(
+    "each role: the lock screen naming the feature outside its rows, the heading inside (BR3.4)",
+    async () => {
+      setLocale("bn");
+      for (const row of SCREEN_ROWS.filter((r) => r.allowed !== "public")) {
+        for (const role of ROLES) {
+          const { view, calls } = await mount(row.path, role);
+          if (isAllowed(row.allowed, role)) {
+            await waitFor(() => expect(headingOf(view, row)).toBe(row.heading), WAIT).catch(() => {
+              throw new Error(
+                `${role} on ${row.path}: heading ${JSON.stringify(headingOf(view, row))}, expected ${row.heading}`,
+              );
+            });
+            check();
+            expect({ role, path: row.path, banner: view.queryByTestId("error-banner") }).toEqual({
+              role,
+              path: row.path,
+              banner: null,
+            });
+            check();
+            expect({ role, path: row.path, lock: view.queryByTestId("lock-sheet") }).toEqual({
+              role,
+              path: row.path,
+              lock: null,
+            });
+          } else {
+            await waitFor(() => expect(view.getByTestId("lock-sheet")).toBeDefined(), WAIT).catch(
+              () => {
+                throw new Error(`${role} on ${row.path}: no lock screen (hash ${hash()})`);
+              },
+            );
+            const text = view.getByTestId("lock-sheet").textContent ?? "";
+            check();
+            expect({ role, path: row.path, namesFeature: text.includes(row.feature) }).toEqual({
+              role,
+              path: row.path,
+              namesFeature: true,
+            });
+            check();
+            expect({ role, path: row.path, gatedCalls: calls.filter(gatedApi) }).toEqual({
+              role,
+              path: row.path,
+              gatedCalls: [],
+            });
+            check();
+            expect(view.getByTestId("lock-home").getAttribute("href")).toBe("#/orders");
+          }
+          cleanup();
+        }
       }
-    }
-  });
+    },
+    WALK,
+  );
 
-  test("no session, or an expired one, never renders a protected route", () => {
-    for (const path of routes.keys()) {
-      if (REACH[path] === PUBLIC) continue;
-      const anon = dispatchPath(concrete(path), null, 1, undefined);
-      const expired = dispatchPath(
-        concrete(path),
-        { ...session("owner"), expiresAt: 0 },
-        1,
-        undefined,
-      );
-      expect({ path, anon: anon.kind === "redirect" && anon.to }).toEqual({
-        path,
-        anon: "/sign-in",
-      });
-      expect({ path, expired: expired.kind === "redirect" && expired.to }).toEqual({
-        path,
-        expired: "/sign-in",
-      });
-    }
-  });
+  test(
+    "no session: public rows render their heading, gated rows go to sign-in (BR1.5)",
+    async () => {
+      setLocale("bn");
+      for (const row of SCREEN_ROWS) {
+        const { view } = await mount(row.path, null);
+        if (row.allowed === "public") {
+          await waitFor(() => expect(headingOf(view, row)).toBe(row.heading), WAIT).catch(() => {
+            throw new Error(`no session on ${row.path}: heading ${headingOf(view, row)}`);
+          });
+          check();
+          expect({ path: row.path, at: hash() }).toEqual({
+            path: row.path,
+            at: row.landsOn ?? row.path,
+          });
+        } else {
+          await waitFor(() => expect(hash()).toBe("/sign-in"), WAIT);
+          check();
+          expect(view.queryByTestId("lock-sheet")).toBeNull();
+        }
+        cleanup();
+      }
+    },
+    WALK,
+  );
 
-  test("inverse: the Owner still reaches order detail, the audit trail and the daily card", () => {
-    for (const raw of [
-      `/orders/${ORDER_ID}`,
-      "/audit-trail",
-      "/daily-card",
-      `/orders/${ORDER_ID}/transition`,
-    ]) {
-      const o = dispatchPath(raw, session("owner"), 1, undefined);
-      expect({ raw, kind: o.kind }).toEqual({ raw, kind: "render" });
-    }
-    const detail = dispatchPath(`/orders/${ORDER_ID}`, session("owner"), 1, undefined);
-    expect(detail.kind === "render" && detail.params).toEqual({ id: ORDER_ID });
-  });
+  test(
+    "signed in, a public row still shows a named heading and never the lock (BR1.1)",
+    async () => {
+      setLocale("bn");
+      for (const row of SCREEN_ROWS.filter((r) => r.allowed === "public" && r.path !== "/lock")) {
+        for (const role of ROLES) {
+          const { view } = await mount(row.path, role);
+          await waitFor(
+            () =>
+              expect(
+                (view.queryByTestId("screen-title")?.textContent ?? "").length,
+              ).toBeGreaterThan(0),
+            WAIT,
+          );
+          check();
+          expect({ role, path: row.path, lock: view.queryByTestId("lock-sheet") }).toEqual({
+            role,
+            path: row.path,
+            lock: null,
+          });
+          cleanup();
+        }
+      }
+    },
+    WALK,
+  );
 
-  test("a malformed or unknown order path never reaches a screen; it lands on /not-found", () => {
-    for (const raw of [
-      "/orders/not-a-uuid",
-      "/orders/ORD-1001",
-      "/orders//transition",
-      "/orders/x/y/z",
-      "/nope",
-    ]) {
-      const o = dispatchPath(raw, session("owner"), 1, undefined);
-      expect({ raw, o: o.kind === "redirect" && o.to }).toEqual({ raw, o: "/not-found" });
-    }
-    // An exact route wins over the :id pattern.
-    const create = dispatchPath("/orders/new", session("owner"), 1, undefined);
-    expect(create.kind === "render" && create.path).toBe("/orders/new");
+  test(
+    "each role's navigation is exactly its allowed rows with a nav item, in order (BR2.1)",
+    async () => {
+      setLocale("bn");
+      for (const role of ROLES) {
+        const { view } = await mount("/orders", role);
+        await waitFor(() => expect(view.getByTestId("shell-nav")).toBeDefined(), WAIT);
+        const hrefs = [...view.getByTestId("shell-nav").querySelectorAll("a")].map(
+          (a) => a.getAttribute("href") ?? "",
+        );
+        const expected = SCREEN_ROWS.filter((r) => r.nav && isAllowed(r.allowed, role)).map(
+          (r) => `#${r.path}`,
+        );
+        check();
+        expect({ role, hrefs }).toEqual({ role, hrefs: expected });
+        cleanup();
+      }
+    },
+    WALK,
+  );
+
+  test("inverse: the Owner reaches the audit trail and the daily card (BR3.5)", async () => {
+    setLocale("bn");
+    const trail = await mount("/audit-trail", "owner");
+    await waitFor(() => expect(trail.view.getAllByTestId("audit-row")).toHaveLength(2), WAIT);
+    check();
+    expect(trail.view.queryByTestId("lock-sheet")).toBeNull();
+    cleanup();
+    const card = await mount("/daily-card", "owner");
+    await waitFor(
+      () => expect(card.view.getByTestId("screen-title").textContent).toBe("দৈনিক কার্ড"),
+      WAIT,
+    );
+    check();
+    expect(card.view.getByTestId("not-available-message").textContent).toBe(
+      "এই অংশ পরের সংস্করণে আসবে",
+    );
   });
 });

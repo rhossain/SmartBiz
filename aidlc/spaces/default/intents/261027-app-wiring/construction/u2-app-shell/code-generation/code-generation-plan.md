@@ -178,15 +178,15 @@ layer is implemented, together with the full existing suite, before the next lay
 
 ### Step 12 — Frontend behaviour: write and run its tests (US1.7, US5.1, US5.4; NFR1.5, NFR1.8, NFR7.9–NFR7.13, NFR9.5, NFR9.7–NFR9.9)
 
-- [ ] `tests/unit/three-layer-gate-absence.test.ts` (rewrite to read the role table): exact match both ways; outside role → `data-testid="lock-sheet"` containing the feature name and no fetch to a gated API path; inside role → `data-testid="screen-title"` with the row's heading and no `error-banner`; public rows render with no session; Owner inverse; nav links per role equal the allowed rows with a nav item; `{ timeout: 60_000 }`; prints checks and duration.
-- [ ] `tests/unit/api-state.test.tsx`: loading only after 300 ms; one test per kind group (unreachable and 503 with retry that reloads once the stub answers; 403 → lock; 404 → not-found; 409 → conflict with reload keeping form values; 500 → correlation id; 401 → nothing rendered and the hook called); `role="alert"` on errors; Bangla by default.
-- [ ] `tests/integration/audit-trail-screen.test.tsx`: rows, Bangla digits, "সিস্টেম" for system rows, more button appends, empty state, Sales Staff lock.
-- [ ] `tests/unit/not-available.test.tsx` and `tests/unit/shell.test.tsx` (extend): heading and home link; Shell renders only the passed nav and imports no router or auth module.
-- [ ] `tests/unit/stylesheet.test.ts`: no literal colour outside `tokens.css` (hex, rgb/rgba, hsl/hsla, named colours; `transparent`, `currentColor`, `inherit` allowed); no `width`/`min-width` over 360 px outside `.scroll-x` (media blocks included); the `:focus-visible` rule covers every listed selector.
-- [ ] `tests/unit/keyboard.test.tsx`: sign-in, the order list and the manual order form — every control is native or `tabIndex` 0 and the forms submit on Enter.
-- [ ] `tests/unit/contrast.test.ts` stays green over the new token pairs.
-- [ ] Every existing U1 screen and order test stays green (F-05).
-- [ ] Add mutant: the client gate lets a forbidden role render a gated screen (→ `three-layer-gate-absence.test.ts`).
+- [x] `tests/unit/three-layer-gate-absence.test.ts` (rewrite to read the role table): exact match both ways; outside role → `data-testid="lock-sheet"` containing the feature name and no fetch to a gated API path; inside role → `data-testid="screen-title"` with the row's heading and no `error-banner`; public rows render with no session; Owner inverse; nav links per role equal the allowed rows with a nav item; `{ timeout: 60_000 }`; prints checks and duration.
+- [x] `tests/unit/api-state.test.tsx`: loading only after 300 ms; one test per kind group (unreachable and 503 with retry that reloads once the stub answers; 403 → lock; 404 → not-found; 409 → conflict with reload keeping form values; 500 → correlation id; 401 → nothing rendered and the hook called); `role="alert"` on errors; Bangla by default.
+- [x] `tests/integration/audit-trail-screen.test.tsx`: rows, Bangla digits, "সিস্টেম" for system rows, more button appends, empty state, Sales Staff lock.
+- [x] `tests/unit/not-available.test.tsx` and `tests/unit/shell.test.tsx` (extend): heading and home link; Shell renders only the passed nav and imports no router or auth module.
+- [x] `tests/unit/stylesheet.test.ts`: no literal colour outside `tokens.css` (hex, rgb/rgba, hsl/hsla, named colours; `transparent`, `currentColor`, `inherit` allowed); no `width`/`min-width` over 360 px outside `.scroll-x` (media blocks included); the `:focus-visible` rule covers every listed selector.
+- [x] `tests/unit/keyboard.test.tsx`: sign-in, the order list and the manual order form — every control is native or `tabIndex` 0 and the forms submit on Enter.
+- [x] `tests/unit/contrast.test.ts` stays green over the new token pairs.
+- [x] Every existing U1 screen and order test stays green (F-05).
+- [x] Add mutant: the client gate lets a forbidden role render a gated screen (→ `three-layer-gate-absence.test.ts`).
 
 ### Step 13 — Environment / build configuration (NFR6.14, NFR6.16, NFR8.12, NFR8.15, NFR9.6, NFR10.2; P10–P12, O12, O14, S17; D-02, D-03, D-10, I-01..I-05)
 

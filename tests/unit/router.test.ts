@@ -29,7 +29,8 @@ describe("router coverage", () => {
       "/sign-up",
       "/recover",
       "/reset",
-      "/accept",
+      // U2 (Q2, BR1.5): `/accept` became `/accept-invite`, the path C6's link uses.
+      "/accept-invite",
       "/orders",
       "/daily-card",
       "/audit-trail",
@@ -39,6 +40,7 @@ describe("router coverage", () => {
       "/not-found",
     ];
     for (const p of expected) expect(routes.has(p as never)).toBe(true);
+    expect(routes.has("/accept" as never)).toBe(false);
   });
 
   // U1: sign-in, sign-up, lock and not-found are mounted on real screens; sign-in and

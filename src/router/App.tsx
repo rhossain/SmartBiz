@@ -222,10 +222,16 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
     if (signedInSession && PUBLIC_ENTRY.has(routePath ?? "")) navigate(returnRoute(sessions));
   }, [signedInSession, routePath, sessions]);
 
+  // U2 (D-04, W1 step 5): a route the role may not open loads nothing — the client gate
+  // refuses before any call, so no gated API request is sent while resolving it.
+  const role = signedInSession?.user.role ?? null;
+  const routeOpens =
+    routePath !== null && role !== null && roleOpens(routes.get(routePath) as Route, role);
+
   // Entering an order route loads what it shows (BR8.3).
   React.useEffect(() => {
     setActionError(null);
-    if (!signedInSession || routePath === null) return;
+    if (!signedInSession || routePath === null || !routeOpens) return;
     if (routePath !== "/orders") clearNotice(ordersStore);
     switch (routePath) {
       case "/orders":
@@ -243,7 +249,7 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
       default:
         break;
     }
-  }, [routePath, routeId, signedInSession, ordersStore, orders]);
+  }, [routePath, routeId, signedInSession, routeOpens, ordersStore, orders]);
 
   /** A 403 from a write opens the lock screen naming the current route's feature (BR4.1). */
   const lockHere = (): void => {
@@ -298,7 +304,6 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
     })();
   };
 
-  const role = signedInSession?.user.role ?? null;
   const canMutate = role !== null && ORDER_MUTATE_CAPABILITIES.some((c) => hasCapability(role, c));
   const nav = role === null ? [] : navFor(role);
   const homeTo = role === null ? null : homeFor(role);

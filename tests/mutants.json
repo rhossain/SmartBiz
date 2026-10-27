@@ -144,6 +144,14 @@
       "find": "  access: AUDIT_READ_ACCESS,",
       "replace": "  access: \"public\",",
       "test": "tests/integration/server-gate-absence.test.ts"
+    },
+    {
+      "id": "client-gate-renders-forbidden",
+      "why": "A role outside a screen row sees the lock screen, never the screen (U2 BR3.4, NFR1.5); rendering it shows a gated screen to a forbidden role.",
+      "file": "src/router/dispatch.ts",
+      "find": "  return { kind: \"redirect\", to: \"/lock\", reason: r.error };",
+      "replace": "  return { kind: \"render\", route, path: match.path, params: match.params };",
+      "test": "tests/unit/three-layer-gate-absence.test.ts"
     }
   ]
 }
