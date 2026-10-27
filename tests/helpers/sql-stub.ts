@@ -310,6 +310,82 @@ const handleSessions = (
   return undefined;
 };
 
+/**
+ * U2 audit reads (src/audit/audit-read.ts page read and src/audit/audit-export.ts batches).
+ * Both seek on (occurred_at, id) descending, inside one business. The retention predicate
+ * is read from the SQL text, as the session handler reads its operators: when the
+ * statement carries `retention_until > ?` (or `>=`) the stub applies it, and when a change
+ * drops it the stub returns expired rows too, so the unit tests see the defect
+ * (mutant `audit-read-drops-retention`), not only tests/realdb. The page read joins the
+ * actor's email from `users`; the export returns the payload and no email.
+ */
+const handleAuditReads = (
+  text: string,
+  params: ReadonlyArray<unknown>,
+  state: { auditLog: Row[]; users: Row[] },
+): Row[] | undefined => {
+  const page =
+    /FROM audit_log a\s+LEFT JOIN users u ON u\.id = a\.actor_user_id\s+WHERE a\.business_id = \?[\s\S]*ORDER BY a\.occurred_at DESC, a\.id DESC\s+LIMIT \?/i.test(
+      text,
+    );
+  const batch =
+    !page &&
+    /SELECT a\.id, a\.business_id, a\.actor_user_id[\s\S]*a\.payload[\s\S]*FROM audit_log a\s+WHERE a\.business_id = \?[\s\S]*ORDER BY a\.occurred_at DESC, a\.id DESC\s+LIMIT \?/i.test(
+      text,
+    );
+  if (!page && !batch) return undefined;
+  const retention = /a\.retention_until\s*(>=?)\s*\?/.exec(text);
+  let i = 0;
+  const businessId = params[i++] as string;
+  const nowIso = retention ? (params[i++] as string) : null;
+  const cursorAt = params[i++] as string | null;
+  i += 1; // the cursor time appears twice: `? IS NULL OR (…) < (?, ?)`
+  const cursorId = params[i++] as string | null;
+  const limit = Number(params[i]);
+  const inclusive = retention?.[1] === ">=";
+  return state.auditLog
+    .filter((a) => a["business_id"] === businessId)
+    .filter((a) => {
+      if (nowIso === null) return true;
+      const until = asTime(a["retention_until"]);
+      return inclusive ? until >= Date.parse(nowIso) : until > Date.parse(nowIso);
+    })
+    .filter((a) => {
+      if (cursorAt === null) return true;
+      const t = asTime(a["occurred_at"]);
+      const c = Date.parse(cursorAt);
+      return t < c || (t === c && byteCompare(String(a["id"]), String(cursorId)) < 0);
+    })
+    .sort(
+      (a, b) =>
+        asTime(b["occurred_at"]) - asTime(a["occurred_at"]) ||
+        byteCompare(String(b["id"]), String(a["id"])),
+    )
+    .slice(0, limit)
+    .map((a) => {
+      const base = {
+        id: a["id"],
+        occurred_at: new Date(asTime(a["occurred_at"])),
+        action: a["action"],
+        subject_kind: a["subject_kind"] ?? null,
+        subject_id: a["subject_id"] ?? null,
+        correlation_id: a["correlation_id"],
+        reverses_id: a["reverses_id"] ?? null,
+      };
+      if (page) {
+        const actor = state.users.find((u) => u["id"] === a["actor_user_id"]);
+        return { ...base, actor_email: actor ? (actor["email"] as string) : null };
+      }
+      const payload = a["payload"];
+      return {
+        ...base,
+        business_id: a["business_id"],
+        actor_user_id: a["actor_user_id"] ?? null,
+        payload: typeof payload === "string" ? (JSON.parse(payload) as unknown) : payload,
+      };
+    });
+};
+
 export const makeSqlStub = (
   opts: SqlStubOptions = {},
 ): {
@@ -561,20 +637,8 @@ export const makeSqlStub = (
       });
       return [];
     }
-    if (
-      /FROM audit_log\s+WHERE business_id = \?\s+ORDER BY occurred_at DESC\s+LIMIT \?/i.test(text)
-    ) {
-      const [businessId, limit] = params as [string, number];
-      return state.auditLog
-        .filter((a) => a["business_id"] === businessId)
-        .sort(
-          (a, b) =>
-            new Date(String(b["occurred_at"])).getTime() -
-            new Date(String(a["occurred_at"])).getTime(),
-        )
-        .slice(0, limit)
-        .map((a) => ({ ...a }));
-    }
+    const auditRows = handleAuditReads(text, params, state);
+    if (auditRows !== undefined) return auditRows;
     // U1 sign-in lookup: by email ignoring case.
     if (
       /SELECT id, business_id, email, password_hash, role, active, locale\s+FROM users WHERE lower\(email\) = lower\(\?\)/i.test(

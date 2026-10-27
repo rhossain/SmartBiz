@@ -121,10 +121,10 @@ layer is implemented, together with the full existing suite, before the next lay
 
 ### Step 5 — Repository / data access: implement (C4; BR7.1–BR7.4; S13; D-05, D-06)
 
-- [ ] `src/audit/audit-read.ts`: `readAuditPage(sql, { businessId, now, cursor, limit })` — one statement, `retention_until > ${now}`, seek `(a.occurred_at, a.id) < (${cursorAt}::timestamptz, ${cursorId}::uuid)`, `ORDER BY a.occurred_at DESC, a.id DESC`, `LIMIT limit + 1`, `LEFT JOIN users u ON u.id = a.actor_user_id`; returns entries without payload or retention date and `nextCursor`.
-- [ ] Cursor encode/decode in `audit-read.ts` (base64url `<ISO>|<uuid>`), decode returning `Result` with `invalid_input`.
-- [ ] `src/audit/audit-export.ts`: own retention-filtered read in keyset batches of 500 that returns the payload; `listAuditForBusiness` removed from `audit-service.ts` and every caller moved (F-09, D-06).
-- [ ] `tests/helpers/sql-stub.ts`: a handler for the new audit page query shape and the export batch shape.
+- [x] `src/audit/audit-read.ts`: `readAuditPage(sql, { businessId, now, cursor, limit })` — one statement, `retention_until > ${now}`, seek `(a.occurred_at, a.id) < (${cursorAt}::timestamptz, ${cursorId}::uuid)`, `ORDER BY a.occurred_at DESC, a.id DESC`, `LIMIT limit + 1`, `LEFT JOIN users u ON u.id = a.actor_user_id`; returns entries without payload or retention date and `nextCursor`.
+- [x] Cursor encode/decode in `audit-read.ts` (base64url `<ISO>|<uuid>`), decode returning `Result` with `invalid_input`.
+- [x] `src/audit/audit-export.ts`: own retention-filtered read in keyset batches of 500 that returns the payload; `listAuditForBusiness` removed from `audit-service.ts` and every caller moved (F-09, D-06).
+- [x] `tests/helpers/sql-stub.ts`: a handler for the new audit page query shape and the export batch shape.
 
 ### Step 6 — Repository / data access: write and run its tests
 
