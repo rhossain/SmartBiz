@@ -27,7 +27,7 @@ Error paths: 409 `business_exists` → panel pointing to the Owner and `#/sign-i
 2. Later any request answers 401 → the app saves the current route → `#/sign-in` with "আবার সাইন ইন করুন" → after 200 returns to the saved route (AC1.3.5).
 3. "সাইন আউট" in the header → 204 → `#/sign-in`; the in-memory stores are cleared.
 
-Error paths: 401 → one generic message, password cleared; 429 → message with minutes, button disabled until the time passes (a countdown is not shown; the button re-enables on the next attempt after the time).
+Error paths: 401 → one generic message, password cleared; 429 → message with the minutes from the response; the button stays disabled until that time has passed on the app clock, then re-enables by itself (no live countdown is shown).
 
 ### F3 Invite a member (US1.5)
 Persona: Owner or Manager.
@@ -118,7 +118,7 @@ Accessibility: `role="dialog"`, `aria-modal="true"`, labelled by its heading; fo
 Add `type: "tel" | "number"`, `error?: string` rendered under the input with `id` referenced by `aria-describedby` and `aria-invalid="true"`, `hint?: string`, and `onBlur`. The label stays above the input.
 
 ### RiskChip (new, on `Pill`)
-Maps 0–3 to `Pill` kind and label: 0 `neutral` "ঝুঁকি নেই", 1 `success` "কম ঝুঁকি", 2 `warning` "মাঝারি ঝুঁকি", 3 `danger` "বেশি ঝুঁকি". The label is always rendered.
+Maps 0–3 to `Pill` kind and label, using AC3.1.4's words: 0 `neutral` "কোনো ঝুঁকি নেই", 1 `success` "কম", 2 `warning` "মাঝারি", 3 `danger` "বেশি" (each with "ঝুঁকি:" as a visually hidden prefix for screen readers). The label is always rendered.
 
 ### LowStockMark (new, on `Pill`)
 `warning` kind, label "কম মজুদ", shown only when stock < minimum.
