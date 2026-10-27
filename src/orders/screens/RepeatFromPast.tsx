@@ -10,9 +10,10 @@
 import * as React from "react";
 import type { Locale } from "../../data/enums.js";
 import { Screen } from "../../pres/Screen.js";
+import { useSubmitGuard } from "../../pres/use-submit-guard.js";
 import { buildRepeatOrder } from "../input-modes.js";
 import {
-  saveDraft,
+  saveDraftGuarded,
   setPending,
   useOrderDraft,
   type OrderDraftStore,
@@ -40,6 +41,8 @@ export const RepeatFromPast = ({
   onSave,
 }: RepeatFromPastProps): React.ReactElement => {
   const state = useOrderDraft(draft);
+  // U2 (F-05, BR6.1): one save at a time.
+  const guard = useSubmitGuard();
   const pending = state.pending;
   const preview = pending
     ? computeOrderTotal(pending.items, pending.orderDiscountPaise, pending.deliveryChargePaise)
@@ -57,7 +60,10 @@ export const RepeatFromPast = ({
             <button
               type="button"
               data-testid="repeat-pick"
-              onClick={() => setPending(draft, buildRepeatOrder(o))}
+              onClick={() => {
+                setPending(draft, buildRepeatOrder(o));
+                guard.reset();
+              }}
             >
               {tr("repeat.pick", locale)}
             </button>
@@ -81,8 +87,9 @@ export const RepeatFromPast = ({
           <button
             type="button"
             data-testid="repeat-save"
-            disabled={state.status === "saving"}
-            onClick={() => void saveDraft(draft, onSave)}
+            disabled={guard.state === "saving"}
+            aria-busy={guard.state === "saving"}
+            onClick={() => void guard.submit(() => saveDraftGuarded(draft, onSave))}
           >
             {tr("orders.save", locale)}
           </button>

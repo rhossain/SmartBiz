@@ -94,5 +94,18 @@ export const saveDraft = async (store: OrderDraftStore, save: SaveOrder): Promis
   }
 };
 
+/**
+ * U2 (F-05, BR6.1): the save as a `useSubmitGuard` run — `true` when the order was saved,
+ * `false` when it was refused or failed. The screens submit through the guard, so a second
+ * submit while this runs is ignored before it can reach `saveDraft`.
+ */
+export const saveDraftGuarded = async (
+  store: OrderDraftStore,
+  save: SaveOrder,
+): Promise<boolean> => {
+  await saveDraft(store, save);
+  return store.get().status === "saved";
+};
+
 export const useOrderDraft = (store: OrderDraftStore): OrderDraft =>
   useSyncExternalStore(store.subscribe, store.get, store.get);

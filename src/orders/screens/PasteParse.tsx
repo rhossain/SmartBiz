@@ -22,9 +22,10 @@ import type { Locale } from "../../data/enums.js";
 import { Pill } from "../../pres/Pill.js";
 import { Screen } from "../../pres/Screen.js";
 import { Toast } from "../../pres/Toast.js";
+import { useSubmitGuard } from "../../pres/use-submit-guard.js";
 import { buildPasteParseOrder } from "../input-modes.js";
 import {
-  saveDraft,
+  saveDraftGuarded,
   setPending,
   useOrderDraft,
   type OrderDraftStore,
@@ -114,10 +115,13 @@ export const PasteParse = ({ locale, draft, onSave }: PasteParseProps): React.Re
   const [text, setText] = React.useState("");
   const [failure, setFailure] = React.useState<ParseFailureReason | null>(null);
   const [edits, setEdits] = React.useState<Edits | null>(null);
+  // U2 (F-05, BR6.1, W3): one save at a time; an edit returns the guard to idle.
+  const guard = useSubmitGuard();
 
   const apply = (next: Edits): void => {
     setEdits(next);
     stagePending(draft, next);
+    guard.reset();
   };
 
   const read = (): void => {
@@ -197,8 +201,9 @@ export const PasteParse = ({ locale, draft, onSave }: PasteParseProps): React.Re
           <button
             type="button"
             data-testid="paste-save"
-            disabled={state.pending === null || state.status === "saving"}
-            onClick={() => void saveDraft(draft, onSave)}
+            disabled={state.pending === null || guard.state === "saving"}
+            aria-busy={guard.state === "saving"}
+            onClick={() => void guard.submit(() => saveDraftGuarded(draft, onSave))}
           >
             {tr("orders.save", locale)}
           </button>

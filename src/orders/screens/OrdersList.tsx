@@ -28,10 +28,10 @@ import { MoneyCell } from "../../pres/MoneyCell.js";
 import { RequestState, type RequestPhase } from "../../pres/RequestState.js";
 import { statusText } from "../../pres/status-labels.js";
 import { Screen } from "../../pres/Screen.js";
-import { Toast } from "../../pres/Toast.js";
+import { useSubmitGuard } from "../../pres/use-submit-guard.js";
 import { buildQuickAddOrder } from "../input-modes.js";
 import {
-  saveDraft,
+  saveDraftGuarded,
   setPending,
   useOrderDraft,
   type OrderDraftStore,
@@ -172,6 +172,8 @@ const QuickAdd = ({
   notice,
 }: Pick<OrdersListProps, "locale" | "draft" | "onSave" | "notice">): React.ReactElement => {
   const state = useOrderDraft(draft);
+  // U2 (F-05, BR6.1, W3): one save at a time; an edit returns the guard to idle.
+  const guard = useSubmitGuard();
   const [description, setDescription] = React.useState("");
   const [quantity, setQuantity] = React.useState("1");
   const [price, setPrice] = React.useState("");
@@ -188,6 +190,7 @@ const QuickAdd = ({
     const p = parseTakaToPaise(next.price ?? price);
     const c = parseTakaToPaise(next.delivery ?? delivery);
     const valid = d.trim().length > 0 && Number.isInteger(q) && q >= 1 && p !== null && c !== null;
+    guard.reset();
     setPending(
       draft,
       valid
@@ -208,7 +211,7 @@ const QuickAdd = ({
       data-testid="orders-quick-add"
       onSubmit={(e) => {
         e.preventDefault();
-        void saveDraft(draft, onSave);
+        void guard.submit(() => saveDraftGuarded(draft, onSave));
       }}
     >
       <h3>{tr("orders.quick.title", locale)}</h3>
@@ -258,7 +261,8 @@ const QuickAdd = ({
       <button
         type="submit"
         data-testid="quick-add-save"
-        disabled={state.pending === null || state.status === "saving"}
+        disabled={state.pending === null || guard.state === "saving"}
+        aria-busy={guard.state === "saving"}
       >
         {tr("orders.save", locale)}
       </button>
@@ -273,10 +277,9 @@ export const OrdersList = (props: OrdersListProps): React.ReactElement => {
   const phase = phaseOf(props);
   return (
     <Screen title={tr("orders.title", locale)}>
+      {/* U2 (F-05): the Shell hosts the announced toast; this marks the new row's list. */}
       {props.notice === "saved" ? (
-        <div data-testid="orders-saved-notice">
-          <Toast message={tr("orders.saved", locale)} tone="info" />
-        </div>
+        <p data-testid="orders-saved-notice">{tr("orders.saved", locale)}</p>
       ) : null}
       {props.canMutate ? <NewOrderLinks locale={locale} /> : null}
       {phase === "error" || phase === "loading" ? (
@@ -299,42 +302,45 @@ export const OrdersList = (props: OrdersListProps): React.ReactElement => {
       {phase === "empty" ? (
         <p data-testid="orders-empty">{tr("orders.empty", locale)}</p>
       ) : phase !== "ready" ? null : (
-        <table data-testid="orders-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>{tr("orders.filter.status", locale)}</th>
-              <th>{tr("orders.source", locale)}</th>
-              <th>{tr("orders.total", locale)}</th>
-              <th />
-            </tr>
-          </thead>
-          <tbody>
-            {orders.map((o) => (
-              <tr key={o.id} data-testid="orders-row" data-order-id={o.id} data-status={o.status}>
-                <td>{o.orderNo}</td>
-                <td>{statusText(o.status, locale)}</td>
-                <td data-testid="orders-row-source">{o.source}</td>
-                <td>
-                  <MoneyCell
-                    figure={orderMoneyFigure(o)}
-                    locale={locale}
-                    testId="orders-row-total"
-                  />
-                </td>
-                <td>
-                  <button
-                    type="button"
-                    data-testid="orders-row-open"
-                    onClick={() => props.onOpen(o.id)}
-                  >
-                    {tr("orders.open", locale)}
-                  </button>
-                </td>
+        // U2 (BR9.1): the wide table scrolls inside its own box, never the page.
+        <div className="scroll-x">
+          <table data-testid="orders-table" className="table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>{tr("orders.filter.status", locale)}</th>
+                <th>{tr("orders.source", locale)}</th>
+                <th>{tr("orders.total", locale)}</th>
+                <th />
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {orders.map((o) => (
+                <tr key={o.id} data-testid="orders-row" data-order-id={o.id} data-status={o.status}>
+                  <td>{o.orderNo}</td>
+                  <td>{statusText(o.status, locale)}</td>
+                  <td data-testid="orders-row-source">{o.source}</td>
+                  <td>
+                    <MoneyCell
+                      figure={orderMoneyFigure(o)}
+                      locale={locale}
+                      testId="orders-row-total"
+                    />
+                  </td>
+                  <td>
+                    <button
+                      type="button"
+                      data-testid="orders-row-open"
+                      onClick={() => props.onOpen(o.id)}
+                    >
+                      {tr("orders.open", locale)}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
       {nextCursor !== null ? (
         <button

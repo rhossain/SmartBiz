@@ -1,11 +1,18 @@
 /**
- * src/pres/Shell.tsx — the app chrome: title, navigation, language and the signed-in person
- * (BR8.6; FR4.1, FR2.4; AC5.2a.1).
+ * src/pres/Shell.tsx — the app chrome: title, navigation, language, the signed-in person and
+ * the save toast (BR8.6; FR4.1, FR2.4; AC5.2a.1; U2 BR2.1–BR2.3, BR6.2; S12; review F-01,
+ * F-05).
  *
  * - The header shows the signed-in email and role, from `GET /api/session` — never a
- *   hard-coded address (BR8.6). Signed out, it shows neither, and no navigation.
- * - The navigation lists only the places the role can open, so a role is never offered a
- *   link that ends on the lock screen; the router gate and the server still decide (NFR1.1).
+ *   hard-coded address (BR2.3). Signed out, it shows neither, and no navigation.
+ * - U2 (F-01, S12): the navigation is a PROP. App (RouterComponent) builds the `NavItem`
+ *   list from the screen route map and keeps only the items the role may open (BR2.1); the
+ *   Shell renders exactly what it is given, each with its own label in the chosen language
+ *   (BR2.2). It holds no capability list and imports neither the router, the API client nor
+ *   `src/auth`.
+ * - U2 (F-05, BR6.2): the toast renders here, at Shell level, so a "সংরক্ষণ হয়েছে" shown
+ *   after a save outlives the route change that follows it; the toast announces itself
+ *   politely (Toast.tsx).
  * - Sign-out is a button that calls the caller's `onSignOut`, which posts to
  *   `/api/auth/sign-out`; it is disabled while that call runs.
  * - No external font is preloaded: the CSP is `default-src 'self'`, and the Bengali font is
@@ -13,8 +20,7 @@
  *   available offline").
  */
 import * as React from "react";
-import { hasCapability } from "../auth/capability.js";
-import type { Capability, Locale, Role } from "../data/enums.js";
+import type { Locale, Role } from "../data/enums.js";
 import { lookup, type LKey } from "../i18n/L.js";
 
 export interface ShellUser {
@@ -22,29 +28,24 @@ export interface ShellUser {
   readonly role: Role;
 }
 
+/** One navigation link: the route it opens and its label key (entities.md NavItem). */
+export interface NavItem {
+  readonly to: string;
+  readonly label: LKey;
+}
+
 export interface ShellProps {
   readonly locale: Locale;
   readonly onLocaleChange: (l: Locale) => void;
   readonly user?: ShellUser | null;
+  /** The links this role may open, already filtered by App from the route map (BR2.1). */
+  readonly nav?: ReadonlyArray<NavItem>;
+  /** The Shell-level toast (BR6.2), or nothing. */
+  readonly toast?: React.ReactNode;
   readonly onSignOut?: () => void;
   readonly signingOut?: boolean;
   readonly children?: React.ReactNode;
 }
-
-interface NavEntry {
-  readonly to: string;
-  readonly label: LKey;
-  readonly capability: Capability;
-}
-
-/** The places in the header, each with the capability its route requires (src/router/routes.ts). */
-const NAV: ReadonlyArray<NavEntry> = [
-  { to: "/orders", label: "nav.orders", capability: "business.view" },
-  { to: "/daily-card", label: "nav.daily_card", capability: "business.view" },
-  { to: "/audit-trail", label: "nav.audit_trail", capability: "audit.view" },
-  { to: "/business", label: "nav.business", capability: "business.edit" },
-  { to: "/settings", label: "nav.settings", capability: "settings.edit.own" },
-];
 
 const ROLE_LABEL: Readonly<Record<Role, LKey>> = {
   owner: "role.owner",
@@ -56,13 +57,14 @@ const ROLE_LABEL: Readonly<Record<Role, LKey>> = {
 export const Shell = (props: ShellProps): React.ReactElement => {
   const { locale, onLocaleChange, user, onSignOut, children } = props;
   const signedIn = user !== null && user !== undefined;
+  const nav = props.nav ?? [];
   return (
-    <div data-testid="shell">
-      <header data-testid="shell-header">
+    <div data-testid="shell" className="shell">
+      <header data-testid="shell-header" className="shell__header">
         <h1>SmartBiz BD</h1>
         {signedIn ? (
-          <nav aria-label="Primary" data-testid="shell-nav">
-            {NAV.filter((n) => hasCapability(user.role, n.capability)).map((n) => (
+          <nav aria-label="Primary" data-testid="shell-nav" className="shell__nav">
+            {nav.map((n) => (
               <a key={n.to} href={`#${n.to}`} data-testid={`nav-${n.to}`}>
                 {lookup(n.label, locale)}
               </a>
@@ -100,7 +102,14 @@ export const Shell = (props: ShellProps): React.ReactElement => {
           </div>
         ) : null}
       </header>
-      <main data-testid="shell-main">{children}</main>
+      {props.toast ? (
+        <div data-testid="shell-toast" className="shell__toast">
+          {props.toast}
+        </div>
+      ) : null}
+      <main data-testid="shell-main" className="shell__main">
+        {children}
+      </main>
     </div>
   );
 };

@@ -11,8 +11,6 @@ import { RecoverScreen } from "../../src/router/screens/Recover.js";
 import { ResetScreen } from "../../src/router/screens/Reset.js";
 import { AcceptScreen } from "../../src/router/screens/Accept.js";
 import { LockScreen } from "../../src/pres/Lock.js";
-import { DailyCardPlaceholder } from "../../src/router/screens/DailyCardPlaceholder.js";
-import { AuditTrailPlaceholder } from "../../src/router/screens/AuditTrailPlaceholder.js";
 import { setLocale } from "../../src/i18n/useTranslations.js";
 
 describe("screens render and submit", () => {
@@ -54,11 +52,7 @@ describe("screens render and submit", () => {
   });
 
   // The B1 orders placeholder was replaced by the real U3 screens in B2
-  // (tests/integration/orders-screens.test.tsx).
-  test("placeholder screens render", () => {
-    expect(render(<DailyCardPlaceholder />).container.textContent).toContain("B5");
-    cleanup();
-    expect(render(<AuditTrailPlaceholder />).container.textContent).toContain("B5");
-    cleanup();
-  });
+  // (tests/integration/orders-screens.test.tsx). U2 replaced the daily-card and audit-trail
+  // placeholders: the audit trail is real (tests/integration/audit-trail-screen.test.tsx) and
+  // the daily card renders the not-available screen (tests/unit/not-available.test.tsx).
 });

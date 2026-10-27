@@ -35,8 +35,15 @@
   --font-size-xl: 24px;
   --line-height: 1.5;
 
-  /* Focus ring. */
+  /* Focus ring. U2 (BR9.3, NFR9.7): a visible outline in the link colour plus the soft halo. */
   --focus-ring: 0 0 0 3px rgba(20, 87, 178, 0.4);
+  --focus-ring-outline: 3px solid var(--color-link); /* 7.0:1 on #ffffff */
+
+  /* U2 (NFR9.9): the error banner's tinted surface; error text on it stays above 4.5:1. */
+  --color-bg-error: #fbeaea; /* #a4252b on it: 6.27:1; #1a1a1a on it: 14.97:1 */
+
+  /* U2 (BR9.1): the widest a fixed box may be; anything wider scrolls inside .scroll-x. */
+  --width-max-fixed: 360px;
 }
 
 /* Body baseline. */
@@ -49,9 +56,14 @@ body {
   background: var(--color-bg);
 }
 
+/* U2 (BR9.3, NFR9.7): focus is always visible on every focusable element, from the token. */
 button:focus-visible,
 input:focus-visible,
-a:focus-visible {
-  outline: none;
+select:focus-visible,
+textarea:focus-visible,
+a:focus-visible,
+[tabindex]:focus-visible {
+  outline: var(--focus-ring-outline);
+  outline-offset: 2px;
   box-shadow: var(--focus-ring);
 }

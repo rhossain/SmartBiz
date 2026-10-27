@@ -21,11 +21,24 @@
  * go to the screen (BR8.2). Sign-out posts to the API, then clears every in-memory store and
  * opens sign-in, whatever the answer, because the server clears the cookie even when the
  * database is down (S3).
+ *
+ * U2 (S12; BR2.1, BR4.1, BR6.2; review F-01, F-05):
+ *   - App builds the navigation: `NAV_ITEMS` lists `{ to, label }` only, and each item's
+ *     access is looked up in the screen route map, so a link is shown exactly when its route
+ *     would open for the role; the Shell receives the filtered list as a prop;
+ *   - a role sent to the lock screen sees the name of the feature it tried to open and a link
+ *     to the first screen it can open (its first navigation item);
+ *   - the save toast "সংরক্ষণ হয়েছে" is hosted by the Shell, so it outlives the move to the
+ *     list that follows a save;
+ *   - `/audit-trail` gets the audit client (`deps.audit`, built over the same HTTP client
+ *     when a caller does not pass one).
  */
 import * as React from "react";
 import { hasCapability } from "../auth/capability.js";
 import type { GateSession } from "../auth/three-layer-gate.js";
 import type { SessionResponse } from "../auth/schemas.js";
+import type { AuditRouteState } from "../audit/screens/AuditTrail.js";
+import { createAuditApi, type AuditApi } from "../client/audit-api.js";
 import type { AuthApi } from "../client/auth-api.js";
 import type { ApiFailure, ApiFailureKind, HttpClient } from "../client/http.js";
 import type { OrdersApi } from "../client/orders-api.js";
@@ -51,9 +64,10 @@ import {
   useSession,
   type SessionStore,
 } from "../client/session-store.js";
-import type { Locale, OrderStatus } from "../data/enums.js";
+import type { Locale, OrderStatus, Role } from "../data/enums.js";
 import { now } from "../data/clock.js";
 import { err, ok } from "../data/result.js";
+import { lookup, type LKey } from "../i18n/L.js";
 import { setLocale, useLocale } from "../i18n/useTranslations.js";
 import { buildRepeatOrder } from "../orders/input-modes.js";
 import { ORDER_MUTATE_CAPABILITIES } from "../orders/order-capability.js";
@@ -66,10 +80,13 @@ import {
 import type { OrdersRouteState } from "../orders/screens/render-orders-route.js";
 import type { Order } from "../orders/types.js";
 import { ErrorBanner, RequestState } from "../pres/RequestState.js";
-import { Shell } from "../pres/Shell.js";
+import { Shell, type NavItem } from "../pres/Shell.js";
+import { Toast } from "../pres/Toast.js";
 import { dispatchPath } from "./dispatch.js";
 import { matchRoute, navigate } from "./hash-router.js";
+import { routes } from "./routes.js";
 import type { AuthRouteState } from "./screens/render-auth-route.js";
+import type { Route, RoutePath } from "./types.js";
 
 export interface AppDeps {
   readonly http: HttpClient;
@@ -78,7 +95,36 @@ export interface AppDeps {
   readonly sessions: SessionStore;
   readonly ordersStore: OrdersStore;
   readonly draft: OrderDraftStore;
+  /** The audit client (U2); built over `http` when not given. */
+  readonly audit?: AuditApi;
 }
+
+/** S12: the places in the header; each item's access is its route's, from the route map. */
+export const NAV_ITEMS: ReadonlyArray<{ readonly to: RoutePath; readonly label: LKey }> = [
+  { to: "/orders", label: "nav.orders" },
+  { to: "/daily-card", label: "nav.daily_card" },
+  { to: "/audit-trail", label: "nav.audit_trail" },
+  { to: "/business", label: "nav.business" },
+  { to: "/settings", label: "nav.settings" },
+];
+
+/** Whether `role` holds any one of the route's capabilities; public routes open for all. */
+export const roleOpens = (route: Route, role: Role): boolean => {
+  const required = route.requiredCapability;
+  if (required === null) return true;
+  const anyOf = typeof required === "string" ? [required] : required;
+  return anyOf.some((c) => hasCapability(role, c));
+};
+
+/** BR2.1: exactly the navigation items whose routes the role can open, in NAV_ITEMS order. */
+export const navFor = (role: Role): ReadonlyArray<NavItem> =>
+  NAV_ITEMS.filter((item) => {
+    const route = routes.get(item.to);
+    return route !== undefined && roleOpens(route, role);
+  });
+
+/** BR4.1: the first screen the role can open (its first navigation item). */
+export const homeFor = (role: Role): string => navFor(role)[0]?.to ?? "/";
 
 const PUBLIC_ENTRY: ReadonlySet<string> = new Set(["/", "/sign-in", "/sign-up"]);
 
@@ -122,6 +168,9 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
   const [actionError, setActionError] = React.useState<ApiFailure | null>(null);
   const [signingOut, setSigningOut] = React.useState(false);
   const [boot, setBoot] = React.useState(0);
+  // BR4.1: the feature a redirect to /lock was about, so the lock screen can name it.
+  const [lockFeature, setLockFeature] = React.useState<LKey | null>(null);
+  const audit = React.useMemo(() => deps.audit ?? createAuditApi(http), [deps.audit, http]);
 
   // W9: a 401 while signed in remembers the route and opens sign-in with the notice.
   React.useEffect(() => {
@@ -196,9 +245,15 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
     }
   }, [routePath, routeId, signedInSession, ordersStore, orders]);
 
+  /** A 403 from a write opens the lock screen naming the current route's feature (BR4.1). */
+  const lockHere = (): void => {
+    setLockFeature(routePath === null ? null : (routes.get(routePath)?.feature ?? null));
+    navigate("/lock");
+  };
+
   /** A refusal from a write: 403 opens the lock screen; infrastructure failures get the banner. */
   const routeFailure = (f: ApiFailure): void => {
-    if (f.kind === "forbidden") navigate("/lock");
+    if (f.kind === "forbidden") lockHere();
     else if (isInfraFailure(f.kind) || f.kind === "payload_too_large") setActionError(f);
   };
 
@@ -209,7 +264,7 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
       navigate("/orders");
       return ok(r.value);
     }
-    if (r.kind === "forbidden") navigate("/lock");
+    if (r.kind === "forbidden") lockHere();
     return err({ kind: r.kind, fields: r.fields });
   };
 
@@ -245,6 +300,8 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
 
   const role = signedInSession?.user.role ?? null;
   const canMutate = role !== null && ORDER_MUTATE_CAPABILITIES.some((c) => hasCapability(role, c));
+  const nav = role === null ? [] : navFor(role);
+  const homeTo = role === null ? null : homeFor(role);
 
   const authState: AuthRouteState = {
     kind: "auth",
@@ -252,7 +309,13 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
     signIn: auth.signIn,
     signUp: auth.signUp,
     onSignedIn,
+    lock: {
+      feature: lockFeature === null ? null : lookup(lockFeature, locale),
+      homeTo,
+    },
   };
+
+  const auditState: AuditRouteState = { kind: "audit", locale, load: audit.page, homeTo };
 
   const ordersState: OrdersRouteState = {
     kind: "orders",
@@ -279,7 +342,11 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
     recent: list.recent,
   };
 
-  const routeState = routePath?.startsWith("/orders") ? ordersState : authState;
+  const routeState = routePath?.startsWith("/orders")
+    ? ordersState
+    : routePath === "/audit-trail"
+      ? auditState
+      : authState;
   const outcome =
     session.status === "unknown"
       ? null
@@ -291,8 +358,17 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
     if (redirectTo === null) return;
     // Remember the gated route, so sign-in comes back to it (W9 step 2).
     if (redirectTo === "/sign-in") rememberRoute(sessions, path);
+    // BR4.1: the lock screen names the feature of the route the role could not open.
+    if (redirectTo === "/lock") {
+      const locked = matchRoute(path);
+      setLockFeature(locked === null ? null : (routes.get(locked.path)?.feature ?? null));
+    }
     navigate(redirectTo);
   }, [redirectTo, path, sessions]);
+
+  // BR6.2, F-05: the Shell hosts the save toast, so it survives the move to the list.
+  const toast =
+    list.notice === "saved" ? <Toast message={lookup("common.saved", locale)} tone="info" /> : null;
 
   let content: React.ReactNode;
   if (bootError) {
@@ -321,6 +397,8 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
           ? { email: signedInSession.user.email, role: signedInSession.user.role }
           : null
       }
+      nav={nav}
+      toast={toast}
       onSignOut={onSignOut}
       signingOut={signingOut}
     >

@@ -166,15 +166,15 @@ layer is implemented, together with the full existing suite, before the next lay
 
 ### Step 11 — Frontend behaviour: implement (US1.7, US5.1, US5.4; BR1.1, BR1.5, BR2.1–BR2.3, BR4.1, BR4.2, BR5.1–BR5.5, BR6.1–BR6.3, BR9.2, BR9.3; S12, R7, R9, R10, P14)
 
-- [ ] `src/pres/ApiState.tsx`: phases loading (300 ms delay), empty, error, ready; error view from `viewForKind` plus `errorMessage`; `lock` renders `LockScreen` inline with the feature name, `not-found` renders `NotFound` inline, `conflict` shows reload, `sign-in` renders nothing (the `http.onUnauthenticated` hook handles it), retry only for reads, `unreachable`, `db_unavailable`; `retryAfterMinutes` for `rate_limited`. `RequestState` re-exports the same component with its U1 props unchanged.
-- [ ] `src/pres/NotAvailable.tsx`: heading `data-testid="screen-title"` with the feature's name, "এই অংশ পরের সংস্করণে আসবে", link "হোমে যান".
-- [ ] `src/pres/LockSheet.tsx` / `Lock.tsx`: name the missing feature and link to the first screen the role can open (BR4.1).
-- [ ] `src/router/routes.ts`: `/accept` → `/accept-invite`; `/daily-card`, `/business`, `/settings`, `/accept-invite`, `/reset`, `/recover` render `NotAvailable` with their feature; `/audit-trail` renders the audit trail screen; each route carries its `feature` key; `/` stays public.
-- [ ] `src/router/App.tsx`: build `NavItem[]` from `{ to, label }` entries and the route map's access; pass the role-filtered list to `Shell`; host the toast at Shell level; order forms move from U1's `setPending` onto `useSubmitGuard` (F-05).
-- [ ] `src/pres/Shell.tsx`: take `nav` as a prop; drop its own capability list and the `src/auth/capability` import.
-- [ ] `src/audit/screens/AuditTrail.tsx` and `src/client/audit-api.ts`: list with action label (raw action when none), Bangla time, actor email or "সিস্টেম", subject, correlation id; "আরও দেখুন" appends the next page; `ApiState` for loading, empty ("এখনো কোনো এন্ট্রি নেই") and errors. The client parses the shared response schema.
-- [ ] `src/i18n/*`: new keys (feature names, not-available copy, audit trail copy, conflict reload, database-not-reachable) in Bangla and English.
-- [ ] `src/pres/tokens.css` and component CSS: `:focus-visible` outline from `--focus-ring` on `button, input, select, textarea, a, [tabindex]`; `.scroll-x` container for wide tables; no literal colour outside `tokens.css`; every error, warning and success view has text plus a label.
+- [x] `src/pres/ApiState.tsx`: phases loading (300 ms delay), empty, error, ready; error view from `viewForKind` plus `errorMessage`; `lock` renders `LockScreen` inline with the feature name, `not-found` renders `NotFound` inline, `conflict` shows reload, `sign-in` renders nothing (the `http.onUnauthenticated` hook handles it), retry only for reads, `unreachable`, `db_unavailable`; `retryAfterMinutes` for `rate_limited`. `RequestState` re-exports the same component with its U1 props unchanged.
+- [x] `src/pres/NotAvailable.tsx`: heading `data-testid="screen-title"` with the feature's name, "এই অংশ পরের সংস্করণে আসবে", link "হোমে যান".
+- [x] `src/pres/LockSheet.tsx` / `Lock.tsx`: name the missing feature and link to the first screen the role can open (BR4.1).
+- [x] `src/router/routes.ts`: `/accept` → `/accept-invite`; `/daily-card`, `/business`, `/settings`, `/accept-invite`, `/reset`, `/recover` render `NotAvailable` with their feature; `/audit-trail` renders the audit trail screen; each route carries its `feature` key; `/` stays public.
+- [x] `src/router/App.tsx`: build `NavItem[]` from `{ to, label }` entries and the route map's access; pass the role-filtered list to `Shell`; host the toast at Shell level; order forms move from U1's `setPending` onto `useSubmitGuard` (F-05).
+- [x] `src/pres/Shell.tsx`: take `nav` as a prop; drop its own capability list and the `src/auth/capability` import.
+- [x] `src/audit/screens/AuditTrail.tsx` and `src/client/audit-api.ts`: list with action label (raw action when none), Bangla time, actor email or "সিস্টেম", subject, correlation id; "আরও দেখুন" appends the next page; `ApiState` for loading, empty ("এখনো কোনো এন্ট্রি নেই") and errors. The client parses the shared response schema.
+- [x] `src/i18n/*`: new keys (feature names, not-available copy, audit trail copy, conflict reload, database-not-reachable) in Bangla and English.
+- [x] `src/pres/tokens.css` and component CSS: `:focus-visible` outline from `--focus-ring` on `button, input, select, textarea, a, [tabindex]`; `.scroll-x` container for wide tables; no literal colour outside `tokens.css`; every error, warning and success view has text plus a label.
 
 ### Step 12 — Frontend behaviour: write and run its tests (US1.7, US5.1, US5.4; NFR1.5, NFR1.8, NFR7.9–NFR7.13, NFR9.5, NFR9.7–NFR9.9)
 

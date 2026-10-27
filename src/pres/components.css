@@ -1,0 +1,102 @@
+/* src/pres/components.css — layout and component rules for the app shell and its screens
+ * (U2: BR9.1, BR9.3, NFR9.6, NFR9.9; P14).
+ *
+ * Rules, checked by tests/unit/stylesheet.test.ts:
+ *   - every colour comes from a token in tokens.css (var(--…)); no literal colour here;
+ *   - no fixed width or min-width above 360 px; wide content (tables) scrolls inside its own
+ *     `.scroll-x` box, so the page never scrolls sideways at 360 px (BR9.1);
+ *   - meaning is never colour alone: every banner carries a text label (NFR9.9).
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.shell__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+  padding: var(--space-2) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.shell__header h1 {
+  margin: 0;
+  font-size: var(--font-size-lg);
+}
+
+.shell__nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+}
+
+.shell__nav a,
+a {
+  color: var(--color-link);
+}
+
+.shell__main {
+  padding: var(--space-4);
+  max-width: 100%;
+}
+
+.shell__toast {
+  padding: var(--space-2) var(--space-4);
+  color: var(--color-success);
+  background: var(--color-bg-muted);
+}
+
+input,
+select,
+textarea,
+button {
+  max-width: 100%;
+  font: inherit;
+}
+
+/* BR9.1: the one place content may be wider than the window; it scrolls inside the box. */
+.scroll-x {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.table {
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: var(--space-1) var(--space-2);
+  text-align: start;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.mono {
+  font-family: ui-monospace, monospace;
+  font-size: var(--font-size-sm);
+}
+
+.banner {
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid currentColor;
+}
+
+.banner--error {
+  color: var(--color-error);
+  background: var(--color-bg-error);
+}
+
+.banner__label {
+  font-weight: 700;
+}
+
+.lock {
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-muted);
+  color: var(--color-text);
+}

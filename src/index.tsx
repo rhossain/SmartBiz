@@ -17,6 +17,7 @@ import { createSessionStore } from "./client/session-store.js";
 import { createOrderDraftStore } from "./orders/order-draft.js";
 import { App, type AppDeps } from "./router/App.js";
 import "./pres/tokens.css";
+import "./pres/components.css";
 
 export const createAppDeps = (): AppDeps => {
   const http = createHttpClient();

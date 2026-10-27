@@ -26,9 +26,10 @@ import type { Locale } from "../../data/enums.js";
 import { toAsciiDigits } from "../../i18n/bnDigits.js";
 import { useFocusOnFailure } from "../../pres/focus.js";
 import { Screen } from "../../pres/Screen.js";
+import { useSubmitGuard } from "../../pres/use-submit-guard.js";
 import { buildManualOrder } from "../input-modes.js";
 import {
-  saveDraft,
+  saveDraftGuarded,
   setPending,
   useOrderDraft,
   type OrderDraft,
@@ -217,10 +218,13 @@ const LineEditor = (props: {
 
 export const ManualOrder = ({ locale, draft, onSave }: ManualOrderProps): React.ReactElement => {
   const state = useOrderDraft(draft);
+  // U2 (F-05, BR6.1, W3): one save at a time; an edit returns the guard to idle.
+  const guard = useSubmitGuard();
   const [form, setForm] = React.useState<Form>(INITIAL);
   const apply = (next: Form): void => {
     setForm(next);
     stage(draft, next);
+    guard.reset();
   };
   const result = evaluate(form);
   const formRef = React.useRef<HTMLFormElement>(null);
@@ -233,7 +237,7 @@ export const ManualOrder = ({ locale, draft, onSave }: ManualOrderProps): React.
         data-testid="manual-order-form"
         onSubmit={(e) => {
           e.preventDefault();
-          void saveDraft(draft, onSave);
+          void guard.submit(() => saveDraftGuarded(draft, onSave));
         }}
       >
         <ol data-testid="manual-lines">
@@ -298,7 +302,8 @@ export const ManualOrder = ({ locale, draft, onSave }: ManualOrderProps): React.
         <button
           type="submit"
           data-testid="manual-save"
-          disabled={state.pending === null || state.status === "saving"}
+          disabled={state.pending === null || guard.state === "saving"}
+          aria-busy={guard.state === "saving"}
         >
           {tr("orders.save", locale)}
         </button>
