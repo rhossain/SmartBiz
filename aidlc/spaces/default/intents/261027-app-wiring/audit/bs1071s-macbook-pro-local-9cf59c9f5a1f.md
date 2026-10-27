@@ -4511,3 +4511,185 @@
 **Context**: inception > domain-design > components.md
 
 ---
+
+## Change Accepted
+**Timestamp**: 2026-10-27T11:14:52Z
+**Event**: CHANGE_ACCEPTED
+**Stage**: domain-design
+**Checkpoint**: review-receipt
+**Changed**: aidlc/spaces/default/intents/261027-app-wiring/inception/domain-design/components.md
+**Recorded**: sha256:2ba8cf29220d4f7afbae8a550a57d20e09866a735a9b788d7f347487b50b4d95
+**Current**: sha256:e8d9db58ea8bcb53474f0b1b98afa31a90fd45e6568d447594be9988e9c7e0a0
+**Details**: aidlc/spaces/default/intents/261027-app-wiring/inception/domain-design/components.md changed after the Domain Design review; carrying on.
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T11:14:52Z
+**Event**: SENSOR_FIRED
+**Fire id**: 0cedac17
+**Sensor ID**: required-sections
+**Stage slug**: domain-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/domain-design/components.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T11:14:52Z
+**Event**: SENSOR_PASSED
+**Fire id**: 0cedac17
+**Sensor ID**: required-sections
+**Stage slug**: domain-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/domain-design/components.md
+**Duration ms**: 77
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T11:14:52Z
+**Event**: SENSOR_FIRED
+**Fire id**: 28bbf967
+**Sensor ID**: required-sections
+**Stage slug**: domain-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/domain-design/decisions.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T11:14:52Z
+**Event**: SENSOR_PASSED
+**Fire id**: 28bbf967
+**Sensor ID**: required-sections
+**Stage slug**: domain-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/domain-design/decisions.md
+**Duration ms**: 74
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T11:14:52Z
+**Event**: SENSOR_FIRED
+**Fire id**: c762dd26
+**Sensor ID**: required-sections
+**Stage slug**: domain-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/domain-design/traceability.json
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T11:14:52Z
+**Event**: SENSOR_PASSED
+**Fire id**: c762dd26
+**Sensor ID**: required-sections
+**Stage slug**: domain-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/domain-design/traceability.json
+**Duration ms**: 73
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T11:14:53Z
+**Event**: SENSOR_FIRED
+**Fire id**: 72bf3dcf
+**Sensor ID**: upstream-coverage
+**Stage slug**: domain-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/domain-design/components.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-27T11:14:53Z
+**Event**: SENSOR_FAILED
+**Fire id**: 72bf3dcf
+**Sensor ID**: upstream-coverage
+**Stage slug**: domain-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/domain-design/components.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/domain-design/upstream-coverage-72bf3dcf.md
+**Findings count**: 1
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T11:14:53Z
+**Event**: SENSOR_FIRED
+**Fire id**: 82c77110
+**Sensor ID**: upstream-coverage
+**Stage slug**: domain-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/domain-design/decisions.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-27T11:14:53Z
+**Event**: SENSOR_FAILED
+**Fire id**: 82c77110
+**Sensor ID**: upstream-coverage
+**Stage slug**: domain-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/domain-design/decisions.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/domain-design/upstream-coverage-82c77110.md
+**Findings count**: 1
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T11:14:53Z
+**Event**: SENSOR_FIRED
+**Fire id**: 0802d06f
+**Sensor ID**: upstream-coverage
+**Stage slug**: domain-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/domain-design/traceability.json
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-27T11:14:53Z
+**Event**: SENSOR_FAILED
+**Fire id**: 0802d06f
+**Sensor ID**: upstream-coverage
+**Stage slug**: domain-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/domain-design/traceability.json
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/domain-design/upstream-coverage-0802d06f.md
+**Findings count**: 1
+
+---
+
+## Stage Awaiting Approval
+**Timestamp**: 2026-10-27T11:14:54Z
+**Event**: STAGE_AWAITING_APPROVAL
+**Stage**: domain-design
+
+---
+
+## Gate Approved
+**Timestamp**: 2026-10-27T11:15:03Z
+**Event**: GATE_APPROVED
+**Stage**: domain-design
+**User Input**: Approve (Owner standing instruction 2026-10-27: don't stop for approval; decide the right options)
+
+---
+
+## Stage Completion
+**Timestamp**: 2026-10-27T11:15:03Z
+**Event**: STAGE_COMPLETED
+**Stage**: domain-design
+**Validation Basis**: {"graphContract":"sha256:4e5ba0b6334a8c25f8dea5929cee93c113f34e58b422ef110b998ef5ff29e179","inputs":[{"artifact":"architecture","contentHash":"sha256:a8c1b87552a623a8ba7eb1563411ca1f2143270bef409f0d83d117014f8928d6","instanceCount":1,"presentCount":1,"producer":"reverse-engineering","required":false,"structureHash":"sha256:497d35376a6af2003f95b7d9af26b0452d905c5f111891904d6863cec2c19486"},{"artifact":"component-inventory","contentHash":"sha256:30a8814d356a7bfdddc5a38dc8ae2618c35d7eececa67b5c23998a945d40339b","instanceCount":1,"presentCount":1,"producer":"reverse-engineering","required":false,"structureHash":"sha256:da5d560976b413a0a33b3ee30f219a7553bcefe1fdd8cfabbb0d1ff202e88543"},{"artifact":"requirements","contentHash":"sha256:91596afb4361696fc6dfebc1fb0aa510db6a3aaccc85c91e4e38d12a760e1716","instanceCount":1,"presentCount":1,"producer":"requirements-analysis","required":true,"structureHash":"sha256:4505671a40e951a46be027fcf40da539cee3d7d128be48e674cb3005a5fe48bc"},{"artifact":"stories","contentHash":"sha256:20c930ae0799389d1fa5b4d900788f1e55e0f44bec0a256ab030cb2116ebdb79","instanceCount":1,"presentCount":1,"producer":"user-stories","required":false,"structureHash":"sha256:7138ad0225d1534181c69d37839e9988c837211669e34b9ab946405dbd7a7190"},{"artifact":"team-practices","contentHash":"sha256:92177ec6929be7f01e88786e9a1cd53fc06e7ea09306cad0e8916b77f7b6de18","instanceCount":1,"presentCount":1,"producer":"practices-discovery","required":false,"structureHash":"sha256:fa129b8f120e57efabb7ce801acb87461f7329b9b6aa803c6fb9fc234a542219"}],"outputs":[{"artifact":"components","contentHash":"sha256:17eb700566bf1162b108f7531a4e94e6e8dc1e94d3672e6201cfeb2a388ee391","instanceCount":1,"presentCount":1,"producer":"domain-design","required":true,"structureHash":"sha256:308751fb5e4c589703740d45ba26da0a3023ad4e04f9038ddd6778706705cdf4"},{"artifact":"decisions","contentHash":"sha256:8c9c10acddaf2b00d8149c5a7e156415a7bbaafae0b2317afa70421139866908","instanceCount":1,"presentCount":1,"producer":"domain-design","required":true,"structureHash":"sha256:1e80620f336aa608579517781cd4cbf24dc1a468402f0b0de4e0816284b9938c"},{"artifact":"traceability","contentHash":"sha256:e98884260d1f77c7056292a4678ef3c279f4cadc0e0019bc0f16ad6dc09edab5","instanceCount":1,"presentCount":1,"producer":"domain-design","required":true,"structureHash":"sha256:35f2f7bf7a9f8684683fa78f7c826fa90bd6789cd86b2f0bf4d025608c86ef20"}],"projectType":"brownfield","schema":3}
+**Details**: Stage Domain Design approved by gate
+**Tokens In**: 50
+**Tokens Out**: 39598
+**Cache Read**: 5563784
+**Cache Write**: 223167
+**Cost USD**: 2.90
+**By Model**: opus-5-5=2.36; sonnet-5-5=0.54
+**By Agent**: main=2.36; aidlc-architecture-reviewer-agent=0.54
+**Tokens By Model**: opus-5-5=36/30.9k/4.9M/94.9k; sonnet-5-5=14/8.7k/646.3k/128.3k
+**Tokens By Agent**: main=36/30.9k/4.9M/94.9k; aidlc-architecture-reviewer-agent=14/8.7k/646.3k/128.3k
+
+---
+
+## Stage Start
+**Timestamp**: 2026-10-27T11:15:03Z
+**Event**: STAGE_STARTED
+**Stage**: units-generation
+**Agent**: aidlc-architect-agent
+
+---
