@@ -121,14 +121,14 @@ that layer is implemented, together with the full existing suite, before the nex
 
 ### Step 3 — Data model / database behaviour: implement (US1.1, US1.2, US2.1a; BR2.6, BR6.8, BR6.10, BR9.1–BR9.4)
 
-- [ ] `src/db/migrations/0011_users_business_link.sql`: `users.business_id` nullable → fill from `businesses.owner_user_id` → stop with `users_without_business` if any null → NOT NULL → DEFERRABLE INITIALLY DEFERRED FK → `businesses_singleton_idx` (unique on a constant expression). Idempotent guards.
-- [ ] `0012_sessions_token_hash.sql`: only when `token_hash` is absent: delete all session rows, add `token_hash TEXT NOT NULL`, unique index; a re-run does nothing.
-- [ ] `0013_users_email_ci_unique.sql`: stop with `users_email_case_duplicate` on a case duplicate; drop `users_email_lower_idx`; unique index on `lower(email)`; also drop the case-sensitive unique of 0001 if present.
-- [ ] `0014_auth_grants.sql`: exact grants for `app_role` on users, businesses, invitations, password_resets, sessions (DELETE only on sessions), per C9.
-- [ ] `0015_order_item_revisions.sql`: `orders.items_revision INT NOT NULL DEFAULT 1`; `order_items.revision INT NOT NULL DEFAULT 1`; drop `UNIQUE(order_id, line_no)`; add `UNIQUE(order_id, revision, line_no)` and index `(order_id, revision)`; `REVOKE DELETE ON order_items FROM app_role`.
-- [ ] `src/db/declared-grants.ts`: the C9 exact grant set as typed data (every table the app touches).
-- [ ] `src/db/migrate.ts`: connect with `MIGRATE_DATABASE_URL` (fail fast if unset), keep the `_migrations` ledger, start-up behind `if (import.meta.main)`.
-- [ ] `docker-compose.yml` (`smartbiz-db`, pinned `postgres:18.6@sha256:4ef4dbc9…c2280`, `127.0.0.1:${SMARTBIZ_DB_PORT:-5432}:5432`, volume `smartbiz-pgdata`, `pg_isready` healthcheck) and `db/init/01-roles.sh` (creates `smartbiz`, `app_role` NOLOGIN, `smartbiz_app` LOGIN member of `app_role`, password from `SMARTBIZ_APP_PASSWORD` via `psql -v`).
+- [x] `src/db/migrations/0011_users_business_link.sql`: `users.business_id` nullable → fill from `businesses.owner_user_id` → stop with `users_without_business` if any null → NOT NULL → DEFERRABLE INITIALLY DEFERRED FK → `businesses_singleton_idx` (unique on a constant expression). Idempotent guards.
+- [x] `0012_sessions_token_hash.sql`: only when `token_hash` is absent: delete all session rows, add `token_hash TEXT NOT NULL`, unique index; a re-run does nothing.
+- [x] `0013_users_email_ci_unique.sql`: stop with `users_email_case_duplicate` on a case duplicate; drop `users_email_lower_idx`; unique index on `lower(email)`; also drop the case-sensitive unique of 0001 if present.
+- [x] `0014_auth_grants.sql`: exact grants for `app_role` on users, businesses, invitations, password_resets, sessions (DELETE only on sessions), per C9.
+- [x] `0015_order_item_revisions.sql`: `orders.items_revision INT NOT NULL DEFAULT 1`; `order_items.revision INT NOT NULL DEFAULT 1`; drop `UNIQUE(order_id, line_no)`; add `UNIQUE(order_id, revision, line_no)` and index `(order_id, revision)`; `REVOKE DELETE ON order_items FROM app_role`.
+- [x] `src/db/declared-grants.ts`: the C9 exact grant set as typed data (every table the app touches).
+- [x] `src/db/migrate.ts`: connect with `MIGRATE_DATABASE_URL` (fail fast if unset), keep the `_migrations` ledger, start-up behind `if (import.meta.main)`.
+- [x] `docker-compose.yml` (`smartbiz-db`, pinned `postgres:18.6@sha256:4ef4dbc9…c2280`, `127.0.0.1:${SMARTBIZ_DB_PORT:-5432}:5432`, volume `smartbiz-pgdata`, `pg_isready` healthcheck) and `db/init/01-roles.sh` (creates `smartbiz`, `app_role` NOLOGIN, `smartbiz_app` LOGIN member of `app_role`, password from `SMARTBIZ_APP_PASSWORD` via `psql -v`).
 
 ### Step 4 — Data model / database behaviour: write and run its tests
 
