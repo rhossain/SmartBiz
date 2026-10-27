@@ -128,9 +128,9 @@ layer is implemented, together with the full existing suite, before the next lay
 
 ### Step 6 — Repository / data access: write and run its tests
 
-- [ ] `tests/unit/audit-read.test.ts`: page shape, no payload key, nextCursor null on the last page, cursor round trip, bad cursor → `invalid_input`, limit+1 detection.
-- [ ] `tests/unit/audit-export.test.ts`: batches until done, includes payload, retention-filtered; the `listAuditForBusiness` cases move here and into `audit-read.test.ts` from `tests/unit/observability.test.ts`.
-- [ ] `tests/realdb/audit-read.realdb.test.ts`: retention boundary (a row exactly at now is excluded), tie on `occurred_at` broken by `id`, another business's rows invisible, a foreign-business cursor returns only own rows, no payload, millisecond precision of `occurred_at`, app_role needs no new grant.
+- [x] `tests/unit/audit-read.test.ts`: page shape, no payload key, nextCursor null on the last page, cursor round trip, bad cursor → `invalid_input`, limit+1 detection.
+- [x] `tests/unit/audit-export.test.ts`: batches until done, includes payload, retention-filtered; the `listAuditForBusiness` cases move here and into `audit-read.test.ts` from `tests/unit/observability.test.ts`.
+- [x] `tests/realdb/audit-read.realdb.test.ts`: retention boundary (a row exactly at now is excluded), tie on `occurred_at` broken by `id`, another business's rows invisible, a foreign-business cursor returns only own rows, no payload, millisecond precision of `occurred_at`, app_role needs no new grant.
 
 ### Step 7 — Business logic: implement (US5.1, US5.4; BR1.3, BR3.1, BR5.2, BR6.1; S15, S16, R8; D-01, D-07, D-08)
 

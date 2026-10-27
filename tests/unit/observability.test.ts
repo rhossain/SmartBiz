@@ -1,15 +1,10 @@
 /**
- * Coverage booster — observability + audit list / export + role-grants import.
+ * Coverage booster — observability + audit retention helper + role-grants import.
  */
 import { describe, expect, test } from "bun:test";
 import { info, warn, error } from "../../src/observability/log.js";
 import { newCorrelationId } from "../../src/observability/correlation.js";
-import { listAuditForBusiness, auditRetentionFilter } from "../../src/audit/audit-service.js";
-import { exportAudit } from "../../src/audit/audit-export.js";
-import { makeSqlStub } from "../helpers/sql-stub.js";
-import { authDeps } from "../helpers/auth-fixtures.js";
-import { signUp } from "../../src/auth/sign-up.js";
-import { setTestClock, FROZEN_TEST_NOW, resetTestClock } from "../../src/data/clock.js";
+import { auditRetentionFilter } from "../../src/audit/audit-service.js";
 import { hashPassword, verifyPassword } from "../../src/auth/argon2.js";
 import { PASSWORD_MIN_LENGTH } from "../../src/auth/argon2.js";
 import { capabilitiesFor } from "../../src/auth/capability.js";
@@ -43,43 +38,8 @@ describe("observability + audit read paths", () => {
     expect(a).not.toBe(b);
   });
 
-  test("listAuditForBusiness returns rows", async () => {
-    setTestClock(FROZEN_TEST_NOW);
-    const stub = makeSqlStub();
-    await signUp(
-      stub.sql,
-      {
-        email: "o@e.com",
-        password: "verysecret",
-        businessName: "A",
-        locale: "bn",
-      },
-      authDeps(),
-    );
-    const businessId = stub.state.businesses[0]!["id"] as never;
-    const rows = await listAuditForBusiness(stub.sql, businessId);
-    expect(Array.isArray(rows)).toBe(true);
-    resetTestClock();
-  });
-
-  test("exportAudit delegates to listAuditForBusiness", async () => {
-    setTestClock(FROZEN_TEST_NOW);
-    const stub = makeSqlStub();
-    await signUp(
-      stub.sql,
-      {
-        email: "o@e.com",
-        password: "verysecret",
-        businessName: "A",
-        locale: "bn",
-      },
-      authDeps(),
-    );
-    const businessId = stub.state.businesses[0]!["id"] as never;
-    const rows = await exportAudit(stub.sql, businessId);
-    expect(Array.isArray(rows)).toBe(true);
-    resetTestClock();
-  });
+  // U2 (D-06): the `listAuditForBusiness` and `exportAudit` cases moved to
+  // tests/unit/audit-read.test.ts and tests/unit/audit-export.test.ts.
 
   test("auditRetentionFilter returns a string", () => {
     const f = auditRetentionFilter(new Date("2026-09-07T00:00:00Z"));
