@@ -33,6 +33,8 @@
 
 - Record Critical/High dependency advisories as a failing Build and Test target, never as a deferred note, especially when the package is a runtime dependency such as zod. (learned 2026-10-27) <!-- cid:261015-b2-orders:build-and-test:fa259167e471066a8489d7dcbee605699c25cfaf21f13ba0920bedba14219b16 -->
 
+- Treat a CI workflow that has never run on the remote as unproven: run each of its gate commands locally before calling the pipeline adequate. (learned 2026-10-27) <!-- cid:261015-b2-orders:ci-pipeline:4171311cc600b1c079c8be818ab73f34e5ee7ffd7fa725d4d391e994bc9a920e -->
+
 ## Guard Policy
 
 <!-- Project-specific. Mode: strict, relaxed, or off. Strict here holds for every intent and cannot be changed from chat. A section under the retired Change Control heading, written by an earlier release, is still read. -->
@@ -40,6 +42,8 @@
 ## Deployment
 
 <!-- Project-specific specialisation. -->
+
+- When a known defect is accepted, add the gate that catches it as blocking, so CI stays red and the defect cannot merge, rather than making the gate report-only. (learned 2026-10-27) <!-- cid:261015-b2-orders:ci-pipeline:4d35ffa97f3069e9f3681291cfa1f64b887ad4c337edb4105531033a97024a3a -->
 
 ## Code Style
 
