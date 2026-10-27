@@ -3,7 +3,10 @@
 > Personas: see `personas.md`. Requirements: `../requirements-analysis/requirements.md`. Plan and
 > answers: `user-stories-questions.md` (Q1–Q11, decided on the Owner's standing instruction; Q7–Q11
 > settle the mob's round-1 objections). Acceptance criteria use Given/When/Then. Priorities are MoSCoW.
-> "Bolt 1" means wiring; "Bolt 2" means catalog. All time limits are measured against the app clock,
+> "Bolt 1" means wiring; "Bolt 2" means catalog.
+> **Amends requirements:** FR6.3 (stock) is set by the Owner and the Manager, and FR6.6 (suppliers) is a
+> Must (stories Q10). The Manager's `audit.view` follows `src/auth/capability.ts` today; whether to keep
+> it (code finding P-18) is carried to Functional Design. All time limits are measured against the app clock,
 > which is passed into SQL, so tests run on a frozen clock.
 
 ## Epic 1 — Use the app on this machine (Bolt 1)
@@ -33,11 +36,12 @@ As the Owner, I want to sign in with my email and password and stay signed in wh
 - **Priority:** Must. **Requirements:** FR2.1, FR2.2, FR2.3, FR2.7, NFR3.
 - **AC1.3.1** Given a valid account, when I sign in, then a cookie named with the `__Host-` prefix is set with `Secure`, `HttpOnly`, `SameSite=Lax` and `Path=/`, and only the SHA-256 hash of the session id is stored in `sessions.token_hash`.
 - **AC1.3.2** Given an existing session, when I sign in again, then a new session id is issued and the earlier one gets 401.
-- **AC1.3.3** Given a session last used 12 hours ago, when I call the API, then I get 401; given one used 11 h 59 m ago, the call succeeds and resets the idle limit.
+- **AC1.3.3** Given a session last used 12 hours ago, when I call the API, then I get 401 (at exactly 12 h the session has expired); given one used 11 h 59 m ago, the call succeeds and resets the idle limit.
 - **AC1.3.4** Given a session created 30 days ago that was used a minute ago, when I call the API, then I get 401 (the absolute cap counts from `created_at`, not from the last use).
 - **AC1.3.5** Given a 401 in the app, when it arrives, then the sign-in screen shows and, after signing in, I return to the route I was on.
-- **AC1.3.6** Given a wrong password and given an unknown email, when I sign in, then both responses have the same status (401), the same body byte for byte, and the same message "ইমেইল বা পাসওয়ার্ড ভুল"; the audit row holds the user id when the email matched an account and otherwise holds no typed text, before or after the attempt is written.
-- **AC1.3.7** Given 5 failed sign-ins for one email within 15 minutes, when a 6th arrives, then it is answered 429 with the minutes to wait, and the password is not checked.
+- **AC1.3.6** Given a wrong password and given an unknown email, when I sign in, then both responses have the same status (401), the same body byte for byte, and the same message "ইমেইল বা পাসওয়ার্ড ভুল"; the audit row holds the user id when the email matched an account and otherwise holds no typed text.
+- **AC1.3.7** Given 5 failed sign-ins for one email within 15 minutes, when a 6th arrives, then it is answered 429 with the minutes to wait, and the password is not checked. Attempts count per typed email whether or not it matches an account, so a 429 never reveals that an account exists; the limit delays sign-in and never disables the account.
+- **AC1.3.9** Given I am signed in, when the server process is restarted, then my next call succeeds with the same cookie, because sessions are stored in Postgres (NFR7).
 - **AC1.3.8** Given the session read path, when a request carries a cookie, then the server looks up the hash, checks both limits and touches `last_used_at` in one statement (closes P-4).
 
 ### US1.4 — Sign out
@@ -65,6 +69,7 @@ As the Owner, I want to reset a forgotten password without an email service, so 
 - **AC1.6.2** Given an unknown email, when recovery is requested, then no audit row holds the typed text.
 - **AC1.6.3** Given terminal access to this machine, when the Owner runs the documented reset command with their email, then a one-time reset link valid for 30 minutes is printed in the terminal.
 - **AC1.6.4** Given I am the Owner or Manager on `/staff`, when I create a reset link for a staff member, then the response returns it once in its `link` field, as for invitations; a Manager cannot create one for the Owner.
+- **AC1.6.7** Given a reset link opened at `/reset`, when the page loads, then the token is read from the URL hash fragment and removed from the address bar before any request, as for invitations.
 - **AC1.6.5** Given a reset link used once or older than 30 minutes, when it is opened, then it is refused with 410.
 - **AC1.6.6** Given a password is reset, when it completes, then every existing session of that user gets 401, and an `auth.password_reset` audit row is written without the email.
 
@@ -92,9 +97,11 @@ As Sales Staff, I want an order API that takes the same operations the order scr
 - **Priority:** Must. **Requirements:** FR3.1, FR3.3, FR3.4, NFR6.
 - **AC2.1a.1** Given I may mutate orders, when I `POST /api/orders` with a valid body, then the order is created, one audit row is written first in the same transaction, and the created order is returned with 201.
 - **AC2.1a.2** Given an order, when I edit it, change its status or link a consignment, then each change goes through its own endpoint and returns the updated order.
-- **AC2.1a.3** Given a request with an unknown key or a bad value, when it reaches the API, then it is refused with 400 `invalid_request` listing the field paths, and nothing is written.
-- **AC2.1a.4** Given each Result kind, when it is returned, then its HTTP status follows the fixed table: `invalid` 400, `unauthenticated` 401, `forbidden` 403, `not_found` 404, `conflict` 409, `gone` 410, `rate_limited` 429, `db_unavailable` 503; a thrown error is 500 with only `{ "error": "internal" }`.
+- **AC2.1a.3** Given a request with an unknown key or a bad value, when it reaches the API, then it is refused with 400 `invalid_request` (kind `invalid_input`) listing the field paths, and nothing is written.
+- **AC2.1a.4** Given each Result kind, when it is returned, then its HTTP status follows the fixed table: `invalid_input` 400 (body `invalid_request` with field paths), `unauthenticated` 401, `forbidden` 403, `not_found` 404, `conflict` / `already_linked` / `not_editable` / `business_exists` 409, `gone` 410, `rate_limited` 429, `db_unavailable` 503; this is the closed set, and the API contract may add a kind only with its row here; a thrown error is 500 with only `{ "error": "internal" }`.
 - **AC2.1a.5** Given an order id that is not a UUID, when it is requested in Bolt 1, then it is answered 404, never 500.
+- **AC2.1a.7** Given orders exist, when I `GET /api/orders` with a status filter, a date range or a customer, then only matching orders return, newest first, at most 50 per page, with a `next` cursor; following the cursor returns the next page with no order repeated or skipped, and a tampered cursor answers 400.
+- **AC2.1a.8** Given an order id in my business, when I `GET /api/orders/:id`, then it returns that order; an id from another business answers 404.
 - **AC2.1a.6** Given 1 000 seeded orders, when the order API calls run 100 times each, then p95 is ≤ 300 ms on this machine (sign-in excluded, because password hashing is deliberately slow).
 
 ### US2.1b — Order screens use the API
@@ -185,7 +192,7 @@ As the Owner, I want each role to be refused everything its job does not need, o
 - **AC5.1.1** Given the role table below, written out inline in `tests/spec/role-table.ts`, when a test walks every route in the server route table and every screen route for each role, then each forbidden combination is refused (403 from the API, the lock screen in the app) and each allowed one succeeds.
 - **AC5.1.2** Given the Owner, when the same walk runs, then the Owner reaches every route, including the audit trail and the daily card.
 - **AC5.1.3** Given a state-changing call that is not `application/json`, or whose `Origin` is not exactly `http://127.0.0.1:<port>` (so `localhost` is refused), when it arrives, then it is refused with 403.
-- **AC5.1.4** Given the screen routes, when they are registered, then they include `/customers`, `/customers/new`, `/customers/:id`, `/products`, `/products/new`, `/products/:id`, `/low-stock`, `/suppliers` and `/staff` (gated by `staff.invite`).
+- **AC5.1.4** Given the screen routes, when they are registered, then they include `/customers`, `/customers/new`, `/customers/:id`, `/products`, `/products/new`, `/products/:id`, `/low-stock`, `/suppliers` and `/staff` (gated by `staff.invite`), plus the public routes `/sign-in`, `/sign-up`, `/accept-invite` and `/reset`, `/recover`, which the walk checks open without a session.
 - **AC5.1.5** Given a role, when the navigation renders, then links to routes the role cannot open are not shown.
 - **AC5.1.6** Given the lock screen, when it shows, then it names what is missing and links back to the home screen; it is never a dead end.
 
