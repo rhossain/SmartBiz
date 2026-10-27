@@ -138,6 +138,32 @@ describe("U1 migrations 0011–0015 (text)", () => {
     expect(s15).toMatch(/ON order_items \(order_id, revision\)/);
   });
 
+  /*
+   * U2 (u2-app-shell): 0016 adds the audit trail's keyset index (P9, review N-03). Restated:
+   * it runs right after 0015, opens with its owner header, is idempotent, is exactly the
+   * one index on (business_id, occurred_at DESC, id DESC), and grants or revokes nothing, so
+   * the exact grant set stays as it is (NFR2.4).
+   */
+  test("0016 runs right after 0015 and opens with its AuditService header (C9)", () => {
+    const files = listMigrations();
+    const at = files.indexOf("0015_order_item_revisions.sql");
+    expect(files[at + 1]).toBe("0016_add_audit_log_keyset_idx.sql");
+    expect(read("0016_add_audit_log_keyset_idx.sql").split("\n")[0]).toMatch(
+      /^-- 0016 — AuthComponent \(AuditService\), U2 u2-app-shell/,
+    );
+  });
+
+  test("0016 is one guarded index statement and grants nothing (NFR2.4, NFR6.17)", () => {
+    const s16 = statements(read("0016_add_audit_log_keyset_idx.sql"));
+    expect(s16).toEqual([
+      "CREATE INDEX IF NOT EXISTS audit_log_business_keyset_idx ON audit_log (business_id, occurred_at DESC, id DESC)",
+    ]);
+    for (const s of s16) {
+      expect(GUARDED.some((re) => re.test(s))).toBe(true);
+      expect(s).not.toMatch(/\b(GRANT|REVOKE)\b/i);
+    }
+  });
+
   test("0011 makes the business a singleton and the user reference deferrable (BR2.2, BR2.3)", () => {
     const s11 = read("0011_users_business_link.sql");
     expect(s11).toMatch(

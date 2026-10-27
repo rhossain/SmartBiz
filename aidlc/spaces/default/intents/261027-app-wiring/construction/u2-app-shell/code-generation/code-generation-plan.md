@@ -116,8 +116,8 @@ layer is implemented, together with the full existing suite, before the next lay
 
 ### Step 4 — Data model / database behaviour: write and run its tests
 
-- [ ] `tests/unit/migrations-u1.test.ts` (extend): 0016 is ordered after 0015, uses `IF NOT EXISTS`, grants nothing.
-- [ ] `tests/realdb/migrations.realdb.test.ts` and `grants.realdb.test.ts` stay green (migrate twice; exact grant set unchanged, NFR2.4).
+- [x] `tests/unit/migrations-u1.test.ts` (extend): 0016 is ordered after 0015, uses `IF NOT EXISTS`, grants nothing.
+- [x] `tests/realdb/migrations.realdb.test.ts` and `grants.realdb.test.ts` stay green (migrate twice; exact grant set unchanged, NFR2.4).
 
 ### Step 5 — Repository / data access: implement (C4; BR7.1–BR7.4; S13; D-05, D-06)
 
