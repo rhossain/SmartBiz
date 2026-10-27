@@ -149,6 +149,7 @@ export const renderOrdersScreen = (
             phase="error"
             locale={locale}
             errorKind={state.currentError}
+            read
             {...(state.onRetryCurrent && state.currentError !== "not_found"
               ? { onRetry: state.onRetryCurrent }
               : {})}

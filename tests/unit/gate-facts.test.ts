@@ -2,9 +2,11 @@
  * tests/unit/gate-facts.test.ts — the pure parts of gate steps 5b, 11 and 14b (U2 P12, O12,
  * O14, S17; NFR6.16, NFR8.12, NFR8.15, NFR10.2; review I-01, I-05).
  *
- * Restated: the walk count sums every `walk … = <n> checks in <ms> ms` line; the browser
- * step maps exit 0 to `browser: ok (<median> ms, <n> screens)`, exit 2 to `browser: not run
- * (no Chrome)` — except under `--large`, where it fails — and anything else to a failure; the
+ * Restated: step 5b reads each walk's `walk <name>: … = <n> checks in <ms> ms` line; it fails
+ * when any of server, client and no-secret printed none or 0 checks (G-04), and its fact
+ * reports the role walks' checks apart from the no-secret scans (G-07). The browser step maps
+ * exit 0 to `browser: ok (<median> ms, <n> screens)`, exit 2 to `browser: not run (no
+ * Chrome)` — except under `--large`, where it fails — and anything else to a failure. The
  * dependency check names every added, removed or re-versioned package.
  */
 import { describe, expect, test } from "bun:test";
@@ -13,21 +15,46 @@ import {
   browserFact,
   WALK_BUDGET_MS,
   WALK_FILES,
-  walkChecks,
+  walkCounts,
+  walkFact,
+  walkProblem,
 } from "../../scripts/lib/gate-facts.js";
 
+const WALK_OUT = [
+  "walk server: 13 rows × 4 roles = 114 checks in 33 ms",
+  "noise walk client: 1 = 2 checks in 3 ms",
+  "walk client: 18 rows × 4 roles = 159 checks in 411 ms",
+  "walk no-secret: 13 rows × 4 roles = 2403 checks in 1968 ms",
+  "walk no-secret: 40 responses scanned",
+].join("\n");
+
 describe("gate step 5b: walks", () => {
-  test("sums the checks every walk printed; the budget is 60 s over the three walk files", () => {
-    const out = [
-      "walk server: 13 rows × 4 roles = 114 checks in 33 ms",
-      "noise walk client: 1 = 2 checks in 3 ms",
-      "walk client: 18 rows × 4 roles = 159 checks in 411 ms",
-      "walk no-secret: 13 rows × 4 roles = 2403 checks in 1968 ms",
-    ].join("\n");
-    expect(walkChecks(out)).toBe(114 + 159 + 2403);
-    expect(walkChecks("")).toBe(0);
+  test("reads each walk's count; the budget is 60 s over the three walk files", () => {
+    expect(walkCounts(WALK_OUT)).toEqual({ server: 114, client: 159, "no-secret": 2403 });
     expect(WALK_BUDGET_MS).toBe(60_000);
     expect(WALK_FILES).toHaveLength(3);
+  });
+
+  test("G-04: a missing walk or a walk with 0 checks fails the step", () => {
+    expect(walkProblem(walkCounts(WALK_OUT))).toBeNull();
+    expect(walkProblem(walkCounts(""))).toBe("walks reported no checks: server, client, no-secret");
+    const noClient = WALK_OUT.split("\n")
+      .filter((l) => !l.startsWith("walk client"))
+      .join("\n");
+    expect(walkProblem(walkCounts(noClient))).toBe("walks reported no checks: client");
+    expect(walkProblem(walkCounts(WALK_OUT.replace("= 114 checks", "= 0 checks")))).toBe(
+      "walks reported no checks: server",
+    );
+  });
+
+  test("G-07: the fact reports the role walks apart from the no-secret scans", () => {
+    const counts = walkCounts(WALK_OUT);
+    expect(walkFact(counts, 1_049)).toBe(
+      "walks server 114 / client 159 checks, no-secret 2403 scans 1.0 s",
+    );
+    expect(walkFact(counts, 61_000, 42_300)).toBe(
+      "walks server 114 / client 159 checks, no-secret 2403 scans 61.0 s (rerun 42.3 s)",
+    );
   });
 });
 

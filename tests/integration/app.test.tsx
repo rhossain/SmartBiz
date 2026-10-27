@@ -135,6 +135,10 @@ describe("the app", () => {
     await go("/orders");
     await waitFor(() => expect(view.getByTestId("orders-saved-notice")).toBeDefined());
     expect(view.getByTestId("orders-saved-notice").textContent).toBe("সংরক্ষণ হয়েছে");
+    // U2 (F-05, NFR9.9, G-01): the Shell hosts the announced toast, labelled "সফল".
+    const shellToast = view.getByTestId("shell-toast");
+    expect(shellToast.querySelector('[data-testid="toast-label"]')?.textContent).toBe("সফল");
+    expect(shellToast.querySelector('[data-testid="toast"]')?.textContent).toBe("সংরক্ষণ হয়েছে");
     const rows = view.getAllByTestId("orders-row");
     expect(rows).toHaveLength(1);
     expect(rows[0]?.getAttribute("data-order-id")).toBe(String(h.stub.state.orders[0]?.["id"]));

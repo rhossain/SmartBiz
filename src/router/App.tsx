@@ -373,7 +373,9 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
 
   // BR6.2, F-05: the Shell hosts the save toast, so it survives the move to the list.
   const toast =
-    list.notice === "saved" ? <Toast message={lookup("common.saved", locale)} tone="info" /> : null;
+    list.notice === "saved" ? (
+      <Toast message={lookup("common.saved", locale)} tone="success" />
+    ) : null;
 
   let content: React.ReactNode;
   if (bootError) {

@@ -228,6 +228,35 @@ describe("ApiState", () => {
     expect(write("invalid_input").queryByTestId("error-banner-retry")).toBeNull();
   });
 
+  test("G-06: retry defaults to closed — only safe kinds, unless the caller says `read`", () => {
+    const view = (kind: ShownErrorKind, read?: boolean) =>
+      render(
+        <ApiState
+          phase="error"
+          locale="bn"
+          errorKind={kind}
+          onRetry={() => undefined}
+          {...(read === undefined ? {} : { read })}
+        />,
+      );
+    for (const kind of ["internal", "rate_limited", "gone", "payload_too_large"] as const) {
+      expect({ kind, retry: view(kind).queryByTestId("error-banner-retry") }).toEqual({
+        kind,
+        retry: null,
+      });
+      cleanup();
+      expect({
+        kind,
+        retry: view(kind, true).queryByTestId("error-banner-retry") !== null,
+      }).toEqual({ kind, retry: true });
+      cleanup();
+    }
+    for (const kind of ["unreachable", "db_unavailable"] as const) {
+      expect(view(kind).getByTestId("error-banner-retry")).toBeDefined();
+      cleanup();
+    }
+  });
+
   test("RequestState is the same component with U1's props; empty and ready pass through", () => {
     expect(RequestState).toBe(ApiState);
     const empty = render(<RequestState phase="empty" locale="bn" empty={<b>কিছু নেই</b>} />);

@@ -21,7 +21,8 @@
  *       banner    → the catalogue message; `rate_limited` with its minutes, `internal` with
  *                   the correlation id.
  *     Retry is offered only where repeating is safe (BR5.3): for `unreachable` and
- *     `db_unavailable`, and for any failed READ (`read`, true by default). Nothing retries
+ *     `db_unavailable`, and for a failed READ only when the caller says so (`read`, false by
+ *     default, review G-06: a caller that forgets it never offers a write retry). Nothing retries
  *     by itself: retry calls the screen's own load function when the person presses it.
  * Every error view is `role="alert"` and carries a text label as well as the message, so no
  * state is shown by colour alone (NFR9.8, NFR9.9). Bangla by default (NFR9.5).
@@ -55,7 +56,10 @@ export interface ApiStateProps {
   readonly feature?: string | null;
   /** The first route the role can open, for the lock and not-found links. */
   readonly homeTo?: string | null;
-  /** False when the failed request was a write: then only BR5.3's safe kinds offer retry. */
+  /**
+   * True when the failed request was a read, so any kind may be retried (BR5.3). Absent or
+   * false: only BR5.3's safe kinds (`unreachable`, `db_unavailable`) offer retry (G-06).
+   */
   readonly read?: boolean;
 }
 
@@ -124,8 +128,9 @@ const ErrorView = (
     correlationId: props.correlationId ?? null,
     retryAfterMinutes: props.retryAfterMinutes ?? null,
   };
-  // BR5.3: a read may always be repeated; a write only for the infrastructure kinds.
-  const retryable = isRetryableKind(kind) || props.read !== false;
+  // BR5.3: a read may always be repeated; anything else only for the infrastructure kinds.
+  // G-06: the default is closed — `read` must be said, not assumed.
+  const retryable = isRetryableKind(kind) || props.read === true;
   const retry = retryable && props.onRetry ? { onRetry: props.onRetry } : {};
   const view = viewForKind(kind);
   switch (view) {

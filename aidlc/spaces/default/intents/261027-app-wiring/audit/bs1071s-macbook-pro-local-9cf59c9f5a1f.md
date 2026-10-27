@@ -13015,3 +13015,329 @@
 **Context**: construction > u2-app-shell > code-generation > code-generation-plan.md
 
 ---
+
+## Subagent Completed
+**Timestamp**: 2026-10-27T18:40:33Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: a3bbc6004a7a8a1d1
+**Message**: continue
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-27T18:40:46Z
+**Event**: HUMAN_TURN
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-27T18:40:54Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: ae9bfa7a919f0e134
+**Message**: Committing code-summary.md for Step 14
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-27T18:40:56Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: aidlc-developer-agent
+**Agent ID**: a6c5fbd57390f6ba1
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-27T18:41:08Z
+**Event**: HUMAN_TURN
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+
+---
+
+## Change Accepted
+**Timestamp**: 2026-10-27T18:41:24Z
+**Event**: CHANGE_ACCEPTED
+**Stage**: code-generation
+**Unit**: u1-skeleton
+**Checkpoint**: review-receipt
+**Changed**: (paths unavailable)
+**Recorded**: sha256:48c0af8670e9ba43b55b8708ab833e7549ffdef4115bab43e893d376a1e4bd1c
+**Current**: sha256:04be663552ddc4e62eaa13a19e3ce75e3dea19968ec6e1a5071289142775d469
+**Details**: The skeleton Unit's list of files changed after it was reviewed; carrying on.
+
+---
+
+## Error Logged
+**Timestamp**: 2026-10-27T18:41:26Z
+**Event**: ERROR_LOGGED
+**Tool**: aidlc-log
+**Command**: aidlc-log engine log review --stage code-generation --reviewer aidlc-architecture-reviewer-agent --iteration 1 --unit u2-app-shell
+**Error**: Cannot record REVIEW_REQUESTED for "code-generation": unit "u2-app-shell" has no valid source manifest at aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/code-generation/source-manifest.json (writes[4].path is inside the framework record/shell exclusions). Write the manifest listing every application-source path the reviewer will inspect, then dispatch the review.
+
+---
+
+## Review Requested
+**Timestamp**: 2026-10-27T18:41:44Z
+**Event**: REVIEW_REQUESTED
+**Stage**: code-generation
+**Reviewer**: aidlc-architecture-reviewer-agent
+**Unit**: u2-app-shell
+**Iteration**: 1
+**Artifact Fingerprint**: sha256:22dfbdf69b6fdd7bbc083906f2019d4c8b6809bfcb25b5a5db310ae53b8209c9
+**Request Id**: review:e20de10d313db42c9dc6bcaa1f80534a
+**Source Fingerprint**: ed35e864d980df6b943138db6f565ac9c1530a6e71e78f71f17ea2723f4d0ad5
+**Unit Source Fingerprint**: sha256:4bcd494865697abb83b0fc93dbd574d62b8118c8040cfffb3b3a0b3f5097ea4b
+**Review File**: .aidlc-engine/reviews/code-generation/units/u2-app-shell/2a103725fe9bdc2e/1.e20de10d313db42c9dc6bcaa1f80534a.review.md
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-27T18:42:43Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: a86e0bc0367b0c840
+**Message**: Reading audit-read.ts handler
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-27T18:43:16Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: aefa57730c45db907
+**Message**: Reading gate.ts browser branch
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-27T18:43:48Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: aabc7a6ab627023b2
+**Message**: Checking traceability.json coverage targets
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-27T18:44:20Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: a1caf9b01ff7e8abf
+**Message**: Reading browser-check.ts main
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-27T18:44:54Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: a554ecc9867925336
+**Message**: Checking retry defaults in ApiState.tsx
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-27T18:45:27Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: a58b7768562eeb39b
+**Message**: Writing the u2-app-shell review file
+
+---
+
+## Review Completed
+**Timestamp**: 2026-10-27T18:45:31Z
+**Event**: REVIEW_COMPLETED
+**Stage**: code-generation
+**Reviewer**: aidlc-architecture-reviewer-agent
+**Unit**: u2-app-shell
+**Iteration**: 1
+**Verdict**: READY
+**Request Fingerprint**: sha256:22dfbdf69b6fdd7bbc083906f2019d4c8b6809bfcb25b5a5db310ae53b8209c9
+**Artifact Fingerprint**: sha256:22dfbdf69b6fdd7bbc083906f2019d4c8b6809bfcb25b5a5db310ae53b8209c9
+**Request Id**: review:e20de10d313db42c9dc6bcaa1f80534a
+**Request Source Fingerprint**: ed35e864d980df6b943138db6f565ac9c1530a6e71e78f71f17ea2723f4d0ad5
+**Source Fingerprint**: ed35e864d980df6b943138db6f565ac9c1530a6e71e78f71f17ea2723f4d0ad5
+**Unit Source Fingerprint**: sha256:4bcd494865697abb83b0fc93dbd574d62b8118c8040cfffb3b3a0b3f5097ea4b
+**Review Record**: .aidlc-engine/reviews/code-generation/units/u2-app-shell/2a103725fe9bdc2e/1.json
+**Review Record Digest**: sha256:347ca22addb4f0d8d6e9e4718c47453ccd2dcf51f19d6a65f0f8212f331f8902
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-27T18:45:34Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: aidlc-architecture-reviewer-agent
+**Agent ID**: ac9839d56d90f2f97
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-27T18:45:43Z
+**Event**: HUMAN_TURN
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-27T18:45:53Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: a50ebaaef98da8996
+**Message**: continue
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-27T18:46:05Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: a96c3730ed74ebe47
+**Message**: continue
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-27T18:46:16Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: a204cea83c4dd9f81
+**Message**: Adding tone labels to Toast.tsx
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-27T18:46:49Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: aeb76c16b866093a8
+**Message**: Writing toast-label.test.tsx label tests
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-27T18:47:23Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: ac1825a61ab54f0cf
+**Message**: Tightening server-gate-absence.test.ts inside-role status
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-27T18:47:56Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: ae3a349c8701524a6
+**Message**: Rerunning server-gate-absence walk tests
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-27T18:48:33Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: aedbbcdeb05fe2420
+**Message**: Adding moreFailure state to AuditTrail.tsx
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-27T18:49:09Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: af69b44b62ab19bd9
+**Message**: Reading audit-trail-screen.test.tsx retry case
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-27T18:49:44Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: ad885958f39aad96a
+**Message**: Reading step 5b in gate.ts
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-27T18:50:49Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: a14d2144dd1c03dcb
+**Message**: Reading gate-facts.test.ts before updating
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-27T18:51:22Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: a0763e6d3eb8959af
+**Message**: Annotating ci.yml step 6b exit codes
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-27T18:51:56Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: a76c566ec937a9baf
+**Message**: Reading source-manifest.json before editing
+
+---
+
+## Artifact Updated
+**Timestamp**: 2026-10-27T18:51:57Z
+**Event**: ARTIFACT_UPDATED
+**Tool**: Edit
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/code-generation/source-manifest.json
+**Context**: construction > u2-app-shell > code-generation > source-manifest.json
+
+---
+
+## Guard Stood Aside
+**Timestamp**: 2026-10-27T18:52:13Z
+**Event**: GUARD_STOOD_ASIDE
+**Guard**: review-freeze
+**Authority**: instruction
+**Grant**: none
+**Actor**: subagent
+**Stage**: code-generation
+**Tool**: Edit
+**Details**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/code-generation/traceability.json
+
+---
+
+## Artifact Updated
+**Timestamp**: 2026-10-27T18:52:14Z
+**Event**: ARTIFACT_UPDATED
+**Tool**: Edit
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/code-generation/traceability.json
+**Context**: construction > u2-app-shell > code-generation > traceability.json
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T18:52:14Z
+**Event**: SENSOR_FIRED
+**Fire id**: b80a6df7
+**Sensor ID**: traceability
+**Stage slug**: code-generation
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/code-generation/traceability.json
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-27T18:52:14Z
+**Event**: SENSOR_FAILED
+**Fire id**: b80a6df7
+**Sensor ID**: traceability
+**Stage slug**: code-generation
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/code-generation/traceability.json
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/code-generation/traceability-b80a6df7.md
+**Findings count**: 5
+
+---

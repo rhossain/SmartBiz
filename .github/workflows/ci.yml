@@ -336,6 +336,9 @@ jobs:
       # U2 gate step 14b — the real-browser check (first load <= 2 s, no sideways scroll at
       # 360 px). Exit 2 means no Chrome at CHROME_PATH and is reported "not run", never a pass;
       # any other non-zero exit fails (I-01).
+      # Review G-04: on a hosted runner exit 2 is ADVISORY — this step prints "not run" and
+      # continues. The merge evidence is local: `bun run gate --large` (every Bolt merge)
+      # refuses "not run" and fails without browser: ok.
       - name: "6a. build for the browser check"
         run: bun run build
 

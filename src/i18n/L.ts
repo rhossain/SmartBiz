@@ -49,6 +49,11 @@ export const L_TABLE: Translations = Object.freeze({
   "common.retry": L("আবার চেষ্টা করুন", "Try again"),
   // U2 (R10, NFR7.13): the conflict view's action.
   "common.reload": L("আবার লোড করুন", "Reload"),
+  // U2 (NFR9.9, G-01): the visible label of each toast tone.
+  "toast.info": L("তথ্য", "Info"),
+  "toast.warn": L("সতর্কতা", "Warning"),
+  "toast.success": L("সফল", "Done"),
+  "toast.error": L("ত্রুটি", "Error"),
   "not_available.message": L("এই অংশ পরের সংস্করণে আসবে", "This part arrives in a later release"),
   // U2: each screen route's feature name (ScreenRoute.feature; lock and not-available screens).
   "feature.home": L("হোম", "Home"),

@@ -174,4 +174,32 @@ describe("the audit trail screen", () => {
     });
     await waitFor(() => expect(view.getAllByTestId("audit-row")).toHaveLength(1));
   });
+
+  test("G-05: a failed আরও দেখুন keeps the rows; retry asks for the same cursor", async () => {
+    const rows = Array.from({ length: 55 }, (_, i) => auditRow(i + 1));
+    const { client } = await setup(rows, "owner");
+    const audit = createAuditApi(client.http);
+    const view = render(<AuditTrail locale="bn" load={audit.page} />);
+    await waitFor(() => expect(view.getAllByTestId("audit-row")).toHaveLength(50));
+    client.net.down = true;
+    await act(async () => {
+      fireEvent.click(view.getByTestId("audit-more"));
+    });
+    await waitFor(() => expect(view.getByTestId("audit-more-error")).toBeDefined());
+    // The 50 rows stay; the banner sits beside them with a retry; no second "more" button.
+    expect(view.getAllByTestId("audit-row")).toHaveLength(50);
+    expect(view.getByTestId("error-banner").getAttribute("data-kind")).toBe("unreachable");
+    expect(view.queryByTestId("audit-more")).toBeNull();
+    const before = client.net.calls.filter((c) => c.path.includes("cursor=")).length;
+    client.net.down = false;
+    await act(async () => {
+      fireEvent.click(view.getByTestId("error-banner-retry"));
+    });
+    await waitFor(() => expect(view.getAllByTestId("audit-row")).toHaveLength(55));
+    expect(view.queryByTestId("audit-more-error")).toBeNull();
+    const cursorCalls = client.net.calls.filter((c) => c.path.includes("cursor="));
+    // The retry used the same cursor (one more cursor call), never page 1 again.
+    expect(cursorCalls).toHaveLength(before + 1);
+    expect(new Set(cursorCalls.map((c) => c.path)).size).toBe(1);
+  });
 });

@@ -7,7 +7,9 @@
  *   for a row with no actor, the subject (kind and short id), and the correlation id in a
  *   monospace cell, so the Owner can match a row to its log line (O10).
  * - It loads the first page on mount; "আরও দেখুন" appears while `nextCursor` is not null and
- *   APPENDS the next page in component state only (P13: nothing cached).
+ *   APPENDS the next page in component state only (P13: nothing cached). If that call fails,
+ *   the rows already loaded stay, the error shows beside them, and its retry asks for the
+ *   SAME cursor again (review G-05). Every request here is a read (G-06).
  * - `ApiState` shows loading (after 300 ms), the empty state "এখনো কোনো এন্ট্রি নেই" and
  *   every error view; a 403 shows the lock screen inside the Shell (BR4.2), a failed read
  *   offers retry (BR5.3).
@@ -81,6 +83,8 @@ export const AuditTrail = ({
   const [phase, setPhase] = React.useState<RequestPhase>("loading");
   const [failure, setFailure] = React.useState<ApiFailure | null>(null);
   const [moreBusy, setMoreBusy] = React.useState(false);
+  // G-05: a failed "আরও দেখুন" keeps the rows; its error shows beside them.
+  const [moreFailure, setMoreFailure] = React.useState<ApiFailure | null>(null);
 
   const first = React.useCallback(async (): Promise<void> => {
     setPhase("loading");
@@ -103,11 +107,12 @@ export const AuditTrail = ({
   const more = async (): Promise<void> => {
     if (nextCursor === null || moreBusy) return;
     setMoreBusy(true);
+    setMoreFailure(null);
     const r = await load(nextCursor);
     setMoreBusy(false);
     if (!r.ok) {
-      setFailure(r);
-      setPhase("error");
+      // G-05: keep the loaded rows and the cursor; retry asks for the same page again.
+      setMoreFailure(r);
       return;
     }
     setEntries((rows) => [...rows, ...r.value.entries]);
@@ -124,6 +129,7 @@ export const AuditTrail = ({
         correlationId={failure?.correlationId ?? null}
         retryAfterMinutes={failure?.retryAfterMinutes ?? null}
         onRetry={() => void first()}
+        read
         feature={title}
         homeTo={homeTo}
         empty={<p data-testid="audit-empty">{lookup("audit.empty", locale)}</p>}
@@ -146,7 +152,22 @@ export const AuditTrail = ({
             </tbody>
           </table>
         </div>
-        {nextCursor !== null ? (
+        {moreFailure !== null ? (
+          <div data-testid="audit-more-error">
+            <ApiState
+              phase="error"
+              locale={locale}
+              errorKind={moreFailure.kind}
+              correlationId={moreFailure.correlationId}
+              retryAfterMinutes={moreFailure.retryAfterMinutes}
+              onRetry={() => void more()}
+              read
+              feature={title}
+              homeTo={homeTo}
+            />
+          </div>
+        ) : null}
+        {nextCursor !== null && moreFailure === null ? (
           <button
             type="button"
             data-testid="audit-more"

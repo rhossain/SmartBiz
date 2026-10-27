@@ -22,6 +22,8 @@
  *   5b the three role walks on their own, timed: any test failure fails the gate at once and
  *      is never rerun; only a wall time over 60 s earns ONE rerun, and the gate fails if the
  *      rerun is over 60 s too; the result line carries the checks and both times (NFR6.16);
+ *      it also fails when any of the three walks printed no count or 0 checks (G-04), and it
+ *      reports the role walks' checks apart from the no-secret walk's scans (G-07);
  *   11 also runs scripts/check-dependencies.ts (package.json equals the committed list);
  *   14b the real-browser check through its OWN exit-code branch, not `step()`: 0 → `browser:
  *      ok (<median> ms, <n> screens)`; 2 → `browser: not run (no Chrome)`, which `--large`
@@ -34,7 +36,14 @@
 import { cpSync, existsSync, readdirSync, rmSync, statSync } from "node:fs";
 import { join } from "node:path";
 import postgres from "postgres";
-import { browserFact, WALK_BUDGET_MS, WALK_FILES, walkChecks } from "./lib/gate-facts.js";
+import {
+  browserFact,
+  WALK_BUDGET_MS,
+  WALK_FILES,
+  walkCounts,
+  walkFact,
+  walkProblem,
+} from "./lib/gate-facts.js";
 import { childEnv, forwardSignal, gitDirty, gitHead, run, say } from "./lib/run.js";
 
 const ROOT = join(import.meta.dir, "..");
@@ -166,23 +175,28 @@ const main = async (): Promise<void> => {
   );
   // 5b. the walks, timed (I-05): a failure fails now; only an overrun is run once more.
   const walkCmd = ["bun", "test", "--timeout", "60000", ...WALK_FILES];
-  const timedWalks = async (pass: string): Promise<{ ms: number; checks: number }> => {
+  const timedWalks = async (pass: string) => {
     const t0 = performance.now();
     const out = await step("5b", `walks (${pass})`, walkCmd);
-    return { ms: Math.round(performance.now() - t0), checks: walkChecks(out) };
+    const counts = walkCounts(out);
+    // G-04: green tests are not enough; each of the three walks must have checked something.
+    const problem = walkProblem(counts);
+    if (problem !== null) throw new GateFailed(`gate 5b: ${problem}`);
+    return { ms: Math.round(performance.now() - t0), counts };
   };
   const firstWalk = await timedWalks("first");
-  let walkFact = `walks ${firstWalk.checks} checks ${(firstWalk.ms / 1000).toFixed(1)} s`;
+  let rerunMs: number | null = null;
   if (firstWalk.ms > WALK_BUDGET_MS) {
     const rerun = await timedWalks("rerun after overrun");
-    walkFact += ` (rerun ${(rerun.ms / 1000).toFixed(1)} s)`;
+    rerunMs = rerun.ms;
     if (rerun.ms > WALK_BUDGET_MS) {
       throw new GateFailed(
         `gate 5b: walks took ${firstWalk.ms} ms then ${rerun.ms} ms (budget ${WALK_BUDGET_MS} ms)`,
       );
     }
   }
-  facts.push(walkFact);
+  // G-07: the role walks' checks and the no-secret walk's scans, reported separately.
+  facts.push(walkFact(firstWalk.counts, firstWalk.ms, rerunMs));
   const cov = await step("6", "coverage", ["bun", "scripts/check-coverage.ts"]);
   facts.push(`lines ${/coverage ok: ([\d.]+) %/.exec(cov)?.[1] ?? "?"} %`);
   await step("7", "named invariants", [

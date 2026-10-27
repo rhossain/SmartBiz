@@ -49,7 +49,7 @@ export const DraftStatus = ({
   showSaved?: boolean;
 }): React.ReactElement | null => {
   if (draft.status === "saved") {
-    return showSaved ? <Toast message={tr("orders.saved", locale)} tone="info" /> : null;
+    return showSaved ? <Toast message={tr("orders.saved", locale)} tone="success" /> : null;
   }
   if (draft.status !== "error") return null;
   return <Toast message={failureText(draft, locale, placedFields)} tone="error" />;

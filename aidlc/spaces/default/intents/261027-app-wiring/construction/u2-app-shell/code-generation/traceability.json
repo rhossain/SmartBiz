@@ -122,7 +122,7 @@
     { "id": "NFR9.6", "status": "OK", "target": "scripts/browser-check.ts" },
     { "id": "NFR9.7", "status": "OK", "target": "tests/unit/keyboard.test.tsx" },
     { "id": "NFR9.8", "status": "OK", "target": "tests/unit/api-state.test.tsx" },
-    { "id": "NFR9.9", "status": "OK", "target": "tests/unit/stylesheet.test.ts" },
+    { "id": "NFR9.9", "status": "OK", "target": "tests/unit/toast-label.test.tsx" },
     { "id": "NFR10.2", "status": "OK", "target": "tests/unit/gate-facts.test.ts" }
   ]
 }

@@ -155,27 +155,45 @@ describe("server role walk over the registered route table (role table, C5)", ()
   );
 
   test(
-    "each role: 403 and no money outside its row; neither 401 nor 403 inside (BR3.3)",
+    "each role: 403 and no money outside its row; the recorded success status inside (BR3.3)",
     async () => {
       const { h, tokens, orderId } = await world();
+      // G-03: each inside probe gets its own order in a state its route accepts (a packed one
+      // for linking a consignment), so a broken fixture or handler cannot hide behind "not
+      // 401/403": the answer must be the fixture's recorded success status.
+      const freshOrder = async (packed: boolean): Promise<string> => {
+        const made = await h.send(
+          request("POST", "/api/orders", { token: tokens.owner, body: ORDER_REQUEST }),
+        );
+        const { id } = (await made.json()) as { id: string };
+        if (packed) {
+          for (const to of ["confirmed", "packed"]) {
+            await h.send(
+              request("POST", `/api/orders/${id}/status`, { token: tokens.owner, body: { to } }),
+            );
+          }
+        }
+        return id;
+      };
+      let ref = 1000;
       for (const row of gatedRows) {
         for (const role of ROLES) {
+          const inside = isAllowed(row.allowed, role);
+          const linking = apiKey(row) === "POST /api/orders/:id/consignment";
+          const id = inside && row.path.includes(":id") ? await freshOrder(linking) : orderId;
+          // A consignment reference is unique per business: each link gets its own.
+          ref += 1;
+          const sent = linking ? { consignmentRef: `PT-${ref}` } : bodyFor(row);
           const r = await h.send(
-            request(row.method, concrete(row, orderId), {
-              token: tokens[role],
-              body: bodyFor(row),
-            }),
+            request(row.method, concrete(row, id), { token: tokens[role], body: sent }),
           );
           const body: unknown = r.status === 204 ? null : await r.json();
-          const inside = isAllowed(row.allowed, role);
-          const got =
-            r.status === 401 ? "unauthenticated" : r.status === 403 ? "forbidden" : "passed";
+          const recorded = API_FIXTURES[apiKey(row)]?.status ?? -1;
           check();
-          expect({ role, route: apiKey(row), got, status: r.status }).toEqual({
+          expect({ role, route: apiKey(row), status: r.status }).toEqual({
             role,
             route: apiKey(row),
-            got: inside ? "passed" : "forbidden",
-            status: inside ? r.status : 403,
+            status: inside ? recorded : 403,
           });
           if (!inside) {
             check();

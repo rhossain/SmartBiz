@@ -3,83 +3,242 @@
   "unit": "u2-app-shell",
   "version": 1,
   "writes": [
-    { "path": ".env.example" },
-    { "path": ".eslintrc.cjs" },
-    { "path": ".github/workflows/ci.yml" },
-    { "path": "README.md" },
-    { "path": "aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/code-generation/code-generation-plan.md" },
-    { "path": "aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/code-generation/code-summary.md" },
-    { "path": "aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/code-generation/source-manifest.json" },
-    { "path": "aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/code-generation/traceability.json" },
-    { "path": "scripts/browser-check.ts" },
-    { "path": "scripts/check-dependencies.ts" },
-    { "path": "scripts/gate.ts" },
-    { "path": "scripts/lib/gate-facts.ts" },
-    { "path": "scripts/lib/run.ts" },
-    { "path": "secret-scan.allow" },
-    { "path": "src/audit/audit-export.ts" },
-    { "path": "src/audit/audit-read.ts" },
-    { "path": "src/audit/audit-service.ts" },
-    { "path": "src/audit/schemas.ts" },
-    { "path": "src/audit/screens/AuditTrail.tsx" },
-    { "path": "src/client/audit-api.ts" },
-    { "path": "src/client/session-store.ts" },
-    { "path": "src/db/migrations/0016_add_audit_log_keyset_idx.sql" },
-    { "path": "src/i18n/L.ts" },
-    { "path": "src/index.tsx" },
-    { "path": "src/orders/order-draft.ts" },
-    { "path": "src/orders/screens/ManualOrder.tsx" },
-    { "path": "src/orders/screens/OrdersList.tsx" },
-    { "path": "src/orders/screens/PasteParse.tsx" },
-    { "path": "src/orders/screens/RepeatFromPast.tsx" },
-    { "path": "src/pres/ApiState.tsx" },
-    { "path": "src/pres/Lock.tsx" },
-    { "path": "src/pres/LockSheet.tsx" },
-    { "path": "src/pres/NotAvailable.tsx" },
-    { "path": "src/pres/RequestState.tsx" },
-    { "path": "src/pres/Shell.tsx" },
-    { "path": "src/pres/components.css" },
-    { "path": "src/pres/tokens.css" },
-    { "path": "src/pres/use-submit-guard.ts" },
-    { "path": "src/pres/view-for-kind.ts" },
-    { "path": "src/router/App.tsx" },
-    { "path": "src/router/hash-router.ts" },
-    { "path": "src/router/routes.ts" },
-    { "path": "src/router/screens/AuditTrailPlaceholder.tsx" },
-    { "path": "src/router/screens/DailyCardPlaceholder.tsx" },
-    { "path": "src/router/screens/render-auth-route.tsx" },
-    { "path": "src/router/types.ts" },
-    { "path": "src/server/handlers/audit.ts" },
-    { "path": "src/server/routes.ts" },
-    { "path": "tests/e2e/wiring-check.ts" },
-    { "path": "tests/helpers/sql-stub.ts" },
-    { "path": "tests/integration/audit-route.test.ts" },
-    { "path": "tests/integration/audit-trail-screen.test.tsx" },
-    { "path": "tests/integration/no-secret-responses.test.ts" },
-    { "path": "tests/integration/server-gate-absence.test.ts" },
-    { "path": "tests/mutants.json" },
-    { "path": "tests/perf/order-api.bench.ts" },
-    { "path": "tests/realdb/audit-read.realdb.test.ts" },
-    { "path": "tests/realdb/outage.realdb.test.ts" },
-    { "path": "tests/spec/dependencies.json" },
-    { "path": "tests/spec/fixtures.ts" },
-    { "path": "tests/spec/role-table.ts" },
-    { "path": "tests/unit/api-state.test.tsx" },
-    { "path": "tests/unit/audit-export.test.ts" },
-    { "path": "tests/unit/audit-read.test.ts" },
-    { "path": "tests/unit/contrast.test.ts" },
-    { "path": "tests/unit/gate-facts.test.ts" },
-    { "path": "tests/unit/keyboard.test.tsx" },
-    { "path": "tests/unit/migrations-u1.test.ts" },
-    { "path": "tests/unit/not-available.test.tsx" },
-    { "path": "tests/unit/observability.test.ts" },
-    { "path": "tests/unit/router.test.ts" },
-    { "path": "tests/unit/screens.test.tsx" },
-    { "path": "tests/unit/session-return.test.ts" },
-    { "path": "tests/unit/shell.test.tsx" },
-    { "path": "tests/unit/stylesheet.test.ts" },
-    { "path": "tests/unit/submit-guard.test.tsx" },
-    { "path": "tests/unit/three-layer-gate-absence.test.ts" },
-    { "path": "tests/unit/view-for-kind.test.ts" }
+    {
+      "path": ".env.example"
+    },
+    {
+      "path": ".eslintrc.cjs"
+    },
+    {
+      "path": ".github/workflows/ci.yml"
+    },
+    {
+      "path": "README.md"
+    },
+    {
+      "path": "src/orders/screens/DraftStatus.tsx"
+    },
+    {
+      "path": "src/orders/screens/render-orders-route.tsx"
+    },
+    {
+      "path": "src/pres/Toast.tsx"
+    },
+    {
+      "path": "tests/integration/app.test.tsx"
+    },
+    {
+      "path": "tests/unit/toast-label.test.tsx"
+    },
+    {
+      "path": "scripts/browser-check.ts"
+    },
+    {
+      "path": "scripts/check-dependencies.ts"
+    },
+    {
+      "path": "scripts/gate.ts"
+    },
+    {
+      "path": "scripts/lib/gate-facts.ts"
+    },
+    {
+      "path": "scripts/lib/run.ts"
+    },
+    {
+      "path": "secret-scan.allow"
+    },
+    {
+      "path": "src/audit/audit-export.ts"
+    },
+    {
+      "path": "src/audit/audit-read.ts"
+    },
+    {
+      "path": "src/audit/audit-service.ts"
+    },
+    {
+      "path": "src/audit/schemas.ts"
+    },
+    {
+      "path": "src/audit/screens/AuditTrail.tsx"
+    },
+    {
+      "path": "src/client/audit-api.ts"
+    },
+    {
+      "path": "src/client/session-store.ts"
+    },
+    {
+      "path": "src/db/migrations/0016_add_audit_log_keyset_idx.sql"
+    },
+    {
+      "path": "src/i18n/L.ts"
+    },
+    {
+      "path": "src/index.tsx"
+    },
+    {
+      "path": "src/orders/order-draft.ts"
+    },
+    {
+      "path": "src/orders/screens/ManualOrder.tsx"
+    },
+    {
+      "path": "src/orders/screens/OrdersList.tsx"
+    },
+    {
+      "path": "src/orders/screens/PasteParse.tsx"
+    },
+    {
+      "path": "src/orders/screens/RepeatFromPast.tsx"
+    },
+    {
+      "path": "src/pres/ApiState.tsx"
+    },
+    {
+      "path": "src/pres/Lock.tsx"
+    },
+    {
+      "path": "src/pres/LockSheet.tsx"
+    },
+    {
+      "path": "src/pres/NotAvailable.tsx"
+    },
+    {
+      "path": "src/pres/RequestState.tsx"
+    },
+    {
+      "path": "src/pres/Shell.tsx"
+    },
+    {
+      "path": "src/pres/components.css"
+    },
+    {
+      "path": "src/pres/tokens.css"
+    },
+    {
+      "path": "src/pres/use-submit-guard.ts"
+    },
+    {
+      "path": "src/pres/view-for-kind.ts"
+    },
+    {
+      "path": "src/router/App.tsx"
+    },
+    {
+      "path": "src/router/hash-router.ts"
+    },
+    {
+      "path": "src/router/routes.ts"
+    },
+    {
+      "path": "src/router/screens/AuditTrailPlaceholder.tsx"
+    },
+    {
+      "path": "src/router/screens/DailyCardPlaceholder.tsx"
+    },
+    {
+      "path": "src/router/screens/render-auth-route.tsx"
+    },
+    {
+      "path": "src/router/types.ts"
+    },
+    {
+      "path": "src/server/handlers/audit.ts"
+    },
+    {
+      "path": "src/server/routes.ts"
+    },
+    {
+      "path": "tests/e2e/wiring-check.ts"
+    },
+    {
+      "path": "tests/helpers/sql-stub.ts"
+    },
+    {
+      "path": "tests/integration/audit-route.test.ts"
+    },
+    {
+      "path": "tests/integration/audit-trail-screen.test.tsx"
+    },
+    {
+      "path": "tests/integration/no-secret-responses.test.ts"
+    },
+    {
+      "path": "tests/integration/server-gate-absence.test.ts"
+    },
+    {
+      "path": "tests/mutants.json"
+    },
+    {
+      "path": "tests/perf/order-api.bench.ts"
+    },
+    {
+      "path": "tests/realdb/audit-read.realdb.test.ts"
+    },
+    {
+      "path": "tests/realdb/outage.realdb.test.ts"
+    },
+    {
+      "path": "tests/spec/dependencies.json"
+    },
+    {
+      "path": "tests/spec/fixtures.ts"
+    },
+    {
+      "path": "tests/spec/role-table.ts"
+    },
+    {
+      "path": "tests/unit/api-state.test.tsx"
+    },
+    {
+      "path": "tests/unit/audit-export.test.ts"
+    },
+    {
+      "path": "tests/unit/audit-read.test.ts"
+    },
+    {
+      "path": "tests/unit/contrast.test.ts"
+    },
+    {
+      "path": "tests/unit/gate-facts.test.ts"
+    },
+    {
+      "path": "tests/unit/keyboard.test.tsx"
+    },
+    {
+      "path": "tests/unit/migrations-u1.test.ts"
+    },
+    {
+      "path": "tests/unit/not-available.test.tsx"
+    },
+    {
+      "path": "tests/unit/observability.test.ts"
+    },
+    {
+      "path": "tests/unit/router.test.ts"
+    },
+    {
+      "path": "tests/unit/screens.test.tsx"
+    },
+    {
+      "path": "tests/unit/session-return.test.ts"
+    },
+    {
+      "path": "tests/unit/shell.test.tsx"
+    },
+    {
+      "path": "tests/unit/stylesheet.test.ts"
+    },
+    {
+      "path": "tests/unit/submit-guard.test.tsx"
+    },
+    {
+      "path": "tests/unit/three-layer-gate-absence.test.ts"
+    },
+    {
+      "path": "tests/unit/view-for-kind.test.ts"
+    }
   ]
 }

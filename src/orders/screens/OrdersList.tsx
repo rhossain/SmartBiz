@@ -287,6 +287,7 @@ export const OrdersList = (props: OrdersListProps): React.ReactElement => {
           phase={phase}
           locale={locale}
           errorKind={props.errorKind ?? null}
+          read
           {...(props.onRetry ? { onRetry: props.onRetry } : {})}
         />
       ) : null}
