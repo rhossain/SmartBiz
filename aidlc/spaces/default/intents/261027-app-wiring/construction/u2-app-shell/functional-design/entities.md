@@ -46,8 +46,8 @@ entities:
       - "Every path in the map has an access value (BR1.2)."
 
   - name: NavItem
-    owner: PresentationComponent
-    description: One link in the Shell's navigation.
+    owner: RouterComponent
+    description: One link in the Shell's navigation. App (Router) builds the list from the route map and passes it to the Shell as a prop (review F-01).
     attributes:
       - { name: to, type: text, required: true, references: ScreenRoute.path }
       - { name: label, type: "i18n key", required: true }

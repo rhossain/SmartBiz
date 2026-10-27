@@ -89,4 +89,4 @@ route's access. U3 adds `/staff`; U4 adds the catalog items.
 |--------|------|----------|
 | AuditTrail | `GET /api/audit?cursor&limit` | C4 |
 | Order screens | unchanged | C3 |
-| Shell | `GET /api/auth/session` (U1) | C2 |
+| Shell | `GET /api/session` (U1) | C2 |

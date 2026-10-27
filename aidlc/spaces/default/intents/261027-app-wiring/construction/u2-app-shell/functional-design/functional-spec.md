@@ -149,7 +149,7 @@ Text fallback: an AuditPage holds AuditEntries; an AuditEntry may reverse anothe
 
 | Path | Access | Screen in U2 |
 |------|--------|--------------|
-| `/` | gated (any role) | goes on to `/orders` |
+| `/` | public | sends a signed-in person on to `/orders` and anyone else to sign-in or sign-up (review F-02) |
 | `/sign-in`, `/sign-up`, `/not-found` | public | real (U1) |
 | `/accept-invite`, `/reset`, `/recover` | public | not-available until U3 (Q2) |
 | `/orders`, `/orders/:id` | `business.view` | real (U1) |
@@ -191,3 +191,21 @@ U3 adds `/staff` and the real screens for the three public routes; U4 adds the c
 | S8 | Two people edit the same order; the second save gets 409 | W3 | the conflict message with reload; the form keeps its values |
 | S9 | A new route is added to the server table without a role-table row | W5 | the walk fails naming the route |
 | S10 | The session expires while a screen is open | W2 | sign-in, then back to the same screen |
+
+## Review follow-ups (architecture review, iteration 1, READY)
+
+Decided on the Owner's standing instruction; each binds U2's Code Generation. Where this section and an
+earlier paragraph disagree, this section wins.
+
+| Finding | Decision |
+|---------|----------|
+| F-01 Presentation must not depend on Router or the client | App (RouterComponent) builds the `NavItem` list from the screen route map, filtered by the role, and passes it to the Shell as a prop; the Shell holds no capability list and imports no router module. `ApiState` renders nothing for `unauthenticated` and relies on the existing `http.onUnauthenticated` hook (U1 W9), so there is one 401 handoff. `ApiState` never calls the client. |
+| F-02 Access of `/` | `/` stays public, as shipped and as U1's gate test asserts; it only redirects. `ScreenRoute.access` keeps two values (public or a capability set). |
+| F-03 Total kind mapping | `ApiState` covers all 19 kinds: the six not named in BR5.2 (`invalid_credentials`, `email_taken`, `business_exists`, `gone`, `payload_too_large`, `rate_limited`) show the catalogue banner from `src/i18n/error-copy.ts`, and `rate_limited` takes a `retryAfterMinutes` prop. Field errors (`invalid_input`, `invalid_email`, `password_too_short`) are rendered by the form under each field, not by `ApiState`. |
+| F-04 Already shipped by U1 | `PublicUser`/`toPublicUser` and the `link`/`t` redaction already exist (`src/auth/public-user.ts`, `src/observability/log.ts`). U2's work for BR8.3 and BR8.4 is the assertions only: the public-user test, the redaction test and the walk. The session call is `GET /api/session`. |
+| F-05 Which U1 files change | `App.tsx` (nav list, toast host) and the order forms (move U1's `setPending` guard onto the shared `SubmitGuard`) change; their props to `RequestState` do not. Every existing U1 order and screen test stays green. The toast renders at Shell level so it outlives the route change in W3 step 3. |
+| F-06 Parameters and queries | Every UUID route uses `:id` (`/orders/:id`, and U4's `/customers/:id`, `/products/:id`); parsers are keyed by route path and parameter name. Route matching ignores the query after `?`, and the remembered route for the 401 handoff is stored without its query, so a token in `?t=` is never remembered or resent. |
+| F-07 Role-table sources and harness | Rows outside the US5.1 table take their source from the stories: `/settings` and `/daily-card` from US1.7 (every role that can sign in may open its own settings; the daily card is `business.view`), `GET /api/session` from US1.3 (any signed-in role), order status and consignment routes from US2.1a's "move orders; link consignments" row. Both sides normalise paths to `:name` (C5's `{userId}` is written `:userId`). Allowed-role fixtures use inputs that avoid domain 403s, so a domain refusal is never mistaken for the gate. The server walk uses `tests/helpers/server-harness.ts`; the client walk mounts `App` in happy-dom with a stubbed client per role. |
+| F-08 No-secret walk inputs | The route table drives the coverage check: a route without a recorded fixture fails the walk. Known secret values are read from the seeded rows (stored password hash, live session token and its hash, any invitation or reset hashes). The key-name scan (`passwordHash`, `password_hash`, `token_hash`) and the `link`-field scan run on every body. |
+| F-09 Audit read tests and the old function | `listAuditForBusiness` is replaced by the filtered, payload-free keyset read; the unfiltered function is removed and its callers (`audit-export.ts`) moved to the new read. Tests: a stub handler for the new query shape, and a realdb test for the retention boundary (a row exactly at now is excluded), a tie on `occurredAt` broken by `id`, another business's rows invisible, no payload in the response, and no new grant for `app_role`. The client wrapper is `src/client/audit-api.ts`, parsing the shared zod response schema (contract rule 2). |
+| F-10 Deferrals and focus | AC1.7.5 (360 px) has no deferral clause, so a Build and Test run without a browser records it as a known deviation for the Owner to decide, not as Deferred. The focus rule (BR9.3) covers `button`, `input`, `select`, `textarea`, `a` and `[tabindex]`. AC1.7.1 and AC5.1.4 hold for the routes that exist when U2 ships; U3 and U4 re-run the same walks for theirs (units R-02). |
