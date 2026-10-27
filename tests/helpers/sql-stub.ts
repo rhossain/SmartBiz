@@ -435,44 +435,51 @@ export const makeSqlStub = (
     if (b2 !== undefined) return b2;
     const sessionRows = handleSessions(text, params, state);
     if (sessionRows !== undefined) return sessionRows;
-    // Simulate common patterns.
-    if (/INSERT INTO users/i.test(text) && /email/i.test(text)) {
-      const [id, email, passwordHash, role, locale, createdAt, updatedAt] = params as [
-        Uuid,
-        string,
-        string,
-        string,
-        string,
-        string,
-        string,
-      ];
-      if (state.users.some((u) => (u["email"] as string).toLowerCase() === email.toLowerCase())) {
-        const e: Error & { code?: string } = new Error("duplicate key");
-        e.code = "23505";
-        throw e;
+    // U1 users: business_id set on insert; one account per email ignoring case (0013).
+    if (
+      /INSERT INTO users \(id, business_id, email, password_hash, role, active, locale, created_at, updated_at\)/i.test(
+        text,
+      )
+    ) {
+      const [id, businessId, email, passwordHash, role, active, locale, createdAt, updatedAt] =
+        params as [Uuid, Uuid, string, string, string, boolean, string, string, string];
+      if (state.users.some((u) => String(u["email"]).toLowerCase() === email.toLowerCase())) {
+        throw dbError("duplicate key value violates unique constraint", "23505");
       }
       state.users.push({
         id,
+        business_id: businessId,
         email,
         password_hash: passwordHash,
         role,
-        active: true,
+        active,
         locale,
         created_at: createdAt,
         updated_at: updatedAt,
       });
       return [];
     }
-    if (/INSERT INTO businesses/i.test(text)) {
+    // businesses_singleton_idx (0011): a second business is a unique violation.
+    if (/INSERT INTO businesses \(id, name, locale, owner_user_id, created_at, updated_at\)/i.test(text)) {
       const [id, name, locale, ownerUserId, createdAt, updatedAt] = params as [
         Uuid,
         string,
         string,
         Uuid,
-        Date,
-        Date,
+        string,
+        string,
       ];
-      state.businesses.push({ id, name, locale, ownerUserId, createdAt, updatedAt });
+      if (state.businesses.length > 0) {
+        throw dbError("duplicate key value violates unique constraint", "23505");
+      }
+      state.businesses.push({
+        id,
+        name,
+        locale,
+        owner_user_id: ownerUserId,
+        created_at: createdAt,
+        updated_at: updatedAt,
+      });
       return [];
     }
     if (/INSERT INTO invitations/i.test(text)) {
@@ -564,30 +571,28 @@ export const makeSqlStub = (
         .slice(0, limit)
         .map((a) => ({ ...a }));
     }
-    if (/SELECT id, email, password_hash/i.test(text)) {
-      const [email] = params as [string];
-      return state.users.filter((u) => (u["email"] as string) === email);
-    }
+    // U1 sign-in lookup: by email ignoring case.
     if (
-      /SELECT id, email, password_hash, role, active, locale, created_at, updated_at/i.test(text)
+      /SELECT id, business_id, email, password_hash, role, active, locale\s+FROM users WHERE lower\(email\) = lower\(\?\)/i.test(
+        text,
+      )
     ) {
       const [email] = params as [string];
-      return state.users.filter((u) => (u["email"] as string) === email);
+      return state.users
+        .filter((u) => String(u["email"]).toLowerCase() === email.toLowerCase())
+        .map((u) => ({ ...u }));
     }
-    if (/SELECT id FROM users WHERE email/i.test(text)) {
+    // U1 setup: the one business, if any.
+    if (/SELECT id FROM businesses LIMIT 1/i.test(text)) {
+      return state.businesses.slice(0, 1).map((b) => ({ id: b["id"] }));
+    }
+    // B1 recovery (U3 rebuilds it): exact-email lookup.
+    if (/SELECT id FROM users WHERE email = \? LIMIT 1/i.test(text)) {
       const [email] = params as [string];
       return state.users
         .filter((u) => (u["email"] as string) === email)
         .map((u) => ({ id: u["id"] }));
     }
-    if (/SELECT id FROM users WHERE id/i.test(text)) return [];
-    if (/SELECT id FROM businesses WHERE owner_user_id/i.test(text)) {
-      const [ownerUserId] = params as [string];
-      return state.businesses
-        .filter((b) => b["ownerUserId"] === ownerUserId)
-        .map((b) => ({ id: b["id"] }));
-    }
-    if (/SELECT id FROM businesses WHERE/i.test(text)) return [];
     if (/SELECT id, business_id, email, role, expires_at, used_at\s+FROM invitations/i.test(text)) {
       const [tokenHash] = params as [string];
       return state.invitations.filter((i) => (i["accept_token_hash"] as string) === tokenHash);
@@ -609,12 +614,6 @@ export const makeSqlStub = (
     if (/UPDATE users SET password_hash/g.test(text)) return [];
     if (/UPDATE password_resets SET used_at/g.test(text)) return [];
     if (/UPDATE invitations SET used_at/g.test(text)) return [];
-    if (
-      /SELECT id, email, password_hash, role, active, locale, created_at, updated_at/i.test(text)
-    ) {
-      const [email] = params as [string];
-      return state.users.filter((u) => (u["email"] as string) === email);
-    }
     // Fail closed (team.md Testing Posture): a new or mistyped query must not pass a unit
     // test on an empty result. Every new query shape gets a handler here and a realdb test.
     throw new Error(`sql-stub: unrecognised statement: ${text.replace(/\s+/g, " ").trim()}`);

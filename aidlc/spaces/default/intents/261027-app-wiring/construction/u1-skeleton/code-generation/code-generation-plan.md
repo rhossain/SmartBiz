@@ -159,14 +159,14 @@ that layer is implemented, together with the full existing suite, before the nex
 
 ### Step 7 — Business logic: implement (US1.2, US1.3, US1.4; BR2.1–BR2.5, BR3.1–BR3.3, BR4.1–BR4.4, BR5.1–BR5.3)
 
-- [ ] `src/auth/argon2.ts`: `PASSWORD_MIN_LENGTH = 10`; argon2id m=64 MiB, t=3, p=1; `DUMMY_HASH` computed once.
-- [ ] `src/auth/hash-gate.ts` (new): semaphore 2, FIFO queue 20, overflow → `rate_limited` (NFR6.12).
-- [ ] `src/auth/attempt-limiter.ts` (new, replaces the per-IP `rate-limit.ts`): per normalised email, fixed 15-minute window, 5 attempts, synchronous `reserve`, `clear` on success, cap 10 000 keys; `rate-limit.ts` is deleted and importers updated (BR4.2).
-- [ ] `src/auth/types.ts`: private `UserRecord` (with `passwordHash`) and `PublicUser` (`id, email, role, locale`); `src/data/zod-schemas.ts` user schema loses `passwordHash` (BR4.4).
-- [ ] `src/auth/sign-up.ts`: open only while no business exists (`business_exists`); one transaction: user + business + `auth.sign_up` audit (no email in payload); singleton violation at commit → `business_exists`; unique email violation → `email_taken`; every other DB error rethrown (the catch-all is removed) (BR2.1–BR2.5).
-- [ ] `src/auth/sign-in.ts`: limiter reserve → lookup ignoring case → verify (dummy hash for unknown email) → active check → identical `invalid_credentials`; failure audit with subject id only when matched and reason code only, skipped when no business exists; success: clear key, new token, delete presented session + insert new + `auth.sign_in` in one transaction; zero-UUID business fallback removed (BR3.3, BR4.1, BR4.3).
-- [ ] `src/auth/sign-out.ts`: delete by hash and, only if a row was deleted, `auth.sign_out` (correct action label) in one transaction (BR5.1–BR5.3).
-- [ ] `src/auth/setup.ts` (new): `businessExists(sql)`.
+- [x] `src/auth/argon2.ts`: `PASSWORD_MIN_LENGTH = 10`; argon2id m=64 MiB, t=3, p=1; `DUMMY_HASH` computed once.
+- [x] `src/auth/hash-gate.ts` (new): semaphore 2, FIFO queue 20, overflow → `rate_limited` (NFR6.12).
+- [x] `src/auth/attempt-limiter.ts` (new, replaces the per-IP `rate-limit.ts`): per normalised email, fixed 15-minute window, 5 attempts, synchronous `reserve`, `clear` on success, cap 10 000 keys; `rate-limit.ts` is deleted and importers updated (BR4.2).
+- [x] `src/auth/types.ts`: private `UserRecord` (with `passwordHash`) and `PublicUser` (`id, email, role, locale`); `src/data/zod-schemas.ts` user schema loses `passwordHash` (BR4.4).
+- [x] `src/auth/sign-up.ts`: open only while no business exists (`business_exists`); one transaction: user + business + `auth.sign_up` audit (no email in payload); singleton violation at commit → `business_exists`; unique email violation → `email_taken`; every other DB error rethrown (the catch-all is removed) (BR2.1–BR2.5).
+- [x] `src/auth/sign-in.ts`: limiter reserve → lookup ignoring case → verify (dummy hash for unknown email) → active check → identical `invalid_credentials`; failure audit with subject id only when matched and reason code only, skipped when no business exists; success: clear key, new token, delete presented session + insert new + `auth.sign_in` in one transaction; zero-UUID business fallback removed (BR3.3, BR4.1, BR4.3).
+- [x] `src/auth/sign-out.ts`: delete by hash and, only if a row was deleted, `auth.sign_out` (correct action label) in one transaction (BR5.1–BR5.3).
+- [x] `src/auth/setup.ts` (new): `businessExists(sql)`.
 
 ### Step 8 — Business logic: write and run its tests
 

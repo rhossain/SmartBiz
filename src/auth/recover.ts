@@ -12,7 +12,7 @@ import { sha256 } from "./sha256.js";
 import { now } from "../data/clock.js";
 import { hashPassword, PASSWORD_MIN_LENGTH, verifyPassword } from "./argon2.js";
 import { auditRecoveryRequest, auditRecoveryReset } from "./audit.js";
-import { checkRateLimit, LIMIT_RECOVERY } from "./rate-limit.js";
+import { flowLimiters } from "./attempt-limiter.js";
 
 export type RecoveryError =
   | { readonly kind: "rate_limited" }
@@ -28,7 +28,7 @@ export const requestRecovery = async (
   email: string,
   nowMs: number,
 ): Promise<Result<{ readonly token: string | null }, RecoveryError>> => {
-  if (!checkRateLimit(`recover:${email}`, LIMIT_RECOVERY, nowMs)) {
+  if (!flowLimiters.recovery.reserve(`recover:${email}`, nowMs).ok) {
     return err({ kind: "rate_limited" });
   }
   const rows = await sql<{ id: string }[]>`SELECT id FROM users WHERE email = ${email} LIMIT 1`;

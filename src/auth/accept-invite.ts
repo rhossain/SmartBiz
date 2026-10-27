@@ -10,7 +10,7 @@ import { sha256 } from "./sha256.js";
 import { now } from "../data/clock.js";
 import { hashPassword, PASSWORD_MIN_LENGTH } from "./argon2.js";
 import { auditAcceptInvite } from "./audit.js";
-import { checkRateLimit, LIMIT_ACCEPT } from "./rate-limit.js";
+import { flowLimiters } from "./attempt-limiter.js";
 
 export type AcceptInviteError =
   | { readonly kind: "invalid_token" }
@@ -36,7 +36,7 @@ export const acceptInvite = async (
   input: AcceptInviteInput,
 ): Promise<Result<AcceptInviteOutput, AcceptInviteError>> => {
   if (input.password.length < PASSWORD_MIN_LENGTH) return err({ kind: "password_too_short" });
-  if (!checkRateLimit(`accept:${input.emailHint ?? "anon"}`, LIMIT_ACCEPT, input.nowMs)) {
+  if (!flowLimiters.accept.reserve(`accept:${input.emailHint ?? "anon"}`, input.nowMs).ok) {
     return err({ kind: "rate_limited" });
   }
   const tokenHash = await sha256(input.token);
@@ -62,9 +62,10 @@ export const acceptInvite = async (
   const passwordHash = await hashPassword(input.password);
   const t = now();
   await sql.begin(async (tx) => {
+    // U1 (0011): every user carries its business; the invitation names it.
     await tx`
-      INSERT INTO users (id, email, password_hash, role, active, locale, created_at, updated_at)
-      VALUES (${userId}, ${row.email}, ${passwordHash}, ${row.role}, TRUE, 'bn', ${t.toISOString()}, ${t.toISOString()})
+      INSERT INTO users (id, business_id, email, password_hash, role, active, locale, created_at, updated_at)
+      VALUES (${userId}, ${row.business_id}, ${row.email}, ${passwordHash}, ${row.role}, ${true}, ${"bn"}, ${t.toISOString()}, ${t.toISOString()})
     `;
     await tx`UPDATE invitations SET used_at = ${t.toISOString()} WHERE id = ${row.id}`;
   });

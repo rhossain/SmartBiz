@@ -1,23 +1,40 @@
 /**
- * src/auth/types.ts — AuthComponent's entity shapes (Business, User, Invitation, Session,
- * AuditEntry, PasswordReset).
+ * src/auth/types.ts — AuthComponent's entity shapes.
  *
- * The role, locale and capability vocabularies moved into the shared kernel
- * (src/data/enums.ts, domain-design follow-up R-01); this file imports them and re-exports
- * nothing it no longer owns, so every caller names them from one place.
+ * A user exists in two shapes (BR4.4, team.md Code Style, P-16):
+ * - `UserRecord` is private to AuthComponent and is the only shape that carries the
+ *   password hash; it never leaves the auth functions that read it.
+ * - `PublicUser` (`id, email, role, locale`) is what every domain function returns and
+ *   every response carries; it has no hash by construction, so a hash cannot be serialised
+ *   by mistake.
+ * The role, locale and capability vocabularies live in the shared kernel
+ * (src/data/enums.ts, domain-design follow-up R-01); this file re-exports none of them.
  */
-import type { Locale, Role } from "../data/enums.js";
+import type { Capability, Locale, Role } from "../data/enums.js";
 import type { Uuid } from "../data/uuid.js";
 
-export interface User {
+export interface UserRecord {
   readonly id: Uuid;
+  readonly businessId: Uuid;
   readonly email: string;
   readonly passwordHash: string;
   readonly role: Role;
   readonly active: boolean;
   readonly locale: Locale;
-  readonly createdAt: string;
-  readonly updatedAt: string;
+}
+
+export interface PublicUser {
+  readonly id: Uuid;
+  readonly email: string;
+  readonly role: Role;
+  readonly locale: Locale;
+}
+
+/** The C2 `Session` body: who is signed in, for which business, with which capabilities. */
+export interface SessionView {
+  readonly user: PublicUser;
+  readonly businessId: Uuid;
+  readonly capabilities: ReadonlyArray<Capability>;
 }
 
 export interface Business {
@@ -39,15 +56,6 @@ export interface Invitation {
   readonly usedAt: string | null;
   readonly createdBy: Uuid;
   readonly createdAt: string;
-}
-
-export interface Session {
-  readonly id: Uuid;
-  readonly userId: Uuid;
-  readonly businessId: Uuid;
-  readonly issuedAt: string;
-  readonly expiresAt: string;
-  readonly lastSeenAt: string;
 }
 
 export interface AuditEntry {

@@ -11,7 +11,7 @@ import { uuid, type Uuid } from "../data/uuid.js";
 import { sha256 } from "./sha256.js";
 import { now } from "../data/clock.js";
 import { auditInvite } from "./audit.js";
-import { checkRateLimit, LIMIT_INVITE } from "./rate-limit.js";
+import { flowLimiters } from "./attempt-limiter.js";
 import type { Invitation } from "./types.js";
 import { hasCapability } from "./capability.js";
 
@@ -44,7 +44,7 @@ export const createInvite = async (
 ): Promise<Result<InviteOutput, InviteError>> => {
   if (!hasCapability(input.actorRole, "staff.invite")) return err({ kind: "forbidden" });
   if (!EMAIL_RE.test(input.email)) return err({ kind: "invalid_email" });
-  if (!checkRateLimit(`invite:${input.actorUserId}`, LIMIT_INVITE, input.nowMs)) {
+  if (!flowLimiters.invite.reserve(`invite:${input.actorUserId}`, input.nowMs).ok) {
     return err({ kind: "rate_limited" });
   }
 

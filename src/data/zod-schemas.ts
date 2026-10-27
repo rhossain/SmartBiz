@@ -5,21 +5,21 @@
  * should pass typed values; zod is for the edges.
  */
 import { z } from "zod";
-import { COURIERS, LOCALES, ORDER_SOURCES, ORDER_STATUSES, ROLES } from "./enums.js";
+import { CAPABILITIES, COURIERS, LOCALES, ORDER_SOURCES, ORDER_STATUSES, ROLES } from "./enums.js";
 
 export const RoleSchema = z.enum(ROLES);
 export const LocaleSchema = z.enum(LOCALES);
 export const UuidSchema = z.string().uuid();
 
-export const UserSchema = z.object({
+/**
+ * The public user (C2 `User`; U1 BR4.4): no password hash, by construction. The private
+ * record with the hash stays inside AuthComponent and has no schema here.
+ */
+export const PublicUserSchema = z.object({
   id: UuidSchema,
-  email: z.string().email(),
-  passwordHash: z.string().min(1),
+  email: z.string(),
   role: RoleSchema,
-  active: z.boolean(),
   locale: LocaleSchema,
-  createdAt: z.string(),
-  updatedAt: z.string(),
 });
 
 export const BusinessSchema = z.object({
@@ -43,13 +43,11 @@ export const InvitationSchema = z.object({
   createdAt: z.string(),
 });
 
-export const SessionSchema = z.object({
-  id: UuidSchema,
-  userId: UuidSchema,
+/** The C2 `Session` body: never the session id or token, which travel only in Set-Cookie. */
+export const SessionViewSchema = z.object({
+  user: PublicUserSchema,
   businessId: UuidSchema,
-  issuedAt: z.string(),
-  expiresAt: z.string(),
-  lastSeenAt: z.string(),
+  capabilities: z.array(z.enum(CAPABILITIES)),
 });
 
 export const AuditEntrySchema = z.object({
