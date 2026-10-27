@@ -44,3 +44,15 @@ Bolt 1 (U1, U2, U3) is squash-merged after `bun run gate --large` passes, so the
 ## Secrets in the pipeline
 
 Unchanged from U1. The browser check uses throwaway credentials in a throwaway database inside the throwaway gate container; they are on the secret-scan allow-list with that reason. `CHROME_PATH` is a path, not a secret.
+
+## Review follow-ups (architecture review, iteration 1, READY)
+
+Decided on the Owner's standing instruction; each binds Code Generation and wins over earlier text.
+
+| Finding | Decision |
+|---------|----------|
+| I-01 Merge without browser evidence | `scripts/browser-check.ts` exits 2 **only** when no file exists at `CHROME_PATH`; any launch failure, timeout, protocol error or assertion failure is exit 1. `gate.ts` runs step 14b through its own exit-code branch (not `step()`): 0 → `browser: ok …`, 2 → `browser: not run (no Chrome)`, anything else → gate fails. `bun run gate --large` (the Bolt merge run) treats exit 2 as a failure, so a Bolt cannot merge without `browser: ok`; the only way past it is the Owner recording the deviation decision in the squash body, which this design never does on the Owner's behalf. In `ci.yml`, step 14b sets `CHROME_PATH: /usr/bin/google-chrome` (present on `ubuntu-latest`). |
+| I-02 Clean-up of the browser check's resources | `scripts/browser-check.ts` registers SIGINT and SIGTERM handlers and wraps its work in `try … finally`; the `finally` kills Chrome (SIGTERM, then SIGKILL after 3 s) and waits for it to exit, removes the temporary profile directory, stops the in-process server, and drops `browser_<random>`. Timeouts, each exiting 1: 15 s for the `DevTools listening` line, 10 s per page load, 120 s for the whole script. `gate.ts` forwards SIGINT/SIGTERM to its running child before removing the container. Build and Test acceptance for the script adds leak checks: after a pass, a failure and a Ctrl-C, no `Google Chrome --headless` process started by the run remains, and no `smartbiz-browser-*` temp directory remains. |
+| I-03 Secret-scan entry | Exactly one new allow-list line: `scripts/browser-check.ts assigned-secret  # throwaway Owner credentials in a per-run database`. No wider glob (such as `scripts/**`) is allowed. |
+| I-04 Plan check | After seeding, the bench runs `ANALYZE audit_log` before `EXPLAIN`, and asserts the plan names `audit_log_business_keyset_idx`. |
+| I-05 Walk timing step | Step 5b is a timing check only. Any test failure fails the gate at once and is never rerun; only a wall time over 60 s earns the one rerun, and the result line carries both times (NFR6.16). |
