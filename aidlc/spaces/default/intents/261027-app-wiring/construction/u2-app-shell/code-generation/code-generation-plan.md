@@ -106,8 +106,8 @@ layer is implemented, together with the full existing suite, before the next lay
 
 ### Step 2 — Verify the test runner and record the unit-scoped command
 
-- [ ] Confirm `bun test` (bun 1.4.3, `tests/setup.ts`, happy-dom, frozen clock) runs the existing suite green.
-- [ ] Run the first U2-scoped command from `unit-test-instructions.md` (the runnable-before-tests command) and confirm it passes on U1's code.
+- [x] Confirm `bun test` (bun 1.4.3, `tests/setup.ts`, happy-dom, frozen clock) runs the existing suite green.
+- [x] Run the first U2-scoped command from `unit-test-instructions.md` (the runnable-before-tests command) and confirm it passes on U1's code.
 
 ### Step 3 — Data model / database behaviour: implement (US5.4 audit trail; P9, SC1; NFR6.13, NFR6.17)
 
