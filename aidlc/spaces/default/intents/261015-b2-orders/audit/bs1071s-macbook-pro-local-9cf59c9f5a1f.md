@@ -4783,3 +4783,505 @@
 **Agent**: aidlc-pipeline-deploy-agent
 
 ---
+
+## Artifact Created
+**Timestamp**: 2026-10-27T05:06:47Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261015-b2-orders/construction/ci-pipeline/ci-pipeline-questions.md
+**Context**: construction > ci-pipeline > ci-pipeline-questions.md
+
+---
+
+## Decision Recorded
+**Timestamp**: 2026-10-27T05:06:50Z
+**Event**: DECISION_RECORDED
+**Stage**: ci-pipeline
+**Decision**: CI Pipeline clarifying questions written to ci-pipeline-questions.md: Q1 CI tool and Q2 branch strategy pre-filled from team.md (decided); Q3 formatting gate fails on 115 files, Q4 real-Postgres and bun audit gates (fail today), Q5 artifact storage asked.
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-27T05:11:17Z
+**Event**: HUMAN_TURN
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+**Picked**: ["Format once, keep gate (Recommended)","Blocking now (Recommended)","Keep 30 days in GitHub (Recommended)"]
+
+---
+
+## Question Replied
+**Timestamp**: 2026-10-27T05:11:18Z
+**Event**: QUESTION_REPLIED
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+**Question**: The CI check for code formatting would fail on its very first run: 115 files (old and new) aren't formatted to the project's style. How should I fix it?
+**Reply**: Format once, keep gate (Recommended)
+
+---
+
+## Question Replied
+**Timestamp**: 2026-10-27T05:11:18Z
+**Event**: QUESTION_REPLIED
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+**Question**: Build and Test found two checks CI doesn't run yet: a real-database job (it would catch the contact and audit details saved as quoted text) and a dependency security scan. Both fail today because of the two defects you accepted. How should CI treat them?
+**Reply**: Blocking now (Recommended)
+
+---
+
+## Question Replied
+**Timestamp**: 2026-10-27T05:11:18Z
+**Event**: QUESTION_REPLIED
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+**Question**: There's no place to store build outputs yet (free tier, hosting not chosen). What should CI do with the built app?
+**Reply**: Keep 30 days in GitHub (Recommended)
+
+---
+
+## Question Answered
+**Timestamp**: 2026-10-27T05:11:23Z
+**Event**: QUESTION_ANSWERED
+**Stage**: ci-pipeline
+**Details**: Q3 Formatting = A. Format once, keep gate; Q4 New gates = A. Blocking now; Q5 Artifacts = A. Keep 30 days in GitHub
+
+---
+
+## Artifact Updated
+**Timestamp**: 2026-10-27T05:11:44Z
+**Event**: ARTIFACT_UPDATED
+**Tool**: Edit
+**File**: <project-dir>/aidlc/spaces/default/intents/261015-b2-orders/construction/ci-pipeline/ci-pipeline-questions.md
+**Context**: construction > ci-pipeline > ci-pipeline-questions.md
+
+---
+
+## Error Logged
+**Timestamp**: 2026-10-27T05:11:46Z
+**Event**: ERROR_LOGGED
+**Tool**: aidlc-log
+**Command**: aidlc-log engine log decision --stage ci-pipeline --checkpoint summary-confirmation --questions-file aidlc/spaces/default/intents/261015-b2-orders/construction/ci-pipeline/ci-pipeline-questions.md --decision Pre-generation summary for CI Pipeline presented for confirmation.
+**Error**: Summary confirmation section in aidlc/spaces/default/intents/261015-b2-orders/construction/ci-pipeline/ci-pipeline-questions.md must contain exactly one `[Answer]:` line with a blank value before this command runs.
+
+---
+
+## Artifact Updated
+**Timestamp**: 2026-10-27T05:11:59Z
+**Event**: ARTIFACT_UPDATED
+**Tool**: Edit
+**File**: <project-dir>/aidlc/spaces/default/intents/261015-b2-orders/construction/ci-pipeline/ci-pipeline-questions.md
+**Context**: construction > ci-pipeline > ci-pipeline-questions.md
+
+---
+
+## Artifact Updated
+**Timestamp**: 2026-10-27T05:12:00Z
+**Event**: ARTIFACT_UPDATED
+**Tool**: Edit
+**File**: <project-dir>/aidlc/spaces/default/intents/261015-b2-orders/construction/ci-pipeline/ci-pipeline-questions.md
+**Context**: construction > ci-pipeline > ci-pipeline-questions.md
+
+---
+
+## Decision Recorded
+**Timestamp**: 2026-10-27T05:12:02Z
+**Event**: DECISION_RECORDED
+**Stage**: ci-pipeline
+**Decision**: Pre-generation summary for CI Pipeline presented for confirmation.
+**Checkpoint**: Consolidated Summary Confirmation
+**Questions File**: aidlc/spaces/default/intents/261015-b2-orders/construction/ci-pipeline/ci-pipeline-questions.md
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-27T05:15:15Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: a377bdc4a69a31aaa
+**Message**: We're finishing the B2 Orders build, now on the CI Pipeline step with code and tests done. Next, type "Looks correct" to approve the CI plan, which adds blocking database and security checks, or "Requ
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-27T05:20:23Z
+**Event**: HUMAN_TURN
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+
+---
+
+## Artifact Updated
+**Timestamp**: 2026-10-27T05:20:27Z
+**Event**: ARTIFACT_UPDATED
+**Tool**: Edit
+**File**: <project-dir>/aidlc/spaces/default/intents/261015-b2-orders/construction/ci-pipeline/ci-pipeline-questions.md
+**Context**: construction > ci-pipeline > ci-pipeline-questions.md
+
+---
+
+## Summary Confirmation Recorded
+**Timestamp**: 2026-10-27T05:20:28Z
+**Event**: SUMMARY_CONFIRMATION_RECORDED
+**Stage**: ci-pipeline
+**Details**: Looks correct
+**Checkpoint**: Consolidated Summary Confirmation
+**Questions File**: aidlc/spaces/default/intents/261015-b2-orders/construction/ci-pipeline/ci-pipeline-questions.md
+**Questions SHA-256**: 87ac4908d24d3ec03a69506e46c4d414abde12b6aa2ae5920ffa3c7df14cb01b
+**Hash Scope**: confirmed-content-v2
+**Person Reply**: Looks correct
+**Summary Authorization Id**: 586ff125f176337a72b842404ee9fd28127fe1b632b0af8dc6023e05cb83c3d3
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T05:22:00Z
+**Event**: SENSOR_FIRED
+**Fire id**: 5fd2723e
+**Sensor ID**: linter
+**Stage slug**: ci-pipeline
+**Output path**: tests/realdb/order-paths.realdb.test.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T05:22:04Z
+**Event**: SENSOR_PASSED
+**Fire id**: 5fd2723e
+**Sensor ID**: linter
+**Stage slug**: ci-pipeline
+**Output path**: tests/realdb/order-paths.realdb.test.ts
+**Duration ms**: 3637
+**Note**: tool-unavailable
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T05:22:04Z
+**Event**: SENSOR_FIRED
+**Fire id**: 54ebacd5
+**Sensor ID**: type-check
+**Stage slug**: ci-pipeline
+**Output path**: tests/realdb/order-paths.realdb.test.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T05:22:07Z
+**Event**: SENSOR_PASSED
+**Fire id**: 54ebacd5
+**Sensor ID**: type-check
+**Stage slug**: ci-pipeline
+**Output path**: tests/realdb/order-paths.realdb.test.ts
+**Duration ms**: 3137
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-10-27T05:23:55Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261015-b2-orders/construction/ci-pipeline/ci-config.md
+**Context**: construction > ci-pipeline > ci-config.md
+**Summary Authorization Id**: 586ff125f176337a72b842404ee9fd28127fe1b632b0af8dc6023e05cb83c3d3
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-10-27T05:24:12Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261015-b2-orders/construction/ci-pipeline/quality-gates.md
+**Context**: construction > ci-pipeline > quality-gates.md
+**Summary Authorization Id**: 586ff125f176337a72b842404ee9fd28127fe1b632b0af8dc6023e05cb83c3d3
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-10-27T05:24:25Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261015-b2-orders/verification/phase-check-construction.md
+**Context**: verification > phase-check-construction.md
+
+---
+
+## Decision Recorded
+**Timestamp**: 2026-10-27T05:24:41Z
+**Event**: DECISION_RECORDED
+**Stage**: ci-pipeline
+**Decision**: CI Pipeline §13 learnings: surface returned 3 candidates (c1-c3). Present them as keep-for-next-time choices plus the mandatory 'Anything to add for next time?' question with Nothing to add + Add a note.
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-27T05:29:17Z
+**Event**: HUMAN_TURN
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+**Picked**: ["Decide for me","Nothing to add"]
+
+---
+
+## Question Replied
+**Timestamp**: 2026-10-27T05:29:17Z
+**Event**: QUESTION_REPLIED
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+**Question**: Which lessons from CI Pipeline should become project rules for next time? Pick any, or none.
+**Reply**: Decide for me
+
+---
+
+## Question Replied
+**Timestamp**: 2026-10-27T05:29:17Z
+**Event**: QUESTION_REPLIED
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+**Question**: Anything else to add for next time?
+**Reply**: Nothing to add
+
+---
+
+## Question Answered
+**Timestamp**: 2026-10-27T05:29:26Z
+**Event**: QUESTION_ANSWERED
+**Stage**: ci-pipeline
+**Details**: Learnings = Decide for me (chosen on the Owner's instruction: c1 Unrun CI is unproven, c3 Blocking beats green; c2 skipped as a one-off already fixed in .eslintrc.cjs); Anything to add = Nothing to add
+
+---
+
+## Rule Learned
+**Timestamp**: 2026-10-27T05:29:26Z
+**Event**: RULE_LEARNED
+**Stage**: ci-pipeline
+**Candidate-ID**: c1
+**Content-Hash**: 4171311cc600b1c079c8be818ab73f34e5ee7ffd7fa725d4d391e994bc9a920e
+**Destination**: <project-dir>/aidlc/spaces/default/memory/project.md
+**Heading**: ## Testing Posture
+**Source**: orchestrator
+
+---
+
+## Rule Learned
+**Timestamp**: 2026-10-27T05:29:26Z
+**Event**: RULE_LEARNED
+**Stage**: ci-pipeline
+**Candidate-ID**: c3
+**Content-Hash**: 4d35ffa97f3069e9f3681291cfa1f64b887ad4c337edb4105531033a97024a3a
+**Destination**: <project-dir>/aidlc/spaces/default/memory/project.md
+**Heading**: ## Deployment
+**Source**: orchestrator
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-27T05:29:36Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: a2abd4cfca8c3cced
+**Message**: fix the two defects first
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T05:29:40Z
+**Event**: SENSOR_FIRED
+**Fire id**: 04ad322f
+**Sensor ID**: required-sections
+**Stage slug**: ci-pipeline
+**Output path**: aidlc/spaces/default/intents/261015-b2-orders/construction/ci-pipeline/ci-config.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T05:29:40Z
+**Event**: SENSOR_PASSED
+**Fire id**: 04ad322f
+**Sensor ID**: required-sections
+**Stage slug**: ci-pipeline
+**Output path**: aidlc/spaces/default/intents/261015-b2-orders/construction/ci-pipeline/ci-config.md
+**Duration ms**: 71
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T05:29:40Z
+**Event**: SENSOR_FIRED
+**Fire id**: a15d3374
+**Sensor ID**: required-sections
+**Stage slug**: ci-pipeline
+**Output path**: aidlc/spaces/default/intents/261015-b2-orders/construction/ci-pipeline/quality-gates.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T05:29:40Z
+**Event**: SENSOR_PASSED
+**Fire id**: a15d3374
+**Sensor ID**: required-sections
+**Stage slug**: ci-pipeline
+**Output path**: aidlc/spaces/default/intents/261015-b2-orders/construction/ci-pipeline/quality-gates.md
+**Duration ms**: 82
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T05:29:41Z
+**Event**: SENSOR_FIRED
+**Fire id**: 7347c73d
+**Sensor ID**: required-sections
+**Stage slug**: ci-pipeline
+**Output path**: aidlc/spaces/default/intents/261015-b2-orders/construction/ci-pipeline/ci-pipeline-questions.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T05:29:41Z
+**Event**: SENSOR_PASSED
+**Fire id**: 7347c73d
+**Sensor ID**: required-sections
+**Stage slug**: ci-pipeline
+**Output path**: aidlc/spaces/default/intents/261015-b2-orders/construction/ci-pipeline/ci-pipeline-questions.md
+**Duration ms**: 71
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T05:29:41Z
+**Event**: SENSOR_FIRED
+**Fire id**: 37697b31
+**Sensor ID**: upstream-coverage
+**Stage slug**: ci-pipeline
+**Output path**: aidlc/spaces/default/intents/261015-b2-orders/construction/ci-pipeline/ci-config.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T05:29:41Z
+**Event**: SENSOR_PASSED
+**Fire id**: 37697b31
+**Sensor ID**: upstream-coverage
+**Stage slug**: ci-pipeline
+**Output path**: aidlc/spaces/default/intents/261015-b2-orders/construction/ci-pipeline/ci-config.md
+**Duration ms**: 71
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T05:29:41Z
+**Event**: SENSOR_FIRED
+**Fire id**: 55b6ddc4
+**Sensor ID**: upstream-coverage
+**Stage slug**: ci-pipeline
+**Output path**: aidlc/spaces/default/intents/261015-b2-orders/construction/ci-pipeline/quality-gates.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T05:29:41Z
+**Event**: SENSOR_PASSED
+**Fire id**: 55b6ddc4
+**Sensor ID**: upstream-coverage
+**Stage slug**: ci-pipeline
+**Output path**: aidlc/spaces/default/intents/261015-b2-orders/construction/ci-pipeline/quality-gates.md
+**Duration ms**: 76
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T05:29:42Z
+**Event**: SENSOR_FIRED
+**Fire id**: 240a9a3d
+**Sensor ID**: upstream-coverage
+**Stage slug**: ci-pipeline
+**Output path**: aidlc/spaces/default/intents/261015-b2-orders/construction/ci-pipeline/ci-pipeline-questions.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T05:29:42Z
+**Event**: SENSOR_PASSED
+**Fire id**: 240a9a3d
+**Sensor ID**: upstream-coverage
+**Stage slug**: ci-pipeline
+**Output path**: aidlc/spaces/default/intents/261015-b2-orders/construction/ci-pipeline/ci-pipeline-questions.md
+**Duration ms**: 74
+
+---
+
+## Stage Awaiting Approval
+**Timestamp**: 2026-10-27T05:29:42Z
+**Event**: STAGE_AWAITING_APPROVAL
+**Stage**: ci-pipeline
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-27T05:29:52Z
+**Event**: HUMAN_TURN
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+**Picked**: ["Approve"]
+
+---
+
+## Question Replied
+**Timestamp**: 2026-10-27T05:29:53Z
+**Event**: QUESTION_REPLIED
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+**Question**: Do you approve CI Pipeline for B2 Orders? CI now blocks merges on the real-database check and the security scan. Both will fail until the two accepted defects are fixed. This is the last step in the workflow.
+**Reply**: Approve
+
+---
+
+## Gate Approved
+**Timestamp**: 2026-10-27T05:29:56Z
+**Event**: GATE_APPROVED
+**Stage**: ci-pipeline
+**User Input**: Approve
+**Person Reply**: Approve
+
+---
+
+## Stage Completion
+**Timestamp**: 2026-10-27T05:29:56Z
+**Event**: STAGE_COMPLETED
+**Stage**: ci-pipeline
+**Validation Basis**: {"graphContract":"sha256:cf50c8b2fb3ea7495a9efd09328d978da763aab327fc8fe6b39fae75cdadfcd5","inputs":[{"artifact":"build-and-test-summary","contentHash":"sha256:d47c67e40bc663bb2de447a6d6bb30af9263a6ca8d326df06c535eeef2386861","instanceCount":1,"presentCount":1,"producer":"build-and-test","required":true,"structureHash":"sha256:5c46c5d509146d7117ae61b6323514296d68f642809fdf6024b910ec05e03af9"},{"artifact":"build-test-results","contentHash":"sha256:f469967af7496ed4b3bf27e74eb110cc7c80e9c30ed94109410932eb9a69a3f6","instanceCount":1,"presentCount":1,"producer":"build-and-test","required":true,"structureHash":"sha256:5a87e01ba9c2e98680c7f115fa1d37c3125699c711e1cd4764089e5b984ff58f"},{"artifact":"code-summary","contentHash":"sha256:dd42f17c3e1aecaee5438b8d2c9bed64875b58d2835e6facd41590f99ab949dc","instanceCount":1,"presentCount":1,"producer":"code-generation","required":true,"structureHash":"sha256:43854326fb182bf984e20ea2b15fcec2fa935bcce7f684e735faa0e64e120948"}],"outputs":[{"artifact":"ci-config","contentHash":"sha256:45a45f26de4952dc504778e8cbd5268b3d00b88793e876d1de487624413acbe4","instanceCount":1,"presentCount":1,"producer":"ci-pipeline","required":true,"structureHash":"sha256:5e420b2326ed78d99c0b0c60d8ddb4061e1a8590e7c3a6652c7120310a814496"},{"artifact":"ci-pipeline-questions","contentHash":"sha256:0e5ecc2af67176702674a806ac12a000298a7f70b7e833ae153d97c9476b3005","instanceCount":1,"presentCount":1,"producer":"ci-pipeline","required":true,"structureHash":"sha256:046b588dc75a8facfb04a6d5490ae1be529ee97bee9d9dc6dbfc397dac7c54af"},{"artifact":"quality-gates","contentHash":"sha256:86a3dee82fcc8a247c7661d0553d8e7b71c5b0787d4a8509890c18a2e1b0a86c","instanceCount":1,"presentCount":1,"producer":"ci-pipeline","required":true,"structureHash":"sha256:f1c44182853b230f23638c26cdf935b5c0de47e8779b6b1948694f9b951d8e16"}],"projectType":"brownfield","schema":3}
+**Details**: Stage CI Pipeline approved by gate
+**Tokens In**: 98
+**Tokens Out**: 33004
+**Cache Read**: 17139830
+**Cache Write**: 96680
+**Cost USD**: 4.86
+**By Model**: opus-5-5=4.86
+**By Agent**: main=4.86
+**Tokens By Model**: opus-5-5=98/33k/17.1M/96.7k
+**Tokens By Agent**: main=98/33k/17.1M/96.7k
+
+---
+
+## Phase Completion
+**Timestamp**: 2026-10-27T05:29:56Z
+**Event**: PHASE_COMPLETED
+**From phase**: construction
+**To phase**: (end)
+**Stages completed**: 9
+
+---
+
+## Phase Verification
+**Timestamp**: 2026-10-27T05:29:56Z
+**Event**: PHASE_VERIFIED
+**Phase boundary**: construction → end
+
+---
+
+## Workflow Completion
+**Timestamp**: 2026-10-27T05:29:56Z
+**Event**: WORKFLOW_COMPLETED
+**Scope**: mvp
+**Details**: Scope: mvp, 9 stages completed
+**Tokens In**: 896
+**Tokens Out**: 468681
+**Cache Read**: 120941843
+**Cache Write**: 2363598
+**Cost USD**: 47.41
+**By Model**: opus-5-5=45.52; sonnet-5-5=1.89
+**By Agent**: main=23.07; aidlc-developer-agent=22.45; aidlc-architecture-reviewer-agent=1.89
+**Tokens By Model**: opus-5-5=830/437.8k/117.1M/2M; sonnet-5-5=66/30.9k/3.9M/322.2k
+**Tokens By Agent**: main=482/163.5k/57.1M/1M; aidlc-developer-agent=348/274.3k/60M/994k; aidlc-architecture-reviewer-agent=66/30.9k/3.9M/322.2k
+
+---
