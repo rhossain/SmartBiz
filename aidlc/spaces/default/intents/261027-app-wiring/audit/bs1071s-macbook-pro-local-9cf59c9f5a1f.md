@@ -3974,3 +3974,129 @@
 **Context**: inception > refined-mockups > interaction-spec.md
 
 ---
+
+## Review Requested
+**Timestamp**: 2026-10-27T11:07:06Z
+**Event**: REVIEW_REQUESTED
+**Stage**: refined-mockups
+**Reviewer**: aidlc-product-lead-agent
+**Iteration**: 1
+**Artifact Fingerprint**: sha256:9c155cd11c325a91f7e8caa18cc1f18eeaf86dce874dfbdfeab93e8a11561ed9
+**Request Id**: review:f34dc87c13b4bec59873e885f50cb6dc
+**Replaces Request Id**: review:d05aa9320dc74373db9ac1bf6192d0c6
+**Review File**: .aidlc-engine/reviews/refined-mockups/stage/7d2de27a5c617940/1.f34dc87c13b4bec59873e885f50cb6dc.review.md
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-10-27T11:07:28Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/reviews/refined-mockups/stage/7d2de27a5c617940/1.f34dc87c13b4bec59873e885f50cb6dc.review.md
+**Context**: .aidlc-engine > reviews > refined-mockups > stage > 7d2de27a5c617940 > 1.f34dc87c13b4bec59873e885f50cb6dc.review.md
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-27T11:07:41Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: aidlc-product-lead-agent
+**Agent ID**: a3251b37827ee4a5e
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-27T11:07:41Z
+**Event**: HUMAN_TURN
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+
+---
+
+## Review Completed
+**Timestamp**: 2026-10-27T11:07:48Z
+**Event**: REVIEW_COMPLETED
+**Stage**: refined-mockups
+**Reviewer**: aidlc-product-lead-agent
+**Iteration**: 1
+**Verdict**: READY
+**Request Fingerprint**: sha256:9c155cd11c325a91f7e8caa18cc1f18eeaf86dce874dfbdfeab93e8a11561ed9
+**Artifact Fingerprint**: sha256:9c155cd11c325a91f7e8caa18cc1f18eeaf86dce874dfbdfeab93e8a11561ed9
+**Request Id**: review:f34dc87c13b4bec59873e885f50cb6dc
+**Review Record**: .aidlc-engine/reviews/refined-mockups/stage/7d2de27a5c617940/1.json
+**Review Record Digest**: sha256:99994cec4b0266744c7dbc44e0ab26249208c4be3cb1146f76a53b32b0a3a59b
+
+---
+
+## Decision Recorded
+**Timestamp**: 2026-10-27T11:07:49Z
+**Event**: DECISION_RECORDED
+**Stage**: refined-mockups
+**Decision**: Refined Mockups review READY (advisory). R-05, R-07 resolved. Carried to Functional Design: R-01 staff lists ACs, R-02 order-screen picker and list states, R-03 hash token link format and port, R-04 purchase-cost visibility for Sales Staff, R-06 edit and empty-notes states, R-08 role variants, R-09 unmatched fields, R-10 320 px reflow, lang switching and the More menu.
+
+---
+
+## Guard Stood Aside
+**Timestamp**: 2026-10-27T11:07:49Z
+**Event**: GUARD_STOOD_ASIDE
+**Guard**: review-freeze
+**Authority**: grant
+**Grant**: turn-marker
+**Actor**: main
+**Stage**: refined-mockups
+**Tool**: Edit
+**Details**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/inception/refined-mockups/mockups.md
+
+---
+
+## Artifact Updated
+**Timestamp**: 2026-10-27T11:07:50Z
+**Event**: ARTIFACT_UPDATED
+**Tool**: Edit
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/inception/refined-mockups/mockups.md
+**Context**: inception > refined-mockups > mockups.md
+
+---
+
+## Guard Stood Aside
+**Timestamp**: 2026-10-27T11:07:51Z
+**Event**: GUARD_STOOD_ASIDE
+**Guard**: review-freeze
+**Authority**: grant
+**Grant**: turn-marker
+**Actor**: main
+**Stage**: refined-mockups
+**Tool**: Edit
+**Details**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/inception/refined-mockups/mockups.md
+
+---
+
+## Artifact Updated
+**Timestamp**: 2026-10-27T11:07:51Z
+**Event**: ARTIFACT_UPDATED
+**Tool**: Edit
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/inception/refined-mockups/mockups.md
+**Context**: inception > refined-mockups > mockups.md
+
+---
+
+## Guard Stood Aside
+**Timestamp**: 2026-10-27T11:08:00Z
+**Event**: GUARD_STOOD_ASIDE
+**Guard**: review-freeze
+**Authority**: grant
+**Grant**: turn-marker
+**Actor**: main
+**Stage**: refined-mockups
+**Tool**: Edit
+**Details**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/inception/refined-mockups/mockups.md
+
+---
+
+## Artifact Updated
+**Timestamp**: 2026-10-27T11:08:00Z
+**Event**: ARTIFACT_UPDATED
+**Tool**: Edit
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/inception/refined-mockups/mockups.md
+**Context**: inception > refined-mockups > mockups.md
+
+---

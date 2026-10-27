@@ -140,7 +140,7 @@ The same panel follows any email (AC1.6.1); no link ever appears here. The comma
 │ │ (স) সালমা বেগম       [বেশি ঝুঁকি] › │ │
 │ │     ০১৭১১…৪৫৬৭ · মিরপুর         │ │
 │ ├──────────────────────────────┤ │
-│ │ (আ) আরিফ হোসেন     [ঝুঁকি নেই]  › │ │
+│ │ (আ) আরিফ হোসেন [কোনো ঝুঁকি নেই] › │ │
 │ └──────────────────────────────┘ │
 └──────────────────────────────────┘
 ```
@@ -159,13 +159,14 @@ The same panel follows any email (AC1.6.1); no link ever appears here. The comma
 │  উদাহরণ: ০১৭১১২২৩৩৪৪               │
 │ ⚠ এই নম্বরে আগে থেকেই আছেন: সালমা বেগম → │  non-blocking (AC3.1.3)
 │ ঠিকানা           [______________]  │
-│ ঝুঁকি   ( ) নেই (•) কম ( ) মাঝারি ( ) বেশি │
+│ ঝুঁকি (•) কোনো ঝুঁকি নেই ( ) কম        │
+│       ( ) মাঝারি ( ) বেশি              │
 │ নোট (ঐচ্ছিক)      [______________]  │
 │ [       সংরক্ষণ করুন       ]         │
 └──────────────────────────────────┘
 ```
 - The phone is normalised on blur and shown back in Bangla digits (AC3.1.2); an invalid one gets "সঠিক মোবাইল নম্বর দিন (০১ দিয়ে শুরু, ১১ সংখ্যা)".
-- Risk defaults to "নেই" (0).
+- Risk defaults to "কোনো ঝুঁকি নেই" (0); the radio labels use AC3.1.4's words (কোনো ঝুঁকি নেই / কম / মাঝারি / বেশি).
 - **Success:** opens `/customers/:id` with the toast "ক্রেতা যোগ হয়েছে".
 
 ## 8. Customer detail — `/customers/:id` (US3.2, US3.3)
