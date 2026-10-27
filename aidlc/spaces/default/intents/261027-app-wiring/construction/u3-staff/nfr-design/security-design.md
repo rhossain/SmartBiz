@@ -100,3 +100,10 @@ any U3 NFR design file (including S21, S22, S24, logical-components.md and nfr-d
 | D-04 Header source | S24 reworded: both `Cache-Control: no-store` on `/api/` and `Referrer-Policy: no-referrer` on every response come from `withHeaders` in `src/server/headers.ts`, applied by the pipeline to static and API responses. No code change; NFR4.3's tests assert them on the two link responses and on `GET /`. |
 | D-05 Port and hashing | `scripts/reset-password.ts` reads the port through the server's `readConfig` (`PORT`, default 3000). `hashToken` delegates to `src/auth/sha256.ts`; there is one SHA-256 helper. |
 | D-06 Changed-files list | logical-components.md gains a changed-files list (below in that file). |
+
+## Follow-ups from review iteration 2 (READY)
+
+| Finding | Decision |
+|---------|----------|
+| E-01 Foreign-key share locks | Reset and reset-link take the business row lock (`FOR UPDATE`) first, before the users row, so every U3 write transaction follows business → invitation → users → resets literally. The invite-versus-accept realdb test gains a case: an invite by a Manager runs against a reset of that same Manager; neither ends in a 500. `withRetry` stays as the safety net. |
+| E-02 Stale inventory row | Fixed: the row now names `src/router/screens/` and the two containers. |

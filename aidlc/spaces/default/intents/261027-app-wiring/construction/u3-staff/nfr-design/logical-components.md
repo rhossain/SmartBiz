@@ -11,7 +11,7 @@
 | Retry helper | `src/db/retry.ts` | bun process | S22, R14 |
 | Staff handlers | `src/server/handlers/staff.ts`, `src/server/handlers/auth.ts` (accept, recover, reset) | bun process | S24 |
 | Migration 0017 | `src/db/migrations/0017_unique_token_hashes.sql` | Postgres | SC6 |
-| Staff client and screens | `src/client/staff-api.ts`, `src/auth/screens/{Staff,AcceptInvite,Reset,Recover}.tsx`, `src/pres/LinkSheet.tsx` | browser tab | S24, P15 |
+| Staff client and screens | `src/client/staff-api.ts`, `src/router/screens/{Staff,Accept,Reset,Recover}.tsx` with containers `src/router/render-staff-route.tsx` and `src/router/render-token-routes.tsx`, `src/pres/LinkSheet.tsx` | browser tab | S24, P15 |
 | Terminal command | `scripts/reset-password.ts` | the Owner's terminal | S25 |
 | Role table rows | `tests/spec/role-table.ts`, `tests/spec/fixtures.ts` | test runner | role-table section of security-design |
 
