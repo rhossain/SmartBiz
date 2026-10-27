@@ -134,10 +134,10 @@ layer is implemented, together with the full existing suite, before the next lay
 
 ### Step 7 — Business logic: implement (US5.1, US5.4; BR1.3, BR3.1, BR5.2, BR6.1; S15, S16, R8; D-01, D-07, D-08)
 
-- [ ] `src/pres/view-for-kind.ts`: one exhaustive `switch` over every C1 kind plus `unreachable` (`assertNever` default) returning behaviour only (`banner`, `lock`, `not-found`, `conflict`, `sign-in`, `field`); copy stays in `src/i18n/error-copy.ts`.
-- [ ] `src/pres/use-submit-guard.ts`: `useSubmitGuard()` with a `useRef` re-entrancy latch set before the first `await`; state mirrors it for rendering (`idle | saving | saved | failed`).
-- [ ] `src/client/session-store.ts`: `returnTarget` keeps the path only (query dropped); `NOT_A_RETURN_TARGET` uses `/accept-invite` instead of `/accept` (D-01).
-- [ ] `src/router/hash-router.ts`: split the path from the query before matching; per-route parameter parsers keyed by route path and parameter name (`:id` → UUID); a parse failure resolves to the not-found screen without a request (BR1.3, F-06).
+- [x] `src/pres/view-for-kind.ts`: one exhaustive `switch` over every C1 kind plus `unreachable` (`assertNever` default) returning behaviour only (`banner`, `lock`, `not-found`, `conflict`, `sign-in`, `field`); copy stays in `src/i18n/error-copy.ts`.
+- [x] `src/pres/use-submit-guard.ts`: `useSubmitGuard()` with a `useRef` re-entrancy latch set before the first `await`; state mirrors it for rendering (`idle | saving | saved | failed`).
+- [x] `src/client/session-store.ts`: `returnTarget` keeps the path only (query dropped); `NOT_A_RETURN_TARGET` uses `/accept-invite` instead of `/accept` (D-01).
+- [x] `src/router/hash-router.ts`: split the path from the query before matching; per-route parameter parsers keyed by route path and parameter name (`:id` → UUID); a parse failure resolves to the not-found screen without a request (BR1.3, F-06).
 
 ### Step 8 — Business logic: write and run its tests
 

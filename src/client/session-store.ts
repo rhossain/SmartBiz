@@ -9,7 +9,8 @@
  *
  * W9: any 401 while signed in stores the current route, shows "আবার সাইন ইন করুন" and goes
  * to `#/sign-in`; after a successful sign-in the app goes back to the stored route, or to
- * `#/orders` when none is stored. Public routes are never stored as a return target.
+ * `#/orders` when none is stored. Public routes are never stored as a return target, and
+ * since U2 the stored route never carries a query string (S16).
  */
 import { useSyncExternalStore } from "react";
 import { createStateContainer, type StateContainer } from "../data/state-container.js";
@@ -17,7 +18,7 @@ import type { SessionResponse } from "../auth/schemas.js";
 
 export const DEFAULT_RETURN_ROUTE = "/orders";
 
-/** Routes that make no sense to come back to after signing in. */
+/** Routes that make no sense to come back to after signing in (U2: `/accept-invite`, Q2). */
 const NOT_A_RETURN_TARGET: ReadonlySet<string> = new Set([
   "",
   "/",
@@ -25,7 +26,7 @@ const NOT_A_RETURN_TARGET: ReadonlySet<string> = new Set([
   "/sign-up",
   "/recover",
   "/reset",
-  "/accept",
+  "/accept-invite",
   "/lock",
   "/not-found",
 ]);
@@ -52,9 +53,14 @@ export const INITIAL_SESSION: SessionState = {
 export const createSessionStore = (initial: SessionState = INITIAL_SESSION): SessionStore =>
   createStateContainer<SessionState>(initial);
 
+/**
+ * U2 (S16, R9; D-01, F-06; NFR5.7, NFR7.12): the remembered route is the PATH only.
+ * Everything from `?` is dropped, so a token in a query (`#/accept-invite?t=…`) is never
+ * stored in memory and never resent after sign-in.
+ */
 const returnTarget = (route: string): string | null => {
   const path = route.split("?")[0] ?? "";
-  return NOT_A_RETURN_TARGET.has(path) ? null : route;
+  return NOT_A_RETURN_TARGET.has(path) ? null : path;
 };
 
 /** Signed in: the server's session view; the notice and any return route are kept for `returnRoute`. */
