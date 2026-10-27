@@ -1,6 +1,103 @@
 # SmartBiz BD — Dependencies
 
-## Scope
+> **Store history.** Prototype dependencies from intent `261004-mvp` (2026-10-04). Production dependencies added by intent `261027-app-wiring` (2026-10-27). Versions are in `technology-stack.md`.
+
+## Production dependencies
+
+### 1. External packages by runtime
+
+| Package | Browser | Server | Test | Notes |
+|---|---|---|---|---|
+| react, react-dom | yes | — | yes | |
+| zod | yes (if screens validate) | yes | yes | Runtime dependency; advisories on it fail Build and Test (project.md §Testing Posture) |
+| postgres | **must not** | yes | yes (realdb, via stub elsewhere) | Pool singleton in `src/db/client.ts` |
+| argon2 | **must not** (native) | yes | yes | |
+| `node:crypto`, `node:fs`, `node:path` | **must not** | yes | yes | `node:crypto` currently reaches the browser closure (P-1) |
+| happy-dom, @testing-library/react | — | — | yes | |
+| vite, @vitejs/plugin-react | build | — | — | |
+
+### 2. External services
+
+| Service | Status | Notes |
+|---|---|---|
+| PostgreSQL (managed, free tier, team.md §Dep-3) | Required; schema in 10 migrations | Only external service the code talks to |
+| Email delivery | Interface only (`EmailGateway`), with no-op and failing gateways | Invites and recovery need a real gateway or a documented manual fallback |
+| Google Fonts | Preloaded by `src/pres/typography.ts` | href likely not a valid stylesheet (P-14); team.md §CS-10 asks for a self-hosted or system Bengali fallback |
+| Courier, payment, LLM providers | None | Out of scope for MVP (scope-md §7) |
+
+### 3. Internal module dependencies
+
+```mermaid
+flowchart LR
+    index["index.tsx"] --> pres["pres/"]
+    index --> i18n["i18n/"]
+    pres --> i18n
+    router["router/"] --> auth_gate["auth/ capability + gate"]
+    router --> oscreens["orders/screens/"]
+    router --> types["types/ (node:crypto)"]
+    oscreens --> opure["orders/ pure logic"]
+    oscreens --> money["money/"]
+    oscreens --> i18n
+    opure --> obs["observability/ (node:crypto, process)"]
+    orepo["orders/ repository"] --> db["db/"]
+    orepo --> audit["audit/"]
+    orepo --> data["data/ zod, clock"]
+    orepo --> opure
+    auth_svc["auth/ services"] --> db
+    auth_svc --> audit
+    auth_svc --> types
+    auth_svc --> data
+    audit --> db
+    audit --> obs
+    audit --> types
+    db --> pg[("Postgres")]
+```
+
+Text fallback: `index.tsx` depends only on `pres/` and `i18n/`. The router depends on the pure auth gate, the order screens and `types/` (which imports `node:crypto`). The order screens depend on the pure order logic, `money/` and `i18n/`; the pure order logic reaches `observability/` (node-only) through `order-draft.ts → log.ts`. The order repository and the auth services both depend on `db/`, `audit/`, `data/` and `types/`. `audit/` depends on `db/`, `observability/` and `types/`. No circular imports were found among the files the developer read.
+
+### 4. Browser-closure dependency problem (verified by the developer)
+
+Every module reachable from `src/router/dispatch.ts` was walked (46 files). Two edges pull node-only code into what must become the browser bundle:
+
+| Edge | Node-only API | Fix direction |
+|---|---|---|
+| `router/hash-router.ts → types/uuid.ts` (for `isUuid`) | `node:crypto.randomUUID` | Move `isUuid` (pure regex) into a browser-safe module, or use `globalThis.crypto.randomUUID` |
+| `orders/order-draft.ts → observability/log.ts → observability/correlation.ts` | `node:crypto.randomBytes`, `process.stdout.write` | Inject a logger, or split a browser logger from the server logger |
+
+A trial `vite build` of `src/router/dispatch.ts` in the scratchpad failed with `src/types/uuid.ts (7:9): "randomUUID" is not exported by "__vite-browser-external"`. [dev-scan §"Build System"]
+
+### 5. Database object dependencies
+
+```
+users ◄── businesses.owner_user_id (RESTRICT)
+users ◄── sessions.user_id, password_resets.user_id (CASCADE), invitations.created_by (RESTRICT)
+users ◄── audit_log.actor_user_id, orders.created_by, consignment_link.linked_by (SET NULL)
+businesses ◄── sessions.business_id, invitations.business_id (NOT NULL, CASCADE)
+businesses ◄── audit_log.business_id, orders.business_id, order_items.business_id,
+               consignment_link.business_id (NOT NULL, RESTRICT)
+audit_log ◄── audit_log.reverses_id (self, RESTRICT)
+orders ◄── order_items.order_id, consignment_link.order_id (UNIQUE), orders.repeat_of_order_id
+orders: UNIQUE (business_id, order_no), order_no drawn from one global sequence
+orders.customer_id, order_items.variant_id → TEXT, no FK (customers and products have no tables yet)
+```
+
+The two `NOT NULL` foreign keys to `businesses` are why the zero-UUID fallback in `signIn` and `requestRecovery` fails on real Postgres (P-2).
+
+### 6. Grant dependencies
+
+The future server process connects as a member of `app_role`. Its grants (migrations 0007–0010) cover `audit_log`, `orders`, `order_items`, `consignment_link` and the order sequence only. The auth functions depend on SELECT, INSERT, UPDATE and DELETE on five tables that have **no grants** (P-5).
+
+### 7. Upstream design-contract dependencies
+
+The production code cites FR, NFR, BR and ADR ids from the `261004-mvp` record (functional design, NFR design, unit-of-work). The prototype's `screen-map.js` contract is not imported by production code; there is no story-coverage analogue yet.
+
+---
+
+## Prototype reference (`prototype/`, preserved from the 261004-mvp scan of 2026-10-04)
+
+The prose below was written by the 261004-mvp reverse-engineering run against `prototype/` and is kept unchanged except that every heading moved down one level. The prototype is read-only guidance (team.md §WoW-4); it was not re-read in depth by this run.
+
+### Scope
 
 The prototype has **zero runtime dependencies**. The only network resource is the Google Fonts stylesheet declared in `index.html`. The test sub-package (`prototype/tests/`) has two resolved npm packages and one external binary (Google Chrome).
 
@@ -8,7 +105,7 @@ This document enumerates **every dependency** in the prototype — runtime, test
 
 ---
 
-## 1. Runtime dependencies
+### 1. Runtime dependencies
 
 **None.** No npm runtime libraries, no bundled JavaScript, no CSS preprocessor output. The application runs in any modern browser that supports ES5 IIFEs, `Array.prototype.forEach`, `Object.keys`, custom properties, and CSS3 transitions.
 
@@ -22,7 +119,7 @@ No analytics, no telemetry, no service workers, no manifest, no `localStorage`, 
 
 ---
 
-## 2. Test-time dependencies (`prototype/tests/`)
+### 2. Test-time dependencies (`prototype/tests/`)
 
 Declared in `prototype/tests/package.json` line 18–19. The `node_modules/` directory is gitignored.
 
@@ -39,7 +136,7 @@ External binary (hard-coded path; not in `package.json`):
 
 ---
 
-## 3. Build-time / design-contract dependencies
+### 3. Build-time / design-contract dependencies
 
 These are **not** npm packages but are loaded at runtime by the prototype and must be reachable at boot/test time.
 
@@ -52,7 +149,7 @@ These two contracts are the **authoritative design surface**. The prototype's `A
 
 ---
 
-## 4. Inter-file load-order graph
+### 4. Inter-file load-order graph
 
 There are no `import` statements anywhere in `prototype/js/`. The dependency graph is the **load order** declared in `index.html` lines 62–73:
 
@@ -72,7 +169,7 @@ i18n.js
 
 Every module declares `window.App = window.App || {};` so the global is additive; every screen module writes to `App.screens`, `App.actions`, `App.state`, and (in one case) `App.parseMessage`.
 
-### 4.1 Each module's dependencies
+#### 4.1 Each module's dependencies
 
 | Module | Reads from `App.*` | Writes to `App.*` |
 |---|---|---|
@@ -87,7 +184,7 @@ Every module declares `window.App = window.App || {};` so the global is additive
 | `screens-journeys.js` | `L`, `bnDigits`, `esc`, `ui`, `I`, `lang`; `window.SMARTBIZ_SCREEN_MAP` | `screens.journeys`; `actions.{journey-action,journey-proof-toast}` |
 | `app.js` | **All** (`L`, `lang`, `role`, `device`, `aiOn`, `summary`, `RECOGNITION`, `orders`, `screen`, `I`, `ui`, `n`, `sheetStack`, `ROLES`, `canReach`, `toast`, `closeSheet`) | `go`, `back`, `render`, `rerender`, `SCREEN_INDEX`, `history`, `screens`/`actions` (re-asserted), `boot`; `actions.{completeness-why,basis-why}`; built-ins `back`/`close-sheet`/`noop`/`toggle`/`press`/`pick` |
 
-### 4.2 Boot-time contracts
+#### 4.2 Boot-time contracts
 
 `app.js` line 420:
 
@@ -102,7 +199,7 @@ The boot path depends on the order of script-tag evaluation: the IIFEs populate 
 
 ---
 
-## 5. CSS file dependencies
+### 5. CSS file dependencies
 
 ```
 tokens.css  (no @imports, no external fonts)
@@ -114,7 +211,7 @@ All three files are loaded by `<link>` tags in `index.html` lines 10–12 (in th
 
 ---
 
-## 6. External services and integrations
+### 6. External services and integrations
 
 **None.** No live integrations of any kind. The "Courier & COD" module is **fully simulated** — every courier (`pathao`, `steadfast`, `redx`, `self`) is a row in `App.couriers`, and the seeded `App.settlementRun` represents an imported payout file (`pathao_payout_2026-08-31.csv`). The paste-parser consumes a hard-coded `DEMO_MSG` (`screens-orders.js` line 130–136). The voice-dictation flow is a UI state toggle without actual microphone access.
 
@@ -122,7 +219,7 @@ This is consistent with `scope-md §7` (out-of-scope: "Direct Pathao/RedX/Steadf
 
 ---
 
-## 7. What this list is *not*
+### 7. What this list is *not*
 
 - It is **not** the production dependency list. The production system will require a bundler, a transpiler (or modern-ES target), a typing layer, a runtime framework (or commitment to vanilla), a database driver, a server framework, an LLM provider for `QUERIES`, and CI/CD tooling.
 - It is **not** the design contract. Story IDs, titles, states, proof copy, and screen map are owned by the mockup set (`screen-map.js`, `epics.md`); the prototype's `App.SCREEN_INDEX` honours but does not own them.
@@ -131,6 +228,16 @@ This is consistent with `scope-md §7` (out-of-scope: "Direct Pathao/RedX/Steadf
 ---
 
 ## Sources
+
+- `[dev-scan]` — this run's developer scan: build dependencies, browser and server split (trial build), schema, grants
+- `[package.json]`, `[bun.lock]` — external packages
+- `[src/db/migrations/0001–0010]` — foreign keys and grants (grant lines re-read by the architect)
+- `[src/router/dispatch.ts]`, `[src/router/routes.ts]` — imports (re-read by the architect)
+- `[team.md §Dep-3, §CS-10]` — free-tier managed DB; Bengali font fallback
+- `[project.md §Testing Posture]` — advisories on runtime dependencies
+- `[scope-md §7]` — out-of-scope integrations
+
+### Prototype sources (preserved from the 261004-mvp scan)
 
 - `[dev-scan]` — full developer scan, frameworks & libraries, build system, dependencies between files
 - `[prototype:index.html]` — Google Fonts `<link>` (line 9), preconnect (lines 7–8), `<link>` order (lines 10–12), `<script>` load order (lines 62–73)

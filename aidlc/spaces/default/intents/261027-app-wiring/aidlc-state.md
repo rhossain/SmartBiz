@@ -22,7 +22,7 @@
 - **Review Override**: 
 - **Guard Policy**: relaxed (from scope feature)
 - **Sensors**: on (from scope feature)
-- **Learnings**: on (from scope feature)
+- **Learnings**: off (set by a command)
 - **Summary Confirmation**: off (set by you)
 - **Plan Approval**: on (from scope feature)
 - **Collaborators**: on (from scope feature)
@@ -105,7 +105,7 @@ Per unit: [TBD]
 - **Current Stage**: reverse-engineering
 - **Next Stage**: practices-discovery
 - **Status**: Running
-- **Last Updated**: 2026-10-27T09:54:03Z
+- **Last Updated**: 2026-10-27T09:55:34Z
 
 ## Session Resume Point
 - **Last Completed Stage**: approval-handoff
