@@ -109,3 +109,10 @@ NFR6.24's verification becomes: the realdb test asserts both unique indexes exis
 | ID | Requirement | Verification |
 |----|-------------|--------------|
 | NFR3.25 | `bun run reset-password` connects with `DATABASE_URL` as an `app_role` member (never the admin URL; it refuses when `MIGRATE_DATABASE_URL` is set, as the server does), prints the link once on stdout and nothing else there, logs nothing, and writes `auth.reset_link_created {targetUserId, by: null, via: "terminal"}` | script test against a realdb database: stdout is one line; the audit row matches; with only the admin URL it exits 1 |
+
+## Follow-ups from review iteration 2 (READY)
+
+| Finding | Decision |
+|---------|----------|
+| P-01 The NFR7.16 race must hold B's transaction open | NFR7.16's realdb test is re-specified: request B runs with an injected hook that pauses **inside** its transaction, after it has locked the token row and marked it used but before commit; request A then runs to its locked read and must block (asserted through `pg_locks`/`pg_stat_activity` showing A waiting on B's lock); B commits; A must get 410 with nothing written. With `FOR UPDATE` removed (the mutant), A reads the row as still unused under READ COMMITTED and proceeds, so the test fails. The same pattern applies to resets. |
+| P-02 Test hooks | The pause points are an injected optional dependency of the domain function (`deps.hooks?.afterLock`, `deps.hooks?.beforeTransaction`), absent in production wiring (`startServer` never passes it); no environment flag and no global. A unit test asserts `startServer`'s deps carry no hooks. |
