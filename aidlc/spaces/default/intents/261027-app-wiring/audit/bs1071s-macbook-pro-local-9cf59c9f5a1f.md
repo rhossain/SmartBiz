@@ -3832,3 +3832,73 @@
 **Agent**: aidlc-design-agent
 
 ---
+
+## Artifact Created
+**Timestamp**: 2026-10-27T11:00:36Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/inception/refined-mockups/refined-mockups-questions.md
+**Context**: inception > refined-mockups > refined-mockups-questions.md
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-10-27T11:01:44Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/inception/refined-mockups/mockups.md
+**Context**: inception > refined-mockups > mockups.md
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-10-27T11:02:33Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/inception/refined-mockups/interaction-spec.md
+**Context**: inception > refined-mockups > interaction-spec.md
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-10-27T11:02:48Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/inception/refined-mockups/design-system-mapping.md
+**Context**: inception > refined-mockups > design-system-mapping.md
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-10-27T11:03:02Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/inception/refined-mockups/accessibility-checklist.md
+**Context**: inception > refined-mockups > accessibility-checklist.md
+
+---
+
+## Decision Recorded
+**Timestamp**: 2026-10-27T11:03:09Z
+**Event**: DECISION_RECORDED
+**Stage**: refined-mockups
+**Decision**: Refined Mockups executed without rough mockups (skipped in Ideation): designs drawn from stories, requirements, src/pres and the prototype's catalog screens. Q1-Q7 answered A by the assistant on the Owner's standing instruction.
+
+---
+
+## Question Answered
+**Timestamp**: 2026-10-27T11:03:09Z
+**Event**: QUESTION_ANSWERED
+**Stage**: refined-mockups
+**Details**: Q1-Q7 all A (see refined-mockups-questions.md)
+
+---
+
+## Artifact Updated
+**Timestamp**: 2026-10-27T11:03:20Z
+**Event**: ARTIFACT_UPDATED
+**Tool**: Edit
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/inception/refined-mockups/design-system-mapping.md
+**Context**: inception > refined-mockups > design-system-mapping.md
+
+---
