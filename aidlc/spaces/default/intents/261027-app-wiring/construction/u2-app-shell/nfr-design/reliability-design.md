@@ -21,7 +21,7 @@ Retry calls the screen's own load function again; the client still retries a GET
 
 ## R9 — Session expiry mid-screen (NFR7.12)
 
-U1's `http.onUnauthenticated` stores the path (without query, S16) and shows sign-in; after success the app navigates back. `ApiState` renders nothing for `unauthenticated`, so there is one handoff (F-01).
+U1's `http.onUnauthenticated` hands the current route to `session-store.ts`, which today keeps the whole route, query included. U2 changes `returnTarget` to keep the path only (S16, revised) and shows sign-in; after success the app navigates back to that path. `ApiState` renders nothing for `unauthenticated`, so there is one handoff (F-01).
 
 ## R10 — Conflicts (NFR7.13)
 

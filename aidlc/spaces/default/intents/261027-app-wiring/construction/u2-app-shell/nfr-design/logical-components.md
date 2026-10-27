@@ -34,3 +34,15 @@
 - PresentationComponent imports neither RouterComponent nor `src/client` (F-01); `App` wires them.
 - The audit read lives in AuthComponent's AuditService (`src/audit/`), with SQL in the domain function and the connection injected (team.md); the handler only parses, calls and maps.
 - Test-only modules (`tests/spec/*`, `scripts/browser-check.ts`) are outside `src`, so they are not in the bundle and not in the coverage floor.
+
+## Added after review iteration 1
+
+| Logical component | Code location | Runs in | NFR patterns applied |
+|-------------------|---------------|---------|----------------------|
+| Return route | `src/client/session-store.ts` (path only; `/accept-invite`) | browser tab | S16, R9 (D-01) |
+| Gate runner | `scripts/gate.ts` (steps 5b and 14b, `browser:` fact, dependency check) | developer shell | P12, O12, O14, S17 (D-03) |
+| Benchmark | `tests/perf/order-api.bench.ts` (audit timings, default small check and large profile) | developer shell | P9 (D-10) |
+| Dependency list | `tests/spec/dependencies.json` | test runner | S17 (D-03) |
+| Fixtures | `tests/spec/fixtures.ts` (one success body per API route, parsed with the shared schemas) | test runner | S11, S14 (D-04) |
+| Kind behaviour | `src/pres/view-for-kind.ts` (behaviour only; copy stays in `src/i18n/error-copy.ts`) | browser tab | S15 (D-07) |
+| Audit export | `src/audit/audit-export.ts` (own batched, retention-filtered read with payload) | bun process | S13 (D-06) |
