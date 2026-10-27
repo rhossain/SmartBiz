@@ -216,13 +216,13 @@ that layer is implemented, together with the full existing suite, before the nex
 
 ### Step 12 — Frontend behaviour: write and run its tests
 
-- [ ] `tests/unit/client-http.test.ts`: timeout at 10 s (frozen clock / fake timers), GET retried once, POST never retried, status → kind.
-- [ ] `tests/unit/session-return.test.ts`: 401 stores the route and returns to it after sign-in; default `#/orders`.
-- [ ] `tests/integration/sign-in-screen.test.tsx`, `sign-up-screen.test.tsx` (happy-dom): field errors, identical failure message, 429 minutes, setup routing.
-- [ ] Update `tests/integration/orders-screens.test.tsx` and `manual-order-screen.test.tsx`: screens use a stubbed client; saved order appears without reload; field errors keep values; loading/empty/error states.
-- [ ] `tests/unit/shell.test.tsx`: email and role shown; sign-out calls the API.
-- [ ] Update `tests/unit/router.test.ts`, `role-lock-reach.test.tsx`, `screens.test.tsx` for the moved Lock and mounted routes.
-- [ ] Run the step's tests plus the full suite.
+- [x] `tests/unit/client-http.test.ts`: timeout at 10 s (frozen clock / fake timers), GET retried once, POST never retried, status → kind.
+- [x] `tests/unit/session-return.test.ts`: 401 stores the route and returns to it after sign-in; default `#/orders`.
+- [x] `tests/integration/sign-in-screen.test.tsx`, `sign-up-screen.test.tsx` (happy-dom): field errors, identical failure message, 429 minutes, setup routing.
+- [x] Update `tests/integration/orders-screens.test.tsx` and `manual-order-screen.test.tsx`: screens use a stubbed client; saved order appears without reload; field errors keep values; loading/empty/error states.
+- [x] `tests/unit/shell.test.tsx`: email and role shown; sign-out calls the API.
+- [x] Update `tests/unit/router.test.ts`, `role-lock-reach.test.tsx`, `screens.test.tsx` for the moved Lock and mounted routes.
+- [x] Run the step's tests plus the full suite.
 
 ### Step 13 — Environment / build configuration (US1.1, US1.7a, US5.2a; BR1.12, BR7.2, BR10.1–BR10.3; NFR8.x, NFR9.x)
 

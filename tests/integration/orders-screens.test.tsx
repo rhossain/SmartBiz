@@ -418,3 +418,106 @@ describe("U3 screens", () => {
     }
   });
 });
+
+// U1 (BR8.3, BR8.5): the list and detail now show the API request's state.
+describe("U1 — list and detail request states", () => {
+  const listProps = {
+    nextCursor: null,
+    locale: "bn" as const,
+    canMutate: true,
+    onOpen: noop,
+    onLoadMore: noop,
+    onFilter: noop,
+    onSave: async () => ({ ok: false as const, error: { kind: "unreachable" } }),
+  };
+
+  test("loading shows nothing for 300 ms, then the loading line", async () => {
+    const view = render(
+      <OrdersList {...listProps} orders={[]} draft={createOrderDraftStore()} loading />,
+    );
+    expect(view.queryByTestId("request-loading")).toBeNull();
+    expect(view.queryByTestId("orders-empty")).toBeNull();
+    await act(async () => {
+      await new Promise((r) => setTimeout(r, 320));
+    });
+    expect(view.getByTestId("request-loading").textContent).toBe("লোড হচ্ছে…");
+  });
+
+  test("empty says এখনো কোনো অর্ডার নেই with the new-order links, only for roles that may create", () => {
+    const view = render(<OrdersList {...listProps} orders={[]} draft={createOrderDraftStore()} />);
+    expect(view.getByTestId("orders-empty").textContent).toBe("এখনো কোনো অর্ডার নেই");
+    expect(view.getByTestId("orders-new-manual").getAttribute("href")).toBe("#/orders/new");
+    cleanup();
+    const readOnly = render(
+      <OrdersList {...listProps} canMutate={false} orders={[]} draft={createOrderDraftStore()} />,
+    );
+    expect(readOnly.queryByTestId("orders-new-links")).toBeNull();
+  });
+
+  test("an error shows the banner and retry calls back; no rows are shown", () => {
+    let retried = 0;
+    const view = render(
+      <OrdersList
+        {...listProps}
+        orders={[]}
+        draft={createOrderDraftStore()}
+        errorKind="db_unavailable"
+        onRetry={() => {
+          retried += 1;
+        }}
+      />,
+    );
+    expect(view.getByTestId("error-banner-message").textContent).toBe(
+      "ডাটাবেস চালু নেই। কিছুক্ষণ পর আবার চেষ্টা করুন।",
+    );
+    expect(view.queryByTestId("orders-empty")).toBeNull();
+    fireEvent.click(view.getByTestId("error-banner-retry"));
+    expect(retried).toBe(1);
+  });
+
+  test("summary rows render, and the saved notice sits at the top", () => {
+    const row = {
+      id: "0f0f0f0f-0f0f-4f0f-8f0f-0f0f0f0f0f0f",
+      orderNo: "ORD-1001",
+      status: "new" as const,
+      source: "manual" as const,
+      totalPaise: 55_000,
+    };
+    const view = render(
+      <OrdersList {...listProps} orders={[row]} draft={createOrderDraftStore()} notice="saved" />,
+    );
+    expect(view.getByTestId("orders-saved-notice").textContent).toBe("সংরক্ষণ হয়েছে");
+    expect(view.getAllByTestId("orders-row")[0]?.getAttribute("data-order-id")).toBe(row.id);
+    expect(assertEveryMoneyHasBasis(view.container)).toBeGreaterThan(0);
+  });
+
+  test("detail: loading, then not found without a retry; another error offers retry", async () => {
+    const base: OrdersRouteState = {
+      kind: "orders",
+      locale: "bn",
+      canMutate: true,
+      draft: createOrderDraftStore(),
+      page: { orders: [], nextCursor: null },
+      current: null,
+      onOpen: noop,
+      onLoadMore: noop,
+      onFilter: noop,
+      onSave: listProps.onSave,
+      onTransition: noop,
+      onRepeat: noop,
+      onRetryCurrent: noop,
+    };
+    const loading = render(renderOrdersScreen("detail", { ...base, currentLoading: true })!);
+    await act(async () => {
+      await new Promise((r) => setTimeout(r, 320));
+    });
+    expect(loading.getByTestId("request-loading")).toBeDefined();
+    cleanup();
+    const missing = render(renderOrdersScreen("detail", { ...base, currentError: "not_found" })!);
+    expect(missing.getByTestId("error-banner-message").textContent).toBe("পাওয়া যায়নি");
+    expect(missing.queryByTestId("error-banner-retry")).toBeNull();
+    cleanup();
+    const down = render(renderOrdersScreen("detail", { ...base, currentError: "unreachable" })!);
+    expect(down.getByTestId("error-banner-retry")).toBeDefined();
+  });
+});

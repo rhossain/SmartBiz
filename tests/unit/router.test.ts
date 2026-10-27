@@ -21,8 +21,29 @@ describe("router coverage", () => {
       "/business",
       "/settings",
       "/lock",
+      "/not-found",
     ];
     for (const p of expected) expect(routes.has(p as never)).toBe(true);
+  });
+
+  // U1: sign-in, sign-up, lock and not-found are mounted on real screens; sign-in and
+  // sign-up render only from the auth route state, never from foreign state.
+  test("U1 public routes render their screens", () => {
+    const render = (path: string, state: unknown): unknown =>
+      routes.get(path as never)!.render(state);
+    expect(render("/sign-in", { kind: "other" })).toBeNull();
+    expect(render("/sign-up", undefined)).toBeNull();
+    const auth = {
+      kind: "auth",
+      notice: null,
+      signIn: async () => ({ ok: true, status: 200, value: undefined }),
+      signUp: async () => ({ ok: true, status: 201, value: undefined }),
+      onSignedIn: () => undefined,
+    };
+    for (const path of ["/sign-in", "/sign-up", "/lock", "/not-found"]) {
+      expect({ path, rendered: render(path, auth) !== null }).toEqual({ path, rendered: true });
+    }
+    expect(routes.get("/not-found")?.requiredCapability).toBeNull();
   });
 
   test("dispatch with no session on a public route renders", () => {

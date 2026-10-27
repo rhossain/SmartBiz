@@ -1,11 +1,12 @@
 /**
- * Coverage booster — render each screen.
+ * Coverage booster — render each screen. Sign-in and sign-up moved to their own
+ * integration tests in U1 (tests/integration/sign-in-screen.test.tsx and
+ * sign-up-screen.test.tsx), because they now call the API.
  */
 import { describe, expect, test } from "bun:test";
 import * as React from "react";
-import { render, cleanup, act, fireEvent } from "@testing-library/react";
-import { SignInScreen } from "../../src/router/screens/SignIn.js";
-import { SignUpScreen } from "../../src/router/screens/SignUp.js";
+import { render, cleanup, fireEvent } from "@testing-library/react";
+import { NotFoundScreen } from "../../src/pres/NotFound.js";
 import { RecoverScreen } from "../../src/router/screens/Recover.js";
 import { ResetScreen } from "../../src/router/screens/Reset.js";
 import { AcceptScreen } from "../../src/router/screens/Accept.js";
@@ -15,47 +16,11 @@ import { AuditTrailPlaceholder } from "../../src/router/screens/AuditTrailPlaceh
 import { setLocale } from "../../src/i18n/useTranslations.js";
 
 describe("screens render and submit", () => {
-  test("SignInScreen submits with values", () => {
+  test("NotFoundScreen says পাওয়া যায়নি and links back to orders", () => {
     setLocale("bn");
-    const { getByTestId } = render(
-      <SignInScreen
-        onSubmit={(e, p) => {
-          (globalThis as { lastSubmit?: unknown }).lastSubmit = { e, p };
-        }}
-      />,
-    );
-    act(() => {
-      fireEvent.change(getByTestId("field-email"), { target: { value: "x@e.com" } });
-      fireEvent.change(getByTestId("field-password"), { target: { value: "verysecret" } });
-    });
-    act(() => {
-      fireEvent.submit(getByTestId("sign-in-form"));
-    });
-    expect((globalThis as { lastSubmit?: { e: string; p: string } }).lastSubmit).toEqual({
-      e: "x@e.com",
-      p: "verysecret",
-    });
-    cleanup();
-  });
-
-  test("SignUpScreen submits with values", () => {
-    setLocale("bn");
-    const { getByTestId } = render(
-      <SignUpScreen
-        onSubmit={(email, password, businessName) => {
-          (globalThis as { lastSubmit?: unknown }).lastSubmit = { email, password, businessName };
-        }}
-      />,
-    );
-    act(() => {
-      fireEvent.change(getByTestId("field-email"), { target: { value: "x@e.com" } });
-      fireEvent.change(getByTestId("field-password"), { target: { value: "verysecret" } });
-      fireEvent.change(getByTestId("field-businessName"), { target: { value: "Acme" } });
-    });
-    act(() => {
-      fireEvent.submit(getByTestId("sign-up-form"));
-    });
-    expect((globalThis as { lastSubmit?: unknown }).lastSubmit).toBeDefined();
+    const { getByTestId } = render(<NotFoundScreen />);
+    expect(getByTestId("screen-title").textContent).toBe("পাওয়া যায়নি");
+    expect(getByTestId("not-found-home").getAttribute("href")).toBe("#/orders");
     cleanup();
   });
 

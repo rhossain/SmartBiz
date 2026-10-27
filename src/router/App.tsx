@@ -43,6 +43,7 @@ import {
 } from "../client/orders-store.js";
 import {
   needsSignIn,
+  rememberRoute,
   returnRoute,
   sessionEnded,
   signedIn,
@@ -149,6 +150,8 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
       needsSignIn(sessions, rawHash());
       const setup = await auth.setup();
       if (!live) return;
+      // An unknown hash stays on not-found; anything else goes to the first-run form or sign-in.
+      if (matchRoute(rawHash())?.path === "/not-found") return;
       if (setup.ok && !setup.value.businessExists) navigate("/sign-up");
       else if (PUBLIC_ENTRY.has(rawHash()) && rawHash() !== "/sign-in") navigate("/sign-in");
     };
@@ -163,10 +166,12 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
   const routeId = match?.params["id"] ?? null;
   const signedInSession = session.status === "signed_in" ? session.session : null;
 
-  // Signed in on an entry route: go on to the orders list.
+  // Signed in on an entry route (load, sign-in, sign-up): go to the remembered route, else
+  // the orders list (W9 step 2). This is the one place that navigates after signing in, so
+  // the return route cannot be overtaken by a second navigation.
   React.useEffect(() => {
-    if (signedInSession && PUBLIC_ENTRY.has(routePath ?? "")) navigate("/orders");
-  }, [signedInSession, routePath]);
+    if (signedInSession && PUBLIC_ENTRY.has(routePath ?? "")) navigate(returnRoute(sessions));
+  }, [signedInSession, routePath, sessions]);
 
   // Entering an order route loads what it shows (BR8.3).
   React.useEffect(() => {
@@ -223,10 +228,8 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
     navigate("/orders/new/repeat");
   };
 
-  const onSignedIn = (s: SessionResponse): void => {
-    signedIn(sessions, s);
-    navigate(returnRoute(sessions));
-  };
+  // The entry-route effect above then navigates to the return route.
+  const onSignedIn = (s: SessionResponse): void => signedIn(sessions, s);
 
   const onSignOut = (): void => {
     setSigningOut(true);
@@ -287,7 +290,7 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
   React.useEffect(() => {
     if (redirectTo === null) return;
     // Remember the gated route, so sign-in comes back to it (W9 step 2).
-    if (redirectTo === "/sign-in") needsSignIn(sessions, path);
+    if (redirectTo === "/sign-in") rememberRoute(sessions, path);
     navigate(redirectTo);
   }, [redirectTo, path, sessions]);
 

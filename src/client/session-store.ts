@@ -74,6 +74,12 @@ export const needsSignIn = (store: SessionStore, currentRoute: string): void =>
     returnTo: returnTarget(currentRoute),
   });
 
+/** The gate sent a signed-out person to sign-in: remember the route, keep any notice. */
+export const rememberRoute = (store: SessionStore, currentRoute: string): void => {
+  const target = returnTarget(currentRoute);
+  if (target !== null) store.update((s) => ({ ...s, returnTo: target }));
+};
+
 /** W9 step 1: a 401 in use. Remember the route, show the notice, go to sign-in. */
 export const sessionEnded = (
   store: SessionStore,

@@ -13,7 +13,7 @@ import type { Role } from "../../src/data/enums.js";
 describe("R1.2 — three-layer gate absence", () => {
   test("(1) every U1 route has a gate (or is explicitly public)", () => {
     for (const [path, route] of routes) {
-      // Public routes: /, /sign-in, /sign-up, /recover, /reset, /accept, /lock.
+      // Public routes: /, /sign-in, /sign-up, /recover, /reset, /accept, /lock, /not-found (U1).
       const isPublic = [
         "/",
         "/sign-in",
@@ -22,6 +22,7 @@ describe("R1.2 — three-layer gate absence", () => {
         "/reset",
         "/accept",
         "/lock",
+        "/not-found",
       ].includes(path);
       if (isPublic) {
         expect(route.requiredCapability).toBeNull();
@@ -97,6 +98,7 @@ const REACH: Readonly<Record<string, ReadonlyArray<Role> | typeof PUBLIC>> = {
   "/reset": PUBLIC,
   "/accept": PUBLIC,
   "/lock": PUBLIC,
+  "/not-found": PUBLIC,
   "/orders": ["owner", "manager", "sales_staff", "accountant"],
   "/orders/:id": ["owner", "manager", "sales_staff", "accountant"],
   // Owner decision 2026-10-26 (M-07): Owner, Manager and Sales Staff mutate orders; Accountant reads only.
@@ -170,7 +172,7 @@ describe("R1.2 extended (B2) — every U1 + U3 route gated by absence", () => {
     expect(detail.kind === "render" && detail.params).toEqual({ id: ORDER_ID });
   });
 
-  test("a malformed or unknown order path never reaches a screen", () => {
+  test("a malformed or unknown order path never reaches a screen; it lands on /not-found", () => {
     for (const raw of [
       "/orders/not-a-uuid",
       "/orders/ORD-1001",
@@ -179,7 +181,7 @@ describe("R1.2 extended (B2) — every U1 + U3 route gated by absence", () => {
       "/nope",
     ]) {
       const o = dispatchPath(raw, session("owner"), 1, undefined);
-      expect({ raw, o: o.kind === "redirect" && o.to }).toEqual({ raw, o: "/" });
+      expect({ raw, o: o.kind === "redirect" && o.to }).toEqual({ raw, o: "/not-found" });
     }
     // An exact route wins over the :id pattern.
     const create = dispatchPath("/orders/new", session("owner"), 1, undefined);
