@@ -1,0 +1,11 @@
+-- 0016 — AuthComponent (AuditService), U2 u2-app-shell: the audit trail's keyset index (P9,
+-- SC1; NFR6.13, NFR6.17; review N-03).
+--
+-- `GET /api/audit` reads one business's rows newest first, seeking past a cursor on
+-- (occurred_at, id) and filtering by retention_until (src/audit/audit-read.ts). This index
+-- serves that seek in key order, so a page costs the same at 20 000 rows as at 200; the
+-- older audit_log_business_idx from 0006 stays. An index needs no grant, so the exact grant
+-- set is unchanged (NFR2.4).
+--
+-- Idempotent: IF NOT EXISTS, so a second migrate run changes nothing.
+CREATE INDEX IF NOT EXISTS audit_log_business_keyset_idx ON audit_log (business_id, occurred_at DESC, id DESC);

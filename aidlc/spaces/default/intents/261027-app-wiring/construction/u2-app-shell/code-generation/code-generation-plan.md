@@ -111,8 +111,8 @@ layer is implemented, together with the full existing suite, before the next lay
 
 ### Step 3 — Data model / database behaviour: implement (US5.4 audit trail; P9, SC1; NFR6.13, NFR6.17)
 
-- [ ] `src/db/migrations/0016_add_audit_log_keyset_idx.sql`: header naming AuthComponent (AuditService) and U2; `CREATE INDEX IF NOT EXISTS audit_log_business_keyset_idx ON audit_log (business_id, occurred_at DESC, id DESC);` no grant.
-- [ ] Confirm `insertAudit` writes `occurred_at` from the app clock at millisecond precision (D-05); state it in `audit-read.ts`'s header.
+- [x] `src/db/migrations/0016_add_audit_log_keyset_idx.sql`: header naming AuthComponent (AuditService) and U2; `CREATE INDEX IF NOT EXISTS audit_log_business_keyset_idx ON audit_log (business_id, occurred_at DESC, id DESC);` no grant.
+- [x] Confirm `insertAudit` writes `occurred_at` from the app clock at millisecond precision (D-05); state it in `audit-read.ts`'s header.
 
 ### Step 4 — Data model / database behaviour: write and run its tests
 
