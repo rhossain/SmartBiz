@@ -586,6 +586,8 @@ export const makeSqlStub = (
         .filter((u) => String(u["email"]).toLowerCase() === email.toLowerCase())
         .map((u) => ({ ...u }));
     }
+    // U1 health probe.
+    if (/^\s*SELECT 1 AS ok\s*$/i.test(text)) return [{ ok: 1 }];
     // U1 setup: the one business, if any.
     if (/SELECT id FROM businesses LIMIT 1/i.test(text)) {
       return state.businesses.slice(0, 1).map((b) => ({ id: b["id"] }));

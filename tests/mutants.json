@@ -32,6 +32,30 @@
       "find": "    if (owner === null) return false;\n    await auditSignOut(tx, owner.businessId, owner.userId, correlationId);\n    return true;",
       "replace": "    await auditSignOut(tx, owner?.businessId as never, owner?.userId as never, correlationId);\n    return owner !== null;",
       "test": "tests/unit/sign-out.test.ts"
+    },
+    {
+      "id": "pipeline-drop-origin-check",
+      "why": "Every write needs the exact Origin http://127.0.0.1:PORT (NFR5.1, S7); without the check a cross-site form could post.",
+      "file": "src/server/pipeline.ts",
+      "find": "if (origin !== expectedOrigin(deps.port) || ",
+      "replace": "if (",
+      "test": "tests/integration/server-pipeline.test.ts"
+    },
+    {
+      "id": "routes-widen-public-allow-list",
+      "why": "Only the five allow-listed routes answer without a session (NFR1.1); making the order list public leaks every order.",
+      "file": "src/server/handlers/orders.ts",
+      "find": "  access: ORDER_READ_CAPABILITY,\n  schemas: { query: ListOrdersQuerySchema },",
+      "replace": "  access: \"public\",\n  schemas: { query: ListOrdersQuerySchema },",
+      "test": "tests/integration/server-gate-absence.test.ts"
+    },
+    {
+      "id": "headers-drop-frame-options",
+      "why": "Every response carries the S5 set, X-Frame-Options DENY included (BR1.7, NFR4.1).",
+      "file": "src/server/headers.ts",
+      "find": "  \"X-Frame-Options\": \"DENY\",\n",
+      "replace": "",
+      "test": "tests/integration/security-headers.test.ts"
     }
   ]
 }

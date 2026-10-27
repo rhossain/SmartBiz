@@ -191,15 +191,15 @@ that layer is implemented, together with the full existing suite, before the nex
 
 ### Step 10 — API / endpoint: write and run its tests
 
-- [ ] `tests/integration/server-pipeline.test.ts`: Host refusal, 413, Origin/JSON refusal, 404, strict-parse 400 with field paths, body carrying `role`/`businessId` → 400, kind→status mapping for every kind, `Retry-After` on 429, thrown error → 500 with only code + correlation id.
-- [ ] `tests/integration/server-gate-absence.test.ts` (server twin of `three-layer-gate-absence.test.ts`): walks the registered route table for every role; outside the allow-list, no cookie / expired / inactive → 401; a role without the capability → 403 with no money field (NFR1.1, BR6.1).
-- [ ] `tests/integration/no-secret-responses.test.ts`: every U1 route's success and error bodies contain no `passwordHash`, `password_hash`, `token_hash` or the live cookie value (NFR3.6).
-- [ ] `tests/integration/security-headers.test.ts`: S5 set on every U1 route and on a static file; no-store and correlation id on API (BR1.7).
-- [ ] `tests/unit/static-handler.test.ts`: `%2f`, `%5c`, `%00`, `..`, dot segments, `*.map` refused; SPA fallback; 405.
-- [ ] `tests/unit/server-config.test.ts`, `tests/unit/db-errors.test.ts`, `tests/unit/status-map.test.ts` (total mapping), `tests/unit/cookies.test.ts`, `tests/unit/log-redaction.test.ts`, `tests/unit/routes-table.test.ts` (every route has `access`; public list exact).
-- [ ] `tests/realdb/outage.realdb.test.ts`: database restart → 503 `db_unavailable`, process keeps running, first success ≤ 5 s after Postgres is back (BR1.5, NFR7.1).
-- [ ] Add mutants: drop the Origin check; widen the public allow-list; remove a header.
-- [ ] Run the step's tests plus the full suite.
+- [x] `tests/integration/server-pipeline.test.ts`: Host refusal, 413, Origin/JSON refusal, 404, strict-parse 400 with field paths, body carrying `role`/`businessId` → 400, kind→status mapping for every kind, `Retry-After` on 429, thrown error → 500 with only code + correlation id.
+- [x] `tests/integration/server-gate-absence.test.ts` (server twin of `three-layer-gate-absence.test.ts`): walks the registered route table for every role; outside the allow-list, no cookie / expired / inactive → 401; a role without the capability → 403 with no money field (NFR1.1, BR6.1).
+- [x] `tests/integration/no-secret-responses.test.ts`: every U1 route's success and error bodies contain no `passwordHash`, `password_hash`, `token_hash` or the live cookie value (NFR3.6).
+- [x] `tests/integration/security-headers.test.ts`: S5 set on every U1 route and on a static file; no-store and correlation id on API (BR1.7).
+- [x] `tests/unit/static-handler.test.ts`: `%2f`, `%5c`, `%00`, `..`, dot segments, `*.map` refused; SPA fallback; 405.
+- [x] `tests/unit/server-config.test.ts`, `tests/unit/db-errors.test.ts`, `tests/unit/status-map.test.ts` (total mapping), `tests/unit/cookies.test.ts`, `tests/unit/log-redaction.test.ts`, `tests/unit/routes-table.test.ts` (every route has `access`; public list exact).
+- [x] `tests/realdb/outage.realdb.test.ts`: database restart → 503 `db_unavailable`, process keeps running, first success ≤ 5 s after Postgres is back (BR1.5, NFR7.1).
+- [x] Add mutants: drop the Origin check; widen the public allow-list; remove a header.
+- [x] Run the step's tests plus the full suite.
 
 ### Step 11 — Frontend behaviour: implement (US1.3, US1.4, US2.1b; BR8.1–BR8.6)
 
