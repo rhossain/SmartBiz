@@ -8,8 +8,8 @@
  * the caller's business, so the B3 body inherits the tenant guard
  * (FR12.4) instead of adding it later.
  */
-import { err, type Result } from "../types/result.js";
-import type { Uuid } from "../types/uuid.js";
+import { err, type Result } from "../data/result.js";
+import type { Uuid } from "../data/uuid.js";
 import type { NotFound } from "./types.js";
 
 export interface Customer {

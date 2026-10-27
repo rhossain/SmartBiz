@@ -5,14 +5,14 @@
  * the email gateway) and NEVER persisted.
  */
 import type { Sql } from "../db/client.js";
-import { err, ok, type Result } from "../types/result.js";
-import { uuid } from "../types/uuid.js";
-import { sha256 } from "../types/sha256.js";
+import type { Role } from "../data/enums.js";
+import { err, ok, type Result } from "../data/result.js";
+import { uuid, type Uuid } from "../data/uuid.js";
+import { sha256 } from "./sha256.js";
 import { now } from "../data/clock.js";
 import { auditInvite } from "./audit.js";
 import { checkRateLimit, LIMIT_INVITE } from "./rate-limit.js";
-import type { Uuid } from "../types/uuid.js";
-import type { Invitation, Role } from "./types.js";
+import type { Invitation } from "./types.js";
 import { hasCapability } from "./capability.js";
 
 export type InviteError =
@@ -57,7 +57,7 @@ export const createInvite = async (
 
   const id = uuid();
   const acceptToken = uuid() + "." + uuid();
-  const acceptTokenHash = sha256(acceptToken);
+  const acceptTokenHash = await sha256(acceptToken);
   const t = now();
   const expiresAt = new Date(t.getTime() + SEVEN_DAYS_MS);
   await sql`

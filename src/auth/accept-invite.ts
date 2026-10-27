@@ -4,14 +4,13 @@
  * invitation as used, creates the user, and grants the role.
  */
 import type { Sql } from "../db/client.js";
-import { err, ok, type Result } from "../types/result.js";
-import { uuid } from "../types/uuid.js";
-import { sha256 } from "../types/sha256.js";
+import { err, ok, type Result } from "../data/result.js";
+import { uuid, type Uuid } from "../data/uuid.js";
+import { sha256 } from "./sha256.js";
 import { now } from "../data/clock.js";
 import { hashPassword, PASSWORD_MIN_LENGTH } from "./argon2.js";
 import { auditAcceptInvite } from "./audit.js";
 import { checkRateLimit, LIMIT_ACCEPT } from "./rate-limit.js";
-import type { Uuid } from "../types/uuid.js";
 
 export type AcceptInviteError =
   | { readonly kind: "invalid_token" }
@@ -40,7 +39,7 @@ export const acceptInvite = async (
   if (!checkRateLimit(`accept:${input.emailHint ?? "anon"}`, LIMIT_ACCEPT, input.nowMs)) {
     return err({ kind: "rate_limited" });
   }
-  const tokenHash = sha256(input.token);
+  const tokenHash = await sha256(input.token);
   const rows = await sql<
     Array<{
       id: string;

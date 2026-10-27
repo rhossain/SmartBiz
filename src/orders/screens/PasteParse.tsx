@@ -17,7 +17,8 @@
  *   large) as a toast; nothing throws to the person.
  */
 import * as React from "react";
-import type { Locale } from "../../auth/types.js";
+import { assertNever } from "../../data/assert-never.js";
+import type { Locale } from "../../data/enums.js";
 import { Pill } from "../../pres/Pill.js";
 import { Screen } from "../../pres/Screen.js";
 import { Toast } from "../../pres/Toast.js";
@@ -31,12 +32,7 @@ import {
 } from "../order-draft.js";
 import { parseTakaToPaise } from "../order-total.js";
 import { parseMessage, reparseItem } from "../parse-message.js";
-import {
-  assertNever,
-  type ParsedItem,
-  type ParsedMessage,
-  type ParseFailureReason,
-} from "../types.js";
+import type { ParsedItem, ParsedMessage, ParseFailureReason } from "../types.js";
 import { tr } from "./copy.js";
 import { DraftStatus } from "./DraftStatus.js";
 

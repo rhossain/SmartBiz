@@ -6,14 +6,13 @@
  * 1-hour token and updates the password hash.
  */
 import type { Sql } from "../db/client.js";
-import { err, ok, type Result } from "../types/result.js";
-import { uuid } from "../types/uuid.js";
-import { sha256 } from "../types/sha256.js";
+import { err, ok, type Result } from "../data/result.js";
+import { uuid, type Uuid } from "../data/uuid.js";
+import { sha256 } from "./sha256.js";
 import { now } from "../data/clock.js";
 import { hashPassword, PASSWORD_MIN_LENGTH, verifyPassword } from "./argon2.js";
 import { auditRecoveryRequest, auditRecoveryReset } from "./audit.js";
 import { checkRateLimit, LIMIT_RECOVERY } from "./rate-limit.js";
-import type { Uuid } from "../types/uuid.js";
 
 export type RecoveryError =
   | { readonly kind: "rate_limited" }
@@ -42,7 +41,7 @@ export const requestRecovery = async (
   }
   const userId = rows[0]!.id as Uuid;
   const token = uuid() + "." + uuid(); // opaque; 73 chars
-  const tokenHash = sha256(token);
+  const tokenHash = await sha256(token);
   const t = now();
   const expiresAt = new Date(t.getTime() + ONE_HOUR_MS);
   await sql`
@@ -64,7 +63,7 @@ export const resetPassword = async (
 ): Promise<Result<true, RecoveryError>> => {
   if (newPassword.length < PASSWORD_MIN_LENGTH) return err({ kind: "password_too_short" });
   if (newPassword.toLowerCase().includes("password")) return err({ kind: "weak_password" });
-  const tokenHash = sha256(token);
+  const tokenHash = await sha256(token);
   const rows = await sql<
     Array<{ id: string; user_id: string; expires_at: string; used_at: string | null }>
   >`

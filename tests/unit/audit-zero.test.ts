@@ -6,7 +6,7 @@ import { signUp } from "../../src/auth/sign-up.js";
 import { makeSqlStub } from "../helpers/sql-stub.js";
 import { setTestClock, FROZEN_TEST_NOW, resetTestClock } from "../../src/data/clock.js";
 import { insertAudit, auditRetentionFilter } from "../../src/audit/audit-service.js";
-import type { Uuid } from "../../src/types/uuid.js";
+import type { Uuid } from "../../src/data/uuid.js";
 import { setTestClock as _ } from "../../src/data/clock.js";
 
 describe("audit (BR3.1, BR3.2, BR3.3)", () => {

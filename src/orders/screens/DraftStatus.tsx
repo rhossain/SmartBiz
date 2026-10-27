@@ -6,7 +6,7 @@
  * again" (the draft is kept), a refused input names what was refused.
  */
 import * as React from "react";
-import type { Locale } from "../../auth/types.js";
+import type { Locale } from "../../data/enums.js";
 import { Toast } from "../../pres/Toast.js";
 import type { OrderDraft } from "../order-draft.js";
 import { tr } from "./copy.js";

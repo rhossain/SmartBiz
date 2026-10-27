@@ -4,7 +4,7 @@
  */
 import { useSyncExternalStore } from "react";
 import { createStateContainer } from "../data/state-container.js";
-import type { Locale } from "../auth/types.js";
+import type { Locale } from "../data/enums.js";
 import { lookup, type LKey } from "./L.js";
 
 interface LocaleState {

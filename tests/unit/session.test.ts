@@ -4,7 +4,7 @@
 import { describe, expect, test } from "bun:test";
 import { buildSession, buildSetCookie, cookieOptions } from "../../src/auth/session.js";
 import { setTestClock, FROZEN_TEST_NOW, resetTestClock } from "../../src/data/clock.js";
-import type { Uuid } from "../../src/types/uuid.js";
+import type { Uuid } from "../../src/data/uuid.js";
 
 describe("session + cookie helpers", () => {
   test("buildSession returns a session id and expiry", () => {

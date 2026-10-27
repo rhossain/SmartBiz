@@ -4,8 +4,7 @@
  * Cookie: HttpOnly, Secure, SameSite=Lax, 30 days rolling
  * (NFR5.5). Re-issue on activity.
  */
-import type { Uuid } from "../types/uuid.js";
-import { uuid } from "../types/uuid.js";
+import { uuid, type Uuid } from "../data/uuid.js";
 import { now } from "../data/clock.js";
 
 const SESSION_DAYS = 30;

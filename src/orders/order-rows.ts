@@ -16,15 +16,10 @@
  */
 import type { Queryable } from "../db/client.js";
 import { OrderContactSchema } from "../data/zod-schemas.js";
-import type { Uuid } from "../types/uuid.js";
+import { ORDER_SOURCES, type OrderSource } from "../data/enums.js";
+import type { Uuid } from "../data/uuid.js";
 import { isOrderStatus } from "./status-fsm.js";
-import {
-  ORDER_SOURCES,
-  type Order,
-  type OrderContact,
-  type OrderItem,
-  type OrderSource,
-} from "./types.js";
+import type { Order, OrderContact, OrderItem } from "./types.js";
 
 export interface OrderRow {
   readonly id: string;

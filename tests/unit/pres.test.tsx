@@ -12,7 +12,7 @@ import { CompletenessControl } from "../../src/pres/CompletenessControl.js";
 import { Toast } from "../../src/pres/Toast.js";
 import { Shell } from "../../src/pres/Shell.js";
 import { setLocale } from "../../src/i18n/useTranslations.js";
-import type { Locale } from "../../src/auth/types.js";
+import type { Locale } from "../../src/data/enums.js";
 
 describe("pres primitives", () => {
   test("Screen renders title + children", () => {

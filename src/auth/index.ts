@@ -28,7 +28,7 @@ export {
   auditBusinessProfileChange,
   auditSettingsChange,
 } from "./audit.js";
-export { capabilitiesFor, hasCapability, type Capability } from "./capability.js";
+export { capabilitiesFor, hasCapability } from "./capability.js";
 export { ROLE_CAPABILITY_MATRIX } from "./role-matrix.js";
 export { evaluateGate, type GateError, type GateSession } from "./three-layer-gate.js";
 export { hashPassword, verifyPassword, PASSWORD_MIN_LENGTH } from "./argon2.js";

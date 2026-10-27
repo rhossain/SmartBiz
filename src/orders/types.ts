@@ -3,48 +3,21 @@
  *
  * Design decisions carried here:
  *
- * - `OrderStatus` is the nine-value string-literal union affirmed in
- *   team.md §TP-4. No value is deferred or collapsed, and every switch
- *   over it in src/orders/ is exhaustive with an `assertNever` default,
- *   so adding a tenth value fails the type-check at every branch site.
- *   The list is mirrored one-for-one by the CHECK in
- *   0008_create_orders.sql.
- * - `OrderSource` covers the seven input modes of FR5.1. Photo,
- *   spreadsheet and voice are typed now even though their bodies are
- *   deferred (US1.14.D–US1.16.D), so FR5.5 holds for every order.
+ * - `OrderStatus`, `OrderSource` and `Courier` live in the shared kernel
+ *   (src/data/enums.ts, domain-design follow-up R-01) so screens and other
+ *   features can name them without importing this unit. Every switch over
+ *   the status in src/orders/ is exhaustive with an `assertNever` default
+ *   (src/data/assert-never.ts), so adding a tenth value fails the
+ *   type-check at every branch site.
  * - Money is integer paise everywhere (ADR-002). Nothing on the order
  *   path holds taka as a float.
  * - Every entity carries `businessId` (FR12.4). Repository functions
  *   take the caller's business from `OrderContext`, never from input.
+ * - U1 adds `itemsRevision`: an edit appends a new revision of lines and
+ *   never deletes the old ones (BR6.8).
  */
-import type { Role } from "../auth/types.js";
-import type { Uuid } from "../types/uuid.js";
-
-export const ORDER_STATUSES = [
-  "new",
-  "confirmed",
-  "packed",
-  "shipped",
-  "delivered",
-  "settled",
-  "cancelled",
-  "returned",
-  "partial",
-] as const;
-
-export type OrderStatus = (typeof ORDER_STATUSES)[number];
-
-export const ORDER_SOURCES = [
-  "paste-parse",
-  "manual",
-  "repeat",
-  "quick-add",
-  "photo",
-  "spreadsheet",
-  "voice",
-] as const;
-
-export type OrderSource = (typeof ORDER_SOURCES)[number];
+import type { Courier, OrderSource, OrderStatus, Role } from "../data/enums.js";
+import type { Uuid } from "../data/uuid.js";
 
 /** The three input modes whose bodies are deferred to a vendor decision. */
 export type DeferredOrderSource = Extract<OrderSource, "photo" | "spreadsheet" | "voice">;
@@ -63,9 +36,6 @@ export type OrderSubjectKind = "order" | "order_item";
 
 /** Status buckets of the money engine (FR10.2). `none` = cancelled/returned. */
 export type OrderBucket = "earned" | "realized" | "pipeline" | "none";
-
-export const COURIERS = ["pathao", "steadfast", "redx"] as const;
-export type Courier = (typeof COURIERS)[number];
 
 /** Contact details detected by paste-parse or typed by hand. */
 export interface OrderContact {
@@ -206,12 +176,3 @@ export type AlreadyLinked = { readonly kind: "already_linked"; readonly orderId:
 
 export type OrderError = NotFound | Forbidden | InvalidTransition | InvalidInput | NotEditable;
 export type LinkError = NotFound | InvalidInput | AlreadyLinked | Forbidden;
-
-/**
- * Exhaustiveness guard for every switch over a union in src/orders/.
- * Reaching it at runtime means a value outside the union got past the
- * type system (for example from an untrusted row), so it fails loudly.
- */
-export const assertNever = (value: never, what: string): never => {
-  throw new Error(`Unhandled ${what}: ${String(value)}`);
-};

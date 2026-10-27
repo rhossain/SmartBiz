@@ -18,7 +18,7 @@
  *   as a pipeline, partial figure: a new order is not earned yet.
  */
 import * as React from "react";
-import type { Locale } from "../../auth/types.js";
+import type { Locale } from "../../data/enums.js";
 import { toAsciiDigits } from "../../i18n/bnDigits.js";
 import { Screen } from "../../pres/Screen.js";
 import { buildManualOrder } from "../input-modes.js";
@@ -33,7 +33,7 @@ import { computeOrderTotal, lineTotalPaise, parseTakaToPaise } from "../order-to
 import type { OrderItemInput } from "../types.js";
 import { tr } from "./copy.js";
 import { DraftStatus } from "./DraftStatus.js";
-import { MoneyCell } from "./MoneyCell.js";
+import { MoneyCell } from "../../pres/MoneyCell.js";
 import { unrecognized } from "../order-figure.js";
 
 export interface ManualOrderProps {

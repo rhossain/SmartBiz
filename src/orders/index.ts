@@ -36,7 +36,6 @@ export {
   nextStatuses,
   isTerminal,
   isEditable,
-  statusLabel,
   isOrderStatus,
 } from "./status-fsm.js";
 export {

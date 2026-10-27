@@ -5,7 +5,7 @@
  * strings; the shape is the same `L(bn, en)` pair, and the key type is
  * closed, so a missing string is a type error, not a blank label.
  */
-import type { Locale } from "../../auth/types.js";
+import type { Locale } from "../../data/enums.js";
 import { L } from "../../i18n/L.js";
 
 const COPY = {

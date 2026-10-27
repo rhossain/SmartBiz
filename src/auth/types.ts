@@ -1,26 +1,13 @@
 /**
- * src/auth/types.ts — domain types shared by auth, audit, and
- * router. Repository / data-access layer (Plan §5).
+ * src/auth/types.ts — AuthComponent's entity shapes (Business, User, Invitation, Session,
+ * AuditEntry, PasswordReset).
+ *
+ * The role, locale and capability vocabularies moved into the shared kernel
+ * (src/data/enums.ts, domain-design follow-up R-01); this file imports them and re-exports
+ * nothing it no longer owns, so every caller names them from one place.
  */
-import type { Uuid } from "../types/uuid.js";
-
-export type Role = "owner" | "manager" | "sales_staff" | "accountant";
-
-export const ROLES: readonly Role[] = ["owner", "manager", "sales_staff", "accountant"] as const;
-
-export type Locale = "bn" | "en";
-
-export type Capability =
-  | "business.edit"
-  | "business.view"
-  | "staff.invite"
-  | "staff.manage"
-  | "settings.edit.own"
-  | "settings.edit.any"
-  | "audit.view"
-  | "money.mutate.full"
-  | "money.mutate.price"
-  | "money.mutate.cost";
+import type { Locale, Role } from "../data/enums.js";
+import type { Uuid } from "../data/uuid.js";
 
 export interface User {
   readonly id: Uuid;

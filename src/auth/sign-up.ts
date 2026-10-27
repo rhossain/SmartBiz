@@ -5,13 +5,13 @@
  * `users.email`; business creation is a guarded transaction.
  */
 import type { Sql } from "../db/client.js";
-import { err, ok, type Result } from "../types/result.js";
-import type { Uuid } from "../types/uuid.js";
-import { uuid } from "../types/uuid.js";
+import type { Locale, Role } from "../data/enums.js";
+import { err, ok, type Result } from "../data/result.js";
+import { uuid, type Uuid } from "../data/uuid.js";
 import { now } from "../data/clock.js";
 import { hashPassword, PASSWORD_MIN_LENGTH } from "./argon2.js";
 import { auditSignUp } from "./audit.js";
-import type { Locale, Role, User } from "./types.js";
+import type { User } from "./types.js";
 
 export type SignUpError =
   | { readonly kind: "invalid_email" }

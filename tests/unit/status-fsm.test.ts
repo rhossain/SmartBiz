@@ -12,9 +12,9 @@ import {
   isOrderStatus,
   isTerminal,
   nextStatuses,
-  statusLabel,
 } from "../../src/orders/status-fsm.js";
-import type { OrderStatus } from "../../src/orders/types.js";
+import { statusLabel } from "../../src/pres/status-labels.js";
+import type { OrderStatus } from "../../src/data/enums.js";
 
 const ALL: ReadonlyArray<OrderStatus> = [
   "new",

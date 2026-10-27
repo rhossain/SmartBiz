@@ -8,7 +8,7 @@ import { signUp } from "../../src/auth/sign-up.js";
 import { insertAudit } from "../../src/audit/audit-service.js";
 import { makeSqlStub } from "../helpers/sql-stub.js";
 import { setTestClock, FROZEN_TEST_NOW, resetTestClock } from "../../src/data/clock.js";
-import type { Uuid } from "../../src/types/uuid.js";
+import type { Uuid } from "../../src/data/uuid.js";
 
 describe("integration: reversal flow (UC-1.10)", () => {
   test("reversal is a NEW row referencing the original; original is unchanged", async () => {

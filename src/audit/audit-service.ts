@@ -8,8 +8,7 @@
 import type { Queryable, Sql } from "../db/client.js";
 import { newCorrelationId } from "../observability/correlation.js";
 import { now } from "../data/clock.js";
-import type { Uuid } from "../types/uuid.js";
-import { uuid } from "../types/uuid.js";
+import { uuid, type Uuid } from "../data/uuid.js";
 
 const FIVE_YEARS_MS = 5 * 365 * 24 * 60 * 60 * 1000;
 

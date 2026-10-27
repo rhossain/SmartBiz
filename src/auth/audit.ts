@@ -7,7 +7,7 @@
  */
 import type { Sql } from "../db/client.js";
 import { insertAudit, type AuditInsertInput } from "../audit/audit-service.js";
-import type { Uuid } from "../types/uuid.js";
+import type { Uuid } from "../data/uuid.js";
 
 export const auditSignUp = (
   sql: Sql,

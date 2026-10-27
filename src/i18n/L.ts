@@ -6,7 +6,7 @@
  * adding a row to L_TABLE; missing-key assertions are surfaced
  * as TypeScript errors via the `keyof L_TABLE` constraint.
  */
-import type { Locale } from "../auth/types.js";
+import type { Locale } from "../data/enums.js";
 import type { Translation, Translations } from "./types.js";
 
 export const L = (bn: string, en: string): Translation => ({ bn, en });

@@ -4,7 +4,7 @@
  * dispatcher reads the route's `requiredCapability` on every
  * navigation (BR2.4, R1.2).
  */
-import type { Capability } from "../auth/types.js";
+import type { Capability } from "../data/enums.js";
 import type { BusinessRule } from "../auth/business-rule.js";
 
 export type RoutePath =

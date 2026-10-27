@@ -8,7 +8,7 @@ import * as React from "react";
 import { NOTO_SANS_BENGALI_HREF } from "./typography.js";
 import { lookup, type LKey } from "../i18n/L.js";
 import { useTranslations } from "../i18n/useTranslations.js";
-import type { Locale } from "../auth/types.js";
+import type { Locale } from "../data/enums.js";
 
 export interface ShellProps {
   readonly locale: Locale;

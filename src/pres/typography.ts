@@ -3,7 +3,8 @@
  * The Intl.NumberFormat is cached by locale so the B1 perf budget
  * (NFR2.3: L(bn, en) resolve ≤ 5 ms p95) holds.
  */
-import { intlCode, type Locale } from "../i18n/locale.js";
+import type { Locale } from "../data/enums.js";
+import { intlCode } from "../i18n/locale.js";
 
 const cache = new Map<Locale, Intl.NumberFormat>();
 

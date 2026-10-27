@@ -2,7 +2,9 @@
  * src/observability/log.ts — stdout JSON line logger.
  * Per NFR7.7: every emitted line is a single-line JSON object so
  * downstream log shippers can parse without a multiline-aware
- * strategy. `console.log` is explicitly allowed by ESLint here.
+ * strategy. It writes to `process.stdout`, so it is server-only: browser
+ * files may not import it (BR7.1). Correlation ids come from Web Crypto
+ * (BR7.3), so no `node:crypto` is reached from here.
  */
 import { newCorrelationId } from "./correlation.js";
 

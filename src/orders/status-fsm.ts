@@ -18,7 +18,8 @@
  *   `assertNever` default (team.md §TP-4), so a tenth status fails the
  *   type-check here before it can reach a screen.
  */
-import { assertNever, ORDER_STATUSES, type OrderStatus } from "./types.js";
+import { assertNever } from "../data/assert-never.js";
+import { ORDER_STATUSES, type OrderStatus } from "../data/enums.js";
 
 export const nextStatuses = (from: OrderStatus): ReadonlyArray<OrderStatus> => {
   switch (from) {
@@ -64,32 +65,6 @@ export const isEditable = (status: OrderStatus): boolean => {
     case "returned":
     case "partial":
       return false;
-    default:
-      return assertNever(status, "order status");
-  }
-};
-
-/** Bilingual status label for screens (FR11.2). */
-export const statusLabel = (status: OrderStatus): { readonly bn: string; readonly en: string } => {
-  switch (status) {
-    case "new":
-      return { bn: "নতুন", en: "New" };
-    case "confirmed":
-      return { bn: "নিশ্চিত", en: "Confirmed" };
-    case "packed":
-      return { bn: "প্যাক করা", en: "Packed" };
-    case "shipped":
-      return { bn: "পাঠানো হয়েছে", en: "Shipped" };
-    case "delivered":
-      return { bn: "ডেলিভারি হয়েছে", en: "Delivered" };
-    case "settled":
-      return { bn: "টাকা পাওয়া গেছে", en: "Settled" };
-    case "cancelled":
-      return { bn: "বাতিল", en: "Cancelled" };
-    case "returned":
-      return { bn: "ফেরত", en: "Returned" };
-    case "partial":
-      return { bn: "আংশিক", en: "Partial" };
     default:
       return assertNever(status, "order status");
   }

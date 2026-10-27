@@ -7,8 +7,8 @@ import { describe, expect, test } from "bun:test";
 import { signUp } from "../../src/auth/sign-up.js";
 import { makeSqlStub } from "../helpers/sql-stub.js";
 import { setTestClock, FROZEN_TEST_NOW, resetTestClock } from "../../src/data/clock.js";
-import { err, ok, type Result } from "../../src/types/result.js";
-import type { Uuid } from "../../src/types/uuid.js";
+import { err, ok, type Result } from "../../src/data/result.js";
+import type { Uuid } from "../../src/data/uuid.js";
 
 interface BusinessRow {
   businesses: Array<Record<string, unknown>>;

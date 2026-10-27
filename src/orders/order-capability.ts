@@ -15,7 +15,7 @@
  * disagree about who may mutate an order.
  */
 import { hasCapability } from "../auth/capability.js";
-import type { Capability, Role } from "../auth/types.js";
+import type { Capability, Role } from "../data/enums.js";
 
 export const ORDER_READ_CAPABILITY: Capability = "business.view";
 

@@ -10,7 +10,7 @@
  * an `:id` segment must be a UUID, so a malformed id falls back to `/`
  * instead of reaching a screen. Anything after `?` is ignored.
  */
-import { isUuid } from "../types/uuid.js";
+import { isUuid } from "../data/uuid.js";
 import { routes } from "./routes.js";
 import type { RouteMatch, RoutePath } from "./types.js";
 

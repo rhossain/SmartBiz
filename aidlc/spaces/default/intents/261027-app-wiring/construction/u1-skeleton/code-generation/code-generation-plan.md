@@ -102,16 +102,16 @@ that layer is implemented, together with the full existing suite, before the nex
 
 ### Step 1 — Project structure and production configuration skeleton (US1.1, US1.7a; R-01..R-04)
 
-- [ ] Apply the domain-design follow-ups in place, updating every importer:
+- [x] Apply the domain-design follow-ups in place, updating every importer:
   - R-01: shared enums (order status, roles, capability names) move into `src/data/` (`src/data/enums.ts`); feature modules re-export nothing they no longer own.
   - R-02: `src/router/screens/Lock.tsx` moves to `src/pres/Lock.tsx`; `src/orders/screens/MoneyCell.tsx` and the order-status labels move into `src/pres/`; `render-orders-route.tsx` imports them from `pres`.
   - R-03: `src/orders/order-draft.ts` no longer imports the logger.
   - R-04: `src/types/result.ts` and `src/types/uuid.ts` move into `src/data/` (uuid via Web Crypto `crypto.randomUUID`, no `node:crypto`); `src/types/sha256.ts` moves into `src/auth/sha256.ts` using `crypto.subtle.digest`; `src/types/` is removed.
-- [ ] `src/observability/correlation.ts` and `log.ts` drop `node:crypto` (Web Crypto) (BR7.3).
-- [ ] Create the empty `src/server/` and `src/client/` directories with module header comments only where a file is created in later steps.
-- [ ] `.eslintrc.cjs`: browser-file `no-restricted-imports` override (`src/index.tsx`, `src/pres/**`, `src/router/**`, `src/i18n/**`, `src/client/**`, `src/**/screens/**`) forbidding `postgres`, `argon2`, `node:*`, and value imports of `db/client`, `auth/argon2`, `observability/log`, `server/**` (type imports allowed) (BR7.1); shared-kernel rule for `src/data/**` importing no feature module and screens importing no other feature or the router (BR7.4); `no-restricted-syntax` banning argument-less `new Date()` / `Date.now()` outside `src/data/clock.ts`.
-- [ ] `tsconfig.json` keeps strict flags; add `src/server`, `src/client`, `scripts`, `tests/e2e`, `tests/perf` to `include`.
-- [ ] Run `bun run type-check` and `bun run lint` and the existing suite after the moves; fix every importer.
+- [x] `src/observability/correlation.ts` and `log.ts` drop `node:crypto` (Web Crypto) (BR7.3).
+- [x] Create the empty `src/server/` and `src/client/` directories with module header comments only where a file is created in later steps.
+- [x] `.eslintrc.cjs`: browser-file `no-restricted-imports` override (`src/index.tsx`, `src/pres/**`, `src/router/**`, `src/i18n/**`, `src/client/**`, `src/**/screens/**`) forbidding `postgres`, `argon2`, `node:*`, and value imports of `db/client`, `auth/argon2`, `observability/log`, `server/**` (type imports allowed) (BR7.1); shared-kernel rule for `src/data/**` importing no feature module and screens importing no other feature or the router (BR7.4); `no-restricted-syntax` banning argument-less `new Date()` / `Date.now()` outside `src/data/clock.ts`.
+- [x] `tsconfig.json` keeps strict flags; add `src/server`, `src/client`, `scripts`, `tests/e2e`, `tests/perf` to `include`.
+- [x] Run `bun run type-check` and `bun run lint` and the existing suite after the moves; fix every importer.
 
 ### Step 2 — Verify the test runner and record the unit-scoped command
 

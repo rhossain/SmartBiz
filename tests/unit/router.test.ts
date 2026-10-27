@@ -4,7 +4,7 @@
 import { describe, expect, test } from "bun:test";
 import { routes } from "../../src/router/routes.js";
 import { dispatch } from "../../src/router/dispatch.js";
-import { isOk } from "../../src/types/result.js";
+import { isOk } from "../../src/data/result.js";
 
 describe("router coverage", () => {
   test("every public route is registered", () => {

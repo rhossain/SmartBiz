@@ -15,7 +15,9 @@
  *   gate is the real guard, this just avoids offering a dead button.
  */
 import * as React from "react";
-import type { Locale } from "../../auth/types.js";
+import { ORDER_STATUSES, type Locale, type OrderStatus } from "../../data/enums.js";
+import { MoneyCell } from "../../pres/MoneyCell.js";
+import { statusText } from "../../pres/status-labels.js";
 import { Screen } from "../../pres/Screen.js";
 import { buildQuickAddOrder } from "../input-modes.js";
 import {
@@ -27,11 +29,10 @@ import {
 } from "../order-draft.js";
 import { parseTakaToPaise } from "../order-total.js";
 import { bucketTotals, orderMoneyFigure } from "../status-bucket.js";
-import { isOrderStatus, statusLabel } from "../status-fsm.js";
-import { ORDER_STATUSES, type Order, type OrderStatus } from "../types.js";
+import { isOrderStatus } from "../status-fsm.js";
+import type { Order } from "../types.js";
 import { tr } from "./copy.js";
 import { DraftStatus } from "./DraftStatus.js";
-import { MoneyCell } from "./MoneyCell.js";
 
 export interface OrdersListFilter {
   readonly status: OrderStatus | null;
@@ -88,7 +89,7 @@ const Filters = ({
         <option value="">{tr("orders.filter.all", locale)}</option>
         {ORDER_STATUSES.map((s) => (
           <option key={s} value={s}>
-            {locale === "bn" ? statusLabel(s).bn : statusLabel(s).en}
+            {statusText(s, locale)}
           </option>
         ))}
       </select>
@@ -254,7 +255,7 @@ export const OrdersList = (props: OrdersListProps): React.ReactElement => {
             {orders.map((o) => (
               <tr key={o.id} data-testid="orders-row" data-order-id={o.id} data-status={o.status}>
                 <td>{o.orderNo}</td>
-                <td>{locale === "bn" ? statusLabel(o.status).bn : statusLabel(o.status).en}</td>
+                <td>{statusText(o.status, locale)}</td>
                 <td data-testid="orders-row-source">{o.source}</td>
                 <td>
                   <MoneyCell

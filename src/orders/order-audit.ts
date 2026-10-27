@@ -23,7 +23,7 @@
  */
 import { insertAudit } from "../audit/audit-service.js";
 import type { Queryable } from "../db/client.js";
-import type { Uuid } from "../types/uuid.js";
+import type { Uuid } from "../data/uuid.js";
 import type { OrderAuditAction, OrderContact, OrderContext } from "./types.js";
 
 /** What the audit log keeps of a contact: which fields were filled, never their values. */

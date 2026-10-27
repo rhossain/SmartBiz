@@ -10,14 +10,16 @@
  *
  * `saveDraft` is the UI boundary of the order write. A typed failure
  * (invalid input, forbidden, …) becomes the draft's message. A thrown
- * error (the database is unreachable) is logged with its correlation id
- * and surfaced as "could not save", and the pending order is kept so
- * the person can retry without re-typing it.
+ * error (the server is unreachable) is surfaced as "could not save", and
+ * the pending order is kept so the person can retry without re-typing it.
+ *
+ * The store runs in the browser, so it imports no logger (domain-design
+ * follow-up R-03, BR7.1): the server logs the failure with its correlation
+ * id; here the failure is shown to the person, which is not a silent drop.
  */
 import { useSyncExternalStore } from "react";
 import { createStateContainer, type StateContainer } from "../data/state-container.js";
-import { error as logError } from "../observability/log.js";
-import type { Result } from "../types/result.js";
+import type { Result } from "../data/result.js";
 import type { CreateOrderInput, Order, OrderError } from "./types.js";
 
 export type DraftStatus = "idle" | "saving" | "saved" | "error";
@@ -58,8 +60,7 @@ export const saveDraft = async (store: OrderDraftStore, save: SaveOrder): Promis
       const message = r.error.kind === "invalid_input" ? r.error.message : r.error.kind;
       store.update((d) => ({ ...d, status: "error", message }));
     }
-  } catch (e: unknown) {
-    logError("order_save_failed", { reason: e instanceof Error ? e.message : String(e) });
+  } catch {
     store.update((d) => ({ ...d, status: "error", message: "save_failed" }));
   }
 };

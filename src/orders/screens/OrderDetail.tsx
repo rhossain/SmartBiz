@@ -12,17 +12,18 @@
  * - Mutating controls are shown only when the role may mutate orders.
  */
 import * as React from "react";
-import type { Locale } from "../../auth/types.js";
+import type { Locale, OrderStatus } from "../../data/enums.js";
 import { money } from "../../money/money-figure.js";
 import { Pill } from "../../pres/Pill.js";
 import { Screen } from "../../pres/Screen.js";
 import { lineTotalPaise } from "../order-total.js";
 import { isRecognized, unrecognized, type OrderFigure } from "../order-figure.js";
 import { orderMoneyFigure } from "../status-bucket.js";
-import { nextStatuses, statusLabel } from "../status-fsm.js";
-import type { Order, OrderStatus } from "../types.js";
+import { MoneyCell } from "../../pres/MoneyCell.js";
+import { statusText } from "../../pres/status-labels.js";
+import { nextStatuses } from "../status-fsm.js";
+import type { Order } from "../types.js";
 import { tr } from "./copy.js";
-import { MoneyCell } from "./MoneyCell.js";
 
 export interface OrderDetailProps {
   readonly order: Order;
@@ -32,8 +33,7 @@ export interface OrderDetailProps {
   readonly onRepeat: (order: Order) => void;
 }
 
-const label = (status: OrderStatus, locale: Locale): string =>
-  locale === "bn" ? statusLabel(status).bn : statusLabel(status).en;
+const label = statusText;
 
 export const OrderDetail = ({
   order,

@@ -15,8 +15,8 @@
 import type { Sql } from "../db/client.js";
 import { UpdateOrderInputSchema } from "../data/zod-schemas.js";
 import { now } from "../data/clock.js";
-import { err, ok, type Result } from "../types/result.js";
-import { isUuid } from "../types/uuid.js";
+import { err, ok, type Result } from "../data/result.js";
+import { isUuid } from "../data/uuid.js";
 import { materialiseItems } from "./create-order.js";
 import { appendOrderAudit } from "./order-audit.js";
 import { canMutateOrders } from "./order-capability.js";

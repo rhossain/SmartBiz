@@ -4,15 +4,15 @@
  * email exists); also writes an audit row on every attempt.
  */
 import type { Sql } from "../db/client.js";
-import { err, ok, type Result } from "../types/result.js";
+import { err, ok, type Result } from "../data/result.js";
 import { verifyPassword } from "./argon2.js";
 import { auditSignIn, auditSignInFailure } from "./audit.js";
 import type { User } from "./types.js";
-import { uuid } from "../types/uuid.js";
+import { uuid } from "../data/uuid.js";
 import { now } from "../data/clock.js";
 import { buildSession } from "./session.js";
 import { checkRateLimit, LIMIT_SIGN_IN } from "./rate-limit.js";
-import type { Uuid } from "../types/uuid.js";
+import type { Uuid } from "../data/uuid.js";
 
 export type SignInError = { readonly kind: "invalid_credentials" };
 

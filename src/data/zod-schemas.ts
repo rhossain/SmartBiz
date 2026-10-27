@@ -5,10 +5,10 @@
  * should pass typed values; zod is for the edges.
  */
 import { z } from "zod";
-import { COURIERS, ORDER_SOURCES, ORDER_STATUSES } from "../orders/types.js";
+import { COURIERS, LOCALES, ORDER_SOURCES, ORDER_STATUSES, ROLES } from "./enums.js";
 
-export const RoleSchema = z.enum(["owner", "manager", "sales_staff", "accountant"]);
-export const LocaleSchema = z.enum(["bn", "en"]);
+export const RoleSchema = z.enum(ROLES);
+export const LocaleSchema = z.enum(LOCALES);
 export const UuidSchema = z.string().uuid();
 
 export const UserSchema = z.object({
@@ -78,7 +78,7 @@ export const PasswordResetSchema = z.object({
 /*
  * U3-orders boundary validators (B2).
  *
- * The enum lists are imported from src/orders/types.ts rather than
+ * The enum lists are imported from src/data/enums.ts rather than
  * restated, so the zod enum and the TypeScript union cannot drift: a
  * tenth status added to ORDER_STATUSES reaches both. Money is integer
  * paise, and each single field is capped at MAX_PAISE (10^12 paise),

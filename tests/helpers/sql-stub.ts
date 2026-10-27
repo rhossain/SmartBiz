@@ -5,7 +5,7 @@
  * the SQL invariants (BR1.1) without DATABASE_URL.
  */
 import type { Sql } from "../../src/db/client.js";
-import type { Uuid } from "../../src/types/uuid.js";
+import type { Uuid } from "../../src/data/uuid.js";
 
 export interface RecordedCall {
   readonly text: string;

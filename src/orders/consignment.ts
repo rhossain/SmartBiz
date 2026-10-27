@@ -18,20 +18,14 @@
 import type { Queryable, Sql } from "../db/client.js";
 import { ConsignmentLinkInputSchema } from "../data/zod-schemas.js";
 import { now } from "../data/clock.js";
-import { err, ok, type Result } from "../types/result.js";
-import { isUuid, uuid, type Uuid } from "../types/uuid.js";
+import { assertNever } from "../data/assert-never.js";
+import type { Courier, OrderStatus } from "../data/enums.js";
+import { err, ok, type Result } from "../data/result.js";
+import { isUuid, uuid, type Uuid } from "../data/uuid.js";
 import { appendOrderAudit } from "./order-audit.js";
 import { canMutateOrders } from "./order-capability.js";
 import { selectOrder, toIso } from "./order-rows.js";
-import {
-  assertNever,
-  type ConsignmentLink,
-  type Courier,
-  type LinkError,
-  type NotFound,
-  type OrderContext,
-  type OrderStatus,
-} from "./types.js";
+import type { ConsignmentLink, LinkError, NotFound, OrderContext } from "./types.js";
 
 export interface LinkConsignmentInput {
   readonly orderId: string;

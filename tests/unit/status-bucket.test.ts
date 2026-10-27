@@ -17,7 +17,7 @@
  */
 import { describe, expect, test } from "bun:test";
 import { bucketOf, bucketTotals, orderMoneyFigure } from "../../src/orders/status-bucket.js";
-import type { OrderStatus } from "../../src/orders/types.js";
+import type { OrderStatus } from "../../src/data/enums.js";
 
 const EARNED: ReadonlyArray<OrderStatus> = ["delivered", "settled"];
 const REALIZED: ReadonlyArray<OrderStatus> = ["settled"];

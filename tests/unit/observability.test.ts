@@ -3,7 +3,7 @@
  */
 import { describe, expect, test } from "bun:test";
 import { info, warn, error } from "../../src/observability/log.js";
-import { newCorrelationId, resetCorrelationCounter } from "../../src/observability/correlation.js";
+import { newCorrelationId } from "../../src/observability/correlation.js";
 import { listAuditForBusiness, auditRetentionFilter } from "../../src/audit/audit-service.js";
 import { exportAudit } from "../../src/audit/audit-export.js";
 import { makeSqlStub } from "../helpers/sql-stub.js";
@@ -34,10 +34,11 @@ describe("observability + audit read paths", () => {
     }
   });
 
-  test("correlation counter increments", () => {
-    resetCorrelationCounter();
+  test("correlation ids are 16 hex characters from Web Crypto and differ per call (O2)", () => {
     const a = newCorrelationId();
     const b = newCorrelationId();
+    expect(a).toMatch(/^[0-9a-f]{16}$/);
+    expect(b).toMatch(/^[0-9a-f]{16}$/);
     expect(a).not.toBe(b);
   });
 

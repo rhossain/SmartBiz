@@ -2,9 +2,9 @@
  * src/auth/sign-out.ts — destroy the session row + clear the cookie.
  */
 import type { Sql } from "../db/client.js";
-import { ok, type Result } from "../types/result.js";
+import { ok, type Result } from "../data/result.js";
 import { auditSignIn } from "./audit.js";
-import type { Uuid } from "../types/uuid.js";
+import type { Uuid } from "../data/uuid.js";
 
 export const signOut = async (
   sql: Sql,

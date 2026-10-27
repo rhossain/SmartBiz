@@ -31,7 +31,7 @@ import {
   type OrderContext,
   type OrderItemInput,
 } from "../../src/orders/index.js";
-import type { Uuid } from "../../src/types/uuid.js";
+import type { Uuid } from "../../src/data/uuid.js";
 
 const adminUrl = process.env["REALDB_ADMIN_URL"];
 const appUrl = process.env["REALDB_APP_URL"];

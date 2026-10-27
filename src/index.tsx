@@ -8,7 +8,7 @@ import * as React from "react";
 import { createRoot } from "react-dom/client";
 import { Shell } from "./pres/Shell.js";
 import { setLocale, useLocale } from "./i18n/useTranslations.js";
-import type { Locale } from "./auth/types.js";
+import type { Locale } from "./data/enums.js";
 import "./pres/tokens.css";
 
 const App = (): React.ReactElement => {

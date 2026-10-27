@@ -15,10 +15,11 @@
  *   /orders/:id, …/transition     → OrderDetail
  */
 import * as React from "react";
-import type { Locale } from "../../auth/types.js";
+import { assertNever } from "../../data/assert-never.js";
+import type { Locale, OrderStatus } from "../../data/enums.js";
+import { LockScreen } from "../../pres/Lock.js";
 import type { OrderDraftStore, SaveOrder } from "../order-draft.js";
-import { assertNever, type Order, type OrdersPage, type OrderStatus } from "../types.js";
-import { LockScreen } from "../../router/screens/Lock.js";
+import type { Order, OrdersPage } from "../types.js";
 import { ManualOrder } from "./ManualOrder.js";
 import { OrderDetail } from "./OrderDetail.js";
 import { OrdersList, type OrdersListFilter } from "./OrdersList.js";

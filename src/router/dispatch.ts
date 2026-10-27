@@ -9,11 +9,11 @@
  * and delegates, keeping its B1 signature. An unknown or malformed path
  * redirects to `/` rather than rendering anything.
  */
-import type { Result } from "../types/result.js";
+import type { Capability } from "../data/enums.js";
+import type { Result } from "../data/result.js";
 import { evaluateGate, type GateSession, type GateError } from "../auth/three-layer-gate.js";
 import type { BusinessRule } from "../auth/business-rule.js";
 import { hasCapability } from "../auth/capability.js";
-import type { Capability } from "../auth/types.js";
 import type { Route, RoutePath } from "./types.js";
 import { matchRoute, navigate } from "./hash-router.js";
 import { routes } from "./routes.js";

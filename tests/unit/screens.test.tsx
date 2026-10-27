@@ -9,7 +9,7 @@ import { SignUpScreen } from "../../src/router/screens/SignUp.js";
 import { RecoverScreen } from "../../src/router/screens/Recover.js";
 import { ResetScreen } from "../../src/router/screens/Reset.js";
 import { AcceptScreen } from "../../src/router/screens/Accept.js";
-import { LockScreen } from "../../src/router/screens/Lock.js";
+import { LockScreen } from "../../src/pres/Lock.js";
 import { DailyCardPlaceholder } from "../../src/router/screens/DailyCardPlaceholder.js";
 import { AuditTrailPlaceholder } from "../../src/router/screens/AuditTrailPlaceholder.js";
 import { setLocale } from "../../src/i18n/useTranslations.js";

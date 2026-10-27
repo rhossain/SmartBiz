@@ -5,7 +5,7 @@
  * returns `SmtpError`, the invitation flow shows a "copy this
  * URL" UI (Plan §7 + integration test).
  */
-import { err, ok, type Result } from "../types/result.js";
+import { err, ok, type Result } from "../data/result.js";
 import { warn } from "../observability/log.js";
 
 export type SmtpError = { readonly kind: "smtp_failure"; readonly reason: string };

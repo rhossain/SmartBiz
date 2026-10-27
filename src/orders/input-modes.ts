@@ -12,7 +12,7 @@
  * check; the builders only refuse what they alone can see (an item the
  * parser marked incomplete, a price list that does not line up).
  */
-import { err, ok, type Result } from "../types/result.js";
+import { err, ok, type Result } from "../data/result.js";
 import type {
   CreateOrderInput,
   InvalidInput,

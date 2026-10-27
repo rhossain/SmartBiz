@@ -8,7 +8,7 @@ import { describe, expect, test } from "bun:test";
 import { routes } from "../../src/router/routes.js";
 import { dispatch, dispatchPath } from "../../src/router/dispatch.js";
 import { capabilitiesFor } from "../../src/auth/capability.js";
-import type { Role } from "../../src/auth/types.js";
+import type { Role } from "../../src/data/enums.js";
 
 describe("R1.2 — three-layer gate absence", () => {
   test("(1) every U1 route has a gate (or is explicitly public)", () => {

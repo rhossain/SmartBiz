@@ -12,8 +12,8 @@
  */
 import type { Queryable } from "../db/client.js";
 import { ListOrdersFilterSchema } from "../data/zod-schemas.js";
-import { err, ok, type Result } from "../types/result.js";
-import { isUuid, type Uuid } from "../types/uuid.js";
+import { err, ok, type Result } from "../data/result.js";
+import { isUuid, type Uuid } from "../data/uuid.js";
 import { canReadOrders } from "./order-capability.js";
 import { selectItemsFor, toOrder, type OrderRow } from "./order-rows.js";
 import type {

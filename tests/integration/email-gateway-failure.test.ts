@@ -11,7 +11,7 @@ import { makeSqlStub } from "../helpers/sql-stub.js";
 import { setTestClock, FROZEN_TEST_NOW, resetTestClock } from "../../src/data/clock.js";
 import { resetBuckets } from "../../src/auth/rate-limit.js";
 import { warn as _warn } from "../../src/observability/log.js";
-import type { Uuid } from "../../src/types/uuid.js";
+import type { Uuid } from "../../src/data/uuid.js";
 
 describe("integration: email gateway failure (graceful degradation)", () => {
   test("failing gateway returns Err; the caller can fall back to a copy-URL UI", async () => {

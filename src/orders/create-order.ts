@@ -14,8 +14,8 @@
 import type { Queryable, Sql } from "../db/client.js";
 import { CreateOrderInputSchema } from "../data/zod-schemas.js";
 import { now } from "../data/clock.js";
-import { err, ok, type Result } from "../types/result.js";
-import { uuid, type Uuid } from "../types/uuid.js";
+import { err, ok, type Result } from "../data/result.js";
+import { uuid, type Uuid } from "../data/uuid.js";
 import { appendOrderAudit } from "./order-audit.js";
 import { canMutateOrders } from "./order-capability.js";
 import { contactJson, insertItems } from "./order-rows.js";
