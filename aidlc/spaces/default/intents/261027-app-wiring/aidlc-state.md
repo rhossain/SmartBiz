@@ -126,6 +126,8 @@ Per unit: [TBD]
 - **Status**: Running
 - **Last Updated**: 2026-10-27T16:09:35Z
 
+- **Construction Autonomy Mode**: autonomous
+
 ## Session Resume Point
 - **Last Completed Stage**: delivery-planning
 - **Next Action**: Execute Functional Design
