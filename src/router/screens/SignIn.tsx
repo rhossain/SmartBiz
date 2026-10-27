@@ -18,6 +18,7 @@ import type { SessionNotice } from "../../client/session-store.js";
 import { errorMessage, fieldMessage, SIGN_IN_AGAIN } from "../../i18n/error-copy.js";
 import { useTranslations } from "../../i18n/useTranslations.js";
 import { Field } from "../../pres/Field.js";
+import { useFocusOnFailure } from "../../pres/focus.js";
 import { ErrorBanner } from "../../pres/RequestState.js";
 import { Screen } from "../../pres/Screen.js";
 
@@ -37,6 +38,9 @@ export const SignInScreen = ({ signIn, onSignedIn, notice }: SignInProps): React
   const [password, setPassword] = React.useState("");
   const [busy, setBusy] = React.useState(false);
   const [failure, setFailure] = React.useState<ApiFailure | null>(null);
+  const root = React.useRef<HTMLDivElement>(null);
+  // NFR9.2: after a failed submit, focus the refused field or the message.
+  useFocusOnFailure(root, failure);
 
   const fieldError = (name: string): string | null =>
     failure !== null && failure.fields.some((f) => f.path === name)
@@ -56,51 +60,53 @@ export const SignInScreen = ({ signIn, onSignedIn, notice }: SignInProps): React
   };
 
   return (
-    <Screen title={t("auth.sign_in.title")}>
-      {notice === "reauth" && failure === null ? (
-        <p role="status" data-testid="sign-in-notice">
-          {locale === "bn" ? SIGN_IN_AGAIN.bn : SIGN_IN_AGAIN.en}
-        </p>
-      ) : null}
-      {failure !== null && isBannerFailure(failure) ? (
-        <ErrorBanner kind={failure.kind} locale={locale} correlationId={failure.correlationId} />
-      ) : null}
-      {failure !== null && !isBannerFailure(failure) && failure.fields.length === 0 ? (
-        <p role="alert" data-testid="sign-in-error" data-kind={failure.kind}>
-          {errorMessage(failure.kind, locale, { retryAfterMinutes: failure.retryAfterMinutes })}
-        </p>
-      ) : null}
-      <form
-        data-testid="sign-in-form"
-        onSubmit={(e) => {
-          e.preventDefault();
-          void submit();
-        }}
-      >
-        <Field
-          label={t("auth.email")}
-          name="email"
-          type="email"
-          value={email}
-          onChange={setEmail}
-          autoComplete="username"
-          error={fieldError("email")}
-          required
-        />
-        <Field
-          label={t("auth.password")}
-          name="password"
-          type="password"
-          value={password}
-          onChange={setPassword}
-          autoComplete="current-password"
-          error={fieldError("password")}
-          required
-        />
-        <button type="submit" data-testid="sign-in-submit" disabled={busy}>
-          {busy ? t("auth.working") : t("auth.sign_in.submit")}
-        </button>
-      </form>
-    </Screen>
+    <div ref={root}>
+      <Screen title={t("auth.sign_in.title")}>
+        {notice === "reauth" && failure === null ? (
+          <p role="status" data-testid="sign-in-notice">
+            {locale === "bn" ? SIGN_IN_AGAIN.bn : SIGN_IN_AGAIN.en}
+          </p>
+        ) : null}
+        {failure !== null && isBannerFailure(failure) ? (
+          <ErrorBanner kind={failure.kind} locale={locale} correlationId={failure.correlationId} />
+        ) : null}
+        {failure !== null && !isBannerFailure(failure) && failure.fields.length === 0 ? (
+          <p role="alert" tabIndex={-1} data-testid="sign-in-error" data-kind={failure.kind}>
+            {errorMessage(failure.kind, locale, { retryAfterMinutes: failure.retryAfterMinutes })}
+          </p>
+        ) : null}
+        <form
+          data-testid="sign-in-form"
+          onSubmit={(e) => {
+            e.preventDefault();
+            void submit();
+          }}
+        >
+          <Field
+            label={t("auth.email")}
+            name="email"
+            type="email"
+            value={email}
+            onChange={setEmail}
+            autoComplete="username"
+            error={fieldError("email")}
+            required
+          />
+          <Field
+            label={t("auth.password")}
+            name="password"
+            type="password"
+            value={password}
+            onChange={setPassword}
+            autoComplete="current-password"
+            error={fieldError("password")}
+            required
+          />
+          <button type="submit" data-testid="sign-in-submit" disabled={busy}>
+            {busy ? t("auth.working") : t("auth.sign_in.submit")}
+          </button>
+        </form>
+      </Screen>
+    </div>
   );
 };

@@ -49,7 +49,7 @@ export const ErrorBanner = (props: {
   readonly correlationId?: string | null;
   readonly onRetry?: () => void;
 }): React.ReactElement => (
-  <div role="alert" data-testid="error-banner" data-kind={props.kind}>
+  <div role="alert" tabIndex={-1} data-testid="error-banner" data-kind={props.kind}>
     <span data-testid="error-banner-message">
       {errorMessage(props.kind, props.locale, { correlationId: props.correlationId ?? null })}
     </span>

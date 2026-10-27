@@ -15,6 +15,7 @@ import type { ApiFailure, ApiResult } from "../../client/http.js";
 import { errorMessage, fieldMessage } from "../../i18n/error-copy.js";
 import { useTranslations } from "../../i18n/useTranslations.js";
 import { Field } from "../../pres/Field.js";
+import { useFocusOnFailure } from "../../pres/focus.js";
 import { ErrorBanner } from "../../pres/RequestState.js";
 import { Screen } from "../../pres/Screen.js";
 import { isBannerFailure } from "./SignIn.js";
@@ -31,6 +32,9 @@ export const SignUpScreen = ({ signUp, onSignedIn }: SignUpProps): React.ReactEl
   const [businessName, setBusinessName] = React.useState("");
   const [busy, setBusy] = React.useState(false);
   const [failure, setFailure] = React.useState<ApiFailure | null>(null);
+  const root = React.useRef<HTMLDivElement>(null);
+  // NFR9.2: after a failed submit, focus the refused field or the message.
+  useFocusOnFailure(root, failure);
 
   const fieldError = (name: string): string | null =>
     failure !== null && failure.fields.some((f) => f.path === name)
@@ -50,61 +54,63 @@ export const SignUpScreen = ({ signUp, onSignedIn }: SignUpProps): React.ReactEl
   };
 
   return (
-    <Screen title={t("auth.sign_up.title")}>
-      {failure !== null && isBannerFailure(failure) ? (
-        <ErrorBanner kind={failure.kind} locale={locale} correlationId={failure.correlationId} />
-      ) : null}
-      {failure !== null && !isBannerFailure(failure) && failure.fields.length === 0 ? (
-        <p role="alert" data-testid="sign-up-error" data-kind={failure.kind}>
-          {errorMessage(failure.kind, locale, { retryAfterMinutes: failure.retryAfterMinutes })}
-          {failure.kind === "business_exists" ? (
-            <a href="#/sign-in" data-testid="sign-up-go-sign-in">
-              {" "}
-              {t("auth.go_sign_in")}
-            </a>
-          ) : null}
-        </p>
-      ) : null}
-      <form
-        data-testid="sign-up-form"
-        onSubmit={(e) => {
-          e.preventDefault();
-          void submit();
-        }}
-      >
-        <Field
-          label={t("auth.business_name")}
-          name="businessName"
-          value={businessName}
-          onChange={setBusinessName}
-          autoComplete="organization"
-          error={fieldError("businessName")}
-          required
-        />
-        <Field
-          label={t("auth.email")}
-          name="email"
-          type="email"
-          value={email}
-          onChange={setEmail}
-          autoComplete="username"
-          error={fieldError("email")}
-          required
-        />
-        <Field
-          label={t("auth.password")}
-          name="password"
-          type="password"
-          value={password}
-          onChange={setPassword}
-          autoComplete="new-password"
-          error={fieldError("password")}
-          required
-        />
-        <button type="submit" data-testid="sign-up-submit" disabled={busy}>
-          {busy ? t("auth.working") : t("auth.sign_up.submit")}
-        </button>
-      </form>
-    </Screen>
+    <div ref={root}>
+      <Screen title={t("auth.sign_up.title")}>
+        {failure !== null && isBannerFailure(failure) ? (
+          <ErrorBanner kind={failure.kind} locale={locale} correlationId={failure.correlationId} />
+        ) : null}
+        {failure !== null && !isBannerFailure(failure) && failure.fields.length === 0 ? (
+          <p role="alert" tabIndex={-1} data-testid="sign-up-error" data-kind={failure.kind}>
+            {errorMessage(failure.kind, locale, { retryAfterMinutes: failure.retryAfterMinutes })}
+            {failure.kind === "business_exists" ? (
+              <a href="#/sign-in" data-testid="sign-up-go-sign-in">
+                {" "}
+                {t("auth.go_sign_in")}
+              </a>
+            ) : null}
+          </p>
+        ) : null}
+        <form
+          data-testid="sign-up-form"
+          onSubmit={(e) => {
+            e.preventDefault();
+            void submit();
+          }}
+        >
+          <Field
+            label={t("auth.business_name")}
+            name="businessName"
+            value={businessName}
+            onChange={setBusinessName}
+            autoComplete="organization"
+            error={fieldError("businessName")}
+            required
+          />
+          <Field
+            label={t("auth.email")}
+            name="email"
+            type="email"
+            value={email}
+            onChange={setEmail}
+            autoComplete="username"
+            error={fieldError("email")}
+            required
+          />
+          <Field
+            label={t("auth.password")}
+            name="password"
+            type="password"
+            value={password}
+            onChange={setPassword}
+            autoComplete="new-password"
+            error={fieldError("password")}
+            required
+          />
+          <button type="submit" data-testid="sign-up-submit" disabled={busy}>
+            {busy ? t("auth.working") : t("auth.sign_up.submit")}
+          </button>
+        </form>
+      </Screen>
+    </div>
   );
 };

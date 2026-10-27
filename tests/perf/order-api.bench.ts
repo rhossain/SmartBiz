@@ -11,7 +11,10 @@
  *   NFR6.1  p95 ≤ 300 ms per route;
  *   NFR6.2  session resolve: `GET /api/session` p95 ≤ 20 ms;
  *   NFR6.3  sign-in: the max of 10 calls ≤ 1.5 s (argon2id); sign-up, which can only succeed
- *           once per database, is the one timed sign-up.
+ *           once per database, is the one timed sign-up;
+ *   NFR6.8  5 signed-in clients in parallel, 50 calls each: zero errors, p95 still ≤ 300 ms;
+ *   NFR6.9  (`large`) 10 % of the 10 000 orders carry 10 line revisions, and the first and a
+ *           cursor page still meet NFR6.1.
  * Prints p50/p95/max per route and one result line; exits 1 when any target is missed.
  */
 import postgres from "postgres";
@@ -22,6 +25,7 @@ import { createPool } from "../../src/db/client.js";
 import { runMigrations } from "../../src/db/migrate.js";
 import { createOrder } from "../../src/orders/create-order.js";
 import { transitionStatus } from "../../src/orders/transition-status.js";
+import { updateOrder } from "../../src/orders/update-order.js";
 import type { CreateOrderInput, OrderContext } from "../../src/orders/types.js";
 import { readConfig } from "../../src/server/config.js";
 import { startServer } from "../../src/server/main.js";
@@ -31,6 +35,8 @@ export const SESSION_P95_MS = 20;
 export const SIGN_IN_MAX_MS = 1_500;
 const WARMUP = 10;
 const SAMPLES = 100;
+const CONCURRENT_CLIENTS = 5;
+const CALLS_PER_CLIENT = 50;
 
 const ADMIN = process.env["REALDB_ADMIN_URL"];
 const APP = process.env["REALDB_APP_URL"];
@@ -121,6 +127,15 @@ const main = async (): Promise<void> => {
       setTestClock(new Date(seedStart + i));
       const r = await createOrder(seedSql, ctx, orderInput(i));
       if (!r.ok) throw new Error(`seed ${i}: ${r.error.kind}`);
+      // NFR6.9 (large): 10 % of orders carry 10 line revisions (9 edits after creation).
+      if (large && i % 10 === 0) {
+        for (let rev = 2; rev <= 10; rev++) {
+          const edited = await updateOrder(seedSql, ctx, r.value.id, {
+            items: orderInput(i + rev).items,
+          });
+          if (!edited.ok) throw new Error(`seed revision ${i}/${rev}: ${edited.error.kind}`);
+        }
+      }
     }
     resetTestClock();
     // Fresh orders for the write routes, each in a status its route accepts.
@@ -239,6 +254,41 @@ const main = async (): Promise<void> => {
       );
       const limit = t.route === "GET /api/session" ? SESSION_P95_MS : ROUTE_P95_MS;
       if (p95 > limit) misses.push(`${t.route} p95 ${p95.toFixed(1)} ms > ${limit} ms`);
+    }
+
+    // NFR6.8: 5 signed-in clients at once, 50 calls each (list and detail), on the pool of 5;
+    // zero errors and the NFR6.1 p95 still met.
+    const clients = await Promise.all(
+      Array.from({ length: CONCURRENT_CLIENTS }, () =>
+        insertSession(seedSql, {
+          userId: session.user.id,
+          businessId: session.businessId,
+          at: new Date(),
+        }),
+      ),
+    );
+    const parallelMs: number[] = [];
+    let parallelErrors = 0;
+    await Promise.all(
+      clients.map(async (c) => {
+        for (let i = 0; i < CALLS_PER_CLIENT; i++) {
+          const url = i % 2 === 0 ? `${base}/api/orders` : `${base}/api/orders/${anyId}`;
+          const started = performance.now();
+          const r = await fetch(url, { headers: { Cookie: `__Host-sb_session=${c.token}` } });
+          await r.arrayBuffer();
+          parallelMs.push(performance.now() - started);
+          if (r.status !== 200) parallelErrors += 1;
+        }
+      }),
+    );
+    const parallelP95 = percentile(parallelMs, 95);
+    say(
+      `${CONCURRENT_CLIENTS} parallel clients × ${CALLS_PER_CLIENT} calls | p95 ${parallelP95.toFixed(1)} ms | errors ${parallelErrors}`,
+    );
+    if (parallelErrors > 0)
+      misses.push(`${parallelErrors} errors with ${CONCURRENT_CLIENTS} parallel clients`);
+    if (parallelP95 > ROUTE_P95_MS) {
+      misses.push(`parallel p95 ${parallelP95.toFixed(1)} ms > ${ROUTE_P95_MS} ms`);
     }
 
     const signIns: number[] = [];

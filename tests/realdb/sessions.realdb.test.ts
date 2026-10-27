@@ -37,6 +37,21 @@ describe.skipIf(!realdbEnabled)("sessions on real Postgres", () => {
 
   const fresh = () => insertSession(db.app, { userId: OWNER, businessId: BUSINESS, at: T0 });
 
+  // NFR6.10: with 1 000 session rows (none purged in this intent), resolving one stays an
+  // index lookup on token_hash, not a scan.
+  test("with 1 000 sessions, resolve uses the token_hash index", async () => {
+    for (let i = 0; i < 1_000; i++) await fresh();
+    await db.admin`ANALYZE sessions`;
+    const plan = await db.admin.unsafe<{ "QUERY PLAN": string }[]>(
+      "EXPLAIN SELECT user_id FROM sessions WHERE token_hash = 'x'",
+    );
+    const text = plan.map((r) => r["QUERY PLAN"]).join("\n");
+    expect(text).toContain("sessions_token_hash_idx");
+    expect(text).not.toContain("Seq Scan");
+    const s = await fresh();
+    expect(await resolveSession(db.app, s.token, at(1_000))).not.toBeNull();
+  });
+
   test("insert stores the hash only; resolve returns user, business and role", async () => {
     const s = await fresh();
     const [row] = await db.admin<{ token_hash: string }[]>`

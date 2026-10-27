@@ -96,6 +96,18 @@ describe("sign-in screen", () => {
     expect((view.getByTestId("field-password") as HTMLInputElement).value).toBe("correct-horse-1");
   });
 
+  // NFR9.2: keyboard users land on the problem after a failed submit.
+  test("a failed submit moves focus to the message, or to the refused field", async () => {
+    const view = render(<SignInScreen signIn={client.auth.signIn} onSignedIn={() => undefined} />);
+    type(view.getByTestId, "owner@acme.test", "wrong-password");
+    await submit(view.getByTestId);
+    await waitFor(() => expect(document.activeElement).toBe(view.getByTestId("sign-in-error")));
+    type(view.getByTestId, `${"x".repeat(250)}@acme.test`, "whatever-1");
+    await submit(view.getByTestId);
+    await waitFor(() => expect(document.activeElement).toBe(view.getByTestId("field-email")));
+    expect(view.getByTestId("field-email").getAttribute("aria-invalid")).toBe("true");
+  });
+
   test("after a session ended, the notice asks to sign in again", () => {
     const view = render(
       <SignInScreen signIn={client.auth.signIn} onSignedIn={() => undefined} notice="reauth" />,

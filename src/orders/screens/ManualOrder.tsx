@@ -24,6 +24,7 @@
 import * as React from "react";
 import type { Locale } from "../../data/enums.js";
 import { toAsciiDigits } from "../../i18n/bnDigits.js";
+import { useFocusOnFailure } from "../../pres/focus.js";
 import { Screen } from "../../pres/Screen.js";
 import { buildManualOrder } from "../input-modes.js";
 import {
@@ -222,9 +223,13 @@ export const ManualOrder = ({ locale, draft, onSave }: ManualOrderProps): React.
     stage(draft, next);
   };
   const result = evaluate(form);
+  const formRef = React.useRef<HTMLFormElement>(null);
+  // NFR9.2: after a refused save, focus the first refused input or the save message.
+  useFocusOnFailure(formRef, state.status === "error" ? state : null);
   return (
     <Screen title={tr("manual.title", locale)}>
       <form
+        ref={formRef}
         data-testid="manual-order-form"
         onSubmit={(e) => {
           e.preventDefault();

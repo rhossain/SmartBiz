@@ -237,6 +237,29 @@ describe("US1.11 — ManualOrder screen", () => {
     expect(draft.get().pending?.source).toBe("manual");
   });
 
+  // NFR9.2 / NFR9.4: focus goes to the first refused input; an error is announced as an alert.
+  test("a refused save focuses the first refused input; error toasts are alerts", async () => {
+    const { getByTestId } = render(
+      <ManualOrder
+        locale="bn"
+        draft={createOrderDraftStore()}
+        onSave={async () => ({
+          ok: false,
+          error: {
+            kind: "invalid_input",
+            fields: [{ path: "items.1.unitPricePaise", message: "x" }],
+          },
+        })}
+      />,
+    );
+    fillTwoLines(getByTestId);
+    await act(async () => {
+      fireEvent.submit(getByTestId("manual-order-form"));
+    });
+    expect(document.activeElement).toBe(getByTestId("manual-line-price-2"));
+    expect(getByTestId("toast").getAttribute("role")).toBe("alert");
+  });
+
   test("a 503 or unreachable answer is the catalogue message, and nothing is resent", async () => {
     let calls = 0;
     const { getByTestId } = render(
