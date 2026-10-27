@@ -1,0 +1,37 @@
+{
+  "$comment": "Scripted, named mutants (team.md Testing Posture). Each entry re-introduces one defect into one file, in a throwaway git worktree, and runs the mapped test, which must FAIL. scripts/mutants.ts applies them; `find` must occur exactly once in `file`. A new invariant test adds its mutant here in the same Bolt.",
+  "mutants": [
+    {
+      "id": "session-idle-boundary",
+      "why": "Exactly 12 h idle must already be invalid (BR3.5): loosening > to >= keeps it alive.",
+      "file": "src/auth/session.ts",
+      "find": "AND s.last_seen_at > ${idleCutoff}::timestamptz",
+      "replace": "AND s.last_seen_at >= ${idleCutoff}::timestamptz",
+      "test": "tests/unit/session-store.test.ts"
+    },
+    {
+      "id": "sign-in-limit-count",
+      "why": "Sign-in allows 5 attempts per 15-minute window (BR4.2), not 6.",
+      "file": "src/auth/attempt-limiter.ts",
+      "find": "export const SIGN_IN_LIMIT: LimiterConfig = { max: 5, windowMs: 15 * 60 * 1000 };",
+      "replace": "export const SIGN_IN_LIMIT: LimiterConfig = { max: 6, windowMs: 15 * 60 * 1000 };",
+      "test": "tests/unit/attempt-limiter.test.ts"
+    },
+    {
+      "id": "sign-in-audit-first",
+      "why": "auth.sign_in is written before the session rows in the same transaction (audit first).",
+      "file": "src/auth/sign-in.ts",
+      "find": "    await auditSignIn(tx, user.businessId, user.id, deps.correlationId);\n    if (input.presentedToken !== null) await deleteSessionByToken(tx, input.presentedToken);\n    return insertSession(tx, { userId: user.id, businessId: user.businessId, at: now() });",
+      "replace": "    if (input.presentedToken !== null) await deleteSessionByToken(tx, input.presentedToken);\n    const created = await insertSession(tx, { userId: user.id, businessId: user.businessId, at: now() });\n    await auditSignIn(tx, user.businessId, user.id, deps.correlationId);\n    return created;",
+      "test": "tests/unit/sign-in.test.ts"
+    },
+    {
+      "id": "sign-out-audit-without-deletion",
+      "why": "auth.sign_out is written only when a session row was actually deleted (BR5.2, BR5.3).",
+      "file": "src/auth/sign-out.ts",
+      "find": "    if (owner === null) return false;\n    await auditSignOut(tx, owner.businessId, owner.userId, correlationId);\n    return true;",
+      "replace": "    await auditSignOut(tx, owner?.businessId as never, owner?.userId as never, correlationId);\n    return owner !== null;",
+      "test": "tests/unit/sign-out.test.ts"
+    }
+  ]
+}

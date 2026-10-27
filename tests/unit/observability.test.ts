@@ -7,6 +7,7 @@ import { newCorrelationId } from "../../src/observability/correlation.js";
 import { listAuditForBusiness, auditRetentionFilter } from "../../src/audit/audit-service.js";
 import { exportAudit } from "../../src/audit/audit-export.js";
 import { makeSqlStub } from "../helpers/sql-stub.js";
+import { authDeps } from "../helpers/auth-fixtures.js";
 import { signUp } from "../../src/auth/sign-up.js";
 import { setTestClock, FROZEN_TEST_NOW, resetTestClock } from "../../src/data/clock.js";
 import { hashPassword, verifyPassword } from "../../src/auth/argon2.js";
@@ -45,12 +46,16 @@ describe("observability + audit read paths", () => {
   test("listAuditForBusiness returns rows", async () => {
     setTestClock(FROZEN_TEST_NOW);
     const stub = makeSqlStub();
-    await signUp(stub.sql, {
-      email: "o@e.com",
-      password: "verysecret",
-      businessName: "A",
-      locale: "bn",
-    });
+    await signUp(
+      stub.sql,
+      {
+        email: "o@e.com",
+        password: "verysecret",
+        businessName: "A",
+        locale: "bn",
+      },
+      authDeps(),
+    );
     const businessId = stub.state.businesses[0]!["id"] as never;
     const rows = await listAuditForBusiness(stub.sql, businessId);
     expect(Array.isArray(rows)).toBe(true);
@@ -60,12 +65,16 @@ describe("observability + audit read paths", () => {
   test("exportAudit delegates to listAuditForBusiness", async () => {
     setTestClock(FROZEN_TEST_NOW);
     const stub = makeSqlStub();
-    await signUp(stub.sql, {
-      email: "o@e.com",
-      password: "verysecret",
-      businessName: "A",
-      locale: "bn",
-    });
+    await signUp(
+      stub.sql,
+      {
+        email: "o@e.com",
+        password: "verysecret",
+        businessName: "A",
+        locale: "bn",
+      },
+      authDeps(),
+    );
     const businessId = stub.state.businesses[0]!["id"] as never;
     const rows = await exportAudit(stub.sql, businessId);
     expect(Array.isArray(rows)).toBe(true);
@@ -78,7 +87,7 @@ describe("observability + audit read paths", () => {
   });
 
   test("argon2 PASSWORD_MIN_LENGTH + hash + verify", async () => {
-    expect(PASSWORD_MIN_LENGTH).toBe(8);
+    expect(PASSWORD_MIN_LENGTH).toBe(10); // U1 BR2.4 (was 8 in B1)
     const hash = await hashPassword("verysecret");
     expect(hash).toMatch(/^\$argon2id\$/);
     const ok = await verifyPassword(hash, "verysecret");

@@ -460,7 +460,11 @@ export const makeSqlStub = (
       return [];
     }
     // businesses_singleton_idx (0011): a second business is a unique violation.
-    if (/INSERT INTO businesses \(id, name, locale, owner_user_id, created_at, updated_at\)/i.test(text)) {
+    if (
+      /INSERT INTO businesses \(id, name, locale, owner_user_id, created_at, updated_at\)/i.test(
+        text,
+      )
+    ) {
       const [id, name, locale, ownerUserId, createdAt, updatedAt] = params as [
         Uuid,
         string,

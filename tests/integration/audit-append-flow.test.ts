@@ -14,31 +14,32 @@ import { acceptInvite } from "../../src/auth/accept-invite.js";
 import { requestRecovery } from "../../src/auth/recover.js";
 import { makeSqlStub } from "../helpers/sql-stub.js";
 import { setTestClock, FROZEN_TEST_NOW, resetTestClock } from "../../src/data/clock.js";
-import { resetBuckets } from "../../src/auth/rate-limit.js";
+import { resetFlowLimiters } from "../../src/auth/attempt-limiter.js";
+import { authDeps } from "../helpers/auth-fixtures.js";
 
 describe("integration: audit append on every mutation (UC-1.9)", () => {
   test("sign-up, sign-in, invite, accept, recover all append audit rows", async () => {
-    resetBuckets();
+    resetFlowLimiters();
     setTestClock(FROZEN_TEST_NOW);
     const stub = makeSqlStub();
-    const su = await signUp(stub.sql, {
-      email: "owner@example.com",
-      password: "verysecret",
-      businessName: "Acme",
-      locale: "bn",
-    });
+    const su = await signUp(
+      stub.sql,
+      {
+        email: "owner@example.com",
+        password: "verysecret",
+        businessName: "Acme",
+        locale: "bn",
+      },
+      authDeps(),
+    );
     if (!su.ok) throw new Error("signup");
     const ownerId = su.value.user.id;
     const businessId = su.value.businessId;
 
     await signIn(
       stub.sql,
-      {
-        email: "owner@example.com",
-        password: "verysecret",
-        ip: "1.1.1.1",
-      },
-      FROZEN_TEST_NOW.getTime() + 1000,
+      { email: "owner@example.com", password: "verysecret", presentedToken: null },
+      authDeps(),
     );
 
     const inv = await createInvite(stub.sql, {

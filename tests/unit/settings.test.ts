@@ -4,6 +4,7 @@
 import { describe, expect, test } from "bun:test";
 import { signUp } from "../../src/auth/sign-up.js";
 import { makeSqlStub } from "../helpers/sql-stub.js";
+import { authDeps } from "../helpers/auth-fixtures.js";
 import { hasCapability } from "../../src/auth/capability.js";
 import { auditSettingsChange } from "../../src/auth/audit.js";
 import { setTestClock, FROZEN_TEST_NOW, resetTestClock } from "../../src/data/clock.js";
@@ -11,12 +12,16 @@ import { setTestClock, FROZEN_TEST_NOW, resetTestClock } from "../../src/data/cl
 const seed = async () => {
   setTestClock(FROZEN_TEST_NOW);
   const stub = makeSqlStub();
-  await signUp(stub.sql, {
-    email: "owner@example.com",
-    password: "verysecret",
-    businessName: "Acme",
-    locale: "bn",
-  });
+  await signUp(
+    stub.sql,
+    {
+      email: "owner@example.com",
+      password: "verysecret",
+      businessName: "Acme",
+      locale: "bn",
+    },
+    authDeps(),
+  );
   return makeSqlStub({ users: stub.state.users, businesses: stub.state.businesses });
 };
 

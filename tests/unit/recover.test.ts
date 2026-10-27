@@ -6,24 +6,29 @@ import { signUp } from "../../src/auth/sign-up.js";
 import { requestRecovery, resetPassword } from "../../src/auth/recover.js";
 import { makeSqlStub } from "../helpers/sql-stub.js";
 import { setTestClock, FROZEN_TEST_NOW, resetTestClock } from "../../src/data/clock.js";
-import { resetBuckets } from "../../src/auth/rate-limit.js";
+import { resetFlowLimiters } from "../../src/auth/attempt-limiter.js";
+import { authDeps } from "../helpers/auth-fixtures.js";
 
 const setup = async () => {
-  resetBuckets();
+  resetFlowLimiters();
   setTestClock(FROZEN_TEST_NOW);
   const seeded = makeSqlStub();
-  await signUp(seeded.sql, {
-    email: "owner@example.com",
-    password: "verysecret",
-    businessName: "Acme",
-    locale: "bn",
-  });
+  await signUp(
+    seeded.sql,
+    {
+      email: "owner@example.com",
+      password: "verysecret",
+      businessName: "Acme",
+      locale: "bn",
+    },
+    authDeps(),
+  );
   return makeSqlStub({ users: seeded.state.users, businesses: seeded.state.businesses });
 };
 
 describe("password recovery (UC-1.3)", () => {
   beforeEach(() => {
-    resetBuckets();
+    resetFlowLimiters();
     resetTestClock();
   });
 

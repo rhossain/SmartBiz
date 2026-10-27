@@ -6,18 +6,23 @@ import { signUp } from "../../src/auth/sign-up.js";
 import { createInvite } from "../../src/auth/invite.js";
 import { makeSqlStub } from "../helpers/sql-stub.js";
 import { setTestClock, FROZEN_TEST_NOW, resetTestClock } from "../../src/data/clock.js";
-import { resetBuckets } from "../../src/auth/rate-limit.js";
+import { resetFlowLimiters } from "../../src/auth/attempt-limiter.js";
+import { authDeps } from "../helpers/auth-fixtures.js";
 
 const seed = async () => {
-  resetBuckets();
+  resetFlowLimiters();
   setTestClock(FROZEN_TEST_NOW);
   const stub = makeSqlStub();
-  const r = await signUp(stub.sql, {
-    email: "owner@example.com",
-    password: "verysecret",
-    businessName: "Acme",
-    locale: "bn",
-  });
+  const r = await signUp(
+    stub.sql,
+    {
+      email: "owner@example.com",
+      password: "verysecret",
+      businessName: "Acme",
+      locale: "bn",
+    },
+    authDeps(),
+  );
   if (!r.ok) throw new Error("seed failed");
   return makeSqlStub({ users: stub.state.users, businesses: stub.state.businesses });
 };

@@ -27,8 +27,7 @@ export interface LimiterConfig {
 }
 
 export type Reservation =
-  | { readonly ok: true }
-  | { readonly ok: false; readonly retryAfterMs: number };
+  { readonly ok: true } | { readonly ok: false; readonly retryAfterMs: number };
 
 export interface AttemptLimiter {
   readonly reserve: (key: string, nowMs: number) => Reservation;

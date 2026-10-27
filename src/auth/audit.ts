@@ -60,7 +60,12 @@ export const auditSignInFailure = (
     ...(correlationId !== undefined ? { correlationId } : {}),
   });
 
-export const auditSignOut = (tx: Queryable, businessId: Uuid, actor: Uuid, correlationId?: string) =>
+export const auditSignOut = (
+  tx: Queryable,
+  businessId: Uuid,
+  actor: Uuid,
+  correlationId?: string,
+) =>
   insertAudit(tx, {
     businessId,
     actorUserId: actor,

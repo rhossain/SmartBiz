@@ -103,9 +103,7 @@ export const signUp = async (
     });
   } catch (e: unknown) {
     if (!isUniqueViolation(e)) throw e;
-    return err(
-      (await businessExists(sql)) ? { kind: "business_exists" } : { kind: "email_taken" },
-    );
+    return err((await businessExists(sql)) ? { kind: "business_exists" } : { kind: "email_taken" });
   }
 
   const session = await insertSession(sql, { userId, businessId, at: now() });

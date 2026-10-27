@@ -170,10 +170,10 @@ that layer is implemented, together with the full existing suite, before the nex
 
 ### Step 8 — Business logic: write and run its tests
 
-- [ ] Update `tests/unit/sign-up.test.ts`, `sign-in.test.ts`, `session.test.ts` to the new contracts; add `tests/unit/attempt-limiter.test.ts` (5 per window, 6th → `rate_limited` with minutes left, window reset, key cap eviction), `tests/unit/hash-gate.test.ts` (2 concurrent, queue 20, overflow), `tests/unit/sign-out.test.ts` (idempotent, audit only when a row is deleted), `tests/unit/public-user.test.ts` (no `passwordHash` on any returned value).
-- [ ] `tests/realdb/auth.realdb.test.ts`: racing sign-ups → exactly one business, other gets `business_exists`; sign-in replaces the presented session; failed sign-in audit row holds no typed text; a DB error during sign-up is not `email_taken`.
-- [ ] Add mutants to `tests/mutants.json` for: idle limit boundary (`>` → `>=`), limiter count (5 → 6), audit-first order in sign-in, sign-out audit without deletion.
-- [ ] Run the step's tests plus the full suite.
+- [x] Update `tests/unit/sign-up.test.ts`, `sign-in.test.ts`, `session.test.ts` to the new contracts; add `tests/unit/attempt-limiter.test.ts` (5 per window, 6th → `rate_limited` with minutes left, window reset, key cap eviction), `tests/unit/hash-gate.test.ts` (2 concurrent, queue 20, overflow), `tests/unit/sign-out.test.ts` (idempotent, audit only when a row is deleted), `tests/unit/public-user.test.ts` (no `passwordHash` on any returned value).
+- [x] `tests/realdb/auth.realdb.test.ts`: racing sign-ups → exactly one business, other gets `business_exists`; sign-in replaces the presented session; failed sign-in audit row holds no typed text; a DB error during sign-up is not `email_taken`.
+- [x] Add mutants to `tests/mutants.json` for: idle limit boundary (`>` → `>=`), limiter count (5 → 6), audit-first order in sign-in, sign-out audit without deletion.
+- [x] Run the step's tests plus the full suite.
 
 ### Step 9 — API / endpoint: implement (US1.1, US1.3, US1.4, US2.1a; BR1.1–BR1.11, BR3.2, BR3.8, BR6.1–BR6.4; S1–S9, O1–O7)
 

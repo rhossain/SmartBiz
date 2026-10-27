@@ -7,18 +7,23 @@ import { signUp } from "../../src/auth/sign-up.js";
 import { createInvite } from "../../src/auth/invite.js";
 import { makeSqlStub } from "../helpers/sql-stub.js";
 import { setTestClock, FROZEN_TEST_NOW, resetTestClock } from "../../src/data/clock.js";
-import { resetBuckets } from "../../src/auth/rate-limit.js";
+import { resetFlowLimiters } from "../../src/auth/attempt-limiter.js";
+import { authDeps } from "../helpers/auth-fixtures.js";
 
 const setup = async () => {
-  resetBuckets();
+  resetFlowLimiters();
   setTestClock(FROZEN_TEST_NOW);
   const stub = makeSqlStub();
-  await signUp(stub.sql, {
-    email: "owner@example.com",
-    password: "verysecret",
-    businessName: "Acme",
-    locale: "bn",
-  });
+  await signUp(
+    stub.sql,
+    {
+      email: "owner@example.com",
+      password: "verysecret",
+      businessName: "Acme",
+      locale: "bn",
+    },
+    authDeps(),
+  );
   const userId = stub.state.users[0]!.id as string;
   const businessId = stub.state.businesses[0]!.id as string;
   const inv = await createInvite(stub.sql, {
@@ -35,7 +40,7 @@ const setup = async () => {
 
 describe("accept-invite (UC-1.5)", () => {
   beforeEach(() => {
-    resetBuckets();
+    resetFlowLimiters();
     resetTestClock();
   });
 
