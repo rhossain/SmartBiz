@@ -18,7 +18,7 @@ entities:
       - { name: createdAt, type: timestamp, required: true }
       - { name: updatedAt, type: timestamp, required: true }
     constraints:
-      - "At most one Business row exists (singleton; BR2.3)."
+      - "At most one Business row exists (singleton index businesses_singleton_idx; BR2.3)."
     relationships:
       - { to: User, cardinality: "1 Business has 1..n Users", direction: "User.businessId -> Business.id" }
 
@@ -28,7 +28,7 @@ entities:
     attributes:
       - { name: id, type: uuid, required: true, unique: true }
       - { name: businessId, type: uuid, required: true, references: Business.id, note: "new in U1; reference checked at transaction end (deferred) so sign-up can insert both rows" }
-      - { name: email, type: text, required: true, unique: true, note: "unique ignoring case" }
+      - { name: email, type: text, required: true, unique: true, note: "unique ignoring case (unique index on lower(email), migration 0013)" }
       - { name: passwordHash, type: text, required: true, note: "private: never leaves AuthComponent (UserRecord only)" }
       - { name: role, type: enum, allowed: [owner, manager, sales_staff, accountant], required: true }
       - { name: active, type: boolean, required: true, default: true }
@@ -48,7 +48,7 @@ entities:
     description: A signed-in browser. U1 adds tokenHash and fixes the two limits.
     attributes:
       - { name: id, type: uuid, required: true, unique: true }
-      - { name: tokenHash, type: text, required: true, unique: true, note: "new in U1; SHA-256 hex of the cookie value; the raw value is never stored" }
+      - { name: tokenHash, type: text, required: true, unique: true, note: "new in U1 (migration 0012 clears old rows first); SHA-256 hex of the cookie value; the raw value is never stored" }
       - { name: userId, type: uuid, required: true, references: User.id }
       - { name: businessId, type: uuid, required: true, references: Business.id }
       - { name: issuedAt, type: timestamp, required: true }

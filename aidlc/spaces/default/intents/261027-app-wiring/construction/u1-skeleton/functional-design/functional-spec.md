@@ -12,9 +12,10 @@ run, signs in with a Postgres-backed session, creates an order on the existing o
 real API, sees it listed, and signs out. Everything else (other screens mounted, the full role walk,
 staff, catalog) belongs to U2–U5.
 
-Contract amendments made here (recorded for C1/C9): the session cookie carries `Max-Age` equal to the
-time left to the 30-day cap (Q3); `order_items` loses DELETE and gains revisions (Q1); `rate_limited` is
-returned by sign-in (Q2, Q6).
+Contract amendments made here are written into `contract-summary.md` §"Amendments from U1 Functional
+Design": the session cookie carries `Max-Age` equal to the time left to the 30-day cap (Q3); `order_items`
+loses DELETE and gains revisions (Q1); auth kinds pass through unchanged with their own statuses, and
+`rate_limited` is returned by sign-in with `Retry-After` (Q2, Q6).
 
 ## Workflows
 
@@ -55,9 +56,9 @@ Error paths: database unreachable → 503 and the form keeps its values (BR2.5);
 ### W4 — Sign-in (BR3.1–BR3.3, BR4.1–BR4.4)
 
 1. Normalise the typed email (trim, lower-case) as the rate-limit key.
-2. If the key already has 5 failures in its 15-minute window → 429 with `retryAfterMinutes`; stop (BR4.2).
+2. Reserve an attempt for the key in one synchronous step; if 5 are already reserved in its fixed 15-minute window → 429 with `retryAfterMinutes` and `Retry-After`; stop (BR4.2).
 3. Look up the user by email ignoring case; verify the password; require `active`.
-4. On failure: add 1 to the key; write `auth.sign_in.failure` (subject user id if matched, reason code, no typed text) unless no business exists; answer the identical 401 (BR4.1, BR4.3).
+4. On failure: keep the reservation; write `auth.sign_in.failure` (subject user id if matched, reason code, no typed text) unless no business exists; answer the identical 401 (BR4.1, BR4.3).
 5. On success: clear the key; generate the token; in one transaction delete the session matching the request's cookie (if any), insert the new session (`expiresAt` = now + 30 days, `lastSeenAt` = now) and write `auth.sign_in`.
 6. Answer 200 with `{user: PublicUser, businessId, capabilities}` and Set-Cookie (`Max-Age` = seconds to `expiresAt`).
 
@@ -99,8 +100,21 @@ No line row is updated or deleted; every earlier revision stays readable for the
 2. Migrate a fresh database twice (idempotency), then compare `app_role`'s grants with the declared set.
 3. Start the server as a child process on a free port with `DATABASE_URL` = the app URL.
 4. Over HTTP: `GET /api/setup` (false) → sign-up → `GET /api/session` → `POST /api/orders` → `GET /api/orders` contains it → sign-out → the old cookie gets 401 on `GET /api/session`; check BR1.7 headers on every response.
-5. In happy-dom, render the U1 routes for a signed-in Owner and assert each heading.
-6. Stop the child server; exit non-zero on any failure.
+5. Refusals: insert one active user per non-Owner role directly in the database, sign each in, and walk every route in the server route table, asserting 403 or success per the role table, 401 without a cookie, and 403 for a cross-origin or non-JSON POST.
+6. In happy-dom, render every route U1 mounts for a signed-in Owner and assert each heading (U2 and U3 extend this walk).
+7. Stop the child server; exit non-zero on any failure.
+
+## Migrations (BR9.4, BR6.10)
+
+| # | Migration | Steps | Fails when |
+|---|-----------|-------|-----------|
+| 0011 | `users_business_link` | add `users.business_id` nullable; fill from `businesses.owner_user_id`; set NOT NULL; add the deferrable reference; add `businesses_singleton_idx` | any user has no business (`users_without_business`) |
+| 0012 | `sessions_token_hash` | delete every session row (none was ever usable); add `token_hash` NOT NULL; unique index | — |
+| 0013 | `users_email_ci_unique` | check for emails equal ignoring case; drop `users_email_lower_idx`; add unique index on lower(email) | a case duplicate exists (`users_email_case_duplicate`) |
+| 0014 | `auth_grants` | exact grants on users, businesses, invitations, password_resets, sessions | — |
+| 0015 | `order_item_revisions` | add `orders.items_revision` and `order_items.revision` (default 1); drop `UNIQUE(order_id, line_no)`; add `UNIQUE(order_id, revision, line_no)` and an index on (order_id, revision); revoke DELETE on order_items | — |
+
+Every migration is idempotent and runs under the admin URL; running the set twice changes nothing (the wiring check does exactly that).
 
 ## State machines
 
@@ -197,18 +211,20 @@ Text fallback: one Business has one or more Users and any number of Sessions, Or
 
 | Kind | Status | Where | Shown to the person (Bangla) |
 |------|--------|-------|-------------------------------|
-| invalid_input | 400 | any parse failure | per field, from the client copy table |
-| unauthenticated | 401 | sign-in failure, no/expired session | "ইমেইল বা পাসওয়ার্ড ভুল" on sign-in; elsewhere "আবার সাইন ইন করুন" |
+| invalid_input, invalid_email, password_too_short | 400 | parse failure; sign-up input | per field, from the client copy table |
+| invalid_credentials | 401 | sign-in failure (identical body every time) | "ইমেইল বা পাসওয়ার্ড ভুল" |
+| unauthenticated | 401 | no, expired or idle session | "আবার সাইন ইন করুন" |
+| email_taken | 409 | sign-up with an existing email (no business case) | "এই ইমেইল আগেই ব্যবহার হয়েছে" |
 | forbidden | 403 | capability, Origin, content type | lock screen "এই অংশ আপনার দায়িত্বের বাইরে" |
 | not_found | 404 | unknown route or order | "পাওয়া যায়নি" |
 | business_exists | 409 | sign-up | "এই ব্যবসা আগেই তৈরি হয়েছে। মালিকের কাছে আমন্ত্রণ লিংক চান।" |
 | not_editable / invalid_transition / already_linked / conflict | 409 | order edits | the B2 copy for each |
 | payload_too_large | 413 | any write | "তথ্য অনেক বড়" |
-| rate_limited | 429 | sign-in | "অনেকবার চেষ্টা হয়েছে। N মিনিট পর আবার চেষ্টা করুন।" |
+| rate_limited | 429 (+ Retry-After) | sign-in | "অনেকবার চেষ্টা হয়েছে। N মিনিট পর আবার চেষ্টা করুন।" |
 | internal | 500 | thrown error | "কিছু একটা ভুল হয়েছে" with the correlation id |
 | db_unavailable | 503 | database down | "ডাটাবেস চালু নেই। কিছুক্ষণ পর আবার চেষ্টা করুন।" |
 | unreachable (client only) | — | network failure or 10 s timeout | "সার্ভারের সাথে যোগাযোগ হচ্ছে না" |
 
 ## Traceability
 
-Every U1 acceptance criterion maps to rules in `traceability.json` (42 ACs, 0 gaps).
+Every U1 acceptance criterion maps to rules in `traceability.json` (42 ACs, 0 gaps; AC5.2a.2 is narrowed to U1's routes per the units review).

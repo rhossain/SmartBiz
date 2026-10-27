@@ -18,11 +18,11 @@ X. Other (please specify)
 
 ## Q2. Mapping the auth domain's error kinds to the wire (contract R-02)
 
-A. One total mapping, checked by the type-checker: `invalid_credentials` → `unauthenticated`; `invalid_email`, `password_too_short` → `invalid_input` (with field paths); `email_taken` → `conflict` (only from the explicit pre-check or a unique-violation on `users.email`, never from any other database error); new `business_exists` → `business_exists`; a rate-limited sign-in returns a new `rate_limited` kind instead of `invalid_credentials`
+A. Kinds go on the wire unchanged (team.md: never reworded); one total kind → status switch, checked by the type-checker: `invalid_email`, `password_too_short` → 400; `invalid_credentials` → 401; `email_taken` → 409 (only from the explicit pre-check or a unique violation on `users.email`, never from any other database error); new `business_exists` → 409; a rate-limited sign-in returns a new `rate_limited` kind (429 with `Retry-After`) instead of `invalid_credentials`. Contract C1's status table gains these rows (amended in `contract-summary.md`)
 B. Return domain kinds on the wire unchanged
 X. Other (please specify)
 
-[Answer]: A. Contract C1's table is closed; a total switch makes an unmapped kind a compile error.
+[Answer]: A. Contract C1's table is closed and kinds are never reworded; a total switch makes an unmapped kind a compile error. (Revised after the first review, R-04.)
 
 ## Q3. Session token, cookie lifetime and expiry (contract R-06, AC1.3.1–AC1.3.4)
 

@@ -33,8 +33,9 @@ content_type:
 body_limit_bytes: 65536                     # larger bodies -> 413 {error: payload_too_large}
 cookie:
   name: __Host-sb_session
-  attributes: [Secure, HttpOnly, SameSite=Lax, Path=/]   # no Domain; Max-Age not set (session cookie); cleared with Max-Age=0
+  attributes: [Secure, HttpOnly, SameSite=Lax, Path=/]   # no Domain; cleared with Max-Age=0
   value: 32 random bytes, base64url          # only SHA-256(value) is stored in sessions.token_hash
+  max_age: seconds left to the session's 30-day cap   # U1 FD amendment A1 (was: no Max-Age)
 headers_on_every_response:
   Content-Security-Policy: "default-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'"
   X-Content-Type-Options: nosniff
@@ -51,6 +52,9 @@ error_envelope:
   rule: the kind string is never reworded; messages shown to people come from the client's Bangla copy, not from the server
 status_table:                               # closed set; a new kind needs a row here first
   invalid_input: 400                         # body key "fields" lists zod issue paths; replaces "invalid_request" in AC2.1a.3
+  invalid_email: 400                         # U1 FD amendment A2: auth kinds pass through unchanged
+  password_too_short: 400
+  invalid_credentials: 401                   # identical body for every failed sign-in
   unauthenticated: 401
   forbidden: 403                             # includes the Origin and content-type refusals
   not_found: 404                             # includes foreign-business ids and non-UUID ids
@@ -59,6 +63,7 @@ status_table:                               # closed set; a new kind needs a row
   not_editable: 409
   invalid_transition: 409                    # exists in B2's order domain
   business_exists: 409
+  email_taken: 409                           # only from the explicit check or a unique violation on users.email
   gone: 410                                  # used or expired invitation / reset link
   payload_too_large: 413
   rate_limited: 429                          # body carries retryAfterMinutes; Retry-After header in seconds
@@ -410,7 +415,7 @@ declared_set:                     # the realdb gate compares pg_catalog with thi
   password_resets: [SELECT, INSERT, UPDATE]
   audit_log: [SELECT, INSERT]
   orders: [SELECT, INSERT, UPDATE]
-  order_items: "[SELECT, INSERT, UPDATE, DELETE] — DELETE pending U1 Functional Design (domain-design R-06)"
+  order_items: [SELECT, INSERT]                # U1 FD amendment A3: DELETE revoked, lines append by revision
   consignment_link: [SELECT, INSERT]
   customers: [SELECT, INSERT, UPDATE]          # U4
   customer_notes: [SELECT, INSERT]             # U4
@@ -418,6 +423,17 @@ declared_set:                     # the realdb gate compares pg_catalog with thi
   variants: [SELECT, INSERT, UPDATE]           # U4
   suppliers: [SELECT, INSERT, UPDATE]          # U4
 ```
+
+## Amendments from U1 Functional Design (2026-10-27)
+
+Recorded on the Owner's standing instruction; source `construction/u1-skeleton/functional-design/` (questions Q1–Q3, Q6; review iteration 1, R-04).
+
+| # | Contract | Change |
+|---|----------|--------|
+| A1 | C1 cookie | `Max-Age` = seconds left to the 30-day cap, instead of a browser-session cookie |
+| A2 | C1 status table | auth kinds go on the wire unchanged: `invalid_email`, `password_too_short` 400; `invalid_credentials` 401; `email_taken` 409; `rate_limited` 429 also sends `Retry-After` |
+| A3 | C9 grants | `order_items` is SELECT, INSERT only; order edits append a new line revision |
+| A4 | C3 list | a non-UUID `customerId` filter returns an empty page until U5 (as contract review R-08 decided) |
 
 ## Contract ownership rules
 

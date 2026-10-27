@@ -49,7 +49,7 @@
     {
       "id": "AC1.1.1",
       "status": "OK",
-      "target": "BR1.1, BR1.3"
+      "target": "BR1.1, BR1.3, BR1.12"
     },
     {
       "id": "AC1.1.2",
@@ -74,7 +74,7 @@
     {
       "id": "AC1.1.6",
       "status": "OK",
-      "target": "BR9.1, BR9.2"
+      "target": "BR9.1, BR9.2, BR9.4"
     },
     {
       "id": "AC1.2.1",
@@ -104,7 +104,7 @@
     {
       "id": "AC1.2.6",
       "status": "OK",
-      "target": "BR2.6"
+      "target": "BR2.6, BR9.4"
     },
     {
       "id": "AC1.3.1",
@@ -189,7 +189,7 @@
     {
       "id": "AC2.1a.2",
       "status": "OK",
-      "target": "BR6.3, BR6.8"
+      "target": "BR6.3, BR6.8, BR6.10"
     },
     {
       "id": "AC2.1a.3",
@@ -239,12 +239,13 @@
     {
       "id": "AC5.2a.1",
       "status": "OK",
-      "target": "BR10.1, BR8.6"
+      "target": "BR10.1, BR8.6, BR1.8"
     },
     {
       "id": "AC5.2a.2",
       "status": "OK",
-      "target": "BR10.2"
+      "target": "BR10.2",
+      "note": "narrowed to the routes U1 mounts; U2 and U3 extend the walk (units review R-01)"
     },
     {
       "id": "AC5.2a.3",
@@ -258,11 +259,6 @@
     }
   ],
   "reverse": [
-    {
-      "id": "BR1.8",
-      "status": "N/A",
-      "target": "cross-cutting security rule from NFR5 / contract C1 (Origin and content type); verified by the U2 role walk"
-    },
     {
       "id": "BR1.9",
       "status": "N/A",
