@@ -234,7 +234,7 @@ that layer is implemented, together with the full existing suite, before the nex
 - [x] `tests/e2e/wiring-check.ts` (W10): fail if `REALDB_*` unset; migrate twice; grant set; child server on a free port; sign-up → session → create order → list → sign-out → old cookie 401; headers on every response; one user per non-Owner role inserted and walked over the route table; cross-origin and non-JSON POST → 403; happy-dom render of every U1 route for the Owner; start-up ≤ 5 s.
 - [x] `tests/perf/order-api.bench.ts`: seeds 1 000 orders (`base`) / 10 000 (`large`); p95 ≤ 300 ms per route, session resolve p95 ≤ 20 ms, sign-in ≤ 1.5 s (BR6.9, NFR6.1–NFR6.3).
 - [x] `.env.example`, `.env.migrate.example` (placeholders), `.gitignore` (`backups/`, `!.env.migrate.example`), `.github/workflows/ci.yml` push trigger `[main, app-wiring, catalog]` plus the new steps (workflow stays disabled), `README.md` (prerequisites, compose up, `bun run start`, backup/restore, rollback, FileVault note).
-- [ ] Run `bun run test:e2e` and `bun run bench` against a throwaway container, `bun run check:bundle`, `bun run check:secrets`, `bun run check:coverage`, and the full `bun run gate` once.
+- [x] Run `bun run test:e2e` and `bun run bench` against a throwaway container, `bun run check:bundle`, `bun run check:secrets`, `bun run check:coverage`, and the full `bun run gate` once.
 
 ### Step 14 — Documentation and traceability
 
