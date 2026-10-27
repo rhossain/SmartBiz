@@ -22,6 +22,8 @@ export interface SqlStubOptions {
   orders?: ReadonlyArray<Record<string, unknown>>;
   orderItems?: ReadonlyArray<Record<string, unknown>>;
   consignmentLinks?: ReadonlyArray<Record<string, unknown>>;
+  /* U1 sessions (token_hash, absolute and idle limits). */
+  sessions?: ReadonlyArray<Record<string, unknown>>;
   /** Throw a simulated database error on the first statement whose text matches. */
   failOn?: RegExp;
 }
@@ -59,6 +61,7 @@ const handleOrders = (
       status,
       source,
       repeatOf,
+      itemsRevision,
       odisc,
       deliv,
       total,
@@ -78,6 +81,7 @@ const handleOrders = (
       status,
       source,
       repeat_of_order_id: repeatOf,
+      items_revision: Number(itemsRevision),
       order_discount_paise: String(odisc),
       delivery_charge_paise: String(deliv),
       total_paise: String(total),
@@ -88,12 +92,31 @@ const handleOrders = (
     return [];
   }
   if (/INSERT INTO order_items/i.test(text)) {
-    const [id, orderId, businessId, lineNo, variantId, description, quantity, unit, lineDisc] =
-      params;
+    const [
+      id,
+      orderId,
+      businessId,
+      revision,
+      lineNo,
+      variantId,
+      description,
+      quantity,
+      unit,
+      lineDisc,
+    ] = params;
+    // UNIQUE(order_id, revision, line_no) from 0015.
+    if (
+      state.orderItems.some(
+        (i) => i["order_id"] === orderId && i["revision"] === revision && i["line_no"] === lineNo,
+      )
+    ) {
+      throw dbError("duplicate key value violates unique constraint", "23505");
+    }
     state.orderItems.push({
       id,
       order_id: orderId,
       business_id: businessId,
+      revision,
       line_no: lineNo,
       variant_id: variantId,
       description,
@@ -115,10 +138,16 @@ const handleOrders = (
       .filter((o) => o["id"] === id && o["business_id"] === businessId)
       .map((o) => ({ ...o }));
   }
-  if (/FROM order_items\s+WHERE business_id = \? AND order_id = ANY/i.test(text)) {
+  if (
+    /FROM order_items oi\s+JOIN orders o ON o\.id = oi\.order_id AND o\.items_revision = oi\.revision\s+WHERE oi\.business_id = \? AND oi\.order_id = ANY/i.test(
+      text,
+    )
+  ) {
     const [businessId, ids] = params as [string, string[]];
+    const current = new Map(state.orders.map((o) => [o["id"], o["items_revision"]]));
     return state.orderItems
       .filter((i) => i["business_id"] === businessId && ids.includes(i["order_id"] as string))
+      .filter((i) => current.get(i["order_id"]) === i["revision"])
       .sort(
         (a, b) =>
           byteCompare(String(a["order_id"]), String(b["order_id"])) ||
@@ -127,7 +156,8 @@ const handleOrders = (
       .map((i) => ({ ...i }));
   }
   if (/UPDATE orders\s+SET customer_id = \?/i.test(text)) {
-    const [customerId, contact, odisc, deliv, total, updatedAt, id, businessId] = params;
+    const [customerId, contact, odisc, deliv, total, itemsRevision, updatedAt, id, businessId] =
+      params;
     for (const o of state.orders) {
       if (o["id"] !== id || o["business_id"] !== businessId) continue;
       o["customer_id"] = customerId;
@@ -135,6 +165,7 @@ const handleOrders = (
       o["order_discount_paise"] = String(odisc);
       o["delivery_charge_paise"] = String(deliv);
       o["total_paise"] = String(total);
+      o["items_revision"] = Number(itemsRevision);
       o["updated_at"] = new Date(String(updatedAt));
     }
     return [];
@@ -149,13 +180,9 @@ const handleOrders = (
     }
     return [];
   }
-  if (/DELETE FROM order_items WHERE order_id = \? AND business_id = \?/i.test(text)) {
-    const [orderId, businessId] = params;
-    const keep = state.orderItems.filter(
-      (i) => !(i["order_id"] === orderId && i["business_id"] === businessId),
-    );
-    state.orderItems.splice(0, state.orderItems.length, ...keep);
-    return [];
+  // app_role holds no DELETE on order_items (0015, amendment A3); mirror the refusal.
+  if (/DELETE\s+FROM\s+order_items/i.test(text)) {
+    throw dbError("permission denied for table order_items", "42501");
   }
   if (/FROM consignment_link\s+WHERE order_id = \? AND business_id = \?/i.test(text)) {
     const [orderId, businessId] = params;
@@ -205,7 +232,7 @@ const handleOrders = (
       .filter((o) => status === null || o["status"] === status)
       .filter((o) => customerId === null || o["customer_id"] === customerId)
       .filter((o) => from === null || time(o) >= Date.parse(from))
-      .filter((o) => to === null || time(o) <= Date.parse(to))
+      .filter((o) => to === null || time(o) < Date.parse(to))
       .filter((o) => {
         if (cursorAt === null) return true;
         const c = Date.parse(cursorAt);
@@ -214,6 +241,71 @@ const handleOrders = (
       .sort((a, b) => time(b) - time(a) || byteCompare(String(b["id"]), String(a["id"])))
       .slice(0, limit)
       .map((o) => ({ ...o }));
+  }
+  return undefined;
+};
+
+const asTime = (v: unknown): number => (v instanceof Date ? v.getTime() : Date.parse(String(v)));
+
+/**
+ * U1 session-store statements (src/auth/session.ts). The resolve statement's comparison
+ * operators are read from the SQL text, so a change from `>` to `>=` is seen by the unit
+ * tests (the idle-boundary mutant), not only by tests/realdb.
+ */
+const handleSessions = (
+  text: string,
+  params: ReadonlyArray<unknown>,
+  state: { sessions: Row[]; users: Row[] },
+): Row[] | undefined => {
+  if (/INSERT INTO sessions \(id, user_id, business_id, token_hash/i.test(text)) {
+    const [id, userId, businessId, tokenHash, issuedAt, expiresAt, lastSeenAt] = params;
+    if (state.sessions.some((s) => s["token_hash"] === tokenHash)) {
+      throw dbError("duplicate key value violates unique constraint", "23505");
+    }
+    state.sessions.push({
+      id,
+      user_id: userId,
+      business_id: businessId,
+      token_hash: tokenHash,
+      issued_at: new Date(String(issuedAt)),
+      expires_at: new Date(String(expiresAt)),
+      last_seen_at: new Date(String(lastSeenAt)),
+    });
+    return [];
+  }
+  if (/UPDATE sessions s\s+SET last_seen_at = \?::timestamptz\s+FROM users u/i.test(text)) {
+    const [nowIso, tokenHash, nowAgain, idleCutoff] = params as [string, string, string, string];
+    const strict = (column: string): boolean =>
+      !new RegExp(`${column}\\s*>=`).test(text) && new RegExp(`${column}\\s*>`).test(text);
+    const after = (value: unknown, bound: string, isStrict: boolean): boolean =>
+      isStrict ? asTime(value) > Date.parse(bound) : asTime(value) >= Date.parse(bound);
+    const expStrict = strict("s\\.expires_at");
+    const idleStrict = strict("s\\.last_seen_at");
+    const out: Row[] = [];
+    for (const s of state.sessions) {
+      if (s["token_hash"] !== tokenHash) continue;
+      const u = state.users.find((x) => x["id"] === s["user_id"]);
+      if (!u || u["active"] !== true) continue;
+      if (!after(s["expires_at"], nowAgain, expStrict)) continue;
+      if (!after(s["last_seen_at"], idleCutoff, idleStrict)) continue;
+      s["last_seen_at"] = new Date(nowIso);
+      out.push({
+        user_id: s["user_id"],
+        business_id: s["business_id"],
+        role: u["role"],
+        email: u["email"],
+        locale: u["locale"],
+        expires_at: s["expires_at"],
+      });
+    }
+    return out;
+  }
+  if (/DELETE FROM sessions WHERE token_hash = \? RETURNING user_id, business_id/i.test(text)) {
+    const [tokenHash] = params;
+    const gone = state.sessions.filter((s) => s["token_hash"] === tokenHash);
+    const keep = state.sessions.filter((s) => s["token_hash"] !== tokenHash);
+    state.sessions.splice(0, state.sessions.length, ...keep);
+    return gone.map((s) => ({ user_id: s["user_id"], business_id: s["business_id"] }));
   }
   return undefined;
 };
@@ -232,6 +324,7 @@ export const makeSqlStub = (
     orders: Array<Record<string, unknown>>;
     orderItems: Array<Record<string, unknown>>;
     consignmentLinks: Array<Record<string, unknown>>;
+    sessions: Array<Record<string, unknown>>;
     seq: { n: number };
   };
 } => {
@@ -245,8 +338,12 @@ export const makeSqlStub = (
     orders: [...(opts.orders ?? [])],
     orderItems: [...(opts.orderItems ?? [])],
     consignmentLinks: [...(opts.consignmentLinks ?? [])],
+    sessions: [...(opts.sessions ?? [])],
     seq: { n: 1000 },
   };
+  // 0015 defaults: rows seeded without a revision are revision 1, as after the migration.
+  for (const o of state.orders) o["items_revision"] ??= 1;
+  for (const i of state.orderItems) i["revision"] ??= 1;
   // Normalise keys to snake_case so consumers see what Postgres would return.
   for (const u of state.users) {
     if (u["passwordHash"] !== undefined && u["password_hash"] === undefined) {
@@ -336,6 +433,8 @@ export const makeSqlStub = (
     }
     const b2 = handleOrders(text, params, state);
     if (b2 !== undefined) return b2;
+    const sessionRows = handleSessions(text, params, state);
+    if (sessionRows !== undefined) return sessionRows;
     // Simulate common patterns.
     if (/INSERT INTO users/i.test(text) && /email/i.test(text)) {
       const [id, email, passwordHash, role, locale, createdAt, updatedAt] = params as [
@@ -376,7 +475,6 @@ export const makeSqlStub = (
       state.businesses.push({ id, name, locale, ownerUserId, createdAt, updatedAt });
       return [];
     }
-    if (/INSERT INTO sessions/i.test(text)) return [];
     if (/INSERT INTO invitations/i.test(text)) {
       const [id, businessId, email, role, acceptTokenHash, expiresAt, createdBy, createdAt] =
         params as [Uuid, Uuid, string, string, string, string, Uuid, string];
@@ -511,7 +609,6 @@ export const makeSqlStub = (
     if (/UPDATE users SET password_hash/g.test(text)) return [];
     if (/UPDATE password_resets SET used_at/g.test(text)) return [];
     if (/UPDATE invitations SET used_at/g.test(text)) return [];
-    if (/DELETE FROM sessions/i.test(text)) return [];
     if (
       /SELECT id, email, password_hash, role, active, locale, created_at, updated_at/i.test(text)
     ) {
@@ -533,6 +630,7 @@ export const makeSqlStub = (
     state.orders,
     state.orderItems,
     state.consignmentLinks,
+    state.sessions,
   ];
   (sql as unknown as { begin: (fn: (tx: Sql) => Promise<unknown>) => Promise<unknown> }).begin =
     async (fn: (tx: Sql) => Promise<unknown>) => {

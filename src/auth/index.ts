@@ -16,7 +16,16 @@ export {
   type AcceptInviteOutput,
   type AcceptInviteError,
 } from "./accept-invite.js";
-export { buildSession, buildSetCookie, cookieOptions } from "./session.js";
+export {
+  generateSessionToken,
+  insertSession,
+  resolveSession,
+  deleteSessionByToken,
+  SESSION_MAX_AGE_MS,
+  SESSION_IDLE_MS,
+  type NewSession,
+  type ResolvedSession,
+} from "./session.js";
 export {
   auditSignUp,
   auditSignIn,

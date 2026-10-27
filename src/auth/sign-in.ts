@@ -8,9 +8,8 @@ import { err, ok, type Result } from "../data/result.js";
 import { verifyPassword } from "./argon2.js";
 import { auditSignIn, auditSignInFailure } from "./audit.js";
 import type { User } from "./types.js";
-import { uuid } from "../data/uuid.js";
 import { now } from "../data/clock.js";
-import { buildSession } from "./session.js";
+import { insertSession } from "./session.js";
 import { checkRateLimit, LIMIT_SIGN_IN } from "./rate-limit.js";
 import type { Uuid } from "../data/uuid.js";
 
@@ -24,7 +23,7 @@ export interface SignInInput {
 
 export interface SignInOutput {
   readonly user: User;
-  readonly sessionId: Uuid;
+  readonly sessionToken: string;
   readonly sessionExpiresAt: string;
 }
 
@@ -72,12 +71,11 @@ export const signIn = async (
   `;
   const businessId = businessIdRows[0]?.id ?? ("00000000-0000-0000-0000-000000000000" as Uuid);
 
-  const session = buildSession({ userId: row.id as Uuid, businessId: businessId as Uuid });
-  const t = now();
-  await sql`
-    INSERT INTO sessions (id, user_id, business_id, issued_at, expires_at, last_seen_at)
-    VALUES (${session.id}, ${row.id}, ${businessId}, ${t.toISOString()}, ${session.expiresAt.toISOString()}, ${t.toISOString()})
-  `;
+  const session = await insertSession(sql, {
+    userId: row.id as Uuid,
+    businessId: businessId as Uuid,
+    at: now(),
+  });
   await auditSignIn(sql, businessId as Uuid, row.id as Uuid, { email: row.email });
 
   return ok({
@@ -91,10 +89,7 @@ export const signIn = async (
       createdAt: row.created_at,
       updatedAt: row.updated_at,
     },
-    sessionId: session.id,
+    sessionToken: session.token,
     sessionExpiresAt: session.expiresAt.toISOString(),
   });
 };
-
-// keep unused import warning quiet: uuid is referenced via the row.id
-void uuid;

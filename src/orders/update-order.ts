@@ -1,16 +1,21 @@
 /**
- * src/orders/update-order.ts — updateOrder (FR5.4, FR12.3).
+ * src/orders/update-order.ts — updateOrder (FR5.4, FR12.3; U1: BR6.8, W8).
  *
  * Only an order that is still `new` or `confirmed` can be edited; once
  * it is packed, the lines and money are what was handed to the courier,
  * and a change is a status transition (or a return), not an edit. The
  * caller gets `NotEditable` instead.
  *
- * The edit locks the row, recomputes the total from the merged values,
- * appends the audit row with the full before/after, and only then
- * writes. When the lines change they are replaced as a set, under the
- * same transaction, so the audit payload is the only record of the old
- * lines and that record is written first.
+ * The edit runs in one transaction: it locks the row (`FOR UPDATE`),
+ * refuses `not_editable`, recomputes the total from the merged values,
+ * appends the audit row with the full before/after, and only then writes.
+ *
+ * Order lines are append-only (U1, BR6.8): an edit that changes the lines
+ * inserts the new set at revision `itemsRevision + 1` and moves the
+ * order's `items_revision` to it. No line row is updated or deleted, so
+ * every earlier revision stays readable for the audit trail, and
+ * `app_role` needs no DELETE on `order_items` (amendment A3). An edit
+ * without `items` keeps the revision and only updates the order's fields.
  */
 import type { Sql } from "../db/client.js";
 import { UpdateOrderInputSchema } from "../data/zod-schemas.js";
@@ -50,6 +55,7 @@ export const updateOrder = async (
     if (!before) return err({ kind: "not_found", entity: "Order", id: orderId });
     if (!isEditable(before.status)) return err({ kind: "not_editable", status: before.status });
 
+    const itemsRevision = patch.items ? before.itemsRevision + 1 : before.itemsRevision;
     const items = patch.items
       ? materialiseItems(before.id, before.businessId, patch.items)
       : before.items;
@@ -62,6 +68,7 @@ export const updateOrder = async (
       ...before,
       customerId: patch.customerId !== undefined ? patch.customerId : before.customerId,
       contact: patch.contact !== undefined ? patch.contact : before.contact,
+      itemsRevision,
       items,
       orderDiscountPaise,
       deliveryChargePaise,
@@ -70,18 +77,16 @@ export const updateOrder = async (
     };
 
     await appendOrderAudit(tx, ctx, "order.update", before.id, { before, after });
+    if (patch.items) await insertItems(tx, after);
     await tx`
       UPDATE orders
       SET customer_id = ${after.customerId}, contact = ${contactJson(after.contact)}::text::jsonb,
           order_discount_paise = ${after.orderDiscountPaise},
           delivery_charge_paise = ${after.deliveryChargePaise},
-          total_paise = ${after.totalPaise}, updated_at = ${after.updatedAt}
+          total_paise = ${after.totalPaise}, items_revision = ${after.itemsRevision},
+          updated_at = ${after.updatedAt}
       WHERE id = ${after.id} AND business_id = ${after.businessId}
     `;
-    if (patch.items) {
-      await tx`DELETE FROM order_items WHERE order_id = ${after.id} AND business_id = ${after.businessId}`;
-      await insertItems(tx, after);
-    }
     return ok(after);
   });
 };

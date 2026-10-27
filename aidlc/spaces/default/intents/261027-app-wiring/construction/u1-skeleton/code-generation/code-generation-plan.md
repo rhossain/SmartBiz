@@ -140,12 +140,12 @@ that layer is implemented, together with the full existing suite, before the nex
 
 ### Step 5 — Repository / data access: implement (US1.1, US1.3, US2.1a; BR1.2, BR3.6, BR6.5, BR6.6, BR6.8; NFR6.2, NFR7.1)
 
-- [ ] `src/db/client.ts`: pool max 5, connect timeout 10 s, per-connection `statement_timeout=5s` and `idle_in_transaction_session_timeout=10s`; `checkRole(sql)` (not superuser, member of `app_role`) (BR1.2, NFR2.1–NFR2.3).
-- [ ] `src/auth/session.ts` (in place): `token_hash` storage, insert, one-statement resolve `UPDATE … FROM users … RETURNING` with `$now` from the app clock and both limits (exactly 12 h idle counts as expired), delete by hash (BR3.1, BR3.4–BR3.6).
-- [ ] `src/orders/update-order.ts` (in place): lock the order `FOR UPDATE`, refuse `not_editable`, audit first, insert lines at `items_revision + 1`, bump `items_revision`; the DELETE at line 82 is removed (BR6.8).
-- [ ] `src/orders/get-order.ts` / `list-orders.ts`: read only the current revision's lines; non-UUID id → `not_found`; keyset cursor `(created_at, id)` base64url, limit ≤ 50, newest first, filters per C3; non-UUID `customerId` gives an empty page (A4) (BR6.5–BR6.7).
-- [ ] `src/orders/create-order.ts`: lines at revision 1, audit first, one transaction through `Queryable`.
-- [ ] Add stub handlers in `tests/helpers/sql-stub.ts` for every new query shape.
+- [x] `src/db/client.ts`: pool max 5, connect timeout 10 s, per-connection `statement_timeout=5s` and `idle_in_transaction_session_timeout=10s`; `checkRole(sql)` (not superuser, member of `app_role`) (BR1.2, NFR2.1–NFR2.3).
+- [x] `src/auth/session.ts` (in place): `token_hash` storage, insert, one-statement resolve `UPDATE … FROM users … RETURNING` with `$now` from the app clock and both limits (exactly 12 h idle counts as expired), delete by hash (BR3.1, BR3.4–BR3.6).
+- [x] `src/orders/update-order.ts` (in place): lock the order `FOR UPDATE`, refuse `not_editable`, audit first, insert lines at `items_revision + 1`, bump `items_revision`; the DELETE at line 82 is removed (BR6.8).
+- [x] `src/orders/get-order.ts` / `list-orders.ts`: read only the current revision's lines; non-UUID id → `not_found`; keyset cursor `(created_at, id)` base64url, limit ≤ 50, newest first, filters per C3; non-UUID `customerId` gives an empty page (A4) (BR6.5–BR6.7).
+- [x] `src/orders/create-order.ts`: lines at revision 1, audit first, one transaction through `Queryable`.
+- [x] Add stub handlers in `tests/helpers/sql-stub.ts` for every new query shape.
 
 ### Step 6 — Repository / data access: write and run its tests
 

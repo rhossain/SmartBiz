@@ -121,9 +121,12 @@ describe("R2.1 — order audit append per action", () => {
     expect(indexOf(stub.calls, /INSERT INTO audit_log/)).toBeLessThan(
       indexOf(stub.calls, /UPDATE orders/),
     );
+    // U1 (BR6.8): the new lines are appended as a new revision, after the audit row, and
+    // no line is ever deleted.
     expect(indexOf(stub.calls, /INSERT INTO audit_log/)).toBeLessThan(
-      indexOf(stub.calls, /DELETE FROM order_items/),
+      indexOf(stub.calls, /INSERT INTO order_items/),
     );
+    expect(stub.calls.some((c) => /DELETE\s+FROM\s+order_items/i.test(c.text))).toBe(false);
   });
 
   test("transitionStatus: one row with before/after status; audit first", async () => {

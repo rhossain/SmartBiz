@@ -141,7 +141,8 @@ export const ListOrdersFilterSchema = z.object({
   from: z.string().datetime().nullable().optional(),
   to: z.string().datetime().nullable().optional(),
   cursor: z.string().max(200).nullable().optional(),
-  limit: z.number().int().min(1).max(1000).nullable().optional(),
+  // C1 paging: 1..50, default 50 (U1; was 1..1000 in B2).
+  limit: z.number().int().min(1).max(50).nullable().optional(),
 });
 
 export const OrderItemSchema = OrderItemInputSchema.extend({
@@ -160,6 +161,7 @@ export const OrderSchema = z.object({
   status: OrderStatusSchema,
   source: OrderSourceSchema,
   repeatOfOrderId: UuidSchema.nullable(),
+  itemsRevision: z.number().int().min(1),
   items: z.array(OrderItemSchema).max(MAX_ORDER_ITEMS),
   orderDiscountPaise: PaiseSchema,
   deliveryChargePaise: PaiseSchema,

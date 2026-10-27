@@ -11,6 +11,11 @@
  *   unions means the row is corrupt. Corrupt rows throw (a fatal error,
  *   not a recoverable one) instead of being coerced into a valid-looking
  *   order.
+ * - Order lines are append-only by revision (U1, BR6.8): every read joins
+ *   `order_items` to its order on `revision = items_revision`, so only the
+ *   current revision is ever returned, while earlier revisions stay in the
+ *   table for the audit trail. `insertItems` writes at the order's
+ *   `itemsRevision`; no line is ever updated or deleted.
  * - The queries use one parameter per `${}` and no nested fragments, so
  *   the in-memory SQL stub used by the tests can match them by shape.
  */
@@ -30,6 +35,7 @@ export interface OrderRow {
   readonly status: string;
   readonly source: string;
   readonly repeat_of_order_id: string | null;
+  readonly items_revision: string | number;
   readonly order_discount_paise: string | number;
   readonly delivery_charge_paise: string | number;
   readonly total_paise: string | number;
@@ -55,6 +61,16 @@ export const toPaise = (value: string | number, column: string): number => {
   if (!Number.isSafeInteger(n) || n < 0) {
     throw new Error(
       `corrupt order row: ${column} is not a non-negative integer (${String(value)})`,
+    );
+  }
+  return n;
+};
+
+const toRevision = (value: string | number): number => {
+  const n = typeof value === "number" ? value : Number(value);
+  if (!Number.isSafeInteger(n) || n < 1) {
+    throw new Error(
+      `corrupt order row: items_revision is not a positive integer (${String(value)})`,
     );
   }
   return n;
@@ -101,6 +117,7 @@ export const toOrder = (row: OrderRow, items: ReadonlyArray<OrderItem>): Order =
     status: row.status,
     source: row.source,
     repeatOfOrderId: row.repeat_of_order_id as Uuid | null,
+    itemsRevision: toRevision(row.items_revision),
     items,
     orderDiscountPaise: toPaise(row.order_discount_paise, "order_discount_paise"),
     deliveryChargePaise: toPaise(row.delivery_charge_paise, "delivery_charge_paise"),
@@ -111,7 +128,10 @@ export const toOrder = (row: OrderRow, items: ReadonlyArray<OrderItem>): Order =
   };
 };
 
-/** Items of several orders in one query, grouped by order id and sorted by line. */
+/**
+ * The current-revision items of several orders in one query, grouped by order id and sorted
+ * by line (BR6.8; P1: one `ANY(uuid[])` query on `(order_id, revision)`).
+ */
 export const selectItemsFor = async (
   sql: Queryable,
   businessId: Uuid,
@@ -120,11 +140,12 @@ export const selectItemsFor = async (
   const grouped = new Map<string, OrderItem[]>();
   if (orderIds.length === 0) return grouped;
   const rows = await sql<OrderItemRow[]>`
-    SELECT id, order_id, business_id, line_no, variant_id, description,
-           quantity, unit_price_paise, line_discount_paise
-    FROM order_items
-    WHERE business_id = ${businessId} AND order_id = ANY(${sql.array([...orderIds])}::uuid[])
-    ORDER BY order_id, line_no
+    SELECT oi.id, oi.order_id, oi.business_id, oi.line_no, oi.variant_id, oi.description,
+           oi.quantity, oi.unit_price_paise, oi.line_discount_paise
+    FROM order_items oi
+    JOIN orders o ON o.id = oi.order_id AND o.items_revision = oi.revision
+    WHERE oi.business_id = ${businessId} AND oi.order_id = ANY(${sql.array([...orderIds])}::uuid[])
+    ORDER BY oi.order_id, oi.line_no
   `;
   for (const row of rows) {
     const list = grouped.get(row.order_id) ?? [];
@@ -134,7 +155,7 @@ export const selectItemsFor = async (
   return grouped;
 };
 
-/** One order with its items, or null when it is missing or in another business. */
+/** One order with its current items, or null when it is missing or in another business. */
 export const selectOrder = async (
   sql: Queryable,
   businessId: Uuid,
@@ -145,7 +166,7 @@ export const selectOrder = async (
     lock === "lock"
       ? await sql<OrderRow[]>`
           SELECT id, business_id, order_no, customer_id, contact, status, source,
-                 repeat_of_order_id, order_discount_paise, delivery_charge_paise,
+                 repeat_of_order_id, items_revision, order_discount_paise, delivery_charge_paise,
                  total_paise, created_by, created_at, updated_at
           FROM orders
           WHERE id = ${orderId} AND business_id = ${businessId}
@@ -153,7 +174,7 @@ export const selectOrder = async (
         `
       : await sql<OrderRow[]>`
           SELECT id, business_id, order_no, customer_id, contact, status, source,
-                 repeat_of_order_id, order_discount_paise, delivery_charge_paise,
+                 repeat_of_order_id, items_revision, order_discount_paise, delivery_charge_paise,
                  total_paise, created_by, created_at, updated_at
           FROM orders
           WHERE id = ${orderId} AND business_id = ${businessId}
@@ -164,16 +185,20 @@ export const selectOrder = async (
   return toOrder(row, items.get(row.id) ?? []);
 };
 
-/** Insert every line of `order` (the caller has already appended the audit row). */
+/**
+ * Insert every line of `order` at `order.itemsRevision` (the caller has already appended the
+ * audit row). Lines are only ever inserted: a new revision supersedes the old one (BR6.8).
+ */
 export const insertItems = async (sql: Queryable, order: Order): Promise<void> => {
   for (const item of order.items) {
     await sql`
       INSERT INTO order_items (
-        id, order_id, business_id, line_no, variant_id, description,
+        id, order_id, business_id, revision, line_no, variant_id, description,
         quantity, unit_price_paise, line_discount_paise
       ) VALUES (
-        ${item.id}, ${item.orderId}, ${item.businessId}, ${item.lineNo}, ${item.variantId},
-        ${item.description}, ${item.quantity}, ${item.unitPricePaise}, ${item.lineDiscountPaise}
+        ${item.id}, ${item.orderId}, ${item.businessId}, ${order.itemsRevision}, ${item.lineNo},
+        ${item.variantId}, ${item.description}, ${item.quantity}, ${item.unitPricePaise},
+        ${item.lineDiscountPaise}
       )
     `;
   }

@@ -1,42 +1,40 @@
 /**
- * Coverage booster — exercises cookie + session helpers.
+ * tests/unit/session.test.ts — the pure parts of the session store (BR3.1, BR3.4, BR3.5;
+ * NFR3.2).
+ *
+ * The token is 32 random bytes as base64url and only its shape is trusted before any query;
+ * the two limits are restated inline (30 days absolute, 12 hours idle) rather than read from
+ * the module's constants alone. The store's queries are covered by session-store.test.ts
+ * (stub) and tests/realdb/sessions.realdb.test.ts (real Postgres).
  */
 import { describe, expect, test } from "bun:test";
-import { buildSession, buildSetCookie, cookieOptions } from "../../src/auth/session.js";
-import { setTestClock, FROZEN_TEST_NOW, resetTestClock } from "../../src/data/clock.js";
-import type { Uuid } from "../../src/data/uuid.js";
+import {
+  generateSessionToken,
+  isSessionTokenShape,
+  SESSION_IDLE_MS,
+  SESSION_MAX_AGE_MS,
+} from "../../src/auth/session.js";
 
-describe("session + cookie helpers", () => {
-  test("buildSession returns a session id and expiry", () => {
-    setTestClock(FROZEN_TEST_NOW);
-    const s = buildSession({
-      userId: "00000000-0000-4000-8000-000000000001" as Uuid,
-      businessId: "00000000-0000-4000-8000-000000000002" as Uuid,
-    });
-    expect(s.id).toMatch(/^[0-9a-f-]{36}$/);
-    expect(s.expiresAt.getTime()).toBe(FROZEN_TEST_NOW.getTime() + 30 * 24 * 60 * 60 * 1000);
-    resetTestClock();
+describe("session tokens and limits", () => {
+  test("a token is 43 base64url characters (32 random bytes)", () => {
+    const t = generateSessionToken();
+    expect(t).toMatch(/^[A-Za-z0-9_-]{43}$/);
+    expect(isSessionTokenShape(t)).toBe(true);
   });
 
-  test("cookieOptions carries the expected flags", () => {
-    setTestClock(FROZEN_TEST_NOW);
-    const opts = cookieOptions(new Date(FROZEN_TEST_NOW.getTime() + 60_000));
-    expect(opts.httpOnly).toBe(true);
-    expect(opts.secure).toBe(true);
-    expect(opts.sameSite).toBe("Lax");
-    expect(opts.path).toBe("/");
-    expect(opts.maxAge).toBe(60);
-    resetTestClock();
+  test("tokens do not repeat across 200 draws", () => {
+    const seen = new Set(Array.from({ length: 200 }, () => generateSessionToken()));
+    expect(seen.size).toBe(200);
   });
 
-  test("buildSetCookie emits the full attribute set", () => {
-    setTestClock(FROZEN_TEST_NOW);
-    const opts = cookieOptions(new Date(FROZEN_TEST_NOW.getTime() + 60_000));
-    const cookie = buildSetCookie("sb_session", "abc", opts);
-    expect(cookie).toContain("sb_session=abc");
-    expect(cookie).toContain("HttpOnly");
-    expect(cookie).toContain("Secure");
-    expect(cookie).toContain("SameSite=Lax");
-    resetTestClock();
+  test("anything that is not a token's shape is refused before any query", () => {
+    for (const bad of ["", "short", "a".repeat(44), "a".repeat(42) + "=", "a b".repeat(15)]) {
+      expect({ bad, ok: isSessionTokenShape(bad) }).toEqual({ bad, ok: false });
+    }
+  });
+
+  test("the limits are 30 days absolute and 12 hours idle (BR3.4, BR3.5)", () => {
+    expect(SESSION_MAX_AGE_MS).toBe(30 * 24 * 60 * 60 * 1000);
+    expect(SESSION_IDLE_MS).toBe(12 * 60 * 60 * 1000);
   });
 });

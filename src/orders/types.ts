@@ -65,6 +65,8 @@ export interface Order {
   readonly status: OrderStatus;
   readonly source: OrderSource;
   readonly repeatOfOrderId: Uuid | null;
+  /** The revision of `items`; an edit of the lines appends revision + 1 (BR6.8). */
+  readonly itemsRevision: number;
   readonly items: ReadonlyArray<OrderItem>;
   readonly orderDiscountPaise: number;
   readonly deliveryChargePaise: number;
