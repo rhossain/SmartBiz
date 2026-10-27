@@ -9,6 +9,7 @@
  * public set is not exactly the allow-list, or when two entries share a method and path.
  * U2–U5 append their routes here.
  */
+import { auditRoute } from "./handlers/audit.js";
 import { signInRoute, signOutRoute, signUpRoute } from "./handlers/auth.js";
 import { healthRoute } from "./handlers/health.js";
 import { orderRoutes } from "./handlers/orders.js";
@@ -24,6 +25,8 @@ export const routes: ReadonlyArray<RouteDef> = [
   signOutRoute,
   sessionRoute,
   ...orderRoutes,
+  // U2 (C4; BR7.5): the audit trail read, `audit.view` only. The public allow-list is unchanged.
+  auditRoute,
 ];
 
 /** The only routes that answer without a session (NFR1.1; C5 public_routes for U1). */

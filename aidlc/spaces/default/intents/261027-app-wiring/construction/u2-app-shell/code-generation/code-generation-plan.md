@@ -149,10 +149,10 @@ layer is implemented, together with the full existing suite, before the next lay
 
 ### Step 9 — API / endpoint: implement (C4; BR7.5; S13, R11, O11; NFR3.15)
 
-- [ ] `src/audit/schemas.ts`: `.strict()` query schema (`limit` coerced integer 1–50, default 50; `cursor` string max 200) and the shared response schema (entries without payload, `nextCursor`).
-- [ ] `src/server/handlers/audit.ts`: `GET /api/audit`, access `["audit.view"]`, business id from the session, calls `readAuditPage` with the app clock; bad cursor → 400 `invalid_input` with `fields: [{ path: "cursor" }]`, never echoing it.
-- [ ] `src/server/routes.ts`: register the audit route (public allow-list unchanged).
-- [ ] Confirm the request log line carries the route pattern and no query string (O11).
+- [x] `src/audit/schemas.ts`: `.strict()` query schema (`limit` coerced integer 1–50, default 50; `cursor` string max 200) and the shared response schema (entries without payload, `nextCursor`).
+- [x] `src/server/handlers/audit.ts`: `GET /api/audit`, access `["audit.view"]`, business id from the session, calls `readAuditPage` with the app clock; bad cursor → 400 `invalid_input` with `fields: [{ path: "cursor" }]`, never echoing it.
+- [x] `src/server/routes.ts`: register the audit route (public allow-list unchanged).
+- [x] Confirm the request log line carries the route pattern and no query string (O11).
 
 ### Step 10 — API / endpoint: write and run its tests (US5.1, US5.3; S11, S14; NFR1.4, NFR1.6, NFR1.7, NFR3.10, NFR3.11, NFR5.6; D-04, D-09)
 
