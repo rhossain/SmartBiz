@@ -4,7 +4,8 @@ name: ci
 # Per aidlc/spaces/default/intents/261004-mvp/construction/U1-foundation/
 #     infrastructure-design/cicd-pipeline.md
 #
-# 10 build stages + 11 test stages + the 3 CI gates (R1.1, R1.2, R1.3).
+# 12 build stages + 20 test stages + the R1.1–R1.3 and R2.1–R2.5 gates,
+# plus the real-Postgres job (B2).
 # The pipeline runs on every PR and on every push to main.
 # Coverage floor: 80% line coverage (NFR6.1, team.md#Testing Posture §TP-2).
 # All gates block merge per team.md#Deployment §Dep-6.
@@ -23,7 +24,7 @@ jobs:
   # JOB 1 — build stages (10 of them, per cicd-pipeline.md "Build stages")
   # -----------------------------------------------------------------------
   build:
-    name: build (10 stages)
+    name: build (12 stages)
     runs-on: ubuntu-latest
     steps:
       - name: checkout
@@ -109,6 +110,25 @@ jobs:
           test -f tests/unit/audit-immutability-migration.test.ts
           test -f tests/unit/three-layer-gate-absence.test.ts
           test -f tests/unit/recognition-basis.test.ts
+
+      # Build stage 11 — Dependency audit (B2 CI Pipeline, Q4 = blocking).
+      # Fails on any High or Critical advisory. Build and Test T-DEPS: zod
+      # is a runtime dependency on the paste-parse validation path, so an
+      # advisory there is a shipped-code risk, not a dev-tool note. Never
+      # add --ignore here to make the step pass; fix the dependency.
+      - name: "11. dependency audit (no High/Critical advisories)"
+        run: bun audit --audit-level=high
+
+      # Build stage 12 — Keep the built app for 30 days (B2 CI Pipeline,
+      # Q5). No registry is chosen yet (team.md §Dep-3, §Dep-5); the commit
+      # SHA in the name ties every download to its source.
+      - name: "12. upload dist/ (smartbiz-dist-<sha>, 30 days)"
+        uses: actions/upload-artifact@v4
+        with:
+          name: smartbiz-dist-${{ github.sha }}
+          path: dist/
+          retention-days: 30
+          if-no-files-found: error
 
   # -----------------------------------------------------------------------
   # JOB 2 — test stages (11 of them, per cicd-pipeline.md "Test stages")
@@ -220,6 +240,80 @@ jobs:
 
       - name: "20. PCI deny-list over src/orders/ (NFR5.4)"
         run: bun test tests/unit/pci-deny-list-orders.test.ts
+
+  # -----------------------------------------------------------------------
+  # JOB 4 — real Postgres (B2 CI Pipeline, Q4 = blocking)
+  # -----------------------------------------------------------------------
+  # The unit and integration suites run on an in-memory SQL stub that
+  # cannot see FOR UPDATE, ANY($1::uuid[]), keyset cursors, real role
+  # grants or JSONB parameter typing. Build and Test found a defect only a
+  # real database shows (T-JSONB), so every PR runs the migrations and the
+  # order/audit paths against a throwaway postgres:18 service container.
+  # The password below is a CI-only throwaway for a container that lives
+  # for this job; it guards nothing and is not a secret.
+  realdb:
+    name: real Postgres (migrations, grants, order paths)
+    runs-on: ubuntu-latest
+    needs: build
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_PASSWORD: ci_throwaway
+          POSTGRES_DB: smartbiz
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d smartbiz"
+          --health-interval 2s
+          --health-timeout 5s
+          --health-retries 30
+    env:
+      DATABASE_URL: postgres://postgres:ci_throwaway@localhost:5432/smartbiz
+      REALDB_ADMIN_URL: postgres://postgres:ci_throwaway@localhost:5432/smartbiz
+      REALDB_APP_URL: postgres://ci_app:ci_throwaway@localhost:5432/smartbiz
+      PGPASSWORD: ci_throwaway
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: install bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: ${{ env.BUN_VERSION }}
+
+      - name: bun install
+        run: bun install --frozen-lockfile
+
+      - name: "1. migrate (T-MIGRATE, FR5.1)"
+        run: bun run migrate
+
+      - name: "2. migrate again — every file must be skipped (idempotent)"
+        run: |
+          set -o pipefail
+          bun run migrate | tee migrate2.txt
+          applied=$(grep -c '^apply ' migrate2.txt || true)
+          if [ "$applied" -ne 0 ]; then echo "::error::second migrate applied $applied file(s)"; exit 1; fi
+
+      - name: "3. app_role grants (TC9, team.md §Dep-6)"
+        run: |
+          set -e
+          q="SELECT privilege_type FROM information_schema.role_table_grants WHERE grantee = 'app_role' AND table_name = 'audit_log' ORDER BY 1"
+          got=$(psql -h localhost -U postgres -d smartbiz -At -c "$q" | paste -sd, -)
+          echo "audit_log grants for app_role: $got"
+          if [ "$got" != "INSERT,SELECT" ]; then echo "::error::app_role on audit_log must be INSERT,SELECT only, got $got"; exit 1; fi
+          for t in orders audit_log consignment_link; do
+            del=$(psql -h localhost -U postgres -d smartbiz -At -c "SELECT count(*) FROM information_schema.role_table_grants WHERE grantee = 'app_role' AND table_name = '$t' AND privilege_type = 'DELETE'")
+            if [ "$del" -ne 0 ]; then echo "::error::app_role holds DELETE on $t"; exit 1; fi
+          done
+
+      - name: "4. app login role for the suite"
+        run: psql -h localhost -U postgres -d smartbiz -c "CREATE ROLE ci_app LOGIN PASSWORD 'ci_throwaway' IN ROLE app_role;"
+
+      - name: "5. order + audit paths, R1.1, T-JSONB on real Postgres"
+        run: |
+          test -n "$REALDB_ADMIN_URL" && test -n "$REALDB_APP_URL"
+          bun test tests/realdb
 
   # -----------------------------------------------------------------------
   # JOB 3 — R1.3 round-trip (no-float drift) — NFR2.x + ADR-002 binding test
