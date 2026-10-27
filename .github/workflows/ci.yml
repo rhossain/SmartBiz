@@ -9,10 +9,16 @@ name: ci
 # The pipeline runs on every PR and on every push to main.
 # Coverage floor: 80% line coverage (NFR6.1, team.md#Testing Posture §TP-2).
 # All gates block merge per team.md#Deployment §Dep-6.
+#
+# U1 (app-wiring, u1-skeleton): this file stays the single list of gates, but hosted Actions
+# stay disabled (zero spend). The merge evidence is `bun run gate` (scripts/gate.ts), which
+# runs these same gates on this machine in cicd-pipeline.md's order. Steps added in U1: the
+# every-file coverage floor, the server-code bundle scan, the scripted mutants, the secret
+# scan, the admin-URL migrate, the wiring check and the API benchmark.
 
 on:
   push:
-    branches: [main, b1-foundation, b2-orders]
+    branches: [main, app-wiring, catalog]
   pull_request:
     branches: [main]
 
@@ -63,14 +69,10 @@ jobs:
       # and bunfig.toml sets no threshold). This step fails the build when
       # line coverage over all reported source files is below 80%
       # (NFR6.1, team.md §TP-2). The floor is never lowered here.
-      - name: "5b. coverage floor (fail below 80% lines)"
-        run: |
-          set -o pipefail
-          bun run coverage 2>&1 | tee coverage.txt
-          lines=$(awk -F'|' '/^All files/ {gsub(/ /, "", $3); print $3}' coverage.txt)
-          echo "All files line coverage: ${lines}%"
-          if [ -z "$lines" ]; then echo "::error::coverage summary line not found"; exit 1; fi
-          awk -v l="$lines" 'BEGIN { exit (l + 0 >= 80) ? 0 : 1 }' || { echo "::error::line coverage ${lines}% is below the 80% floor"; exit 1; }
+      # U1: scripts/check-coverage.ts also fails when any src file is missing from the
+      # report (tests/import-all.test.ts imports them all) and is not type-only.
+      - name: "5b. coverage floor (>= 80% lines over every src file)"
+        run: bun run check:coverage
 
       # Build stage 6 — R1.1 audit-immutability migration test
       - name: "6. R1.1 audit-immutability (NFR5.1, NFR1.2)"
@@ -85,31 +87,15 @@ jobs:
         run: bun run build
 
       # Build stage 9 — Bundle-size assertion (NFR2.b: <= 350 KB gzip)
-      - name: "9. bundle-size assertion (<= 350 KB gzip)"
-        run: |
-          set -e
-          gzip_bytes=$(gzip -c dist/assets/*.js 2>/dev/null | wc -c | tr -d ' ')
-          max_bytes=$((350 * 1024))
-          if [ "$gzip_bytes" -gt "$max_bytes" ]; then
-            echo "::error::Bundle size $gzip_bytes bytes exceeds 350 KB limit ($max_bytes bytes)"
-            exit 1
-          fi
-          echo "Bundle size: $gzip_bytes bytes (limit: $max_bytes)"
+      - name: "9. bundle (<= 350 KB gzip, no server code in the bundle)"
+        run: bun run check:bundle
 
-      # Build stage 10 — Mutation discipline (per-assertion, manual)
-      # Recorded here as a CI step that fails the build if a marker test
-      # that the team uses for the mutation discipline is broken.
-      - name: "10. mutation discipline (NFR6.3 + TP-10)"
-        run: |
-          # The mutation discipline is satisfied by the fact that the
-          # recognition-basis invariant, role-gate, and audit-immutability
-          # tests are present and pass. Each is checked by mutation: each
-          # defect it was written for is reintroduced one at a time, and
-          # each must be caught. The CI step asserts the three test files
-          # are present and the source invariants they assert are intact.
-          test -f tests/unit/audit-immutability-migration.test.ts
-          test -f tests/unit/three-layer-gate-absence.test.ts
-          test -f tests/unit/recognition-basis.test.ts
+      # Build stage 10 — scripted, named mutants (team.md Testing Posture). Replaces the
+      # old file-presence check: each entry of tests/mutants.json is applied in a throwaway
+      # git worktree and its mapped test must fail; a control run proves the tests pass
+      # unmutated first.
+      - name: "10. mutants (every named mutant caught)"
+        run: bun run mutants
 
       # Build stage 11 — Dependency audit (B2 CI Pipeline, Q4 = blocking).
       # Fails on any High or Critical advisory. Build and Test T-DEPS: zod
@@ -118,6 +104,11 @@ jobs:
       # add --ignore here to make the step pass; fix the dependency.
       - name: "11. dependency audit (no High/Critical advisories)"
         run: bun audit --audit-level=high
+
+      # Build stage 11b — secret scan (U1; team.md Code Style). Allowed entries live in
+      # secret-scan.allow, each with its reason.
+      - name: "11b. secret scan (no unallowed key, token or password)"
+        run: bun run check:secrets
 
       # Build stage 12 — Keep the built app for 30 days (B2 CI Pipeline,
       # Q5). No registry is chosen yet (team.md §Dep-3, §Dep-5); the commit
@@ -269,7 +260,8 @@ jobs:
           --health-timeout 5s
           --health-retries 30
     env:
-      DATABASE_URL: postgres://postgres:ci_throwaway@localhost:5432/smartbiz
+      # U1: migrations run with the admin URL in MIGRATE_DATABASE_URL (BR1.3).
+      MIGRATE_DATABASE_URL: postgres://postgres:ci_throwaway@localhost:5432/smartbiz
       REALDB_ADMIN_URL: postgres://postgres:ci_throwaway@localhost:5432/smartbiz
       REALDB_APP_URL: postgres://ci_app:ci_throwaway@localhost:5432/smartbiz
       PGPASSWORD: ci_throwaway
@@ -314,6 +306,14 @@ jobs:
         run: |
           test -n "$REALDB_ADMIN_URL" && test -n "$REALDB_APP_URL"
           bun test tests/realdb
+
+      # U1 — W10 wiring check on its own fresh, empty database (from businessExists: false).
+      - name: "6. wiring check (W10, BR10.1-BR10.3)"
+        run: bun run test:e2e
+
+      # U1 — API latency (NFR6.1-NFR6.3); budgets are constants and never relaxed by CI.
+      - name: "7. API benchmark (p95 <= 300 ms per route, session <= 20 ms, sign-in <= 1.5 s)"
+        run: bun run bench
 
   # -----------------------------------------------------------------------
   # JOB 3 — R1.3 round-trip (no-float drift) — NFR2.x + ADR-002 binding test

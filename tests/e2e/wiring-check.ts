@@ -1,0 +1,389 @@
+/**
+ * tests/e2e/wiring-check.ts — `bun run test:e2e`: the walking skeleton end to end on a real
+ * Postgres and a real server process (W10; BR10.1–BR10.3; US1.1, US2.1a, US5.2a;
+ * cicd-pipeline.md gate 14).
+ *
+ * 1. Stop with a clear message if REALDB_ADMIN_URL or REALDB_APP_URL is unset (a skip must
+ *    never pass for green).
+ * 2. Create a fresh, empty database on that server; migrate it twice — the second run must
+ *    apply nothing — and compare app_role's privileges with the declared set exactly.
+ * 3. Start `src/server/main.ts` as a child process on a free loopback port, connected as the
+ *    app login; it must answer `/api/health` within 5 s of being started (NFR6.6).
+ * 4. Over HTTP, from `businessExists: false`: sign up → session → create an order → list it
+ *    → sign out → the old cookie answers 401. Every response carries the S5 headers.
+ * 5. Insert one user per non-Owner role (admin SQL, argon2 hash), sign each in, and walk the
+ *    server's registered route table: a role without the capability gets 403, one with it
+ *    gets past the gate, exactly as the restated reach table says.
+ * 6. A cross-origin POST and a non-JSON POST answer 403.
+ * 7. In happy-dom, the real App, talking to the real server, renders every U1 route for the
+ *    Owner (orders list, the three create screens, detail, lock, not-found).
+ * The child server and the database are always removed. One result line; exit 1 on failure.
+ */
+import postgres from "postgres";
+import { hashPassword } from "../../src/auth/argon2.js";
+import type { Role } from "../../src/data/enums.js";
+import { APP_ROLE, declaredGrantMap } from "../../src/db/declared-grants.js";
+import { runMigrations } from "../../src/db/migrate.js";
+import { routeKey, routes } from "../../src/server/routes.js";
+
+const ADMIN = process.env["REALDB_ADMIN_URL"];
+const APP = process.env["REALDB_APP_URL"];
+
+const say = (line: string): void => {
+  process.stdout.write(`${line}\n`);
+};
+
+class CheckFailed extends Error {}
+const check = (ok: boolean, what: string): void => {
+  if (!ok) throw new CheckFailed(what);
+};
+
+const withDb = (url: string, db: string): string => {
+  const u = new URL(url);
+  u.pathname = `/${db}`;
+  return u.toString();
+};
+
+const S5: Readonly<Record<string, string>> = {
+  "content-security-policy":
+    "default-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'",
+  "x-content-type-options": "nosniff",
+  "referrer-policy": "no-referrer",
+  "x-frame-options": "DENY",
+};
+
+const ALL: ReadonlyArray<Role> = ["owner", "manager", "sales_staff", "accountant"];
+const MUTATE: ReadonlyArray<Role> = ["owner", "manager", "sales_staff"];
+/** Restated reach (C5 shape), as in tests/integration/server-gate-absence.test.ts. */
+const REACH: Readonly<Record<string, ReadonlyArray<Role> | "public">> = {
+  "GET /api/health": "public",
+  "GET /api/setup": "public",
+  "POST /api/auth/sign-up": "public",
+  "POST /api/auth/sign-in": "public",
+  "POST /api/auth/sign-out": "public",
+  "GET /api/session": ALL,
+  "GET /api/orders": ALL,
+  "POST /api/orders": MUTATE,
+  "GET /api/orders/:id": ALL,
+  "PATCH /api/orders/:id": MUTATE,
+  "POST /api/orders/:id/status": MUTATE,
+  "POST /api/orders/:id/consignment": MUTATE,
+};
+
+const ORDER = {
+  source: "manual",
+  customerId: null,
+  contact: { name: "রিনা", phone: "01711111111", address: null },
+  repeatOfOrderId: null,
+  items: [
+    {
+      variantId: null,
+      description: "কুর্তি",
+      quantity: 2,
+      unitPricePaise: 55_000,
+      lineDiscountPaise: 0,
+    },
+  ],
+  orderDiscountPaise: 0,
+  deliveryChargePaise: 6_000,
+};
+
+const freePort = (): number => {
+  const probe = Bun.serve({ hostname: "127.0.0.1", port: 0, fetch: () => new Response() });
+  const port = probe.port ?? 0;
+  void probe.stop(true);
+  return port;
+};
+
+const main = async (): Promise<void> => {
+  if (!ADMIN || !APP) {
+    process.stderr.write(
+      "wiring-check: REALDB_ADMIN_URL and REALDB_APP_URL must be set (bun run gate sets them)\n",
+    );
+    process.exit(1);
+  }
+  const dbName = `e2e_${crypto.randomUUID().slice(0, 8)}`;
+  const server0 = postgres(ADMIN, { max: 1, onnotice: () => undefined });
+  await server0.unsafe(`CREATE DATABASE "${dbName}"`);
+  await server0.end({ timeout: 5 });
+  const adminUrl = withDb(ADMIN, dbName);
+  const appUrl = withDb(APP, dbName);
+  let child: ReturnType<typeof Bun.spawn> | null = null;
+  const admin = postgres(adminUrl, { max: 2, onnotice: () => undefined });
+  const facts: string[] = [];
+  try {
+    // 2. migrate twice; exact grants.
+    const first = await runMigrations(adminUrl, () => undefined);
+    const second = await runMigrations(adminUrl, () => undefined);
+    check(
+      first.applied.length > 0 && second.applied.length === 0,
+      `second migrate applied ${second.applied.length}`,
+    );
+    const rows = await admin<{ relation: string; privilege: string }[]>`
+      SELECT c.relname AS relation, a.privilege_type AS privilege
+      FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
+      CROSS JOIN LATERAL aclexplode(c.relacl) a
+      WHERE n.nspname = 'public' AND c.relkind IN ('r','S','v','m','p')
+        AND a.grantee = (SELECT oid FROM pg_roles WHERE rolname = ${APP_ROLE})`;
+    const actual = new Map<string, string[]>();
+    for (const r of rows)
+      actual.set(r.relation, [...(actual.get(r.relation) ?? []), r.privilege].sort());
+    const declared = declaredGrantMap();
+    check(
+      JSON.stringify([...actual].sort()) ===
+        JSON.stringify([...declared].map(([k, v]) => [k, [...v].sort()]).sort()),
+      "app_role grants differ from the declared set",
+    );
+    facts.push(`migrations ${first.applied.length} then 0, grants exact`);
+
+    // 3. the real server, as a child process.
+    const port = freePort();
+    const base = `http://127.0.0.1:${port}`;
+    const env: Record<string, string> = {};
+    for (const [k, v] of Object.entries(process.env)) if (v !== undefined) env[k] = v;
+    delete env["MIGRATE_DATABASE_URL"];
+    delete env["CI"];
+    env["PORT"] = String(port);
+    env["DATABASE_URL"] = appUrl;
+    const started = performance.now();
+    child = Bun.spawn(["bun", "src/server/main.ts"], { env, stdout: "ignore", stderr: "inherit" });
+    let upAfter = -1;
+    while (performance.now() - started < 10_000) {
+      const ok = await fetch(`${base}/api/health`).then(
+        (r) => r.ok,
+        () => false,
+      );
+      if (ok) {
+        upAfter = Math.round(performance.now() - started);
+        break;
+      }
+      await Bun.sleep(50);
+    }
+    check(upAfter >= 0 && upAfter <= 5_000, `server not up within 5 s (${upAfter} ms)`);
+    facts.push(`start-up ${upAfter} ms`);
+
+    let responses = 0;
+    const call = async (
+      method: string,
+      path: string,
+      opts: { body?: unknown; cookie?: string; origin?: string | null; type?: string } = {},
+    ): Promise<Response> => {
+      const headers: Record<string, string> = {};
+      if (method !== "GET") {
+        if (opts.origin !== null) headers["Origin"] = opts.origin ?? base;
+        headers["Content-Type"] = opts.type ?? "application/json";
+      }
+      if (opts.cookie) headers["Cookie"] = opts.cookie;
+      const r = await fetch(`${base}${path}`, {
+        method,
+        headers,
+        ...(method !== "GET" ? { body: JSON.stringify(opts.body ?? {}) } : {}),
+      });
+      responses += 1;
+      for (const [name, value] of Object.entries(S5)) {
+        check(
+          r.headers.get(name) === value,
+          `${method} ${path}: header ${name} is ${r.headers.get(name)}`,
+        );
+      }
+      return r;
+    };
+    const cookieOf = (r: Response): string =>
+      (r.headers.get("Set-Cookie") ?? "").split(";")[0] ?? "";
+
+    // 4. the Owner's whole path, from an empty database.
+    check(
+      JSON.stringify(await (await call("GET", "/api/setup")).json()) === '{"businessExists":false}',
+      "setup is not empty",
+    );
+    const up = await call("POST", "/api/auth/sign-up", {
+      body: {
+        businessName: "Wiring Check",
+        email: "owner@wiring.test",
+        password: "correct-horse-1",
+      },
+    });
+    check(up.status === 201, `sign-up answered ${up.status}`);
+    const owner = cookieOf(up);
+    check(
+      (await call("GET", "/api/session", { cookie: owner })).status === 200,
+      "session after sign-up",
+    );
+    const created = await call("POST", "/api/orders", { cookie: owner, body: ORDER });
+    check(created.status === 201, `create order answered ${created.status}`);
+    const order = (await created.json()) as { id: string; totalPaise: number };
+    check(order.totalPaise === 2 * 55_000 + 6_000, `order total ${order.totalPaise}`);
+    const listed = (await (await call("GET", "/api/orders", { cookie: owner })).json()) as {
+      orders: Array<{ id: string }>;
+    };
+    check(listed.orders[0]?.id === order.id, "the new order is not first in the list");
+    facts.push("sign-up → order → list");
+
+    // 5. one user per non-Owner role, walked over the registered route table.
+    const [biz] = await admin<{ id: string }[]>`SELECT id FROM businesses LIMIT 1`;
+    const hash = await hashPassword("role-password-1");
+    const tokens: Partial<Record<Role, string>> = { owner };
+    for (const role of ["manager", "sales_staff", "accountant"] as const) {
+      await admin`INSERT INTO users (id, business_id, email, password_hash, role, active, locale)
+        VALUES (${crypto.randomUUID()}, ${biz?.id ?? ""}, ${`${role}@wiring.test`}, ${hash}, ${role}, true, 'bn')`;
+      const r = await call("POST", "/api/auth/sign-in", {
+        body: { email: `${role}@wiring.test`, password: "role-password-1" },
+      });
+      check(r.status === 200, `${role} sign-in answered ${r.status}`);
+      tokens[role] = cookieOf(r);
+    }
+    check(
+      JSON.stringify(routes.map(routeKey).sort()) === JSON.stringify(Object.keys(REACH).sort()),
+      "the registered route table differs from the restated reach table",
+    );
+    let walked = 0;
+    for (const route of routes) {
+      const reach = REACH[routeKey(route)];
+      if (reach === "public" || reach === undefined) continue;
+      for (const role of ALL) {
+        const r = await call(route.method, route.path.replace(":id", order.id), {
+          cookie: tokens[role] ?? "",
+          body: {},
+        });
+        const allowed = reach.includes(role);
+        check(
+          allowed ? r.status !== 401 && r.status !== 403 : r.status === 403,
+          `${role} on ${routeKey(route)} answered ${r.status}`,
+        );
+        walked += 1;
+      }
+    }
+    facts.push(`${walked} role × route calls as the table says`);
+
+    // 6. cross-origin and non-JSON writes.
+    check(
+      (
+        await call("POST", "/api/orders", {
+          cookie: owner,
+          body: ORDER,
+          origin: "http://evil.example",
+        })
+      ).status === 403,
+      "cross-origin POST was not refused",
+    );
+    check(
+      (await call("POST", "/api/orders", { cookie: owner, body: ORDER, type: "text/plain" }))
+        .status === 403,
+      "non-JSON POST was not refused",
+    );
+
+    // 7. the real App in happy-dom against the real server, as the Owner.
+    const rendered = await renderAllRoutes(base, order.id);
+    facts.push(`${rendered} screens rendered`);
+
+    // 4 (end). sign out; the old cookie is dead.
+    check((await call("POST", "/api/auth/sign-out", { cookie: owner })).status === 204, "sign-out");
+    check(
+      (await call("GET", "/api/session", { cookie: owner })).status === 401,
+      "the signed-out cookie still works",
+    );
+    facts.push(`S5 headers on ${responses} responses`);
+    say(`wiring-check ok: ${facts.join("; ")}`);
+  } finally {
+    child?.kill("SIGTERM");
+    await child?.exited;
+    await admin.end({ timeout: 5 });
+    const s = postgres(ADMIN, { max: 1, onnotice: () => undefined });
+    await s.unsafe(`DROP DATABASE IF EXISTS "${dbName}" WITH (FORCE)`);
+    await s.end({ timeout: 5 });
+  }
+};
+
+/** Mount the App in happy-dom with a fetch that behaves like the browser on `base`. */
+const renderAllRoutes = async (base: string, orderId: string): Promise<number> => {
+  const { Window } = await import("happy-dom");
+  const window = new Window({ url: `${base}/` });
+  for (const [key, value] of [
+    ["window", window],
+    ["document", window.document],
+    ["navigator", window.navigator],
+    ["HTMLElement", window.HTMLElement],
+  ] as const) {
+    Object.defineProperty(globalThis, key, { value, writable: true, configurable: true });
+  }
+  const React = await import("react");
+  const { act, render, waitFor, cleanup } = await import("@testing-library/react");
+  const { createHttpClient } = await import("../../src/client/http.js");
+  const { createAuthApi } = await import("../../src/client/auth-api.js");
+  const { createOrdersApi } = await import("../../src/client/orders-api.js");
+  const { createSessionStore } = await import("../../src/client/session-store.js");
+  const { createOrdersStore } = await import("../../src/client/orders-store.js");
+  const { createOrderDraftStore } = await import("../../src/orders/order-draft.js");
+  const { App } = await import("../../src/router/App.js");
+
+  let cookie = "";
+  const browserFetch = (async (input: string | URL | Request, init: RequestInit = {}) => {
+    const headers = new Headers(init.headers ?? {});
+    if ((init.method ?? "GET") !== "GET") headers.set("Origin", base);
+    if (cookie) headers.set("Cookie", cookie);
+    const r = await fetch(`${base}${String(input)}`, { ...init, headers });
+    const set = r.headers.get("Set-Cookie");
+    if (set) cookie = /Max-Age=0/.test(set) ? "" : (set.split(";")[0] ?? "");
+    return r;
+  }) as typeof fetch;
+  const http = createHttpClient({ fetch: browserFetch });
+  const auth = createAuthApi(http);
+  check(
+    (await auth.signIn({ email: "owner@wiring.test", password: "correct-horse-1" })).ok,
+    "App sign-in",
+  );
+
+  const go = async (path: string): Promise<void> => {
+    await act(async () => {
+      window.location.hash = path;
+      window.dispatchEvent(new window.HashChangeEvent("hashchange"));
+    });
+  };
+  await go("/orders");
+  const view = render(
+    React.createElement(App, {
+      deps: {
+        http,
+        auth,
+        orders: createOrdersApi(http),
+        sessions: createSessionStore(),
+        ordersStore: createOrdersStore(),
+        draft: createOrderDraftStore(),
+      },
+    }),
+  );
+  const expectations: ReadonlyArray<readonly [string, string]> = [
+    ["/orders", "orders-table"],
+    ["/orders/new", "manual-order-form"],
+    ["/orders/new/paste-parse", "paste-box"],
+    ["/orders/new/repeat", "repeat-orders"],
+    [`/orders/${orderId}`, "order-detail-header"],
+    [`/orders/${orderId}/transition`, "order-detail-actions"],
+    ["/lock", "lock-sheet"],
+    ["/nowhere", "not-found-home"],
+  ];
+  for (const [path, testId] of expectations) {
+    await go(path);
+    try {
+      await waitFor(
+        () => {
+          if (view.queryByTestId(testId) === null) throw new Error("not yet");
+        },
+        { timeout: 3_000 },
+      );
+    } catch {
+      throw new CheckFailed(`the App did not render ${testId} at #${path}`);
+    }
+  }
+  const email = view.queryByTestId("user-email")?.textContent;
+  check(email === "owner@wiring.test", `the header shows ${email ?? "no email"}`);
+  cleanup();
+  return expectations.length;
+};
+
+if (import.meta.main) {
+  main().catch((e: unknown) => {
+    process.stderr.write(`wiring-check FAILED: ${e instanceof Error ? e.message : String(e)}\n`);
+    process.exit(1);
+  });
+}

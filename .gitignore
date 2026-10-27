@@ -12,6 +12,10 @@ __pycache__/
 .env
 .env.*
 !.env.example
+!.env.migrate.example
+
+# pg_dump rollback points (README "Backup and restore")
+backups/
 
 # BEGIN AI-DLC:gitignore
 # Logs

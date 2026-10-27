@@ -56,6 +56,54 @@
       "find": "  \"X-Frame-Options\": \"DENY\",\n",
       "replace": "",
       "test": "tests/integration/security-headers.test.ts"
+    },
+    {
+      "id": "paste-segment-isolation",
+      "why": "Each item reads only its own segment (FR5.2): reading the whole message lets one item take another item's colour, size or quantity.",
+      "file": "src/orders/parse-message.ts",
+      "find": "    const details = readSegment(segment, catalog);",
+      "replace": "    const details = { ...readSegment(segment, catalog), quantity: readSegment(itemText, catalog).quantity };",
+      "test": "tests/unit/parseMessage-segments.test.ts"
+    },
+    {
+      "id": "bucket-earned-includes-shipped",
+      "why": "Earned is delivered or settled only (FR10.2, ADR-002); counting shipped orders as earned overstates income.",
+      "file": "src/orders/status-bucket.ts",
+      "find": "new Set<OrderStatus>([\n  \"delivered\",\n  \"settled\",\n]);",
+      "replace": "new Set<OrderStatus>([\n  \"shipped\",\n  \"delivered\",\n  \"settled\",\n]);",
+      "test": "tests/unit/status-bucket.test.ts"
+    },
+    {
+      "id": "status-enum-drops-partial",
+      "why": "The order status enum carries all nine values (team.md, affirmed 2026-10-04); collapsing one loses a real state.",
+      "file": "src/data/enums.ts",
+      "find": "  \"returned\",\n  \"partial\",\n] as const;",
+      "replace": "  \"returned\",\n] as const;",
+      "test": "tests/unit/status-exhaustive.test.ts"
+    },
+    {
+      "id": "order-create-without-audit",
+      "why": "Every order mutation writes its audit row first, in the same transaction (NFR5.7, R2.1).",
+      "file": "src/orders/create-order.ts",
+      "find": "    await appendOrderAudit(tx, ctx, \"order.create\", id, { before: null, after: order });\n",
+      "replace": "",
+      "test": "tests/unit/order-audit-append.test.ts"
+    },
+    {
+      "id": "role-gate-sales-staff-audit",
+      "why": "Sales Staff never reaches the audit trail (role x capability matrix, R1.2).",
+      "file": "src/auth/capability.ts",
+      "find": "return new Set<Capability>([\"business.view\", \"settings.edit.own\", \"money.mutate.price\"]);",
+      "replace": "return new Set<Capability>([\"business.view\", \"settings.edit.own\", \"money.mutate.price\", \"audit.view\"]);",
+      "test": "tests/unit/three-layer-gate-absence.test.ts"
+    },
+    {
+      "id": "audit-keeps-customer-pii",
+      "why": "No customer PII in the insert-only audit log (review R-05): the contact is replaced by its summary.",
+      "file": "src/orders/order-audit.ts",
+      "find": "      before: redact(change.before),\n      after: redact(change.after),",
+      "replace": "      before: change.before,\n      after: change.after,",
+      "test": "tests/unit/order-audit-append.test.ts"
     }
   ]
 }
