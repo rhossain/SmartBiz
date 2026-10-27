@@ -46,7 +46,7 @@ file is new (N), rewritten in place (R) or modified (M); the old files are not d
 | `src/router/screens/Accept.tsx`, `Reset.tsx`, `Recover.tsx` | R | props-only screens |
 | `src/router/screens/Staff.tsx` | N | props-only screen |
 | `src/router/render-staff-route.tsx` | N | container for `/staff` |
-| `src/router/screens/render-auth-route.tsx` | M | containers for accept, reset, recover |
+| `src/router/render-token-routes.tsx` | N | container for accept, reset and recover (outside `screens/`, so it may import the client) |
 | `src/router/routes.ts`, `src/router/App.tsx` | M | routes, nav item, client wiring |
 | `src/pres/LinkSheet.tsx` | N | props-only link sheet |
 | `src/i18n/*` | M | U3 copy and audit action labels |
