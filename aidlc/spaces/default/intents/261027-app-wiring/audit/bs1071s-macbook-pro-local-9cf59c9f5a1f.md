@@ -873,3 +873,57 @@
 **Summary Authorization Id**: 03c38715b90e993817f54024a681b9196be08426b67c2b36102a9741b6448f8e
 
 ---
+
+## Decision Recorded
+**Timestamp**: 2026-10-27T09:09:30Z
+**Event**: DECISION_RECORDED
+**Stage**: feasibility
+**Decision**: Feasibility §13 learnings: 1 candidate (c1 single-stack tradeoff) plus the mandatory 'Anything to add for next time?' question.
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-27T09:29:27Z
+**Event**: HUMAN_TURN
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+**Picked**: ["Save it","Nothing to add"]
+
+---
+
+## Question Replied
+**Timestamp**: 2026-10-27T09:29:28Z
+**Event**: QUESTION_REPLIED
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+**Question**: Lesson from Feasibility: save "keep a single TypeScript stack, using bun's built-in server rather than adding a web framework" as a project rule? (Type /aidlc --learnings off to stop these questions.)
+**Reply**: Save it
+
+---
+
+## Question Replied
+**Timestamp**: 2026-10-27T09:29:28Z
+**Event**: QUESTION_REPLIED
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+**Question**: Anything else to add for next time?
+**Reply**: Nothing to add
+
+---
+
+## Question Answered
+**Timestamp**: 2026-10-27T09:30:12Z
+**Event**: QUESTION_ANSWERED
+**Stage**: feasibility
+**Details**: Learning c1 = Save it; Anything to add = Nothing to add
+
+---
+
+## Rule Learned
+**Timestamp**: 2026-10-27T09:30:12Z
+**Event**: RULE_LEARNED
+**Stage**: feasibility
+**Candidate-ID**: c1
+**Content-Hash**: a023018f4c62fdfad6d7de8496ba003bdf758672e12723e13f4c0b8f71531595
+**Destination**: <project-dir>/aidlc/spaces/default/memory/project.md
+**Heading**: ## Tech Stack
+**Source**: orchestrator
+
+---

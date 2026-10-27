@@ -53,6 +53,8 @@
 
 <!-- Technology choices locked for this project. -->
 
+- Keep a single TypeScript stack: the API server runs on bun's built-in HTTP server, with no separate web framework, so the project stays zero-spend with one package.json. (learned 2026-10-27) <!-- cid:261027-app-wiring:feasibility:a023018f4c62fdfad6d7de8496ba003bdf758672e12723e13f4c0b8f71531595 -->
+
 ## Decided
 
 <!-- Decisions made in earlier stages that should not be re-asked. -->
