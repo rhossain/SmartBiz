@@ -149,13 +149,13 @@ that layer is implemented, together with the full existing suite, before the nex
 
 ### Step 6 — Repository / data access: write and run its tests
 
-- [ ] `tests/unit/session-store.test.ts`: insert stores only the hash; resolve at 12 h − 1 ms is valid and at exactly 12 h is invalid; 30-day cap; inactive user invalid (stub).
-- [ ] `tests/unit/order-revisions.test.ts`: edit with items writes revision n + 1 and no DELETE statement is issued; edit without items keeps the revision; not-editable status refuses.
-- [ ] `tests/unit/list-orders-cursor.test.ts`: cursor encode/decode, limit bounds, malformed cursor → `invalid_input`, non-UUID customerId → empty page.
-- [ ] `tests/realdb/sessions.realdb.test.ts`: resolve, idle, expiry, inactive, restart-safety (new pool, same cookie works) (BR3.7, AC1.3.9).
-- [ ] `tests/realdb/order-revisions.realdb.test.ts`: append-only revisions, `app_role` cannot DELETE `order_items`, earlier revisions stay readable; atomicity: failure injected through `Queryable` after the audit insert leaves neither row (R3, NFR7.5).
-- [ ] Extend `tests/realdb/order-paths.realdb.test.ts` for keyset paging over 120 orders and foreign-business ids → not found.
-- [ ] Run the step's tests plus the full suite.
+- [x] `tests/unit/session-store.test.ts`: insert stores only the hash; resolve at 12 h − 1 ms is valid and at exactly 12 h is invalid; 30-day cap; inactive user invalid (stub).
+- [x] `tests/unit/order-revisions.test.ts`: edit with items writes revision n + 1 and no DELETE statement is issued; edit without items keeps the revision; not-editable status refuses.
+- [x] `tests/unit/list-orders-cursor.test.ts`: cursor encode/decode, limit bounds, malformed cursor → `invalid_input`, non-UUID customerId → empty page.
+- [x] `tests/realdb/sessions.realdb.test.ts`: resolve, idle, expiry, inactive, restart-safety (new pool, same cookie works) (BR3.7, AC1.3.9).
+- [x] `tests/realdb/order-revisions.realdb.test.ts`: append-only revisions, `app_role` cannot DELETE `order_items`, earlier revisions stay readable; atomicity: failure injected through `Queryable` after the audit insert leaves neither row (R3, NFR7.5).
+- [x] Extend `tests/realdb/order-paths.realdb.test.ts` for keyset paging over 120 orders and foreign-business ids → not found.
+- [x] Run the step's tests plus the full suite.
 
 ### Step 7 — Business logic: implement (US1.2, US1.3, US1.4; BR2.1–BR2.5, BR3.1–BR3.3, BR4.1–BR4.4, BR5.1–BR5.3)
 
