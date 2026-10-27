@@ -3617,3 +3617,218 @@
 **Decision**: Product-lead re-review READY. Carried: R-03, R-05 delegation matrix, R-08, R-10, P-18 to Functional Design; R-07 real-browser Secure cookie check to Build and Test.
 
 ---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T10:59:04Z
+**Event**: SENSOR_FIRED
+**Fire id**: 19cd0640
+**Sensor ID**: required-sections
+**Stage slug**: user-stories
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/user-stories/stories.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T10:59:04Z
+**Event**: SENSOR_PASSED
+**Fire id**: 19cd0640
+**Sensor ID**: required-sections
+**Stage slug**: user-stories
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/user-stories/stories.md
+**Duration ms**: 98
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T10:59:05Z
+**Event**: SENSOR_FIRED
+**Fire id**: 372cab24
+**Sensor ID**: required-sections
+**Stage slug**: user-stories
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/user-stories/personas.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-27T10:59:05Z
+**Event**: SENSOR_FAILED
+**Fire id**: 372cab24
+**Sensor ID**: required-sections
+**Stage slug**: user-stories
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/user-stories/personas.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/user-stories/required-sections-372cab24.md
+**Findings count**: 1
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T10:59:05Z
+**Event**: SENSOR_FIRED
+**Fire id**: e5e37279
+**Sensor ID**: required-sections
+**Stage slug**: user-stories
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/user-stories/user-stories-assessment.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-27T10:59:05Z
+**Event**: SENSOR_FAILED
+**Fire id**: e5e37279
+**Sensor ID**: required-sections
+**Stage slug**: user-stories
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/user-stories/user-stories-assessment.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/user-stories/required-sections-e5e37279.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T10:59:05Z
+**Event**: SENSOR_FIRED
+**Fire id**: 2cccc68d
+**Sensor ID**: required-sections
+**Stage slug**: user-stories
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/user-stories/traceability.json
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T10:59:06Z
+**Event**: SENSOR_PASSED
+**Fire id**: 2cccc68d
+**Sensor ID**: required-sections
+**Stage slug**: user-stories
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/user-stories/traceability.json
+**Duration ms**: 144
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T10:59:06Z
+**Event**: SENSOR_FIRED
+**Fire id**: 0f7926a5
+**Sensor ID**: upstream-coverage
+**Stage slug**: user-stories
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/user-stories/stories.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-27T10:59:06Z
+**Event**: SENSOR_FAILED
+**Fire id**: 0f7926a5
+**Sensor ID**: upstream-coverage
+**Stage slug**: user-stories
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/user-stories/stories.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/user-stories/upstream-coverage-0f7926a5.md
+**Findings count**: 3
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T10:59:07Z
+**Event**: SENSOR_FIRED
+**Fire id**: 0c6bd8f3
+**Sensor ID**: upstream-coverage
+**Stage slug**: user-stories
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/user-stories/personas.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-27T10:59:07Z
+**Event**: SENSOR_FAILED
+**Fire id**: 0c6bd8f3
+**Sensor ID**: upstream-coverage
+**Stage slug**: user-stories
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/user-stories/personas.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/user-stories/upstream-coverage-0c6bd8f3.md
+**Findings count**: 3
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T10:59:08Z
+**Event**: SENSOR_FIRED
+**Fire id**: 777cc4e4
+**Sensor ID**: upstream-coverage
+**Stage slug**: user-stories
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/user-stories/user-stories-assessment.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-27T10:59:09Z
+**Event**: SENSOR_FAILED
+**Fire id**: 777cc4e4
+**Sensor ID**: upstream-coverage
+**Stage slug**: user-stories
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/user-stories/user-stories-assessment.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/user-stories/upstream-coverage-777cc4e4.md
+**Findings count**: 3
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T10:59:09Z
+**Event**: SENSOR_FIRED
+**Fire id**: a9dc2eb5
+**Sensor ID**: upstream-coverage
+**Stage slug**: user-stories
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/user-stories/traceability.json
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-27T10:59:09Z
+**Event**: SENSOR_FAILED
+**Fire id**: a9dc2eb5
+**Sensor ID**: upstream-coverage
+**Stage slug**: user-stories
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/user-stories/traceability.json
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/user-stories/upstream-coverage-a9dc2eb5.md
+**Findings count**: 3
+
+---
+
+## Stage Awaiting Approval
+**Timestamp**: 2026-10-27T10:59:09Z
+**Event**: STAGE_AWAITING_APPROVAL
+**Stage**: user-stories
+
+---
+
+## Gate Approved
+**Timestamp**: 2026-10-27T10:59:16Z
+**Event**: GATE_APPROVED
+**Stage**: user-stories
+**User Input**: Approve (Owner standing instruction 2026-10-27: don't stop for approval; decide the right options)
+
+---
+
+## Stage Completion
+**Timestamp**: 2026-10-27T10:59:16Z
+**Event**: STAGE_COMPLETED
+**Stage**: user-stories
+**Validation Basis**: {"graphContract":"sha256:c75f05406db1b9ac835b39d17823589395911112ecd624d831c9997726414fca","inputs":[{"artifact":"business-overview","contentHash":"sha256:a4085aafd7a813f8d5bf1fe7e80801446da7a117c7f7bdded0d1be04b9a81ee7","instanceCount":1,"presentCount":1,"producer":"reverse-engineering","required":false,"structureHash":"sha256:d70b08a93f1a0163fea4c995ce401850fd67f54f064f5700d2c5c21982663d09"},{"artifact":"component-inventory","contentHash":"sha256:30a8814d356a7bfdddc5a38dc8ae2618c35d7eececa67b5c23998a945d40339b","instanceCount":1,"presentCount":1,"producer":"reverse-engineering","required":false,"structureHash":"sha256:da5d560976b413a0a33b3ee30f219a7553bcefe1fdd8cfabbb0d1ff202e88543"},{"artifact":"requirements","contentHash":"sha256:91596afb4361696fc6dfebc1fb0aa510db6a3aaccc85c91e4e38d12a760e1716","instanceCount":1,"presentCount":1,"producer":"requirements-analysis","required":true,"structureHash":"sha256:4505671a40e951a46be027fcf40da539cee3d7d128be48e674cb3005a5fe48bc"},{"artifact":"team-practices","contentHash":"sha256:92177ec6929be7f01e88786e9a1cd53fc06e7ea09306cad0e8916b77f7b6de18","instanceCount":1,"presentCount":1,"producer":"practices-discovery","required":false,"structureHash":"sha256:fa129b8f120e57efabb7ce801acb87461f7329b9b6aa803c6fb9fc234a542219"}],"outputs":[{"artifact":"personas","contentHash":"sha256:6b8219f1777c76a7322f08d468c1dbbdeeb19934cab8cf5c0cb768650730e56f","instanceCount":1,"presentCount":1,"producer":"user-stories","required":true,"structureHash":"sha256:76d49def0273ce8961df717960654d4f707ff82990fd1b75a85be928afb59bfe"},{"artifact":"stories","contentHash":"sha256:20c930ae0799389d1fa5b4d900788f1e55e0f44bec0a256ab030cb2116ebdb79","instanceCount":1,"presentCount":1,"producer":"user-stories","required":true,"structureHash":"sha256:7138ad0225d1534181c69d37839e9988c837211669e34b9ab946405dbd7a7190"},{"artifact":"traceability","contentHash":"sha256:da5617c23fe27c54a570f2dbc19f7243f39a9eef4af696d29b34a0fa082b62fe","instanceCount":1,"presentCount":1,"producer":"user-stories","required":true,"structureHash":"sha256:bf54a92b05af600c0585e2f0e63e0d5b3db222826efafe04113ff66e1eea5bb7"},{"artifact":"user-stories-assessment","contentHash":"sha256:ec652595bbaa2c12f6cbba506928502595ca04d549ba6f66982f37b62b6b7b50","instanceCount":1,"presentCount":1,"producer":"user-stories","required":true,"structureHash":"sha256:854d61e8f311cb1a35ecca0be9569d744c0ceaa11bc433fb7b4962fc18689e4c"}],"projectType":"brownfield","schema":3}
+**Details**: Stage User Stories approved by gate
+**Tokens In**: 164
+**Tokens Out**: 115638
+**Cache Read**: 18693965
+**Cache Write**: 659553
+**Cost USD**: 9.37
+**By Model**: opus-5-5=8.61; sonnet-5-5=0.77
+**By Agent**: main=5.29; aidlc-design-agent=1.03; aidlc-quality-agent=0.98; aidlc-developer-agent=1.30; aidlc-product-lead-agent=0.77
+**Tokens By Model**: opus-5-5=136/97.1k/17.4M/528.6k; sonnet-5-5=28/18.5k/1.3M/130.9k
+**Tokens By Agent**: main=84/40.8k/15.2M/179k; aidlc-design-agent=18/16k/738.4k/113.1k; aidlc-quality-agent=12/19.6k/468.8k/99k; aidlc-developer-agent=22/20.7k/1M/137.6k; aidlc-product-lead-agent=28/18.5k/1.3M/130.9k
+
+---
+
+## Stage Start
+**Timestamp**: 2026-10-27T10:59:16Z
+**Event**: STAGE_STARTED
+**Stage**: refined-mockups
+**Agent**: aidlc-design-agent
+
+---
