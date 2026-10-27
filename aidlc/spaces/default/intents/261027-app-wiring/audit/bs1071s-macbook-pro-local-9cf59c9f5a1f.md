@@ -5392,3 +5392,98 @@
 **Context**: inception > contract-design > contract-summary.md
 
 ---
+
+## Change Accepted
+**Timestamp**: 2026-10-27T11:27:17Z
+**Event**: CHANGE_ACCEPTED
+**Stage**: contract-design
+**Checkpoint**: review-receipt
+**Changed**: aidlc/spaces/default/intents/261027-app-wiring/inception/contract-design/contract-summary.md
+**Recorded**: sha256:a2c3df44e9a740cab1a5cf981cbec55d2961ba4568e4ba35182f13acbbc7150a
+**Current**: sha256:96dd654e1380eb8269dfe6885ae3f5cdc81b2ce6a846c7321b50e17429440cf8
+**Details**: aidlc/spaces/default/intents/261027-app-wiring/inception/contract-design/contract-summary.md changed after the Contract Design review; carrying on.
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T11:27:18Z
+**Event**: SENSOR_FIRED
+**Fire id**: 2e12b9b1
+**Sensor ID**: required-sections
+**Stage slug**: contract-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/contract-design/contract-summary.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T11:27:18Z
+**Event**: SENSOR_PASSED
+**Fire id**: 2e12b9b1
+**Sensor ID**: required-sections
+**Stage slug**: contract-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/contract-design/contract-summary.md
+**Duration ms**: 327
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-27T11:27:18Z
+**Event**: SENSOR_FIRED
+**Fire id**: 8099a363
+**Sensor ID**: upstream-coverage
+**Stage slug**: contract-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/contract-design/contract-summary.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-27T11:27:19Z
+**Event**: SENSOR_PASSED
+**Fire id**: 8099a363
+**Sensor ID**: upstream-coverage
+**Stage slug**: contract-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/inception/contract-design/contract-summary.md
+**Duration ms**: 927
+
+---
+
+## Stage Awaiting Approval
+**Timestamp**: 2026-10-27T11:27:20Z
+**Event**: STAGE_AWAITING_APPROVAL
+**Stage**: contract-design
+
+---
+
+## Gate Approved
+**Timestamp**: 2026-10-27T11:27:32Z
+**Event**: GATE_APPROVED
+**Stage**: contract-design
+**User Input**: Approve (Owner standing instruction 2026-10-27: don't stop for approval; decide the right options)
+
+---
+
+## Stage Completion
+**Timestamp**: 2026-10-27T11:27:32Z
+**Event**: STAGE_COMPLETED
+**Stage**: contract-design
+**Validation Basis**: {"graphContract":"sha256:ad5599bf4da38de3dec2bfb4bf705de33d27113e18b6a160549a97c4b694fea3","inputs":[{"artifact":"components","contentHash":"sha256:17eb700566bf1162b108f7531a4e94e6e8dc1e94d3672e6201cfeb2a388ee391","instanceCount":1,"presentCount":1,"producer":"domain-design","required":false,"structureHash":"sha256:308751fb5e4c589703740d45ba26da0a3023ad4e04f9038ddd6778706705cdf4"},{"artifact":"requirements","contentHash":"sha256:91596afb4361696fc6dfebc1fb0aa510db6a3aaccc85c91e4e38d12a760e1716","instanceCount":1,"presentCount":1,"producer":"requirements-analysis","required":false,"structureHash":"sha256:4505671a40e951a46be027fcf40da539cee3d7d128be48e674cb3005a5fe48bc"},{"artifact":"unit-of-work-dependency","contentHash":"sha256:51813cd22a33358b9e050fa7067340a77279b27150def17b0cd47980b1f00a30","instanceCount":1,"presentCount":1,"producer":"units-generation","required":true,"structureHash":"sha256:7290b18a5b8b68de4ef0a248fa921a47836a6a778b573f028ee79d2deaad10bd"},{"artifact":"unit-of-work","contentHash":"sha256:d5ded731a81d36ecf63836a0438042bd2d7ab2b845ed6b9c44773cc08dccca33","instanceCount":1,"presentCount":1,"producer":"units-generation","required":true,"structureHash":"sha256:dd659a79af2fd83ce30594ff06ba9bd61b1169d7c31235f630f0989d321ad919"}],"outputs":[{"artifact":"contract-summary","contentHash":"sha256:d99f199b6ba7786296b9b13462b1449b520949cd5b9a7f601b0546d00f253136","instanceCount":1,"presentCount":1,"producer":"contract-design","required":true,"structureHash":"sha256:30a652db9038a52def5123b74608b14c0f031a96e4f3759d2aa5b61ae779014b"}],"projectType":"brownfield","schema":3}
+**Details**: Stage Contract Design approved by gate
+**Tokens In**: 56
+**Tokens Out**: 34331
+**Cache Read**: 8780187
+**Cache Write**: 175151
+**Cost USD**: 3.20
+**By Model**: opus-5-5=2.68; sonnet-5-5=0.52
+**By Agent**: main=2.68; aidlc-architecture-reviewer-agent=0.52
+**Tokens By Model**: opus-5-5=38/24k/7.9M/77.1k; sonnet-5-5=18/10.3k/862.5k/98.1k
+**Tokens By Agent**: main=38/24k/7.9M/77.1k; aidlc-architecture-reviewer-agent=18/10.3k/862.5k/98.1k
+
+---
+
+## Stage Start
+**Timestamp**: 2026-10-27T11:27:33Z
+**Event**: STAGE_STARTED
+**Stage**: delivery-planning
+**Agent**: aidlc-delivery-agent
+
+---
