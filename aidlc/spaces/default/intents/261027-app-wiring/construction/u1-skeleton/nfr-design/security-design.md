@@ -35,6 +35,7 @@ flowchart TD
 
 Text fallback: every request gets a correlation id, then the Host check (403), the 64 KiB size check (413), and a split into static files or the API. API writes need an exact Origin and JSON (403). The route is matched; non-public routes resolve the session (401) and check the role's capability (403); every route parses strictly (400) and calls one domain function, whose result kind maps to a status; headers are added last. Covers NFR1.1, NFR3.3, NFR5.1, NFR5.2, NFR5.5.
 
+- **Body cap mechanism** (NFR5.2): `Bun.serve({ maxRequestBodySize: 65536 })` makes bun refuse larger bodies, chunked or not; the pipeline also refuses a declared `Content-Length` over 65536 before reading. Our 413 response carries the S5 headers; a body bun rejects before our handler runs gets bun's own 413, accepted as is.
 - **Route table as data** (NFR1.1): `src/server/routes.ts` exports an array of `{ method, path, access: 'public' | Capability | Capability[], schemas, handler }`. Start-up fails if any entry lacks `access`. The public list is exactly health, setup, sign-up, sign-in, sign-out.
 - **Context from the session** (NFR3.3, NFR1.3): handlers receive `{ businessId, userId, role }` from S3 only; schemas are `.strict()`, so a body carrying `role` or `businessId` is a 400.
 
@@ -56,7 +57,7 @@ Text fallback: every request gets a correlation id, then the Host check (403), t
 | Cookie | `__Host-sb_session=<value>; Max-Age=<seconds to expires_at>; Path=/; HttpOnly; Secure; SameSite=Lax`; clearing sets an empty value and `Max-Age=0` | NFR3.2 |
 | Resolve | one statement: `UPDATE sessions s SET last_seen_at = $now FROM users u WHERE s.token_hash = $hash AND u.id = s.user_id AND u.active AND s.expires_at > $now AND s.last_seen_at > $now - interval '12 hours' RETURNING …`; `$now` is the app clock | NFR3.3, NFR6.2 |
 | Fixation | sign-in deletes the presented session in the same transaction as the new insert | NFR3.4, T3 |
-| Sign-out | delete by hash + `auth.sign_out` in one transaction; always 204 | NFR3.4 |
+| Sign-out | delete by hash + `auth.sign_out` in one transaction; 204 whether or not a session existed; if the database is unavailable the response is 503 `db_unavailable` and still clears the cookie, so the browser is signed out locally and the server row expires by its own limits | NFR3.4 |
 
 ## S4 — Data protection
 
@@ -74,7 +75,7 @@ A frozen header map applied as the last pipeline step to every response, static 
 
 ## S6 — Static files (NFR5.4, T13)
 
-1. Decode the path once; refuse (404) if it contains `..`, `\`, `%2f`/`%5c` after decoding, a NUL, or a segment starting with `.`; refuse `*.map`.
+1. On the raw (still-encoded) path, refuse (404) any `%2f`, `%5c` or `%00` in any case. Then decode once; refuse (404) if the decoded path contains `..`, `\`, a NUL, or a segment starting with `.`; refuse `*.map`. Only GET and HEAD are served on non-API paths; other methods get 405 with the S5 headers.
 2. Resolve against the absolute `dist/` real path; `realpath` the target; refuse unless it starts with `dist/` + separator.
 3. Existing file → send it with its content type; otherwise, for a path with no extension, send `index.html` (the SPA); otherwise 404.
 

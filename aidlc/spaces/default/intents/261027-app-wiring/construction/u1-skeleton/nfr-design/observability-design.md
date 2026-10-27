@@ -19,7 +19,7 @@ Generated at the first pipeline step from Web Crypto (16 hex chars); stored in a
 
 ## O3 — Error logging (NFR8.3)
 
-Errors are logged once, by the pipeline's outer catch: 500 at `error` with `error_class` and a redacted message; 503 at `warn` with `db_class: "availability"`; start-up failures at `error` before exit. Handlers never log.
+Errors are logged once, by the pipeline's outer catch: 500 at `error` with only `error_class`, the Postgres SQLSTATE and constraint name when present — never the error message, detail or query parameters, because Postgres error text echoes values (for example a unique violation's `Key (lower(email))=(…)`); a unit test raises a unique violation on a typed email and asserts the email is absent from the log line; 503 at `warn` with `db_class: "availability"`; start-up failures at `error` before exit. Handlers never log.
 
 ## O4 — Audit events (NFR8.4)
 
@@ -33,7 +33,7 @@ Errors are logged once, by the pipeline's outer catch: 500 at `error` with `erro
 
 ## O5 — Rate-limit visibility (NFR8.5)
 
-A `warn` line per 429: `{"event":"sign_in_limited","key_hash":"<first 12 hex of SHA-256(key)>","retry_after_s":…}`; and `{"event":"hash_gate_full"}` for queue overflow.
+A `warn` line per 429: `{"event":"sign_in_limited","retry_after_s":…}` — no key or hash of the typed email, since an unsalted hash of an email can be confirmed offline; and `{"event":"hash_gate_full"}` for queue overflow.
 
 ## O6 — Health (NFR8.6)
 

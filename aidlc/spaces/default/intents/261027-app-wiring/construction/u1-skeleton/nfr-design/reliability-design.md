@@ -18,7 +18,7 @@
 
 ## R3 — Atomic writes (NFR7.5)
 
-Every mutation runs inside `sql.begin(tx => …)`: audit row first, then the entity rows, then the order's `items_revision` (for edits). An exception anywhere rolls back everything. A realdb test injects a failure after the audit insert (a test-only hook in the order write path) and asserts neither row exists.
+Every mutation runs inside `sql.begin(tx => …)`: audit row first, then the entity rows, then the order's `items_revision` (for edits). An exception anywhere rolls back everything. A realdb test injects the failure through `Queryable`: it wraps the transaction handle so the first statement after the audit insert throws, and asserts neither row exists. No test hook exists in production code.
 
 ## R4 — Migrations (NFR7.6)
 

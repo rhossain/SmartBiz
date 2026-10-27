@@ -19,7 +19,7 @@
 |-------|-------|--------|
 | sessions | unique `token_hash` | resolve |
 | orders | `(business_id, created_at DESC, id DESC)` (existing in 0008; verified, added if absent) | list and cursor |
-| orders | `(business_id, status, created_at DESC)` (added if absent) | status filter |
+| orders | `(business_id, status)` (existing in 0008) | status filter; no new index — revisit only if the benchmark's status-filter route misses NFR6.1 |
 | order_items | `(order_id, revision)` (migration 0015) | current-revision items |
 | users | unique `lower(email)` (migration 0013) | sign-in lookup |
 
