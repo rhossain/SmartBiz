@@ -8,6 +8,8 @@
  * `db: "down"`, so the process keeps running. The container is started again and, from the
  * moment `pg_isready` succeeds, the first successful call must come within 5 s with no
  * server restart (postgres.js reconnects on the next query).
+ * U2 (R11, NFR7.14): `GET /api/audit` answers the same coded 503 during the outage, and the
+ * same process serves it again afterwards.
  *
  * It needs REALDB_CONTAINER (scripts/gate.ts sets it to the container it started); without
  * it, or without the realdb URLs, the file is skipped. It never touches any other container.
@@ -80,6 +82,7 @@ describe.skipIf(!enabled)("database outage and recovery", () => {
   }, 60_000);
 
   const listOrders = () => fetch(`${base}/api/orders`, { headers: { Cookie: cookie } });
+  const listAudit = () => fetch(`${base}/api/audit`, { headers: { Cookie: cookie } });
 
   test("503 while Postgres is down, health stays up, first success within 5 s of Postgres being back", async () => {
     expect((await listOrders()).status).toBe(200);
@@ -87,6 +90,12 @@ describe.skipIf(!enabled)("database outage and recovery", () => {
     expect(await docker("stop", "-t", "5", CONTAINER ?? "")).toBe(0);
     const during = await listOrders();
     expect({ status: during.status, body: await during.json() }).toEqual({
+      status: 503,
+      body: { error: "db_unavailable" },
+    });
+    // U2 (R11, NFR7.14): the audit trail read answers the same coded 503 during the outage.
+    const auditDuring = await listAudit();
+    expect({ status: auditDuring.status, body: await auditDuring.json() }).toEqual({
       status: 503,
       body: { error: "db_unavailable" },
     });
@@ -114,5 +123,7 @@ describe.skipIf(!enabled)("database outage and recovery", () => {
     });
     const after = await fetch(`${base}/api/health`);
     expect(await after.json()).toEqual({ status: "up", db: "up" });
+    // The same process (never restarted) serves the audit trail again.
+    expect((await listAudit()).status).toBe(200);
   }, 90_000);
 });

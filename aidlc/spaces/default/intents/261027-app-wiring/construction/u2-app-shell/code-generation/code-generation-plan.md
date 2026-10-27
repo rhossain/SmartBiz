@@ -156,13 +156,13 @@ layer is implemented, together with the full existing suite, before the next lay
 
 ### Step 10 — API / endpoint: write and run its tests (US5.1, US5.3; S11, S14; NFR1.4, NFR1.6, NFR1.7, NFR3.10, NFR3.11, NFR5.6; D-04, D-09)
 
-- [ ] `tests/spec/role-table.ts`: the inline role table (C5 shape; API rows for all 13 server routes and screen rows for every screen route with `allowed`, `feature` and `heading`), restating US5.1 and the story sources named in F-07; never imports `src/auth`.
-- [ ] `tests/spec/fixtures.ts`: one recorded success body per API route, each parsed with the route's shared zod response schema in the tests that use it.
-- [ ] `tests/integration/server-gate-absence.test.ts` (rewrite to read the role table): exact match both ways; no cookie / expired / idle / inactive → 401; outside role → 403 and no `*Paise` key; inside role → neither 401 nor 403; write probes carry a valid Origin and JSON content type (D-09); NFR5.6 probes (text/plain, no Origin, `localhost`) → 403; Owner never 403; `{ timeout: 60_000 }`; prints its checks and duration (O12).
-- [ ] `tests/integration/no-secret-responses.test.ts` (rewrite): every registered route needs a fixture; known secret values read from the seeded rows; key-name scan; `link` allow-list (`[]`) scan; prints checks and duration.
-- [ ] `tests/integration/audit-route.test.ts`: `limit` 0, 51, -1, 1.5, `abc`, an unknown key, a truncated or non-base64url cursor → 400 `invalid_input`; Sales Staff → 403; the body never echoes the cursor; a log-capture test asserts no line holds the cursor, `?` or an email (N-04).
-- [ ] `tests/realdb/outage.realdb.test.ts` (extend): `GET /api/audit` answers 503 while the database is down and the process stays up (R11).
-- [ ] Add mutants: the audit read drops the retention filter (→ `tests/unit/audit-read.test.ts`, which asserts the recorded SQL carries the retention predicate and that an expired stub row is not returned); the audit route is registered as public (→ `tests/integration/server-gate-absence.test.ts`).
+- [x] `tests/spec/role-table.ts`: the inline role table (C5 shape; API rows for all 13 server routes and screen rows for every screen route with `allowed`, `feature` and `heading`), restating US5.1 and the story sources named in F-07; never imports `src/auth`.
+- [x] `tests/spec/fixtures.ts`: one recorded success body per API route, each parsed with the route's shared zod response schema in the tests that use it.
+- [x] `tests/integration/server-gate-absence.test.ts` (rewrite to read the role table): exact match both ways; no cookie / expired / idle / inactive → 401; outside role → 403 and no `*Paise` key; inside role → neither 401 nor 403; write probes carry a valid Origin and JSON content type (D-09); NFR5.6 probes (text/plain, no Origin, `localhost`) → 403; Owner never 403; `{ timeout: 60_000 }`; prints its checks and duration (O12).
+- [x] `tests/integration/no-secret-responses.test.ts` (rewrite): every registered route needs a fixture; known secret values read from the seeded rows; key-name scan; `link` allow-list (`[]`) scan; prints checks and duration.
+- [x] `tests/integration/audit-route.test.ts`: `limit` 0, 51, -1, 1.5, `abc`, an unknown key, a truncated or non-base64url cursor → 400 `invalid_input`; Sales Staff → 403; the body never echoes the cursor; a log-capture test asserts no line holds the cursor, `?` or an email (N-04).
+- [x] `tests/realdb/outage.realdb.test.ts` (extend): `GET /api/audit` answers 503 while the database is down and the process stays up (R11).
+- [x] Add mutants: the audit read drops the retention filter (→ `tests/unit/audit-read.test.ts`, which asserts the recorded SQL carries the retention predicate and that an expired stub row is not returned); the audit route is registered as public (→ `tests/integration/server-gate-absence.test.ts`).
 
 ### Step 11 — Frontend behaviour: implement (US1.7, US5.1, US5.4; BR1.1, BR1.5, BR2.1–BR2.3, BR4.1, BR4.2, BR5.1–BR5.5, BR6.1–BR6.3, BR9.2, BR9.3; S12, R7, R9, R10, P14)
 

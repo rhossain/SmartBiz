@@ -1,144 +1,248 @@
 /**
- * tests/integration/server-gate-absence.test.ts — the server twin of
- * three-layer-gate-absence.test.ts (team.md Testing Posture; NFR1.1, NFR1.2; BR6.1; R1.2).
+ * tests/integration/server-gate-absence.test.ts — the server role walk, driven by the inline
+ * role table (W5; BR3.1–BR3.3, BR3.5, BR3.6; S11; NFR1.4, NFR1.6, NFR1.7, NFR5.6; AC5.1.1–
+ * AC5.1.3; team.md Testing Posture "role gate tested by absence, on the server"; R1.2).
  *
  * Once data comes over HTTP the client gate is advisory, so the server enforces the role
- * table on every call. This walks the server's REGISTERED route table, not a hand-kept list:
- *   - every registered route has a row in the restated reach table below, and every row
- *     names a registered route, so a new route cannot ship ungated or unreviewed;
- *   - outside the public allow-list, no cookie, an expired, an idle or an inactive user's
- *     session each give 401;
- *   - a role without the route's capability gets 403, and the body carries no money field;
- *   - a role with it gets past the gate (any status but 401 or 403).
- * The reach table is restated inline (C5 shape), never imported from src/auth.
+ * table on every call. This walks the server's REGISTERED route table (src/server/routes.ts),
+ * not a hand-kept list, against the API rows of tests/spec/role-table.ts:
+ *   - the two match exactly, in both directions; a new route without a row fails, naming it
+ *     (BR3.2, scenario S9);
+ *   - the public routes are exactly the public rows (C5 public_routes);
+ *   - every non-public route answers 401 with no cookie, a forged one, and an expired, idle or
+ *     inactive user's session (BR3.3);
+ *   - each role outside a row gets 403 and no key ending in `Paise` anywhere in the body;
+ *     each role inside gets neither 401 nor 403 (BR3.3). Write probes carry the exact Origin
+ *     and a JSON content type and a body from tests/spec/fixtures.ts that satisfies the
+ *     domain, so neither the CSRF check nor a domain refusal can mask the gate (D-09, F-07);
+ *   - every POST / PATCH / DELETE refuses `text/plain`, a missing Origin and
+ *     `http://localhost:<port>` with 403, even for the Owner (BR3.6, NFR5.6);
+ *   - the Owner is never refused with 403 (BR3.5).
+ * Each failure names the role, the route and the status (NFR8.14). The walk prints the rows,
+ * roles, checks and milliseconds it covered (O12, NFR8.12); gate step 5b times it (NFR6.16).
  */
-import { describe, expect, test } from "bun:test";
-import { ROLES, type Role } from "../../src/data/enums.js";
+import { afterAll, describe, expect, test } from "bun:test";
 import { routeKey, routes } from "../../src/server/routes.js";
+import {
+  API_ROWS,
+  apiKey,
+  diffKeys,
+  isAllowed,
+  reportWalk,
+  ROLES,
+  type ApiRow,
+  type Role,
+} from "../spec/role-table.js";
+import { API_FIXTURES, ORDER_REQUEST } from "../spec/fixtures.js";
 import { makeSqlStub } from "../helpers/sql-stub.js";
-import { harness, NOW, request, seedBusiness } from "../helpers/server-harness.js";
+import {
+  harness,
+  NOW,
+  PORT,
+  request,
+  seedBusiness,
+  type Harness,
+} from "../helpers/server-harness.js";
 
-const PUBLIC = "public";
-const ALL: ReadonlyArray<Role> = ["owner", "manager", "sales_staff", "accountant"];
-const MUTATE: ReadonlyArray<Role> = ["owner", "manager", "sales_staff"];
+const WALK = { timeout: 60_000 };
+const HOUR = 60 * 60 * 1000;
+const UNKNOWN_ID = "0f0f0f0f-0f0f-4f0f-8f0f-0f0f0f0f0f0f";
+const WRITES = new Set(["POST", "PATCH", "DELETE"]);
 
-const REACH: Readonly<Record<string, ReadonlyArray<Role> | typeof PUBLIC>> = {
-  "GET /api/health": PUBLIC,
-  "GET /api/setup": PUBLIC,
-  "POST /api/auth/sign-up": PUBLIC,
-  "POST /api/auth/sign-in": PUBLIC,
-  "POST /api/auth/sign-out": PUBLIC,
-  "GET /api/session": ALL,
-  "GET /api/orders": ALL,
-  "POST /api/orders": MUTATE,
-  "GET /api/orders/:id": ALL,
-  "PATCH /api/orders/:id": MUTATE,
-  "POST /api/orders/:id/status": MUTATE,
-  "POST /api/orders/:id/consignment": MUTATE,
+const started = performance.now();
+let checks = 0;
+const check = (): void => {
+  checks += 1;
 };
 
-const ID = "0f0f0f0f-0f0f-4f0f-8f0f-0f0f0f0f0f0f";
-const concrete = (path: string): string => path.replace(":id", ID);
-const HOUR = 60 * 60 * 1000;
+const gatedRows = API_ROWS.filter((r) => r.allowed !== "public");
+const writeRows = API_ROWS.filter((r) => WRITES.has(r.method));
+const concrete = (row: ApiRow, id: string): string => row.path.replace(":id", id);
+const bodyFor = (row: ApiRow): unknown => API_FIXTURES[apiKey(row)]?.request ?? {};
 
-/** True when any key anywhere in the body names money (…Paise) or a list of orders. */
+/** True when any key anywhere in the body names money (`…Paise`). */
 const carriesMoney = (value: unknown): boolean => {
   if (Array.isArray(value)) return value.some(carriesMoney);
   if (value === null || typeof value !== "object") return false;
-  return Object.entries(value).some(
-    ([k, v]) => /paise$/i.test(k) || k === "orders" || carriesMoney(v),
-  );
+  return Object.entries(value).some(([k, v]) => /Paise$/.test(k) || carriesMoney(v));
 };
 
-const gated = routes.filter((r) => REACH[routeKey(r)] !== PUBLIC);
+/** One business with a user and live session per role, and one real order to walk with. */
+const world = async (): Promise<{
+  readonly h: Harness;
+  readonly tokens: Readonly<Record<Role, string>>;
+  readonly orderId: string;
+}> => {
+  const stub = makeSqlStub();
+  const tokens = await seedBusiness(stub);
+  const h = harness(stub);
+  const created = await h.send(
+    request("POST", "/api/orders", { token: tokens.owner, body: ORDER_REQUEST }),
+  );
+  if (created.status !== 201) throw new Error(`seed order failed: ${created.status}`);
+  const { id } = (await created.json()) as { id: string };
+  return { h, tokens, orderId: id };
+};
 
-describe("server gate by absence over the registered route table", () => {
-  test("every registered route has a reviewed row, and every row is a registered route", () => {
-    expect(routes.map(routeKey).sort()).toEqual(Object.keys(REACH).sort());
+afterAll(() => {
+  reportWalk("server", API_ROWS.length, ROLES.length, checks, performance.now() - started);
+});
+
+describe("server role walk over the registered route table (role table, C5)", () => {
+  test("the role table and the route table match exactly, both ways (BR3.2)", () => {
+    const d = diffKeys(routes.map(routeKey), API_ROWS.map(apiKey));
+    check();
+    expect(d).toEqual({ missingRow: [], notRegistered: [] });
   });
 
-  test("the public routes are exactly the allow-list", () => {
-    const publicKeys = routes
+  test("the public routes are exactly the public rows (C5 public_routes)", () => {
+    const registered = routes
       .filter((r) => r.access === "public")
       .map(routeKey)
       .sort();
-    expect(publicKeys).toEqual(
-      Object.entries(REACH)
-        .filter(([, v]) => v === PUBLIC)
-        .map(([k]) => k)
+    check();
+    expect(registered).toEqual(
+      API_ROWS.filter((r) => r.allowed === "public")
+        .map(apiKey)
         .sort(),
     );
   });
 
-  test("no cookie, or a forged one, gives 401 on every gated route", async () => {
-    const h = harness();
-    for (const route of gated) {
-      for (const token of [null, "F".repeat(43)]) {
-        const r = await h.send(request(route.method, concrete(route.path), { token }));
-        expect({ key: routeKey(route), forged: token !== null, status: r.status }).toEqual({
-          key: routeKey(route),
-          forged: token !== null,
-          status: 401,
-        });
-      }
-    }
-  });
-
-  test("an expired, an idle or an inactive user's session gives 401 on every gated route", async () => {
-    for (const situation of ["expired", "idle", "inactive"] as const) {
-      const stub = makeSqlStub();
-      const tokens = await seedBusiness(stub);
-      if (situation === "inactive") stub.state.users[0]!["active"] = false;
-      const later = situation === "expired" ? 30 * 24 * HOUR : situation === "idle" ? 12 * HOUR : 1;
-      const h = harness(stub, { clock: () => new Date(NOW.getTime() + later) });
-      for (const route of gated) {
-        const r = await h.send(
-          request(route.method, concrete(route.path), { token: tokens.owner }),
-        );
-        expect({ situation, key: routeKey(route), status: r.status }).toEqual({
-          situation,
-          key: routeKey(route),
-          status: 401,
-        });
-      }
-    }
-  });
-
-  test("each role is refused with 403 and no money exactly where the table says, and passes elsewhere", async () => {
-    const stub = makeSqlStub();
-    const tokens = await seedBusiness(stub);
-    const h = harness(stub);
-    for (const route of gated) {
-      const reach = REACH[routeKey(route)];
-      for (const role of ROLES) {
-        const r = await h.send(
-          request(route.method, concrete(route.path), { token: tokens[role] }),
-        );
-        const allowed = reach !== PUBLIC && (reach ?? []).includes(role);
-        const body: unknown = r.status === 204 ? null : await r.json();
-        const got = r.status === 403 ? "refused" : r.status === 401 ? "unauthenticated" : "passed";
-        expect({ key: routeKey(route), role, got }).toEqual({
-          key: routeKey(route),
-          role,
-          got: allowed ? "passed" : "refused",
-        });
-        if (!allowed)
-          expect({ key: routeKey(route), role, money: carriesMoney(body) }).toEqual({
-            key: routeKey(route),
-            role,
-            money: false,
+  test(
+    "no cookie, a forged one, an expired, an idle or an inactive session: 401 everywhere gated",
+    async () => {
+      const { h, orderId } = await world();
+      for (const row of gatedRows) {
+        for (const token of [null, "F".repeat(43)]) {
+          const r = await h.send(
+            request(row.method, concrete(row, orderId), { token, body: bodyFor(row) }),
+          );
+          check();
+          expect({ route: apiKey(row), forged: token !== null, status: r.status }).toEqual({
+            route: apiKey(row),
+            forged: token !== null,
+            status: 401,
           });
+        }
       }
-    }
-  });
+      for (const situation of ["expired", "idle", "inactive"] as const) {
+        const stub = makeSqlStub();
+        const tokens = await seedBusiness(stub);
+        if (situation === "inactive") {
+          const owner = stub.state.users.find((u) => u["role"] === "owner");
+          if (owner) owner["active"] = false;
+        }
+        const later =
+          situation === "expired" ? 30 * 24 * HOUR : situation === "idle" ? 12 * HOUR : 1;
+        const lateH = harness(stub, { clock: () => new Date(NOW.getTime() + later) });
+        for (const row of gatedRows) {
+          const r = await lateH.send(
+            request(row.method, concrete(row, UNKNOWN_ID), {
+              token: tokens.owner,
+              body: bodyFor(row),
+            }),
+          );
+          check();
+          expect({ situation, route: apiKey(row), status: r.status }).toEqual({
+            situation,
+            route: apiKey(row),
+            status: 401,
+          });
+        }
+      }
+    },
+    WALK,
+  );
 
-  test("inverse: the Owner still reads and writes orders", async () => {
-    const stub = makeSqlStub();
-    const tokens = await seedBusiness(stub);
-    const h = harness(stub);
-    const list = await h.send(request("GET", "/api/orders", { token: tokens.owner }));
-    expect(list.status).toBe(200);
-    const session = await h.send(request("GET", "/api/session", { token: tokens.accountant }));
-    expect(session.status).toBe(200);
-  });
+  test(
+    "each role: 403 and no money outside its row; neither 401 nor 403 inside (BR3.3)",
+    async () => {
+      const { h, tokens, orderId } = await world();
+      for (const row of gatedRows) {
+        for (const role of ROLES) {
+          const r = await h.send(
+            request(row.method, concrete(row, orderId), {
+              token: tokens[role],
+              body: bodyFor(row),
+            }),
+          );
+          const body: unknown = r.status === 204 ? null : await r.json();
+          const inside = isAllowed(row.allowed, role);
+          const got =
+            r.status === 401 ? "unauthenticated" : r.status === 403 ? "forbidden" : "passed";
+          check();
+          expect({ role, route: apiKey(row), got, status: r.status }).toEqual({
+            role,
+            route: apiKey(row),
+            got: inside ? "passed" : "forbidden",
+            status: inside ? r.status : 403,
+          });
+          if (!inside) {
+            check();
+            expect({ role, route: apiKey(row), money: carriesMoney(body) }).toEqual({
+              role,
+              route: apiKey(row),
+              money: false,
+            });
+          }
+        }
+      }
+    },
+    WALK,
+  );
+
+  test(
+    "every write refuses text/plain, no Origin and localhost with 403, Owner included (BR3.6)",
+    async () => {
+      const { h, tokens, orderId } = await world();
+      const probes = [
+        { name: "text/plain", opts: { contentType: "text/plain" } },
+        { name: "no Origin", opts: { origin: null } },
+        { name: "localhost", opts: { origin: `http://localhost:${PORT}` } },
+      ] as const;
+      expect(writeRows.length).toBeGreaterThan(0);
+      for (const row of writeRows) {
+        for (const probe of probes) {
+          const r = await h.send(
+            request(row.method, concrete(row, orderId), {
+              token: tokens.owner,
+              body: bodyFor(row),
+              ...probe.opts,
+            }),
+          );
+          check();
+          expect({ route: apiKey(row), probe: probe.name, status: r.status }).toEqual({
+            route: apiKey(row),
+            probe: probe.name,
+            status: 403,
+          });
+        }
+      }
+    },
+    WALK,
+  );
+
+  test(
+    "inverse: the Owner is never refused with 403, the audit trail included (BR3.5)",
+    async () => {
+      const { h, tokens, orderId } = await world();
+      for (const row of API_ROWS) {
+        const r = await h.send(
+          request(row.method, concrete(row, orderId), {
+            token: row.allowed === "public" ? null : tokens.owner,
+            body: bodyFor(row),
+          }),
+        );
+        check();
+        expect({ route: apiKey(row), status: r.status === 403 ? 403 : "not 403" }).toEqual({
+          route: apiKey(row),
+          status: "not 403",
+        });
+      }
+      const audit = await h.send(request("GET", "/api/audit", { token: tokens.owner }));
+      check();
+      expect(audit.status).toBe(200);
+    },
+    WALK,
+  );
 });

@@ -1,126 +1,280 @@
 /**
- * tests/integration/no-secret-responses.test.ts — no secret in any response body (NFR3.6;
- * team.md Testing Posture; P-16).
+ * tests/integration/no-secret-responses.test.ts — the no-secret walk over every registered
+ * route (W7; BR8.1, BR8.2; S14; NFR3.10, NFR3.11; AC5.3.1, AC5.3.2; review F-08; team.md
+ * Testing Posture "no secret in any response body"; P-16).
  *
- * Every U1 route is called on a success path and on an error path, and every body is
- * serialised and searched for `passwordHash`, `password_hash`, `token_hash`, an argon2 hash,
- * and the live session cookie value (which may appear only in Set-Cookie). The test also
- * fails when a registered route was not exercised, so a new route must be added here.
+ * The REGISTERED route table drives it (src/server/routes.ts): a route with no entry in
+ * tests/spec/fixtures.ts fails the walk, so a new route cannot skip it (F-08). For every route
+ * it records the success answer and its error answers — 401 with no cookie (gated routes),
+ * 403 for a role outside its row, 400 where the route takes input, 404 where it takes an id —
+ * and scans every body and header for:
+ *   - the KNOWN secret values, read from the seeded rows after the run: every stored
+ *     password hash, every live session token (raw) and its SHA-256 `token_hash`, and any
+ *     invitation or reset token hash (none until U3). The raw session token may appear only
+ *     in `Set-Cookie`; hashes never appear anywhere;
+ *   - the key names `passwordHash`, `password_hash`, `token_hash` (and an argon2 prefix);
+ *   - a key named `link` from a route not on the closed allow-list (`[]` in U2, BR8.2).
+ * It prints the routes, responses and checks it covered and its duration (O12, NFR8.12).
  */
 import { describe, expect, test } from "bun:test";
+import { insertSession } from "../../src/auth/session.js";
+import { sha256 } from "../../src/auth/sha256.js";
+import type { Uuid } from "../../src/data/uuid.js";
 import { routeKey, routes } from "../../src/server/routes.js";
 import { makeSqlStub } from "../helpers/sql-stub.js";
-import { harness, request } from "../helpers/server-harness.js";
+import { harness, NOW, request } from "../helpers/server-harness.js";
+import {
+  API_FIXTURES,
+  ORDER_REQUEST,
+  parsedFixture,
+  SIGN_UP_REQUEST,
+  type ApiFixture,
+} from "../spec/fixtures.js";
+import {
+  API_ROWS,
+  apiKey,
+  isAllowed,
+  LINK_ALLOW_LIST,
+  reportWalk,
+  ROLES,
+  type Role,
+} from "../spec/role-table.js";
 
-const FORBIDDEN = [/passwordHash/i, /password_hash/i, /token_hash/i, /\$argon2/];
+const SECRET_KEYS = new Set(["passwordHash", "password_hash", "token_hash"]);
+const UNKNOWN_ID = "0f0f0f0f-0f0f-4f0f-8f0f-0f0f0f0f0f0f";
 
-const order = {
-  source: "manual",
-  customerId: null,
-  contact: { name: "রিনা", phone: "01711111111", address: null },
-  repeatOfOrderId: null,
-  items: [
-    {
-      variantId: null,
-      description: "কুর্তি",
-      quantity: 1,
-      unitPricePaise: 1000,
-      lineDiscountPaise: 0,
-    },
-  ],
-  orderDiscountPaise: 0,
-  deliveryChargePaise: 0,
+interface Recorded {
+  readonly key: string;
+  readonly probe: string;
+  readonly status: number;
+  readonly body: string;
+  readonly headers: ReadonlyArray<readonly [string, string]>;
+}
+
+const cookieValue = (set: string | null): string | null =>
+  set === null ? null : (/^__Host-sb_session=([^;]*)/.exec(set)?.[1] ?? null) || null;
+
+/** Every key name anywhere in a JSON value. */
+const keysOf = (value: unknown): string[] => {
+  if (Array.isArray(value)) return value.flatMap(keysOf);
+  if (value === null || typeof value !== "object") return [];
+  return Object.entries(value).flatMap(([k, v]) => [k, ...keysOf(v)]);
 };
 
-describe("no secret in any response body", () => {
-  test("success and error bodies of every U1 route hold no hash and no live cookie value", async () => {
-    const stub = makeSqlStub();
-    const h = harness(stub);
-    const bodies: Array<{ key: string; text: string }> = [];
-    const covered = new Set<string>();
-    const call = async (method: string, path: string, key: string, opts = {}) => {
-      const r = await h.send(request(method, path, opts));
-      covered.add(key);
-      const text = await r.text();
-      bodies.push({ key, text });
-      return { r, text };
-    };
+const parse = (text: string): unknown => {
+  try {
+    return JSON.parse(text) as unknown;
+  } catch {
+    return null;
+  }
+};
 
-    // Public routes, before and after the business exists.
-    await call("GET", "/api/health", "GET /api/health");
-    await call("GET", "/api/setup", "GET /api/setup");
-    const up = await call("POST", "/api/auth/sign-up", "POST /api/auth/sign-up", {
-      body: { businessName: "Acme", email: "owner@acme.test", password: "correct-horse-1" },
-    });
-    const liveTokens = [
-      (up.r.headers.get("Set-Cookie") ?? "").replace(/^__Host-sb_session=([^;]*).*$/, "$1"),
-    ];
-    await call("POST", "/api/auth/sign-up", "POST /api/auth/sign-up", {
-      body: { businessName: "B", email: "second@acme.test", password: "correct-horse-1" },
-    });
-    await call("POST", "/api/auth/sign-in", "POST /api/auth/sign-in", {
-      body: { email: "owner@acme.test", password: "wrong-wrong-1" },
-    });
-    const inn = await call("POST", "/api/auth/sign-in", "POST /api/auth/sign-in", {
-      body: { email: "owner@acme.test", password: "correct-horse-1" },
-    });
-    const token = (inn.r.headers.get("Set-Cookie") ?? "").replace(
-      /^__Host-sb_session=([^;]*).*$/,
-      "$1",
-    );
-    liveTokens.push(token);
+describe("no secret leaves the server (every registered route)", () => {
+  test(
+    "success and error answers of every route hold no hash, token or unlisted link",
+    async () => {
+      const started = performance.now();
+      const stub = makeSqlStub();
+      const h = harness(stub);
+      const recorded: Recorded[] = [];
+      const rawTokens = new Set<string>();
+      const send = async (
+        key: string,
+        probe: string,
+        method: string,
+        path: string,
+        opts: Parameters<typeof request>[2] = {},
+      ): Promise<Recorded> => {
+        const r = await h.send(request(method, path, opts));
+        const raw = cookieValue(r.headers.get("Set-Cookie"));
+        if (raw !== null) rawTokens.add(raw);
+        const rec: Recorded = {
+          key,
+          probe,
+          status: r.status,
+          body: await r.text(),
+          headers: [...r.headers.entries()],
+        };
+        recorded.push(rec);
+        return rec;
+      };
 
-    // Session and orders as the Owner, each with a refusal beside the success.
-    await call("GET", "/api/session", "GET /api/session", { token });
-    await call("GET", "/api/session", "GET /api/session");
-    const created = await call("POST", "/api/orders", "POST /api/orders", { token, body: order });
-    await call("POST", "/api/orders", "POST /api/orders", { token, body: { ...order, items: [] } });
-    const id = (JSON.parse(created.text) as { id: string }).id;
-    await call("GET", "/api/orders", "GET /api/orders", { token });
-    await call("GET", "/api/orders?limit=0", "GET /api/orders", { token });
-    await call("GET", `/api/orders/${id}`, "GET /api/orders/:id", { token });
-    await call("GET", "/api/orders/not-a-uuid", "GET /api/orders/:id", { token });
-    await call("PATCH", `/api/orders/${id}`, "PATCH /api/orders/:id", {
-      token,
-      body: { deliveryChargePaise: 500 },
-    });
-    await call("PATCH", `/api/orders/${id}`, "PATCH /api/orders/:id", { token, body: {} });
-    await call("POST", `/api/orders/${id}/status`, "POST /api/orders/:id/status", {
-      token,
-      body: { to: "delivered" },
-    });
-    for (const to of ["confirmed", "packed"]) {
-      await call("POST", `/api/orders/${id}/status`, "POST /api/orders/:id/status", {
-        token,
-        body: { to },
+      // Setup through the API itself: first-run sign-up (the success answer of that route).
+      const up = await send("POST /api/auth/sign-up", "success", "POST", "/api/auth/sign-up", {
+        body: SIGN_UP_REQUEST,
       });
-    }
-    await call("POST", `/api/orders/${id}/consignment`, "POST /api/orders/:id/consignment", {
-      token,
-      body: { consignmentRef: "PT-1234" },
-    });
-    await call("POST", `/api/orders/${id}/consignment`, "POST /api/orders/:id/consignment", {
-      token,
-      body: { consignmentRef: "PT-5678" },
-    });
-    await call("POST", "/api/auth/sign-out", "POST /api/auth/sign-out", { token });
-    await call("POST", "/api/auth/sign-out", "POST /api/auth/sign-out");
+      expect(up.status).toBe(201);
+      const business = stub.state.businesses[0]?.["id"] as Uuid;
+      const ownerToken = [...rawTokens][0] ?? "";
+      const tokens: Record<Role, string> = {
+        owner: ownerToken,
+        manager: "",
+        sales_staff: "",
+        accountant: "",
+      };
+      for (const role of ROLES.filter((r) => r !== "owner")) {
+        const id = `b${ROLES.indexOf(role)}000000-0000-4000-8000-0000000000b1` as Uuid;
+        stub.state.users.push({
+          id,
+          business_id: business,
+          email: `${role}@acme.test`,
+          password_hash: `$argon2id$v=19$m=19456,t=2,p=1$${role}-stored-hash-value`,
+          role,
+          active: true,
+          locale: "bn",
+        });
+        const s = await insertSession(stub.sql, { userId: id, businessId: business, at: NOW });
+        tokens[role] = s.token;
+        rawTokens.add(s.token);
+      }
+      const make = async (): Promise<string> => {
+        const r = await h.send(
+          request("POST", "/api/orders", { token: ownerToken, body: ORDER_REQUEST }),
+        );
+        return ((await r.json()) as { id: string }).id;
+      };
+      const orderId = await make();
+      // A packed order, so linking a consignment can succeed (consignment.ts).
+      const packedId = await make();
+      for (const to of ["confirmed", "packed"]) {
+        await h.send(
+          request("POST", `/api/orders/${packedId}/status`, { token: ownerToken, body: { to } }),
+        );
+      }
 
-    expect([...covered].sort()).toEqual(routes.map(routeKey).sort());
-    for (const { key, text } of bodies) {
-      for (const pattern of FORBIDDEN) {
-        expect({ key, pattern: String(pattern), found: pattern.test(text) }).toEqual({
-          key,
-          pattern: String(pattern),
-          found: false,
+      const missingFixture: string[] = [];
+      for (const route of routes) {
+        const key = routeKey(route);
+        const fixture: ApiFixture | undefined = API_FIXTURES[key];
+        if (fixture === undefined) {
+          missingFixture.push(key);
+          continue;
+        }
+        parsedFixture(key); // the recorded body still parses with the route's shared schema
+        const row = API_ROWS.find((r) => apiKey(r) === key);
+        if (row === undefined) throw new Error(`no role-table row for ${key}`);
+        const id = key === "POST /api/orders/:id/consignment" ? packedId : orderId;
+        const path = route.path.replace(":id", id);
+        const inside = ROLES.find((r) => isAllowed(row.allowed, r)) ?? "owner";
+        const outside = ROLES.find((r) => !isAllowed(row.allowed, r));
+        const body = fixture.request;
+        // Success: sign-up already succeeded above; sign-out uses its own fresh session.
+        if (key === "POST /api/auth/sign-out") {
+          const s = await insertSession(stub.sql, {
+            userId: stub.state.users[0]?.["id"] as Uuid,
+            businessId: business,
+            at: NOW,
+          });
+          rawTokens.add(s.token);
+          await send(key, "success", route.method, path, { token: s.token, body });
+        } else if (key !== "POST /api/auth/sign-up") {
+          const token = row.allowed === "public" ? null : tokens[inside];
+          await send(key, "success", route.method, path, { token, body });
+        }
+        if (row.allowed !== "public") {
+          await send(key, "401", route.method, path, { token: null, body });
+          if (outside !== undefined) {
+            await send(key, "403", route.method, path, { token: tokens[outside], body });
+          }
+        } else if (key === "POST /api/auth/sign-in") {
+          await send(key, "401 wrong password", route.method, path, {
+            body: { email: SIGN_UP_REQUEST.email, password: "wrong-wrong-1" },
+          });
+        } else if (key === "POST /api/auth/sign-up") {
+          await send(key, "409 again", route.method, path, { body });
+        }
+        const token = row.allowed === "public" ? null : tokens[inside];
+        if (fixture.badRequest !== undefined) {
+          await send(key, "400", route.method, path, { token, body: fixture.badRequest });
+        }
+        if (fixture.badQuery !== undefined) {
+          await send(key, "400", route.method, `${path}?${fixture.badQuery}`, { token });
+        }
+        if (route.path.includes(":id")) {
+          await send(key, "404", route.method, route.path.replace(":id", UNKNOWN_ID), {
+            token,
+            body,
+          });
+        }
+      }
+
+      // The known secret values, read from the seeded rows (F-08).
+      const hashes = [
+        ...stub.state.users.map((u) => String(u["password_hash"])),
+        ...stub.state.sessions.map((s) => String(s["token_hash"])),
+        ...stub.state.invitations.map((i) => String(i["accept_token_hash"])),
+        ...stub.state.passwordResets.map((p) => String(p["token_hash"])),
+        ...(await Promise.all([...rawTokens].map((t) => sha256(t)))),
+      ].filter((v) => v.length >= 16);
+      const raw = [...rawTokens].filter((t) => t.length >= 16);
+      expect(hashes.length).toBeGreaterThanOrEqual(4 + ROLES.length);
+
+      let checks = 0;
+      const covered = new Set(recorded.map((r) => r.key));
+      const succeeded = new Set(
+        recorded.filter((r) => r.status >= 200 && r.status < 300).map((r) => r.key),
+      );
+      checks += 3;
+      expect({ missingFixture }).toEqual({ missingFixture: [] });
+      expect([...covered].sort()).toEqual(routes.map(routeKey).sort());
+      expect([...succeeded].sort()).toEqual(routes.map(routeKey).sort());
+      for (const rec of recorded) {
+        const where = { key: rec.key, probe: rec.probe };
+        const headerText = rec.headers
+          .filter(([name]) => name.toLowerCase() !== "set-cookie")
+          .map(([n, v]) => `${n}: ${v}`)
+          .join("\n");
+        const setCookie = rec.headers
+          .filter(([name]) => name.toLowerCase() === "set-cookie")
+          .map(([, v]) => v)
+          .join("\n");
+        for (const secret of [...hashes, ...raw]) {
+          checks += 2;
+          expect({ ...where, inBody: rec.body.includes(secret) }).toEqual({
+            ...where,
+            inBody: false,
+          });
+          expect({ ...where, inHeaders: headerText.includes(secret) }).toEqual({
+            ...where,
+            inHeaders: false,
+          });
+        }
+        for (const hash of hashes) {
+          checks += 1;
+          expect({ ...where, hashInCookie: setCookie.includes(hash) }).toEqual({
+            ...where,
+            hashInCookie: false,
+          });
+        }
+        const keys = keysOf(parse(rec.body));
+        checks += 3;
+        expect({ ...where, secretKeys: keys.filter((k) => SECRET_KEYS.has(k)) }).toEqual({
+          ...where,
+          secretKeys: [],
+        });
+        expect({ ...where, argon2: /\$argon2/.test(rec.body) }).toEqual({
+          ...where,
+          argon2: false,
+        });
+        const linkAllowed = LINK_ALLOW_LIST.includes(rec.key);
+        expect({ ...where, link: keys.includes("link") && !linkAllowed }).toEqual({
+          ...where,
+          link: false,
         });
       }
-      for (const live of liveTokens) {
-        expect({ key, leaksCookie: live.length > 0 && text.includes(live) }).toEqual({
-          key,
-          leaksCookie: false,
-        });
-      }
+      // O12: rows × roles; the responses scanned are in the check count.
+      reportWalk("no-secret", routes.length, ROLES.length, checks, performance.now() - started);
+      process.stdout.write(`walk no-secret: ${recorded.length} responses scanned\n`);
+    },
+    { timeout: 60_000 },
+  );
+
+  test("every recorded fixture parses with its route's shared response schema (D-04)", () => {
+    for (const key of Object.keys(API_FIXTURES)) {
+      expect({ key, parsed: (() => parsedFixture(key).status)() }).toEqual({
+        key,
+        parsed: API_FIXTURES[key]?.status ?? -1,
+      });
     }
   });
 });

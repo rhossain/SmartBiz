@@ -128,6 +128,22 @@
       "find": "    if (latch.current) return; // BR6.1: a submit while saving is ignored.\n",
       "replace": "",
       "test": "tests/unit/submit-guard.test.tsx"
+    },
+    {
+      "id": "audit-read-drops-retention",
+      "why": "Rows past their retention date are never read (U2 BR7.2; team.md NBR retention enforced on read); dropping the filter shows expired rows.",
+      "file": "src/audit/audit-read.ts",
+      "find": "      AND a.retention_until > ${nowIso}::timestamptz\n",
+      "replace": "",
+      "test": "tests/unit/audit-read.test.ts"
+    },
+    {
+      "id": "audit-route-public",
+      "why": "Only audit.view roles read the audit trail (U2 BR7.5, C4); registering it as public leaks every business action to anyone.",
+      "file": "src/server/handlers/audit.ts",
+      "find": "  access: AUDIT_READ_ACCESS,",
+      "replace": "  access: \"public\",",
+      "test": "tests/integration/server-gate-absence.test.ts"
     }
   ]
 }
