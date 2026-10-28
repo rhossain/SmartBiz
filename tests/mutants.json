@@ -192,6 +192,30 @@
       "find": "        // F-03, NFR3.22: a new link closes every other open link of this user.\n        await tx`\n          UPDATE password_resets SET used_at = ${at}::timestamptz\n          WHERE user_id = ${userId} AND used_at IS NULL\n        `;\n",
       "replace": "",
       "test": "tests/unit/password-reset.test.ts tests/realdb/staff.realdb.test.ts"
+    },
+    {
+      "id": "manager-may-invite-manager",
+      "why": "One level down (U3 BR1.2, Q1, NFR1.10): a Manager who could invite a Manager could multiply Managers without the Owner.",
+      "file": "src/auth/delegation.ts",
+      "find": "  manager: [\"sales_staff\", \"accountant\"],",
+      "replace": "  manager: [\"manager\", \"sales_staff\", \"accountant\"],",
+      "test": "tests/unit/delegation.test.ts"
+    },
+    {
+      "id": "accept-role-from-request",
+      "why": "Accept creates the user with the invitation's role only (U3 NFR1.9, BR3.1); taking it from the request lets an invitee choose Manager.",
+      "file": "src/auth/accept-invite.ts",
+      "find": "${hashed.value}, ${inv.role}, ${true}",
+      "replace": "${hashed.value}, ${(input as unknown as { role?: string }).role ?? inv.role}, ${true}",
+      "test": "tests/unit/accept-invite.test.ts"
+    },
+    {
+      "id": "invite-audit-keeps-email",
+      "why": "No email in any auth audit payload (U3 BR8.1, NFR3.20, F-07): the B1 helper spread its input, email included, into an insert-only, five-year row.",
+      "file": "src/auth/audit.ts",
+      "find": "    payload: { invitationId: input.invitationId, role: input.role, by: input.by },",
+      "replace": "    payload: { ...input },",
+      "test": "tests/unit/auth-audit-payloads.test.ts"
     }
   ]
 }
