@@ -471,3 +471,175 @@ The form sits in a 480 px card centred 48 px below the header (no nav in the hea
 ```
 Elements: a bordered list; each row spaces its figures with a gap, puts its button at the far end
 and tints brand on hover. Staff and audit tables use the §16.2 table style.
+
+## 17. Daily card, Business and Settings — redrawn for B5 (2026-10-28)
+
+> **Status:** design ready, not built. Today these three routes render the "not available yet"
+> screen (U2 functional-spec, B5). This section redraws the MVP mockups S12 (Daily card), S2
+> (Business setup) and S14 (Settings) from
+> `../../../261004-mvp/inception/refined-mockups/mockups.md` in the §16 visual language, and
+> resolves their overlap:
+> - **Business** (`/business`, `business.edit`, Owner) owns the business profile.
+> - **Settings** (`/settings`, `settings.edit.own`, every role) owns *my* settings, plus the
+>   Owner-only business toggles.
+> - The staff-invite table drawn in MVP S2 is dropped: inviting staff lives on `/staff` (§5).
+>
+> Decisions taken on the Owner's standing instruction ("decide for me"), recorded so later stages
+> do not read them as the Owner's own wording:
+> - **D17-1** A figure whose source is not recorded yet (payments, expenses, dues: later Bolts)
+>   is shown as a tile with **no amount**, the `unknown` completeness value and the line
+>   "এখনো রেকর্ড শুরু হয়নি" (not recorded yet). It is never shown as ৳০, because a zero would
+>   claim a complete figure (recognition-basis invariant: every money figure states basis and
+>   completeness).
+> - **D17-2** "Today" is the business day in Asia/Dhaka (UTC+6), taken from the live "now" in
+>   `src/data/clock.ts`. The clock has no business-day helper yet; B5 adds one, tested on the
+>   frozen test clock across midnight Dhaka time.
+> - **D17-3** Business profile fields beyond `name` and `locale` (address, phone, currency) need a
+>   migration (`businesses` has only `name`, `locale` today); currency is BDT-only, shown
+>   read-only, until a second currency is in scope.
+
+### 17.1 Daily card — `/daily-card` (US3.1; MVP S12)
+
+```
+┌ screen card ───────────────────────────────────────────────────────────────────────┐
+│ আজকের কার্ড                                                     [↻ রিফ্রেশ]          │
+│ বুধবার, ২৮ অক্টোবর ২০২৬ · সর্বশেষ হালনাগাদ ১৪:০৫                     text-2, 14 px     │
+│ ┌─────────────────────────────────┐ ┌─────────────────────────────────┐            │
+│ │ আজকের অর্ডার                     │ │ আজকের আয় (হাতে এসেছে)              │            │
+│ │ ৳৮,৪৫০.০০              26 px     │ │ ৳৫,৮৬০.০০                         │            │
+│ │ ৬টি অর্ডার                        │ │ ২টি অর্ডারের টাকা                  │            │
+│ │ ●earned ●complete       [কেন?]  │ │ ●realized ●partial      [কেন?]   │            │
+│ └─────────────────────────────────┘ └─────────────────────────────────┘            │
+│ ┌─────────────────────────────────┐ ┌─────────────────────────────────┐            │
+│ │ বকেয়া                            │ │ আজকের খরচ                         │            │
+│ │ —                    (no amount) │ │ —                                │            │
+│ │ এখনো রেকর্ড শুরু হয়নি               │ │ এখনো রেকর্ড শুরু হয়নি                │            │
+│ │ ●realized ●unknown      [কেন?]  │ │ ●realized ●unknown      [কেন?]   │            │
+│ └─────────────────────────────────┘ └─────────────────────────────────┘            │
+│ ┌ today's orders by status (canvas panel) ──────────────────────────────────────┐ │
+│ │ ●নতুন ৩   ●নিশ্চিত ১   ●প্যাক করা ১   ●পাঠানো হয়েছে ১   ●টাকা পাওয়া গেছে ২             │ │
+│ └────────────────────────────────────────────────────────────────────────────────┘ │
+│ [সব অর্ডার দেখুন →]                                                                   │
+└──────────────────────────────────────────────────────────────────────────────────────┘
+```
+Elements:
+- **Header row:** title; the date and last-refreshed time; a secondary refresh button (announces
+  "হালনাগাদ হয়েছে" through `aria-live="polite"`).
+- **Four tiles** in a 2 × 2 grid (one column below 760 px), each a white panel with a
+  `--color-line` border and radius 12: label (13 px / 600, text-2), figure (26 px / 700, tabular
+  numerals), one supporting line (count of orders, or the D17-1 line), then `BasisPill` +
+  `CompletenessControl` and a "কেন?" (why) button opening the why-missing sheet.
+  - Today's orders: count and total of orders created today; basis `earned` (AC3.1.1).
+  - Today's income: total of orders settled today; basis `realized`. While payments and expenses
+    are not recorded, completeness is `partial` and the sheet says which sources are missing
+    (AC3.1.2).
+  - Dues and today's expenses: D17-1 until their Bolts land (AC3.1.3).
+- **Status strip:** today's orders counted per status as `statusTone` pills (§16 visual language);
+  each pill links to `/orders` filtered by that status.
+- **Link** to the full orders list.
+
+States:
+- **Loading:** four skeleton tiles (`api-state__skeleton`), "লোড হচ্ছে" for screen readers.
+- **No orders today:** tiles show ৳০.০০ with `complete` (a true zero: the day is recorded and empty)
+  and the line "আজ এখনো কোনো অর্ডার নেই"; the status strip is hidden.
+- **Error / 503:** the §14 server banner above the tiles, with [আবার চেষ্টা করুন].
+
+Role gate: route `business.view`, but the **money tiles render for the Owner only** (US3.1
+persona). Any other role opening `/daily-card` gets the lock screen (§14 403 row); the absence test
+asserts no money figure and no `data-money` element in the body (NFR6.6, AC5.1.2).
+Accessibility: h2 title; each tile is a `<section>` with its label as `aria-labelledby`; the "কেন?"
+button has `aria-haspopup="dialog"`; colour never carries meaning alone.
+
+### 17.2 Business — `/business` (US1.5 AC1.5.1, AC1.5.4; MVP S2 without the invite table)
+
+```
+┌ screen card ───────────────────────────────────────────────────────────────────────┐
+│ ব্যবসা                                                                               │
+│ আপনার ব্যবসার তথ্য — রসিদ ও কুরিয়ারে এগুলো দেখানো হবে।                    text-2        │
+│ ┌ panel ──────────────────────────────────────────────────────────────────────┐   │
+│ │ ব্যবসার তথ্য                                                    h3, 17 px      │   │
+│ │ ব্যবসার নাম                                                                    │   │
+│ │ [রহিম ফ্যাশন হাউস_________________________________________]                    │   │
+│ │ ফোন                                 মুদ্রা                                     │   │
+│ │ [01711-000000______________]        [BDT (৳)            ] read-only (D17-3)    │   │
+│ │ ঠিকানা                                                                         │   │
+│ │ [বাড়ি ১২, রোড ৫, মিরপুর ১০, ঢাকা_________________________]                     │   │
+│ │ ডিফল্ট ভাষা                                                                    │   │
+│ │ (●) বাংলা   ( ) English                                                        │   │
+│ └──────────────────────────────────────────────────────────────────────────────┘   │
+│ [  পরিবর্তন সংরক্ষণ করুন  ]  primary, disabled until a field changes                      │
+│ সর্বশেষ পরিবর্তন: owner@smartbiz.test · ২৮/১০/২০২৬ ১৩:৪৭ → অডিট ট্রেইলে দেখুন             │
+└──────────────────────────────────────────────────────────────────────────────────────┘
+```
+Elements: title and one explanatory line; a canvas panel with the profile form in a two-column
+grid on desktop (name and address span both columns); default language as a radio group; one
+primary save, enabled only when the form differs from the saved values; a "last changed" line
+linking to the audit trail filtered to `business.update`.
+
+States:
+- **Saving:** the button reads "সংরক্ষণ হচ্ছে…" and is disabled (AC5.4.4).
+- **Saved:** toast "ব্যবসার তথ্য সংরক্ষণ হয়েছে"; one audit row `business.update` naming the
+  changed fields, never their old values (AC1.5.4).
+- **Invalid:** field errors under the field (name 1–120 characters; phone 11 digits starting 01);
+  values are kept.
+- **Unsaved changes:** leaving the page asks "পরিবর্তনগুলো সংরক্ষণ হয়নি। তবুও যাবেন?".
+
+Role gate: `business.edit` (Owner). Others get the lock screen; there is no read-only view of the
+profile for them in B5.
+
+### 17.3 Settings — `/settings` (US1.5 AC1.5.2–AC1.5.3, US3.4; MVP S14 split)
+
+```
+┌ screen card ───────────────────────────────────────────────────────────────────────┐
+│ সেটিংস                                                                               │
+│ ┌ panel: আমার সেটিংস (every role) ────────────────────────────────────────────┐   │
+│ │ আমার ভাষা                                                                      │   │
+│ │ (●) বাংলা   ( ) English          এই ভাষায় আপনার স্ক্রিন খুলবে                      │   │
+│ │ ইমেইল                                                                          │   │
+│ │ owner@smartbiz.test   (মালিক)    read-only; role shown as the §16.1 badge       │   │
+│ │ পাসওয়ার্ড                                                                       │   │
+│ │ [পাসওয়ার্ড বদলান]  secondary → the reset flow (§4)                               │   │
+│ └──────────────────────────────────────────────────────────────────────────────┘   │
+│ ┌ panel: ব্যবসার সুইচ (Owner only) ────────────────────────────────────────────┐   │
+│ │ AI সহকারী                                                    [ ○━━ ] বন্ধ      │   │
+│ │ মেসেজ থেকে অর্ডার পড়তে AI সাহায্য নেবে। চালু করলে মেসেজের লেখা                     │   │
+│ │ বাইরের সেবায় যেতে পারে।                                       text-2, 13 px     │   │
+│ │ ───────────────────────────────────────────────────────────────────────────   │   │
+│ │ ডিবাগ স্ক্রিন                                                  [ ━━● ] চালু     │   │
+│ │ শুধু সমস্যা খোঁজার জন্য। চালু থাকলে মেনুতে "ডিবাগ" দেখা যাবে।                          │   │
+│ └──────────────────────────────────────────────────────────────────────────────┘   │
+└──────────────────────────────────────────────────────────────────────────────────────┘
+```
+Elements:
+- **My settings** (every signed-in role, AC1.5.2): display language as a radio group that saves on
+  change (toast "ভাষা বদলানো হয়েছে"; the header switch follows); email and role read-only; a
+  secondary "change password" button into the existing reset flow. The MVP's "default role for new
+  sessions" is not drawn: a user holds exactly one role in this build, so there is nothing to
+  choose (to revisit if multi-role users are introduced).
+- **Business switches** (Owner only, US3.4): two switches, each a `<button role="switch"
+  aria-checked>` with a visible text state ("চালু" / "বন্ধ") beside the track, so the state is
+  never colour alone, and a 13 px explanation under its label.
+  - AI assistant opt-in (AC3.4.1). Off by default; turning it on asks for confirmation because
+    message text may leave the machine (zero-spend rule: only a free, optional service, and the
+    app works with it off).
+  - Debug screen (AC1.5.3, AC3.4.2). When on, a "ডিবাগ" link appears in the nav for the Owner.
+  - Each flip saves at once, shows a toast, and appends one audit row (`settings.toggle`, with the
+    switch name and its new value) (AC3.4.3).
+
+States: loading (skeleton rows in each panel); a failed save puts the switch back to its previous
+state and shows the §14 banner; never an optimistic state that the server did not confirm.
+
+Role gate: the route is `settings.edit.own` (every role). The "business switches" panel is
+**absent**, not disabled, for every role except the Owner, and the server refuses the toggle
+endpoint with 403 (absence-asserted like §15).
+
+### 17.4 Navigation and states summary
+
+| Route | Nav label | Owner | Manager | Sales staff | Accountant | Needs before build |
+|-------|-----------|:-----:|:-------:|:-----------:|:----------:|--------------------|
+| `/daily-card` | দৈনিক কার্ড | ✓ (tiles) | lock | lock | lock | today's-orders query by Dhaka day; why-missing sheet copy |
+| `/business` | ব্যবসা | ✓ | lock | lock | lock | migration: address, phone, currency on `businesses` + `app_role` grant + realdb exact-set assertion |
+| `/settings` | সেটিংস | ✓ (+ switches) | ✓ | ✓ | ✓ | migration: `business_settings` (ai_opt_in, debug_flows) + user locale update endpoint |
+
+Classes these screens add (for the `classes` harness): `day-tile`, `day-tile__figure`,
+`day-tile__note`, `status-strip`, `switch`, `switch__track`, `switch__state`, `settings-panel`.
