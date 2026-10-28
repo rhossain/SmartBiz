@@ -103,8 +103,8 @@ is implemented, together with the full existing suite, before the next layer sta
 
 ### Step 2 — Verify the test runner and record the unit-scoped command
 
-- [ ] Confirm `bun test` (bun 1.4.3, `tests/setup.ts`, happy-dom, frozen clock) runs the existing suite green.
-- [ ] Run the U3 runnable-before-tests command from `unit-test-instructions.md` and confirm it passes on U2's code.
+- [x] Confirm `bun test` (bun 1.4.3, `tests/setup.ts`, happy-dom, frozen clock) runs the existing suite green.
+- [x] Run the U3 runnable-before-tests command from `unit-test-instructions.md` and confirm it passes on U2's code.
 
 ### Step 3 — Data model / database behaviour: implement (US1.5, US1.6; SC6; NFR6.24; I-01)
 
