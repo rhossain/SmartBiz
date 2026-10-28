@@ -3,6 +3,7 @@
  * BR4.2, NFR3.5, NFR6.11, T2, T8, T10). Replaces the per-IP token bucket of B1's
  * rate-limit.ts.
  *
+ * Sign-in is the one limited flow (U3 retired the others, F-01).
  * Sign-in is limited per typed email (trimmed, lower-cased), not per IP: on a loopback
  * server every request comes from 127.0.0.1, so an IP key would lock out the whole shop.
  * Rules (BR4.2, restated):
@@ -90,18 +91,9 @@ export const SIGN_IN_LIMIT: LimiterConfig = { max: 5, windowMs: 15 * 60 * 1000 }
 /** The sign-in key: the typed email, trimmed and lower-cased. */
 export const signInKey = (email: string): string => email.trim().toLowerCase();
 
-/**
- * The B1 flows that U3 rebuilds (recovery, invitation, accept) keep their B1 limits, now on
- * this limiter: recovery 3 per hour per email, invite 10 per hour per user, accept 5 per
- * 15 minutes per email hint. Each process holds one limiter per flow.
+/*
+ * U3 (review F-01, F-07): the B1 per-flow limiters for recovery, invitation and accept are
+ * retired. Invitation and reset tokens are 256-bit, so guessing one is not a threat; the
+ * argon2 work of accept and reset is bounded by the shared hash gate (src/auth/hash-gate.ts);
+ * and recovery does no work at all. Sign-in keeps the limiter above.
  */
-export const flowLimiters = {
-  recovery: createAttemptLimiter({ max: 3, windowMs: 60 * 60 * 1000 }),
-  invite: createAttemptLimiter({ max: 10, windowMs: 60 * 60 * 1000 }),
-  accept: createAttemptLimiter({ max: 5, windowMs: 15 * 60 * 1000 }),
-} as const;
-
-/** Empty every flow limiter (tests start each case from a clean window). */
-export const resetFlowLimiters = (): void => {
-  for (const limiter of Object.values(flowLimiters)) limiter.reset();
-};

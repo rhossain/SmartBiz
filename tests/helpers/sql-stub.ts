@@ -26,6 +26,19 @@ export interface SqlStubOptions {
   sessions?: ReadonlyArray<Record<string, unknown>>;
   /** Throw a simulated database error on the first statement whose text matches. */
   failOn?: RegExp;
+  /**
+   * U3: throw a database error with `code` (and `constraint_name`) on the next `times`
+   * statements whose text matches, then run normally — a deadlock that clears on retry
+   * (NFR7.18) or a unique violation on a named index (NFR7.21).
+   */
+  faults?: ReadonlyArray<StubFault>;
+}
+
+export interface StubFault {
+  readonly match: RegExp;
+  readonly code: string;
+  times: number;
+  readonly constraint_name?: string;
 }
 
 type Row = Record<string, unknown>;
@@ -246,6 +259,205 @@ const handleOrders = (
 };
 
 const asTime = (v: unknown): number => (v instanceof Date ? v.getTime() : Date.parse(String(v)));
+
+const lower = (v: unknown): string => String(v).toLowerCase();
+
+const ROLE_ORDER = ["owner", "manager", "sales_staff", "accountant"];
+
+/**
+ * U3 statements (src/auth/invite.ts, accept-invite.ts, password-reset.ts). Each mirrors one
+ * query shape exactly, one parameter per `${}`, and emulates what Postgres would do with it:
+ * the 0017 unique indexes on the two token hashes, `lower(email)` comparisons, the `CASE`
+ * role order of the staff list, `LIMIT`, and the `used_at IS NULL` / `expires_at >` filters.
+ * Row locks (`FOR UPDATE`) cannot be seen in memory; the order of the lock statements is
+ * visible in `calls`, and the locking itself is tested in tests/realdb/staff.realdb.test.ts.
+ */
+const handleStaff = (
+  text: string,
+  params: ReadonlyArray<unknown>,
+  state: {
+    users: Row[];
+    businesses: Row[];
+    invitations: Row[];
+    passwordResets: Row[];
+    sessions: Row[];
+  },
+): Row[] | undefined => {
+  if (/^\s*SELECT id FROM businesses WHERE id = \? FOR UPDATE\s*$/i.test(text)) {
+    const [id] = params;
+    return state.businesses.filter((b) => b["id"] === id).map((b) => ({ id: b["id"] }));
+  }
+  if (/^\s*SELECT id FROM users WHERE lower\(email\) = \? LIMIT 1\s*$/i.test(text)) {
+    const [email] = params;
+    return state.users
+      .filter((u) => lower(u["email"]) === email)
+      .slice(0, 1)
+      .map((u) => ({ id: u["id"] }));
+  }
+  if (
+    /SELECT id, role FROM invitations\s+WHERE business_id = \? AND lower\(email\) = \?\s+AND used_at IS NULL AND expires_at > \?::timestamptz\s+ORDER BY id FOR UPDATE/i.test(
+      text,
+    )
+  ) {
+    const [businessId, email, nowIso] = params;
+    return state.invitations
+      .filter((i) => i["business_id"] === businessId && lower(i["email"]) === email)
+      .filter((i) => i["used_at"] === null && asTime(i["expires_at"]) > asTime(nowIso))
+      .sort((a, b) => byteCompare(String(a["id"]), String(b["id"])))
+      .map((i) => ({ id: i["id"], role: i["role"] }));
+  }
+  if (/^\s*UPDATE invitations SET used_at = \?::timestamptz WHERE id = \?\s*$/i.test(text)) {
+    const [at, id] = params;
+    for (const i of state.invitations) if (i["id"] === id) i["used_at"] = at;
+    return [];
+  }
+  if (
+    /SELECT id, email, role, active FROM users\s+WHERE business_id = \?\s+ORDER BY CASE role WHEN 'owner' THEN 0 WHEN 'manager' THEN 1 WHEN 'sales_staff' THEN 2 ELSE 3 END,\s+lower\(email\), id\s+LIMIT \?/i.test(
+      text,
+    )
+  ) {
+    const [businessId, limit] = params;
+    return state.users
+      .filter((u) => u["business_id"] === businessId)
+      .sort(
+        (a, b) =>
+          ROLE_ORDER.indexOf(String(a["role"])) - ROLE_ORDER.indexOf(String(b["role"])) ||
+          byteCompare(lower(a["email"]), lower(b["email"])) ||
+          byteCompare(String(a["id"]), String(b["id"])),
+      )
+      .slice(0, Number(limit))
+      .map((u) => ({ id: u["id"], email: u["email"], role: u["role"], active: u["active"] }));
+  }
+  if (
+    /SELECT id, email, role, expires_at FROM invitations\s+WHERE business_id = \? AND used_at IS NULL\s+AND expires_at > \?::timestamptz\s+ORDER BY expires_at, id\s+LIMIT \?/i.test(
+      text,
+    )
+  ) {
+    const [businessId, nowIso, limit] = params;
+    return state.invitations
+      .filter((i) => i["business_id"] === businessId && i["used_at"] === null)
+      .filter((i) => asTime(i["expires_at"]) > asTime(nowIso))
+      .sort(
+        (a, b) =>
+          asTime(a["expires_at"]) - asTime(b["expires_at"]) ||
+          byteCompare(String(a["id"]), String(b["id"])),
+      )
+      .slice(0, Number(limit))
+      .map((i) => ({
+        id: i["id"],
+        email: i["email"],
+        role: i["role"],
+        expires_at: i["expires_at"],
+      }));
+  }
+  const invitationColumns =
+    /SELECT id, business_id, email, role, expires_at, used_at\s+FROM invitations/i;
+  if (invitationColumns.test(text) && /WHERE accept_token_hash = \?\s*$/i.test(text)) {
+    const [tokenHash] = params;
+    return state.invitations
+      .filter((i) => i["accept_token_hash"] === tokenHash)
+      .map((i) => ({ ...i }));
+  }
+  if (invitationColumns.test(text) && /WHERE id = \? FOR UPDATE\s*$/i.test(text)) {
+    const [id] = params;
+    return state.invitations.filter((i) => i["id"] === id).map((i) => ({ ...i }));
+  }
+  if (
+    /^\s*SELECT id, business_id, role, active FROM users WHERE lower\(email\) = \?\s*$/i.test(text)
+  ) {
+    const [email] = params;
+    return state.users
+      .filter((u) => lower(u["email"]) === email)
+      .map((u) => ({
+        id: u["id"],
+        business_id: u["business_id"],
+        role: u["role"],
+        active: u["active"],
+      }));
+  }
+  if (/^\s*SELECT id, business_id, role, active FROM users WHERE id = \?\s*$/i.test(text)) {
+    const [id] = params;
+    return state.users
+      .filter((u) => u["id"] === id)
+      .map((u) => ({
+        id: u["id"],
+        business_id: u["business_id"],
+        role: u["role"],
+        active: u["active"],
+      }));
+  }
+  if (/^\s*SELECT active FROM users WHERE id = \? FOR UPDATE\s*$/i.test(text)) {
+    const [id] = params;
+    return state.users.filter((u) => u["id"] === id).map((u) => ({ active: u["active"] }));
+  }
+  if (
+    /^\s*UPDATE password_resets SET used_at = \?::timestamptz\s+WHERE user_id = \? AND used_at IS NULL\s*$/i.test(
+      text,
+    )
+  ) {
+    const [at, userId] = params;
+    for (const r of state.passwordResets) {
+      if (r["user_id"] === userId && r["used_at"] === null) r["used_at"] = at;
+    }
+    return [];
+  }
+  if (
+    /SELECT r\.id, r\.user_id, r\.expires_at, r\.used_at, u\.business_id, u\.active\s+FROM password_resets r JOIN users u ON u\.id = r\.user_id\s+WHERE r\.token_hash = \?/i.test(
+      text,
+    )
+  ) {
+    const [tokenHash] = params;
+    return state.passwordResets
+      .filter((r) => r["token_hash"] === tokenHash)
+      .flatMap((r) => {
+        const u = state.users.find((x) => x["id"] === r["user_id"]);
+        return u === undefined
+          ? []
+          : [
+              {
+                id: r["id"],
+                user_id: r["user_id"],
+                expires_at: r["expires_at"],
+                used_at: r["used_at"],
+                business_id: u["business_id"],
+                active: u["active"],
+              },
+            ];
+      });
+  }
+  if (
+    /SELECT id, expires_at FROM password_resets\s+WHERE user_id = \? AND used_at IS NULL ORDER BY id FOR UPDATE/i.test(
+      text,
+    )
+  ) {
+    const [userId] = params;
+    return state.passwordResets
+      .filter((r) => r["user_id"] === userId && r["used_at"] === null)
+      .sort((a, b) => byteCompare(String(a["id"]), String(b["id"])))
+      .map((r) => ({ id: r["id"], expires_at: r["expires_at"] }));
+  }
+  if (
+    /^\s*UPDATE users SET password_hash = \?, updated_at = \?::timestamptz\s+WHERE id = \?\s*$/i.test(
+      text,
+    )
+  ) {
+    const [hash, at, id] = params;
+    for (const u of state.users) {
+      if (u["id"] === id) {
+        u["password_hash"] = hash;
+        u["updated_at"] = at;
+      }
+    }
+    return [];
+  }
+  if (/^\s*DELETE FROM sessions WHERE user_id = \?\s*$/i.test(text)) {
+    const [userId] = params;
+    const keep = state.sessions.filter((s) => s["user_id"] !== userId);
+    state.sessions.splice(0, state.sessions.length, ...keep);
+    return [];
+  }
+  return undefined;
+};
 
 /**
  * U1 session-store statements (src/auth/session.ts). The resolve statement's comparison
@@ -503,6 +715,13 @@ export const makeSqlStub = (
     if (opts.failOn && opts.failOn.test(text)) {
       throw dbError(`simulated database failure on: ${text.trim().slice(0, 40)}`, "08006");
     }
+    const fault = (opts.faults ?? []).find((f) => f.times > 0 && f.match.test(text));
+    if (fault) {
+      fault.times -= 1;
+      throw Object.assign(dbError(`simulated ${fault.code}`, fault.code), {
+        ...(fault.constraint_name !== undefined ? { constraint_name: fault.constraint_name } : {}),
+      });
+    }
     // The application role holds INSERT only on audit_log (R1.1); mirror the DB refusal.
     if (/(UPDATE\s+audit_log|DELETE\s+FROM\s+audit_log|TRUNCATE\s+audit_log)/i.test(text)) {
       throw dbError("permission denied for table audit_log", "42501");
@@ -511,6 +730,8 @@ export const makeSqlStub = (
     if (b2 !== undefined) return b2;
     const sessionRows = handleSessions(text, params, state);
     if (sessionRows !== undefined) return sessionRows;
+    const staffRows = handleStaff(text, params, state);
+    if (staffRows !== undefined) return staffRows;
     // U1 users: business_id set on insert; one account per email ignoring case (0013).
     if (
       /INSERT INTO users \(id, business_id, email, password_hash, role, active, locale, created_at, updated_at\)/i.test(
@@ -520,7 +741,9 @@ export const makeSqlStub = (
       const [id, businessId, email, passwordHash, role, active, locale, createdAt, updatedAt] =
         params as [Uuid, Uuid, string, string, string, boolean, string, string, string];
       if (state.users.some((u) => String(u["email"]).toLowerCase() === email.toLowerCase())) {
-        throw dbError("duplicate key value violates unique constraint", "23505");
+        throw Object.assign(dbError("duplicate key value violates unique constraint", "23505"), {
+          constraint_name: "users_email_lower_unique_idx",
+        });
       }
       state.users.push({
         id,
@@ -565,6 +788,12 @@ export const makeSqlStub = (
     if (/INSERT INTO invitations/i.test(text)) {
       const [id, businessId, email, role, acceptTokenHash, expiresAt, createdBy, createdAt] =
         params as [Uuid, Uuid, string, string, string, string, Uuid, string];
+      // 0017: one row per token hash.
+      if (state.invitations.some((i) => i["accept_token_hash"] === acceptTokenHash)) {
+        throw Object.assign(dbError("duplicate key value violates unique constraint", "23505"), {
+          constraint_name: "invitations_accept_token_hash_idx",
+        });
+      }
       state.invitations.push({
         id,
         business_id: businessId,
@@ -586,6 +815,12 @@ export const makeSqlStub = (
         string,
         string,
       ];
+      // 0017: one row per token hash.
+      if (state.passwordResets.some((r) => r["token_hash"] === tokenHash)) {
+        throw Object.assign(dbError("duplicate key value violates unique constraint", "23505"), {
+          constraint_name: "password_resets_token_hash_idx",
+        });
+      }
       state.passwordResets.push({
         id,
         user_id: userId,
@@ -656,34 +891,8 @@ export const makeSqlStub = (
     if (/SELECT id FROM businesses LIMIT 1/i.test(text)) {
       return state.businesses.slice(0, 1).map((b) => ({ id: b["id"] }));
     }
-    // B1 recovery (U3 rebuilds it): exact-email lookup.
-    if (/SELECT id FROM users WHERE email = \? LIMIT 1/i.test(text)) {
-      const [email] = params as [string];
-      return state.users
-        .filter((u) => (u["email"] as string) === email)
-        .map((u) => ({ id: u["id"] }));
-    }
-    if (/SELECT id, business_id, email, role, expires_at, used_at\s+FROM invitations/i.test(text)) {
-      const [tokenHash] = params as [string];
-      return state.invitations.filter((i) => (i["accept_token_hash"] as string) === tokenHash);
-    }
-    if (/SELECT id, user_id, expires_at, used_at FROM password_resets/i.test(text)) {
-      const [tokenHash] = params as [string];
-      return state.passwordResets.filter((r) => (r["token_hash"] as string) === tokenHash);
-    }
-    if (/SELECT u.id FROM users u/i.test(text)) {
-      const [email] = params as [string];
-      return state.users.filter((u) => (u["email"] as string) === email && u["active"] === true);
-    }
-    if (/SELECT id FROM businesses WHERE owner_user_id = .* LIMIT 1/i.test(text)) {
-      const [ownerUserId] = params as [string];
-      return state.businesses
-        .filter((b) => b["owner_user_id"] === ownerUserId)
-        .map((b) => ({ id: b["id"] }));
-    }
-    if (/UPDATE users SET password_hash/g.test(text)) return [];
-    if (/UPDATE password_resets SET used_at/g.test(text)) return [];
-    if (/UPDATE invitations SET used_at/g.test(text)) return [];
+    // U3: the B1 recovery, invite and accept shapes (exact-email lookups, the owner-business
+    // fallback and the no-op UPDATEs) are gone with the code that sent them (F-07).
     // Fail closed (team.md Testing Posture): a new or mistyped query must not pass a unit
     // test on an empty result. Every new query shape gets a handler here and a realdb test.
     throw new Error(`sql-stub: unrecognised statement: ${text.replace(/\s+/g, " ").trim()}`);

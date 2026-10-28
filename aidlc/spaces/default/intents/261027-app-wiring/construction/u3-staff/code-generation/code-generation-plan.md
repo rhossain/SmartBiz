@@ -119,14 +119,14 @@ is implemented, together with the full existing suite, before the next layer sta
 
 ### Step 5 — Repository / data access: implement (BR2.x, BR3.x, BR4.x, BR6.1; S18, S19, S22, S23; D-03, E-01; F-07)
 
-- [ ] `src/auth/one-time-token.ts`: `newToken`, `hashToken` (delegates to `sha256.ts`), `linkFor`.
-- [ ] `src/db/retry.ts`: `withRetry(times, codes, fn)` catching only SQLSTATE 40P01 and 40001.
-- [ ] `src/auth/invite.ts` (rewritten): `createInvitation`, `listStaff`; business row `FOR UPDATE` first; supersede; email normalisation; audit-first.
-- [ ] `src/auth/accept-invite.ts` (rewritten): `acceptInvitation` in the S19 order (parse → length → unlocked lookup → hash gate → `withRetry` transaction locking business then invitation, re-check, audit-first, user insert; 23505 on `users_email_lower_unique_idx` → `email_taken`); after commit delete a presented session and create the new one; optional `deps.hooks`.
-- [ ] `src/auth/password-reset.ts`: `createResetLink` (business → users row → close siblings → insert; `via` staff or terminal) and `completeReset` (S19 order; business → users → resets; audit-first; hash, close all open resets, delete every session).
-- [ ] `src/auth/recover.ts` (rewritten): `recover()` takes no `sql` and no gate; returns the 202 outcome only.
-- [ ] `src/auth/audit.ts`: `auditInviteCreated`, `auditInviteAccepted`, `auditResetLinkCreated`, `auditPasswordReset`; the retired helpers deleted; `flowLimiters` removed from `attempt-limiter.ts` and `src/auth/index.ts`.
-- [ ] `tests/helpers/sql-stub.ts`: handlers for every new query shape (business lock, invitation lookup/lock/supersede/insert, users lock, resets close/insert/lock, staff list).
+- [x] `src/auth/one-time-token.ts`: `newToken`, `hashToken` (delegates to `sha256.ts`), `linkFor`.
+- [x] `src/db/retry.ts`: `withRetry(times, codes, fn)` catching only SQLSTATE 40P01 and 40001.
+- [x] `src/auth/invite.ts` (rewritten): `createInvitation`, `listStaff`; business row `FOR UPDATE` first; supersede; email normalisation; audit-first.
+- [x] `src/auth/accept-invite.ts` (rewritten): `acceptInvitation` in the S19 order (parse → length → unlocked lookup → hash gate → `withRetry` transaction locking business then invitation, re-check, audit-first, user insert; 23505 on `users_email_lower_unique_idx` → `email_taken`); after commit delete a presented session and create the new one; optional `deps.hooks`.
+- [x] `src/auth/password-reset.ts`: `createResetLink` (business → users row → close siblings → insert; `via` staff or terminal) and `completeReset` (S19 order; business → users → resets; audit-first; hash, close all open resets, delete every session).
+- [x] `src/auth/recover.ts` (rewritten): `recover()` takes no `sql` and no gate; returns the 202 outcome only.
+- [x] `src/auth/audit.ts`: `auditInviteCreated`, `auditInviteAccepted`, `auditResetLinkCreated`, `auditPasswordReset`; the retired helpers deleted; `flowLimiters` removed from `attempt-limiter.ts` and `src/auth/index.ts`.
+- [x] `tests/helpers/sql-stub.ts`: handlers for every new query shape (business lock, invitation lookup/lock/supersede/insert, users lock, resets close/insert/lock, staff list).
 
 ### Step 6 — Repository / data access: write and run its tests (NFR3.16, NFR3.21, NFR3.22, NFR7.15–NFR7.18, NFR7.21; P-01)
 

@@ -1,9 +1,9 @@
 /**
  * src/auth/audit.ts — typed wrapper around AuditService for the
- * auth-mutation actions (sign-up, sign-in, recover, invite,
- * accept-invite, business-profile, settings). Each helper
- * dispatches a consistent `action` string so the audit log is
- * queryable by `audit.action`.
+ * auth-mutation actions (sign-up, sign-in, sign-out, the U3 staff
+ * actions, business-profile, settings). Each helper dispatches a
+ * consistent `action` string so the audit log is queryable by
+ * `audit.action`.
  */
 import type { Queryable, Sql } from "../db/client.js";
 import { insertAudit, type AuditInsertInput } from "../audit/audit-service.js";
@@ -77,69 +77,96 @@ export const auditSignOut = (
     ...(correlationId !== undefined ? { correlationId } : {}),
   });
 
-export const auditRecoveryRequest = (
-  sql: Sql,
-  businessId: Uuid,
-  payload: Record<string, unknown>,
-) =>
-  insertAudit(sql, {
-    businessId,
-    actorUserId: null,
-    action: "auth.recover.request",
-    subjectKind: "user",
-    subjectId: null,
-    payload,
-    reversesId: null,
-  });
+/*
+ * U3 (BR8.1; NFR3.20, NFR8.16; review F-07): the four staff actions. Each payload is exactly
+ * the ids, role and channel BR8.1 lists — never an email, a token, a link or a hash — and
+ * each row is written first, inside the caller's transaction, before the change it records.
+ * The B1 helpers that wrote an email into the payload under old action names
+ * (`auth.recover.request`, `auth.recover.reset`, `auth.invite`, `auth.invite.accept`) and
+ * filed recovery rows under the all-zero business id are deleted.
+ */
 
-export const auditRecoveryReset = (
-  sql: Sql,
-  businessId: Uuid,
-  actor: Uuid,
-  payload: Record<string, unknown>,
-) =>
-  insertAudit(sql, {
-    businessId,
-    actorUserId: actor,
-    action: "auth.recover.reset",
-    subjectKind: "user",
-    subjectId: actor,
-    payload,
-    reversesId: null,
-  });
+/** Who created a reset link: a staff member's session, or the terminal on this machine. */
+export type ResetLinkVia = "staff" | "terminal";
 
-export const auditInvite = (
-  sql: Sql,
-  businessId: Uuid,
-  actor: Uuid,
-  subjectId: Uuid,
-  payload: Record<string, unknown>,
+export interface AuditContext {
+  readonly businessId: Uuid;
+  readonly correlationId?: string | undefined;
+}
+
+const withCorrelation = (correlationId: string | undefined): { correlationId?: string } =>
+  correlationId !== undefined ? { correlationId } : {};
+
+/** `auth.invite_created {invitationId, role, by}` — the inviter is the actor (W1). */
+export const auditInviteCreated = (
+  tx: Queryable,
+  ctx: AuditContext,
+  input: { readonly invitationId: Uuid; readonly role: string; readonly by: Uuid },
 ) =>
-  insertAudit(sql, {
-    businessId,
-    actorUserId: actor,
-    action: "auth.invite",
+  insertAudit(tx, {
+    businessId: ctx.businessId,
+    actorUserId: input.by,
+    action: "auth.invite_created",
     subjectKind: "invitation",
-    subjectId,
-    payload,
+    subjectId: input.invitationId,
+    payload: { invitationId: input.invitationId, role: input.role, by: input.by },
     reversesId: null,
+    ...withCorrelation(ctx.correlationId),
   });
 
-export const auditAcceptInvite = (
-  sql: Sql,
-  businessId: Uuid,
-  actor: Uuid,
-  subjectId: Uuid,
-  payload: Record<string, unknown>,
+/** `auth.invite_accepted {invitationId, role, userId}` — the new user is the actor (W2). */
+export const auditInviteAccepted = (
+  tx: Queryable,
+  ctx: AuditContext,
+  input: { readonly invitationId: Uuid; readonly role: string; readonly userId: Uuid },
 ) =>
-  insertAudit(sql, {
-    businessId,
-    actorUserId: actor,
-    action: "auth.invite.accept",
+  insertAudit(tx, {
+    businessId: ctx.businessId,
+    actorUserId: input.userId,
+    action: "auth.invite_accepted",
     subjectKind: "user",
-    subjectId: actor,
-    payload: { ...payload, invitation_id: subjectId },
+    subjectId: input.userId,
+    payload: { invitationId: input.invitationId, role: input.role, userId: input.userId },
     reversesId: null,
+    ...withCorrelation(ctx.correlationId),
+  });
+
+/**
+ * `auth.reset_link_created {targetUserId, by, via}` — `by` is the staff member, or null when
+ * the terminal command issued it (W3, W4). A null actor therefore always means the terminal
+ * on this machine, which the audit trail shows as "টার্মিনাল" (O15).
+ */
+export const auditResetLinkCreated = (
+  tx: Queryable,
+  ctx: AuditContext,
+  input: { readonly targetUserId: Uuid; readonly by: Uuid | null; readonly via: ResetLinkVia },
+) =>
+  insertAudit(tx, {
+    businessId: ctx.businessId,
+    actorUserId: input.by,
+    action: "auth.reset_link_created",
+    subjectKind: "user",
+    subjectId: input.targetUserId,
+    payload: { targetUserId: input.targetUserId, by: input.by, via: input.via },
+    reversesId: null,
+    ...withCorrelation(ctx.correlationId),
+  });
+
+/** `auth.password_reset {userId}` — the person who reset is the actor (W5). */
+export const auditPasswordReset = (
+  tx: Queryable,
+  ctx: AuditContext,
+  input: { readonly userId: Uuid },
+) =>
+  insertAudit(tx, {
+    businessId: ctx.businessId,
+    actorUserId: input.userId,
+    action: "auth.password_reset",
+    subjectKind: "user",
+    subjectId: input.userId,
+    payload: { userId: input.userId },
+    reversesId: null,
+    ...withCorrelation(ctx.correlationId),
   });
 
 export const auditBusinessProfileChange = (

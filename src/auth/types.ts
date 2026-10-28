@@ -72,6 +72,19 @@ export interface AuditEntry {
   readonly retentionUntil: string;
 }
 
+/**
+ * U3 (review P-01, P-02): optional pause points of the four staff write paths, so a realdb
+ * test can force a race deterministically — `beforeTransaction` runs after the unlocked
+ * lookup and the hash, before the transaction begins; `afterLock` runs inside the
+ * transaction once its row locks are held, before the re-check and the writes. They are an
+ * injected dependency, never an environment flag or a global: production wiring
+ * (`startServer`) never passes them, and a unit test asserts that.
+ */
+export interface TxHooks {
+  readonly beforeTransaction?: () => Promise<void>;
+  readonly afterLock?: () => Promise<void>;
+}
+
 export interface PasswordReset {
   readonly id: Uuid;
   readonly userId: Uuid;

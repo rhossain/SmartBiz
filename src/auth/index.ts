@@ -23,14 +23,41 @@ export {
 export { signOut, type SignOutOutput } from "./sign-out.js";
 export { businessExists, theBusinessId } from "./setup.js";
 export { toPublicUser, toSessionView } from "./public-user.js";
-export { requestRecovery, resetPassword, type RecoveryError } from "./recover.js";
-export { createInvite, type InviteInput, type InviteOutput, type InviteError } from "./invite.js";
+export { recover, RECOVER_OUTCOME, type RecoverOutcome } from "./recover.js";
 export {
-  acceptInvite,
-  type AcceptInviteInput,
-  type AcceptInviteOutput,
-  type AcceptInviteError,
+  createInvitation,
+  listStaff,
+  normaliseEmail,
+  type InviteInput,
+  type InviteOutput,
+  type InviteError,
+  type StaffList,
+  type StaffMember,
+  type PendingInvitation,
+} from "./invite.js";
+export {
+  acceptInvitation,
+  type AcceptInvitationInput,
+  type AcceptInvitationOutput,
+  type AcceptInvitationError,
 } from "./accept-invite.js";
+export {
+  createResetLink,
+  completeReset,
+  type ResetLinkInput,
+  type ResetLinkOutput,
+  type ResetLinkError,
+  type CompleteResetError,
+} from "./password-reset.js";
+export { newToken, hashToken, linkFor, type LinkKind } from "./one-time-token.js";
+export {
+  INVITABLE,
+  canInvite,
+  canResetTarget,
+  canSupersede,
+  type Actor,
+  type StaffRole,
+} from "./delegation.js";
 export {
   generateSessionToken,
   insertSession,
@@ -46,10 +73,10 @@ export {
   auditSignIn,
   auditSignInFailure,
   auditSignOut,
-  auditRecoveryRequest,
-  auditRecoveryReset,
-  auditInvite,
-  auditAcceptInvite,
+  auditInviteCreated,
+  auditInviteAccepted,
+  auditResetLinkCreated,
+  auditPasswordReset,
   auditBusinessProfileChange,
   auditSettingsChange,
 } from "./audit.js";
@@ -60,8 +87,6 @@ export { hashPassword, verifyPassword, getDummyHash, PASSWORD_MIN_LENGTH } from 
 export { createHashGate, type HashGate, type HashGateFull } from "./hash-gate.js";
 export {
   createAttemptLimiter,
-  flowLimiters,
-  resetFlowLimiters,
   signInKey,
   SIGN_IN_LIMIT,
   type AttemptLimiter,
@@ -73,4 +98,4 @@ export {
   type EmailGateway,
   type SmtpError,
 } from "./email.js";
-export type { PublicUser, SessionView, UserRecord } from "./types.js";
+export type { PublicUser, SessionView, TxHooks, UserRecord } from "./types.js";
