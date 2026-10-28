@@ -16661,3 +16661,167 @@
 **Message**: Staging review fixes for commit
 
 ---
+
+## Subagent Completed
+**Timestamp**: 2026-10-28T03:33:01Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: ae621b99c3b063d78
+**Message**: Committing sign-in.ts lock re-check fixes
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-28T03:40:35Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: ab257097718d303db
+**Message**: Verifying realdb mutant kills in staff.realdb.test.ts
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-28T03:43:08Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: a6fd3caa34ea1eb74
+**Message**: Reading code-summary.md and traceability.json
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-28T03:43:41Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: a2f118a6cf26d6aa5
+**Message**: Updating source-manifest.json paths
+
+---
+
+## Guard Stood Aside
+**Timestamp**: 2026-10-28T03:44:05Z
+**Event**: GUARD_STOOD_ASIDE
+**Guard**: review-freeze
+**Authority**: instruction
+**Grant**: none
+**Actor**: subagent
+**Stage**: code-generation
+**Tool**: Edit
+**Details**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/code-generation/code-summary.md
+
+---
+
+## Artifact Updated
+**Timestamp**: 2026-10-28T03:44:06Z
+**Event**: ARTIFACT_UPDATED
+**Tool**: Edit
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/code-generation/code-summary.md
+**Context**: construction > u3-staff > code-generation > code-summary.md
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-28T03:44:13Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: a5267070e62ccd355
+**Message**: Documenting G-05 in code-summary.md
+
+---
+
+## Guard Stood Aside
+**Timestamp**: 2026-10-28T03:44:17Z
+**Event**: GUARD_STOOD_ASIDE
+**Guard**: review-freeze
+**Authority**: instruction
+**Grant**: none
+**Actor**: subagent
+**Stage**: code-generation
+**Tool**: Edit
+**Details**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/code-generation/code-summary.md
+
+---
+
+## Artifact Updated
+**Timestamp**: 2026-10-28T03:44:18Z
+**Event**: ARTIFACT_UPDATED
+**Tool**: Edit
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/code-generation/code-summary.md
+**Context**: construction > u3-staff > code-generation > code-summary.md
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-28T03:44:21Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: aidlc-developer-agent
+**Agent ID**: a78e9ec47152314a3
+**Message**: The record edits are in, and I'm waiting for the `--large` gate run to finish.
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-28T03:46:06Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: acb0e3b36e442a128
+**Message**: Checking sign-in.test.ts gate failure
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-28T03:46:39Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: a9895055333c2b803
+**Message**: Debugging sign-in limiter-clear test timeout
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-28T03:47:12Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: a0dce55bf66c4cbbf
+**Message**: Reading sign-in.test.ts clearing test
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-28T03:47:44Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: a7861b672bef567d9
+**Message**: Rerunning sign-in.test.ts with longer timeout
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-28T03:47:47Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: aidlc-developer-agent
+**Agent ID**: a78e9ec47152314a3
+**Message**: The gate is rerunning on a clean tree, with my record edits stashed; it restores them when it finishes.
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-28T03:52:05Z
+**Event**: HUMAN_TURN
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-28T03:52:07Z
+**Event**: HUMAN_TURN
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-28T03:54:04Z
+**Event**: HUMAN_TURN
+**Session**: f6486091-0b09-46cb-a3b1-e0938660d7d0
+
+---
