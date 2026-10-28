@@ -231,7 +231,10 @@ export const ManualOrder = ({ locale, draft, onSave }: ManualOrderProps): React.
   // NFR9.2: after a refused save, focus the first refused input or the save message.
   useFocusOnFailure(formRef, state.status === "error" ? state : null);
   return (
-    <Screen title={tr("manual.title", locale)}>
+    <Screen
+      title={tr("manual.title", locale)}
+      back={{ href: "#/orders", label: tr("orders.back", locale) }}
+    >
       <form
         ref={formRef}
         data-testid="manual-order-form"

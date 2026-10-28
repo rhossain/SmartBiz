@@ -49,7 +49,7 @@ export const OrderDetail = ({
       ? money(paise, basis.recognition, basis.completeness)
       : unrecognized(paise, basis.basis, basis.completeness);
   return (
-    <Screen title={order.orderNo}>
+    <Screen title={order.orderNo} back={{ href: "#/orders", label: tr("orders.back", locale) }}>
       <div data-testid="order-detail-header">
         <Pill kind="neutral" label={label(order.status, locale)} />
         <span data-testid="order-detail-source">

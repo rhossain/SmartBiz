@@ -48,7 +48,10 @@ export const RepeatFromPast = ({
     ? computeOrderTotal(pending.items, pending.orderDiscountPaise, pending.deliveryChargePaise)
     : null;
   return (
-    <Screen title={tr("repeat.title", locale)}>
+    <Screen
+      title={tr("repeat.title", locale)}
+      back={{ href: "#/orders", label: tr("orders.back", locale) }}
+    >
       {pastOrders.length === 0 ? (
         <p data-testid="repeat-none">{tr("repeat.none", locale)}</p>
       ) : null}

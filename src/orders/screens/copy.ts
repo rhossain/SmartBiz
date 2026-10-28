@@ -10,6 +10,8 @@ import { L } from "../../i18n/L.js";
 
 const COPY = {
   "orders.title": L("অর্ডার", "Orders"),
+  // The back link on every orders sub-screen (detail, new, from a message, repeat).
+  "orders.back": L("অর্ডারে ফিরুন", "Back to orders"),
   "orders.empty": L("এখনো কোনো অর্ডার নেই", "No orders yet"),
   "orders.new": L("নতুন অর্ডার", "New order"),
   "orders.paste": L("মেসেজ থেকে", "From a message"),

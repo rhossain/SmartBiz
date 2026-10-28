@@ -138,7 +138,10 @@ export const PasteParse = ({ locale, draft, onSave }: PasteParseProps): React.Re
   };
 
   return (
-    <Screen title={tr("paste.title", locale)}>
+    <Screen
+      title={tr("paste.title", locale)}
+      back={{ href: "#/orders", label: tr("orders.back", locale) }}
+    >
       <label htmlFor="paste-box">{tr("paste.box", locale)}</label>
       <textarea
         id="paste-box"
