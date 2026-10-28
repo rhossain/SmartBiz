@@ -130,12 +130,12 @@ is implemented, together with the full existing suite, before the next layer sta
 
 ### Step 6 — Repository / data access: write and run its tests (NFR3.16, NFR3.21, NFR3.22, NFR7.15–NFR7.18, NFR7.21; P-01)
 
-- [ ] `tests/unit/one-time-token.test.ts`: 43-character base64url, hash is SHA-256 hex, link format.
-- [ ] `tests/unit/retry.test.ts`: retries 40P01/40001 once; rethrows others; second failure surfaces.
-- [ ] `tests/unit/invite.test.ts`, `tests/unit/accept-invite.test.ts` (rewritten): order of operations with a gate spy; unknown token → 410 with no gate call; full gate + unknown → 410, + valid → 429 token unused; 23505 mapping; normalisation; supersede.
-- [ ] `tests/unit/password-reset.test.ts` (new) and `tests/unit/recover.test.ts` (rewritten): reset order; recover zero SQL and zero gate calls (spies); TTL boundaries at limit − 1 ms and at the limit.
-- [ ] `tests/realdb/staff.realdb.test.ts`: atomic fault injection; forced races via `deps.hooks` (B paused after lock inside its transaction, A blocked on the lock per `pg_stat_activity`, A gets 410); invite supersede race; invite vs accept; invite by a Manager vs reset of that Manager; reset deletes every session and closes sibling resets; reset link closes siblings; 40P01 retry then 410.
-- [ ] Add mutants: drop `FOR UPDATE` on the token row; drop the business-row lock; reverse the reset lock order; skip the session delete on reset; skip closing siblings on link issue.
+- [x] `tests/unit/one-time-token.test.ts`: 43-character base64url, hash is SHA-256 hex, link format.
+- [x] `tests/unit/retry.test.ts`: retries 40P01/40001 once; rethrows others; second failure surfaces.
+- [x] `tests/unit/invite.test.ts`, `tests/unit/accept-invite.test.ts` (rewritten): order of operations with a gate spy; unknown token → 410 with no gate call; full gate + unknown → 410, + valid → 429 token unused; 23505 mapping; normalisation; supersede.
+- [x] `tests/unit/password-reset.test.ts` (new) and `tests/unit/recover.test.ts` (rewritten): reset order; recover zero SQL and zero gate calls (spies); TTL boundaries at limit − 1 ms and at the limit.
+- [x] `tests/realdb/staff.realdb.test.ts`: atomic fault injection; forced races via `deps.hooks` (B paused after lock inside its transaction, A blocked on the lock per `pg_stat_activity`, A gets 410); invite supersede race; invite vs accept; invite by a Manager vs reset of that Manager; reset deletes every session and closes sibling resets; reset link closes siblings; 40P01 retry then 410.
+- [x] Add mutants: drop `FOR UPDATE` on the token row; drop the business-row lock; reverse the reset lock order; skip the session delete on reset; skip closing siblings on link issue.
 
 ### Step 7 — Business logic: implement (BR1.1–BR1.3, BR2.3–BR2.5; S20; NFR1.9, NFR1.10, NFR1.12)
 
