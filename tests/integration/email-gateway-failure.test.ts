@@ -1,29 +1,25 @@
 /**
- * tests/integration/email-gateway-failure.test.ts — graceful degradation.
- * When the email gateway returns SmtpError, the invite flow
- * shows a "copy this URL" UI and the audit row records the failure.
+ * tests/integration/email-gateway-failure.test.ts — graceful degradation of the optional
+ * email gateway (team.md Deployment: a free hosted service only when the app degrades
+ * gracefully without it).
+ *
+ * U3 sends no email at all (C6, NFR10.3): an invitation is a link the Owner or Manager copies
+ * by hand. The gateway stays optional and unused by the invitation flow, so a failing
+ * gateway cannot stop an invitation: the invitation and its link exist whatever the gateway
+ * answers.
  */
 import { describe, expect, test } from "bun:test";
-import { signUp } from "../../src/auth/sign-up.js";
-import { createInvite } from "../../src/auth/invite.js";
-import { sendInviteEmail, failingEmailGateway, noopEmailGateway } from "../../src/auth/email.js";
-import { makeSqlStub } from "../helpers/sql-stub.js";
-import { setTestClock, FROZEN_TEST_NOW, resetTestClock } from "../../src/data/clock.js";
-import { resetFlowLimiters } from "../../src/auth/attempt-limiter.js";
-import { authDeps } from "../helpers/auth-fixtures.js";
-import { warn as _warn } from "../../src/observability/log.js";
-import type { Uuid } from "../../src/data/uuid.js";
+import { createInvitation } from "../../src/auth/invite.js";
+import { failingEmailGateway, noopEmailGateway, sendInviteEmail } from "../../src/auth/email.js";
+import { FROZEN_TEST_NOW, resetTestClock, setTestClock } from "../../src/data/clock.js";
+import { staffWorld } from "../helpers/staff-fixtures.js";
 
 describe("integration: email gateway failure (graceful degradation)", () => {
   test("failing gateway returns Err; the caller can fall back to a copy-URL UI", async () => {
-    resetFlowLimiters();
-    setTestClock(FROZEN_TEST_NOW);
     const r = await sendInviteEmail(failingEmailGateway, "x@e.com", "https://example.com/accept/x");
     expect(r.ok).toBe(false);
     if (r.ok) return;
     expect(r.error.kind).toBe("smtp_failure");
-    void _warn;
-    resetTestClock();
   });
 
   test("healthy gateway returns Ok", async () => {
@@ -31,38 +27,23 @@ describe("integration: email gateway failure (graceful degradation)", () => {
     expect(r.ok).toBe(true);
   });
 
-  test("the invite still records the accept token in the DB even when the gateway fails", async () => {
-    resetFlowLimiters();
+  test("an invitation and its link exist whatever the gateway answers (C6: no email sent)", async () => {
     setTestClock(FROZEN_TEST_NOW);
-    const stub = makeSqlStub();
-    const su = await signUp(
-      stub.sql,
-      {
-        email: "o@e.com",
-        password: "verysecret",
-        businessName: "A",
-        locale: "bn",
-      },
-      authDeps(),
-    );
-    if (!su.ok) throw new Error("signup");
-    const r = await createInvite(stub.sql, {
-      businessId: su.value.businessId as Uuid,
-      actorUserId: su.value.user.id as Uuid,
-      actorRole: "owner",
+    const w = await staffWorld();
+    const r = await createInvitation(w.stub.sql, {
+      businessId: w.businessId,
+      actor: { id: w.id("owner"), role: "owner" },
       email: "new@example.com",
       role: "manager",
-      nowMs: FROZEN_TEST_NOW.getTime(),
+      now: FROZEN_TEST_NOW,
+      port: 3000,
     });
     expect(r.ok).toBe(true);
     if (!r.ok) return;
-    expect(stub.state.invitations.length).toBe(1);
-    const send = await sendInviteEmail(
-      failingEmailGateway,
-      "new@example.com",
-      `https://app/accept/${r.value.acceptToken}`,
-    );
+    expect(w.stub.state.invitations.length).toBe(1);
+    const send = await sendInviteEmail(failingEmailGateway, "new@example.com", r.value.link);
     expect(send.ok).toBe(false);
+    expect(w.stub.state.invitations.length).toBe(1);
     resetTestClock();
   });
 });

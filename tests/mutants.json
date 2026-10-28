@@ -152,6 +152,46 @@
       "find": "  return { kind: \"redirect\", to: \"/lock\", reason: r.error };",
       "replace": "  return { kind: \"render\", route, path: match.path, params: match.params };",
       "test": "tests/unit/three-layer-gate-absence.test.ts"
+    },
+    {
+      "id": "accept-token-row-unlocked",
+      "why": "Accept locks the invitation row FOR UPDATE before its re-check (U3 S19, NFR7.16, P-01); without it a racing accept is not held off the token row.",
+      "file": "src/auth/accept-invite.ts",
+      "find": "FROM invitations WHERE id = ${found.id} FOR UPDATE",
+      "replace": "FROM invitations WHERE id = ${found.id}",
+      "test": "tests/unit/accept-invite.test.ts tests/realdb/staff.realdb.test.ts"
+    },
+    {
+      "id": "invite-drops-business-lock",
+      "why": "Every invite locks the business row first (U3 F-02, D-03, NFR7.17); without it two invites for one email both find no pending invitation and both insert one.",
+      "file": "src/auth/invite.ts",
+      "find": "        await tx`SELECT id FROM businesses WHERE id = ${input.businessId} FOR UPDATE`;\n",
+      "replace": "",
+      "test": "tests/unit/invite.test.ts tests/realdb/staff.realdb.test.ts"
+    },
+    {
+      "id": "reset-lock-order-reversed",
+      "why": "A reset locks the users row before the reset rows (U3 F-04, E-01, NFR7.18); the reversed order holds reset rows while it waits on the user.",
+      "file": "src/auth/password-reset.ts",
+      "find": "        const [user] = await tx<{ active: boolean }[]>`\n          SELECT active FROM users WHERE id = ${userId} FOR UPDATE\n        `;\n        const open = await tx<{ id: string; expires_at: Date | string }[]>`\n          SELECT id, expires_at FROM password_resets\n          WHERE user_id = ${userId} AND used_at IS NULL ORDER BY id FOR UPDATE\n        `;\n",
+      "replace": "        const open = await tx<{ id: string; expires_at: Date | string }[]>`\n          SELECT id, expires_at FROM password_resets\n          WHERE user_id = ${userId} AND used_at IS NULL ORDER BY id FOR UPDATE\n        `;\n        const [user] = await tx<{ active: boolean }[]>`\n          SELECT active FROM users WHERE id = ${userId} FOR UPDATE\n        `;\n",
+      "test": "tests/unit/password-reset.test.ts tests/realdb/staff.realdb.test.ts"
+    },
+    {
+      "id": "reset-keeps-sessions",
+      "why": "A completed reset deletes every session of the user (U3 BR4.3, NFR3.21); keeping them leaves an attacker's old cookie signed in.",
+      "file": "src/auth/password-reset.ts",
+      "find": "        await tx`DELETE FROM sessions WHERE user_id = ${userId}`;\n",
+      "replace": "",
+      "test": "tests/unit/password-reset.test.ts tests/realdb/staff.realdb.test.ts"
+    },
+    {
+      "id": "reset-link-keeps-siblings",
+      "why": "Issuing a reset link closes the user's other open links (U3 F-03, NFR3.22); keeping them leaves a lost link usable.",
+      "file": "src/auth/password-reset.ts",
+      "find": "        // F-03, NFR3.22: a new link closes every other open link of this user.\n        await tx`\n          UPDATE password_resets SET used_at = ${at}::timestamptz\n          WHERE user_id = ${userId} AND used_at IS NULL\n        `;\n",
+      "replace": "",
+      "test": "tests/unit/password-reset.test.ts tests/realdb/staff.realdb.test.ts"
     }
   ]
 }

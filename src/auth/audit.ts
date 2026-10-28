@@ -114,7 +114,11 @@ export const auditInviteCreated = (
     ...withCorrelation(ctx.correlationId),
   });
 
-/** `auth.invite_accepted {invitationId, role, userId}` — the new user is the actor (W2). */
+/**
+ * `auth.invite_accepted {invitationId, role, userId}` (W2). It is written before the user row
+ * (audit-first), and `audit_log.actor_user_id` is a non-deferrable reference to `users`, so
+ * the actor is null — no one was signed in — and the new user is the subject.
+ */
 export const auditInviteAccepted = (
   tx: Queryable,
   ctx: AuditContext,
@@ -122,7 +126,7 @@ export const auditInviteAccepted = (
 ) =>
   insertAudit(tx, {
     businessId: ctx.businessId,
-    actorUserId: input.userId,
+    actorUserId: null,
     action: "auth.invite_accepted",
     subjectKind: "user",
     subjectId: input.userId,

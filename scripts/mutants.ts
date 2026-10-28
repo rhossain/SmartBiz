@@ -14,6 +14,8 @@
  * pass, so a "kill" can never come from a broken checkout. The run fails if any mutant
  * survives or cannot be applied. `--only <id>` runs one entry.
  * It mutates committed code only (HEAD), so commit before running it.
+ * U3: an entry whose `test` names a tests/realdb file also receives the realdb URLs (the gate
+ * passes them to this step), so a row-lock mutant is checked on a real Postgres too.
  */
 import { mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -70,10 +72,17 @@ const tryMutant = async (m: Mutant): Promise<Outcome> => {
       say(`  ${m.id}: ${e instanceof Error ? e.message : String(e)}`);
       return "broken";
     }
-    // The mutant must make the mapped test fail; realdb URLs are not passed on.
+    // The mutant must make the mapped test fail. Realdb URLs are passed on only to a mutant
+    // whose mapped tests include a tests/realdb file (U3: the row-lock mutants, whose real
+    // effect only a real database shows); the gate sets them, and without them that file
+    // skips and the mapped unit test alone decides.
     const env = childEnv();
-    delete env["REALDB_ADMIN_URL"];
-    delete env["REALDB_APP_URL"];
+    // Never the container name: no mutant run may stop the gate's database (outage test).
+    delete env["REALDB_CONTAINER"];
+    if (!m.test.includes("tests/realdb/")) {
+      delete env["REALDB_ADMIN_URL"];
+      delete env["REALDB_APP_URL"];
+    }
     const tested = await run(["bun", "test", ...m.test.split(" ")], {
       cwd: tree,
       env,

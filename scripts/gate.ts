@@ -209,7 +209,8 @@ const main = async (): Promise<void> => {
   await step("8", "build", ["bun", "scripts/build.ts"]);
   const bundle = await step("9", "bundle", ["bun", "scripts/check-bundle.ts"]);
   facts.push(`bundle ${/bundle ok: ([\d.]+) KB/.exec(bundle)?.[1] ?? "?"} KB gz`);
-  const mutants = await step("10", "mutants", ["bun", "scripts/mutants.ts"]);
+  // U3: realdb URLs reach only the mutants mapped to a tests/realdb file (scripts/mutants.ts).
+  const mutants = await step("10", "mutants", ["bun", "scripts/mutants.ts"], realdb);
   facts.push(`mutants ${/mutants ok: (\d+\/\d+)/.exec(mutants)?.[1] ?? "?"}`);
   await step("11", "dependency audit", ["bun", "audit", "--audit-level=high"]);
   await step("11", "dependency list", ["bun", "scripts/check-dependencies.ts"]);
