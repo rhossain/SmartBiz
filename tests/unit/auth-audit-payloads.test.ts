@@ -22,6 +22,7 @@ import { completeReset, createResetLink } from "../../src/auth/password-reset.js
 import { sha256 } from "../../src/auth/sha256.js";
 import { FROZEN_TEST_NOW, resetTestClock, setTestClock } from "../../src/data/clock.js";
 import type { Uuid } from "../../src/data/uuid.js";
+import { actionLabel, actorLabel } from "../../src/audit/screens/AuditTrail.js";
 import { authDeps } from "../helpers/auth-fixtures.js";
 import { NEW_PASSWORD, staffWorld, tokenOf } from "../helpers/staff-fixtures.js";
 
@@ -137,5 +138,31 @@ describe("U3 audit payloads (BR8.1, NFR3.20)", () => {
     for (const a of w.stub.state.auditLog) {
       expect(keysOf(JSON.parse(String(a["payload"])))).not.toContain("email");
     }
+  });
+
+  test("the audit trail names the four actions in Bangla and the terminal as an actor (O15, NFR8.16)", () => {
+    const entry = (action: string, actorEmail: string | null) => ({
+      id: "d4000000-0000-4000-8000-0000000000d4",
+      occurredAt: "2026-10-28T09:00:00.000Z",
+      action,
+      subjectKind: "user",
+      subjectId: null,
+      actorEmail,
+      correlationId: "0123456789abcdef",
+      reversesId: null,
+    });
+    expect(
+      [
+        "auth.invite_created",
+        "auth.invite_accepted",
+        "auth.reset_link_created",
+        "auth.password_reset",
+      ].map((a) => actionLabel(a, "bn")),
+    ).toEqual(["আমন্ত্রণ তৈরি", "আমন্ত্রণ গ্রহণ", "রিসেট লিংক তৈরি", "পাসওয়ার্ড রিসেট"]);
+    expect(actorLabel(entry("auth.reset_link_created", null), "bn")).toBe("টার্মিনাল");
+    expect(actorLabel(entry("auth.reset_link_created", "owner@acme.test"), "bn")).toBe(
+      "owner@acme.test",
+    );
+    expect(actorLabel(entry("auth.invite_accepted", null), "bn")).toBe("সিস্টেম");
   });
 });

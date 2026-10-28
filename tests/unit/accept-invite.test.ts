@@ -17,6 +17,7 @@
  */
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { acceptInvitation } from "../../src/auth/accept-invite.js";
+import { createHashGate, type HashGate } from "../../src/auth/hash-gate.js";
 import { createInvitation } from "../../src/auth/invite.js";
 import { insertSession, resolveSession } from "../../src/auth/session.js";
 import { FROZEN_TEST_NOW, resetTestClock, setTestClock } from "../../src/data/clock.js";
@@ -249,4 +250,62 @@ describe("acceptInvitation (W2, S19)", () => {
     expect(await resolveSession(w.stub.sql, presented, later)).toBeNull();
     expect(await resolveSession(w.stub.sql, r.value.session.token, later)).not.toBeNull();
   });
+
+  test(
+    "30 parallel accepts share the gate: ≤ 2 hashes at once, 429 beyond the queue, those tokens unused (NFR6.23)",
+    async () => {
+      const w = await staffWorld();
+      const tokens: string[] = [];
+      for (let i = 0; i < 30; i++) {
+        const r = await createInvitation(w.stub.sql, {
+          businessId: w.businessId,
+          actor: { id: w.id("owner"), role: "owner" },
+          email: `p${i}@acme.test`,
+          role: "accountant",
+          now: NOW,
+          port: 3000,
+        });
+        if (!r.ok) throw new Error(r.error.kind);
+        tokens.push(tokenOf(r.value.link));
+      }
+      // The shared gate (2 permits, queue 20), wrapped to measure how many hashes overlap.
+      const inner = createHashGate();
+      let running = 0;
+      let peak = 0;
+      const gate: HashGate = {
+        run: (work) =>
+          inner.run(async () => {
+            running += 1;
+            peak = Math.max(peak, running);
+            try {
+              return await work();
+            } finally {
+              running -= 1;
+            }
+          }),
+        inFlight: inner.inFlight,
+        waiting: inner.waiting,
+      };
+      const results = await Promise.all(
+        tokens.map((token) =>
+          acceptInvitation(
+            w.stub.sql,
+            {
+              token,
+              password: NEW_PASSWORD,
+              presentedToken: null,
+              now: new Date(NOW.getTime() + 1000),
+            },
+            { hashGate: gate },
+          ),
+        ),
+      );
+      const kinds = results.map((r) => (r.ok ? "ok" : r.error.kind));
+      expect(peak).toBeLessThanOrEqual(2);
+      expect(kinds.filter((k) => k === "ok")).toHaveLength(22);
+      expect(kinds.filter((k) => k === "rate_limited")).toHaveLength(8);
+      expect(w.stub.state.invitations.filter((i) => i["used_at"] === null)).toHaveLength(8);
+    },
+    { timeout: 60_000 },
+  );
 });

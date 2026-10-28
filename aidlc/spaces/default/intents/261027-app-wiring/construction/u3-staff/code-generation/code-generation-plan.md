@@ -188,13 +188,13 @@ is implemented, together with the full existing suite, before the next layer sta
 - [x] `scripts/browser-check.ts`: `/staff` in the 360 px walk (via the role table).
 - [x] `tests/perf/order-api.bench.ts`: staff routes and recover p95 ≤ 300 ms; accept and reset max of 10 ≤ 1.5 s; unknown-token gate-spy count 0; recover median difference printed.
 - [x] README: `bun run reset-password <email>`, the links-on-this-machine note, the Bolt 1 merge steps (dump, `gate --large`, squash, migrate, start, smoke) and the whole-Bolt rollback (I-05).
-- [ ] Run `bun run gate` end to end and record its result line.
+- [x] Run `bun run gate` end to end and record its result line.
 
 ### Step 14 — Documentation and traceability
 
-- [ ] Module header comments on every new file; inline comments cite BR/NFR/S/P/R/O ids.
-- [ ] `code-summary.md`, `source-manifest.json` (application paths only; every path created, modified or deleted), `traceability.json` (AC1.5.1–AC1.5.7, AC1.6.1–AC1.6.7, BR1.1–BR10.1, NFR1.9–NFR10.3; each `OK` target an existing file that proves it).
-- [ ] Commit per step on `app-wiring`.
+- [x] Module header comments on every new file; inline comments cite BR/NFR/S/P/R/O ids.
+- [x] `code-summary.md`, `source-manifest.json` (application paths only; every path created, modified or deleted), `traceability.json` (AC1.5.1–AC1.5.7, AC1.6.1–AC1.6.7, BR1.1–BR10.1, NFR1.9–NFR10.3; each `OK` target an existing file that proves it).
+- [x] Commit per step on `app-wiring`.
 
 ## Story-to-step traceability
 
