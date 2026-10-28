@@ -28,7 +28,11 @@
   --space-8: 32px;
 
   /* Typography. */
-  --font-ui: "Hind Siliguri", "Noto Sans Bengali", system-ui, sans-serif;
+  /* Latin from the platform UI face; Bangla falls through to Hind Siliguri / Noto Sans Bengali
+   * when installed, else the macOS Kohinoor Bangla, so no hosted font is needed offline. */
+  --font-ui:
+    system-ui, -apple-system, "Segoe UI", "Hind Siliguri", "Noto Sans Bengali", "Kohinoor Bangla",
+    sans-serif;
   --font-size-sm: 14px;
   --font-size-base: 16px;
   --font-size-lg: 20px;
@@ -61,10 +65,17 @@
   --color-warning: #8f5c11;
   --color-bg-warning: #f8ebd3; /* #8f5c11 on it: 4.9:1 */
   --color-bg-neutral: #efede7; /* #414a52 on it: 7.0:1 */
-  --radius-sm: 6px;
-  --radius-md: 10px;
+  --color-control-border: #8c8272; /* 3.6:1 on #ffffff: bounds a control (WCAG 1.4.11) */
+  --color-header-active: #2a343c; /* #f3f1ec on it: 11.6:1 */
+  --color-brand-tint: #eff7f3; /* #0a5b44 on it: 7.0:1 */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
   --radius-pill: 999px;
-  --shadow-card: 0 1px 2px rgba(11, 16, 20, 0.06), 0 4px 16px rgba(11, 16, 20, 0.06);
+  --shadow-card: 0 1px 2px rgba(11, 16, 20, 0.05), 0 8px 24px rgba(11, 16, 20, 0.06);
+  --shadow-raised: 0 1px 2px rgba(11, 16, 20, 0.08), 0 2px 6px rgba(11, 16, 20, 0.06);
+  --shadow-button: 0 1px 2px rgba(6, 56, 42, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  --ring-brand: 0 0 0 3px rgba(10, 91, 68, 0.18);
 }
 
 /* Body baseline. */

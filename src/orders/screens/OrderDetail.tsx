@@ -20,7 +20,7 @@ import { lineTotalPaise } from "../order-total.js";
 import { isRecognized, unrecognized, type OrderFigure } from "../order-figure.js";
 import { orderMoneyFigure } from "../status-bucket.js";
 import { MoneyCell } from "../../pres/MoneyCell.js";
-import { statusText } from "../../pres/status-labels.js";
+import { statusText, statusTone } from "../../pres/status-labels.js";
 import { nextStatuses } from "../status-fsm.js";
 import type { Order } from "../types.js";
 import { tr } from "./copy.js";
@@ -51,7 +51,7 @@ export const OrderDetail = ({
   return (
     <Screen title={order.orderNo} back={{ href: "#/orders", label: tr("orders.back", locale) }}>
       <div data-testid="order-detail-header">
-        <Pill kind="neutral" label={label(order.status, locale)} />
+        <Pill kind={statusTone(order.status)} label={label(order.status, locale)} />
         <span data-testid="order-detail-source">
           {tr("orders.source", locale)}: {order.source}
         </span>

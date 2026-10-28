@@ -5,11 +5,12 @@
  *   - every colour comes from a token in tokens.css (var(--…)); no literal colour here;
  *   - no fixed width or min-width above 360 px; wide content (tables) scrolls inside its own
  *     `.scroll-x` box, so the page never scrolls sideways at 360 px (BR9.1);
- *   - meaning is never colour alone: every banner carries a text label (NFR9.9).
+ *   - meaning is never colour alone: every banner and pill carries a text label (NFR9.9).
  *
  * The screens are mostly class-free semantic HTML (form, label, input, button, table, h2), so
- * the visual design is applied to elements inside the shell rather than by adding classes to
- * every screen. Colours follow the prototype's ledger palette via the brand tokens.
+ * the design is applied to elements inside the shell, plus a few `data-testid` hooks where a
+ * screen has a distinct layout (the orders summary, filter and quick-add rows, order detail,
+ * the paste result, manual order lines). Colours follow the prototype's ledger palette.
  */
 
 *,
@@ -21,6 +22,13 @@
 body {
   background: var(--color-canvas);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+a {
+  color: var(--color-link);
+  text-underline-offset: 3px;
 }
 
 .shell {
@@ -29,7 +37,7 @@ body {
   flex-direction: column;
 }
 
-/* ---- Header ------------------------------------------------------------------------- */
+/* ===== Header ========================================================================== */
 
 .shell__header {
   position: sticky;
@@ -39,61 +47,91 @@ body {
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-2) var(--space-6);
-  padding: var(--space-3) var(--space-6);
+  min-height: 64px;
+  padding: var(--space-2) var(--space-8);
   color: var(--color-header-text);
   background: var(--color-header-bg);
   box-shadow: var(--shadow-card);
 }
 
 .shell__header h1 {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
   margin: 0;
-  font-size: var(--font-size-lg);
+  font-size: 18px;
   font-weight: 700;
-  letter-spacing: 0.01em;
+  letter-spacing: -0.01em;
   color: var(--color-header-text);
+  white-space: nowrap;
+}
+
+/* The brand mark: a money-green tile with the taka sign. */
+.shell__header h1::before {
+  content: "৳";
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  font-size: 18px;
+  color: var(--color-on-primary);
+  background: var(--color-brand);
+  box-shadow: var(--shadow-button);
 }
 
 .shell__nav {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-1) var(--space-2);
+  gap: var(--space-1);
   flex: 1 1 auto;
 }
 
-a {
-  color: var(--color-link);
-  text-underline-offset: 2px;
-}
-
 .shell__nav a {
-  padding: var(--space-1) var(--space-3);
+  padding: 6px var(--space-3);
   border-radius: var(--radius-sm);
-  color: var(--color-header-text);
-  text-decoration: none;
   font-size: var(--font-size-sm);
   font-weight: 500;
+  text-decoration: none;
+  color: var(--color-header-muted);
+  transition:
+    background 120ms ease,
+    color 120ms ease;
 }
 
-.shell__nav a:hover {
-  background: var(--color-text-2);
+.shell__nav a:hover,
+.shell__nav a[aria-current="page"] {
+  color: var(--color-header-text);
+  background: var(--color-header-active);
+}
+
+.shell__nav a[aria-current="page"] {
+  font-weight: 600;
+}
+
+/* The language switch: its label and select sit together with a gap. */
+.shell__header > div:has(> select) {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
 }
 
 .shell__header label {
-  margin-inline-end: var(--space-2);
   font-size: var(--font-size-sm);
   color: var(--color-header-muted);
 }
 
 .shell__header select {
-  padding: var(--space-1) var(--space-2);
-  border: 1px solid var(--color-header-muted);
+  padding: 6px var(--space-6) 6px var(--space-3);
+  border: 1px solid var(--color-header-active);
   border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
   color: var(--color-header-text);
-  background: var(--color-header-bg);
+  background: var(--color-header-active);
 }
 
 .shell__header [data-testid="user-info"] {
-  display: flex;
+  display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-2) var(--space-3);
@@ -103,66 +141,76 @@ a {
 }
 
 .shell__header [data-testid="user-role"] {
-  padding: 2px var(--space-2);
-  border: 1px solid var(--color-header-muted);
+  padding: 2px 10px;
   border-radius: var(--radius-pill);
-  color: var(--color-header-text);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-brand);
+  background: var(--color-bg-success);
 }
 
 .shell__header button {
-  padding: var(--space-1) var(--space-3);
-  border: 1px solid var(--color-header-muted);
+  padding: 6px var(--space-3);
+  border: 1px solid var(--color-header-active);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
   color: var(--color-header-text);
   background: transparent;
+  box-shadow: none;
 }
 
 .shell__header button:hover:not(:disabled) {
-  background: var(--color-text-2);
+  background: var(--color-header-active);
 }
 
-/* ---- Main column ------------------------------------------------------------------------ */
+/* ===== Main column ======================================================================== */
 
 .shell__main {
   flex: 1 1 auto;
   width: 100%;
-  max-width: 1120px;
+  max-width: 1180px;
   margin: 0 auto;
-  padding: var(--space-8) var(--space-6);
+  padding: var(--space-8);
   /* BR9.1: a long unbroken string (an email, an id) breaks instead of widening the page. */
   overflow-wrap: anywhere;
 }
 
 .shell__toast {
-  padding: var(--space-2) var(--space-6);
+  padding: var(--space-3) var(--space-8);
+  font-weight: 600;
   color: var(--color-brand);
   background: var(--color-bg-success);
-  font-weight: 500;
 }
 
 /* A screen is a white card on the canvas. */
 .shell__main [data-testid="screen"] {
-  padding: var(--space-6);
+  padding: var(--space-8);
   border: 1px solid var(--color-line);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   background: var(--color-surface);
   box-shadow: var(--shadow-card);
 }
 
 /* Signed out (no primary nav), the screen is a form: a narrow centred card. */
 .shell:not(:has(.shell__nav)) .shell__main [data-testid="screen"] {
-  max-width: 520px;
-  margin: var(--space-6) auto 0;
+  max-width: 480px;
+  margin: 48px auto 0;
 }
 
 .shell__main h2 {
   margin: 0 0 var(--space-6);
-  font-size: var(--font-size-xl);
-  line-height: 1.25;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
 }
 
 .shell__main h3 {
-  margin: var(--space-6) 0 var(--space-3);
-  font-size: var(--font-size-lg);
+  margin: var(--space-8) 0 var(--space-3);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.005em;
 }
 
 .shell__main p {
@@ -180,41 +228,55 @@ a {
   margin-bottom: var(--space-1);
 }
 
-/* A list row with its own action (repeat a past order): figures spaced, action at the end. */
-.shell__main li:has(> button) {
-  display: flex;
-  flex-wrap: wrap;
+/* The back link on a sub-screen: above the title, clearly a way out. */
+.screen__back {
+  display: inline-flex;
   align-items: center;
-  gap: var(--space-2) var(--space-3);
-  max-width: 640px;
-  padding: var(--space-2) 0;
-  border-bottom: 1px solid var(--color-line);
+  gap: var(--space-1);
+  margin-bottom: var(--space-4);
+  padding: 6px var(--space-3) 6px 10px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--color-text-2);
+  background: var(--color-surface);
+  transition: background 120ms ease;
 }
 
-.shell__main li:has(> button) > button {
-  margin-inline-start: auto;
+.screen__back:hover {
+  color: var(--color-text);
+  background: var(--color-canvas);
 }
 
-/* ---- Forms ----------------------------------------------------------------------------- */
+/* ===== Forms ============================================================================= */
 
 .shell__main form {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
-  max-width: 480px;
+  max-width: 560px;
   margin-bottom: var(--space-4);
 }
 
 .field {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: 6px;
 }
 
 .shell__main label {
-  font-size: var(--font-size-sm);
+  font-size: 13px;
   font-weight: 600;
-  color: var(--color-text);
+  color: var(--color-text-2);
+}
+
+/* A label that wraps its control stacks them with a small gap. */
+.shell__main label:has(> input, > select, > textarea) {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 input,
@@ -229,15 +291,35 @@ button {
 .shell__main select,
 .shell__main textarea {
   width: 100%;
+  min-height: 44px;
   padding: 10px var(--space-3);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-control-border);
   border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-weight: 400;
   color: var(--color-text);
   background: var(--color-surface);
+  transition:
+    border-color 120ms ease,
+    box-shadow 120ms ease;
+}
+
+.shell__main input:not([type="checkbox"]):not([type="radio"]):hover,
+.shell__main select:hover,
+.shell__main textarea:hover {
+  border-color: var(--color-text-2);
+}
+
+.shell__main input:focus,
+.shell__main select:focus,
+.shell__main textarea:focus {
+  border-color: var(--color-brand);
+  box-shadow: var(--ring-brand);
 }
 
 .shell__main textarea {
-  min-height: 120px;
+  min-height: 160px;
+  line-height: 1.6;
   resize: vertical;
 }
 
@@ -246,22 +328,40 @@ button {
 }
 
 .field__error {
-  font-size: var(--font-size-sm);
+  font-size: 13px;
   color: var(--color-error);
 }
 
+/* ===== Buttons ============================================================================ */
+
 button {
   cursor: pointer;
-  padding: 10px var(--space-4);
-  border: 1px solid var(--color-brand);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 40px;
+  padding: 8px var(--space-4);
+  border: 1px solid var(--color-control-border);
   border-radius: var(--radius-sm);
+  font-size: 14px;
   font-weight: 600;
-  color: var(--color-brand);
+  color: var(--color-text);
   background: var(--color-surface);
+  box-shadow: var(--shadow-raised);
+  transition:
+    background 120ms ease,
+    border-color 120ms ease,
+    transform 60ms ease;
 }
 
 button:hover:not(:disabled) {
-  background: var(--color-bg-success);
+  border-color: var(--color-text-2);
+  background: var(--color-canvas);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(1px);
 }
 
 /* Buttons in a stacked form keep their own width rather than stretching across it. */
@@ -269,116 +369,56 @@ button:hover:not(:disabled) {
   align-self: flex-start;
 }
 
-/* A form's submit button is the primary action. */
+/* A form's submit button, and the paste screen's read and save, are the primary action. */
 .shell__main form button[type="submit"],
-.shell__main form > button:last-child {
-  align-self: flex-start;
+.shell__main form > button:last-child,
+[data-testid="paste-parse"],
+[data-testid="paste-save"] {
+  min-height: 44px;
+  padding-inline: var(--space-6);
+  border-color: var(--color-brand);
   color: var(--color-on-primary);
   background: var(--color-brand);
+  box-shadow: var(--shadow-button);
 }
 
 .shell__main form button[type="submit"]:hover:not(:disabled),
-.shell__main form > button:last-child:hover:not(:disabled) {
-  background: var(--color-brand-dark);
-}
-
-/* Filter and quick-add forms: labels on one row, their controls under them, side by side.
- * The labels and controls are siblings, so a two-row grid filled column by column pairs them. */
-.shell__main form[data-testid="orders-filter-form"],
-.shell__main form[data-testid="orders-quick-add"] {
-  display: grid;
-  grid-template-rows: auto auto auto;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(0, 1fr);
-  align-items: end;
-  gap: var(--space-1) var(--space-3);
-  max-width: none;
-  padding: var(--space-4);
-  border-radius: var(--radius-sm);
-  background: var(--color-canvas);
-}
-
-/* Row 1: an optional heading across the form; row 2: labels; row 3: controls and button. */
-.shell__main form[data-testid="orders-filter-form"] > :is(h2, h3, p),
-.shell__main form[data-testid="orders-quick-add"] > :is(h2, h3, p) {
-  grid-row: 1;
-  grid-column: 1 / span 5;
-  margin: 0 0 var(--space-2);
-}
-
-.shell__main form[data-testid="orders-filter-form"] > label,
-.shell__main form[data-testid="orders-quick-add"] > label {
-  grid-row: 2;
-}
-
-.shell__main form[data-testid="orders-filter-form"] > :is(input, select, button),
-.shell__main form[data-testid="orders-quick-add"] > :is(input, select, button) {
-  grid-row: 3;
-  align-self: stretch;
-}
-
-/* Links that start an action (new order, from a message, repeat) read as buttons. */
-.shell__main nav[data-testid="orders-new-links"] {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  margin-bottom: var(--space-4);
-}
-
-.shell__main nav[data-testid="orders-new-links"] a {
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-sm);
-  font-weight: 600;
-  text-decoration: none;
-  color: var(--color-on-primary);
-  background: var(--color-brand);
-}
-
-.shell__main nav[data-testid="orders-new-links"] a:hover {
+.shell__main form > button:last-child:hover:not(:disabled),
+[data-testid="paste-parse"]:hover:not(:disabled),
+[data-testid="paste-save"]:hover:not(:disabled) {
+  border-color: var(--color-brand-dark);
   background: var(--color-brand-dark);
 }
 
 button:disabled {
   cursor: not-allowed;
-  opacity: 0.6;
+  opacity: 0.55;
+  box-shadow: none;
 }
 
-/* The order list's labelled figures: one label + figure per row, aligned in two columns. */
-.summary {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  align-items: center;
-  gap: var(--space-2) var(--space-4);
-  margin-bottom: var(--space-4);
-  padding: var(--space-3) var(--space-4);
-  border-radius: var(--radius-sm);
-  background: var(--color-canvas);
-}
-
-.money-cell {
-  display: inline-flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-1) var(--space-2);
-}
-
-.money-cell__amount {
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-}
-
-/* ---- Pills: the label always carries the meaning; colour only reinforces it (NFR9.9). --- */
+/* ===== Pills: the label always carries the meaning; colour only reinforces it. ========= */
 
 [data-testid="pill"] {
-  display: inline-block;
-  padding: 2px var(--space-2);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
   border-radius: var(--radius-pill);
   font-size: 12px;
   font-weight: 600;
-  line-height: 1.6;
+  line-height: 1.5;
   white-space: nowrap;
   color: var(--color-text-2);
   background: var(--color-bg-neutral);
+}
+
+/* A small dot in the pill's own colour. */
+[data-testid="pill"]::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
 }
 
 [data-testid="pill"][data-kind="success"] {
@@ -396,33 +436,167 @@ button:disabled {
   background: var(--color-bg-error);
 }
 
-/* ---- Tables ---------------------------------------------------------------------------- */
+.money-cell {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px var(--space-2);
+}
+
+.money-cell__amount {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+  color: var(--color-text);
+}
+
+/* ===== Orders list ========================================================================== */
+
+/* Actions that start an order (new, from a message, repeat) read as buttons. */
+.shell__main nav[data-testid="orders-new-links"] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: calc(-1 * var(--space-2)) 0 var(--space-6);
+}
+
+.shell__main nav[data-testid="orders-new-links"] a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 8px var(--space-4);
+  border: 1px solid var(--color-control-border);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--color-text);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-raised);
+}
+
+.shell__main nav[data-testid="orders-new-links"] a:first-child {
+  border-color: var(--color-brand);
+  color: var(--color-on-primary);
+  background: var(--color-brand);
+  box-shadow: var(--shadow-button);
+}
+
+.shell__main nav[data-testid="orders-new-links"] a:hover {
+  background: var(--color-canvas);
+}
+
+.shell__main nav[data-testid="orders-new-links"] a:first-child:hover {
+  background: var(--color-brand-dark);
+}
+
+/* The summary: three stat tiles (label over figure), filled column by column. */
+.summary {
+  display: grid;
+  grid-template-rows: auto auto;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  column-gap: 0;
+  row-gap: var(--space-2);
+  margin-bottom: var(--space-6);
+  padding: var(--space-4) 0;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.summary > span:not(.money-cell) {
+  padding: 0 var(--space-6);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-2);
+}
+
+.summary > .money-cell {
+  padding: 0 var(--space-6);
+}
+
+.summary > :nth-child(n + 3) {
+  border-inline-start: 1px solid var(--color-line);
+}
+
+.summary .money-cell__amount {
+  flex-basis: 100%;
+  font-size: 26px;
+  line-height: 1.2;
+}
+
+/* Filter and quick-add: labels on one row, their controls under them, side by side.
+ * Row 1 holds an optional heading, row 2 the labels, row 3 the controls and the button. */
+.shell__main form[data-testid="orders-filter-form"],
+.shell__main form[data-testid="orders-quick-add"] {
+  display: grid;
+  grid-template-rows: auto auto auto;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  align-items: end;
+  gap: 6px var(--space-3);
+  max-width: none;
+  margin-bottom: var(--space-6);
+  padding: var(--space-4) var(--space-6) var(--space-6);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  background: var(--color-canvas);
+}
+
+.shell__main form[data-testid="orders-filter-form"] > :is(h2, h3, p),
+.shell__main form[data-testid="orders-quick-add"] > :is(h2, h3, p) {
+  grid-row: 1;
+  grid-column: 1 / span 5;
+  margin: var(--space-2) 0 var(--space-2);
+}
+
+.shell__main form[data-testid="orders-filter-form"] > label,
+.shell__main form[data-testid="orders-quick-add"] > label {
+  grid-row: 2;
+}
+
+.shell__main form[data-testid="orders-filter-form"] > :is(input, select, button),
+.shell__main form[data-testid="orders-quick-add"] > :is(input, select, button) {
+  grid-row: 3;
+  align-self: stretch;
+}
+
+/* ===== Tables ============================================================================== */
 
 /* BR9.1: the one place content may be wider than the window; it scrolls inside the box. */
 .scroll-x {
   max-width: 100%;
   overflow-x: auto;
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-6);
   border: 1px solid var(--color-line);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
 }
 
-.table {
+.table,
+.shell__main table[data-testid="order-detail-items"] {
   width: 100%;
   border-collapse: collapse;
-  font-size: var(--font-size-sm);
+  font-size: 14px;
 }
 
 .table th,
-.table td {
-  padding: var(--space-2) var(--space-3);
+.table td,
+.shell__main table[data-testid="order-detail-items"] th,
+.shell__main table[data-testid="order-detail-items"] td {
+  padding: 14px var(--space-4);
   text-align: start;
   vertical-align: middle;
   border-bottom: 1px solid var(--color-line);
 }
 
 .table th {
-  font-weight: 600;
+  padding-block: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   color: var(--color-text-2);
   background: var(--color-canvas);
 }
@@ -431,16 +605,320 @@ button:disabled {
   border-bottom: 0;
 }
 
+.table tbody tr {
+  transition: background 100ms ease;
+}
+
 .table tbody tr:hover td {
-  background: var(--color-canvas);
+  background: var(--color-brand-tint);
+}
+
+/* The first column is the record's key (order number, email): set it a little heavier. */
+.table td:first-child {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+/* The row's action sits at the far end. */
+.table td:last-child:has(> button) {
+  text-align: end;
+}
+
+.table td > button {
+  min-height: 32px;
+  padding: 4px var(--space-3);
+  font-size: 13px;
 }
 
 .mono {
-  font-family: ui-monospace, monospace;
-  font-size: var(--font-size-sm);
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 13px;
+  color: var(--color-text-2);
 }
 
-/* ---- Banners, toasts, locks, sheets -------------------------------------------------- */
+/* ===== Order detail ======================================================================= */
+
+.shell__main [data-testid="order-detail-header"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  margin: calc(-1 * var(--space-3)) 0 var(--space-6);
+  font-size: 14px;
+  color: var(--color-text-2);
+}
+
+.shell__main [data-testid="order-detail-contact"] {
+  display: grid;
+  gap: 2px;
+  max-width: 480px;
+  padding: var(--space-4) var(--space-6);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  background: var(--color-canvas);
+}
+
+.shell__main [data-testid="order-detail-contact"] h3 {
+  margin: 0 0 var(--space-2);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-2);
+}
+
+.shell__main [data-testid="order-detail-contact"] p {
+  margin: 0;
+  color: var(--color-text);
+}
+
+.shell__main [data-testid="order-detail-contact"] p:first-of-type {
+  font-weight: 600;
+}
+
+.shell__main table[data-testid="order-detail-items"] {
+  margin-bottom: var(--space-4);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+}
+
+.shell__main table[data-testid="order-detail-items"] tr:last-child td {
+  border-bottom: 0;
+}
+
+/* Discount, delivery and total: a label + figure per row; the total row stands out. */
+.shell__main table[data-testid="order-detail-items"] + div {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: var(--space-3) var(--space-6);
+  max-width: 420px;
+  margin: 0 0 var(--space-8) auto;
+  padding: var(--space-4) var(--space-6);
+  border-radius: var(--radius-md);
+  background: var(--color-canvas);
+}
+
+.shell__main table[data-testid="order-detail-items"] + div > span:not(.money-cell) {
+  font-size: 14px;
+  color: var(--color-text-2);
+}
+
+.shell__main table[data-testid="order-detail-items"] + div > :nth-last-child(-n + 2) {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-line);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.shell__main table[data-testid="order-detail-items"] + div > .money-cell {
+  justify-content: flex-end;
+}
+
+.shell__main [data-testid="order-detail-actions"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--color-line);
+}
+
+.shell__main [data-testid="order-detail-actions"] > span {
+  margin-inline-end: var(--space-2);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-2);
+}
+
+/* Repeat sits apart from the status moves, as the one primary action. */
+.shell__main [data-testid="order-detail-repeat"] {
+  margin-inline-start: auto;
+  border-color: var(--color-brand);
+  color: var(--color-on-primary);
+  background: var(--color-brand);
+  box-shadow: var(--shadow-button);
+}
+
+.shell__main [data-testid="order-detail-repeat"]:hover:not(:disabled) {
+  border-color: var(--color-brand-dark);
+  background: var(--color-brand-dark);
+}
+
+/* ===== New order (manual): each line is its own card with a two-column field grid ======= */
+
+.shell__main ol[data-testid="manual-lines"] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.shell__main ol[data-testid="manual-lines"] > li {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3) var(--space-4);
+  margin: 0;
+  padding: var(--space-4) var(--space-6) var(--space-6);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  background: var(--color-canvas);
+}
+
+/* The "Line n" heading, the description and the line total span the full card. */
+.shell__main ol[data-testid="manual-lines"] > li > span:first-child {
+  grid-column: 1 / -1;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-brand);
+}
+
+.shell__main ol[data-testid="manual-lines"] > li > label:nth-of-type(1),
+.shell__main ol[data-testid="manual-lines"] > li > :is(.money-cell, [role="alert"], button) {
+  grid-column: 1 / -1;
+}
+
+.shell__main ol[data-testid="manual-lines"] > li > button {
+  justify-self: start;
+}
+
+/* ===== Order from a message =============================================================== */
+
+[data-testid="paste-result"] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--color-line);
+}
+
+[data-testid="paste-result"] > p[data-testid="paste-contact"] {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  border-inline-start: 3px solid var(--color-brand);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  color: var(--color-text);
+  background: var(--color-brand-tint);
+}
+
+[data-testid="paste-result"] > [data-testid="pill"] {
+  align-self: flex-start;
+}
+
+.shell__main ol[data-testid="paste-items"] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.shell__main ol[data-testid="paste-items"] > li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 200px);
+  align-items: end;
+  gap: var(--space-3) var(--space-4);
+  margin: 0;
+  padding: var(--space-4) var(--space-6);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-raised);
+}
+
+.shell__main ol[data-testid="paste-items"] > li[data-incomplete="true"] {
+  border-color: var(--color-warning);
+}
+
+/* The item's own words span the card. */
+.shell__main ol[data-testid="paste-items"] > li > input {
+  grid-column: 1 / -1;
+  font-weight: 600;
+}
+
+.paste-item__facts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.fact {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text);
+  background: var(--color-canvas);
+}
+
+.fact__label {
+  font-weight: 500;
+  color: var(--color-text-2);
+}
+
+[data-testid="paste-result"] > label {
+  margin-bottom: -10px;
+}
+
+[data-testid="paste-result"] > input {
+  max-width: 240px;
+}
+
+[data-testid="paste-result"] > button {
+  align-self: flex-start;
+}
+
+/* ===== Lists with a row action (repeat a past order) ===================================== */
+
+.shell__main li:has(> button) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+  margin: 0;
+  padding: 14px var(--space-4);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.shell__main ul:has(> li > button),
+.shell__main
+  ol:has(> li > button):not([data-testid="manual-lines"]):not([data-testid="paste-items"]) {
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.shell__main li:has(> button):last-child {
+  border-bottom: 0;
+}
+
+.shell__main li:has(> button):hover {
+  background: var(--color-brand-tint);
+}
+
+.shell__main li:has(> button) > button {
+  margin-inline-start: auto;
+}
+
+/* ===== Banners, toasts, locks, sheets ===================================================== */
 
 .banner {
   margin-bottom: var(--space-4);
@@ -483,32 +961,32 @@ button:disabled {
 }
 
 .lock {
-  padding: var(--space-6);
-  border: 1px dashed var(--color-border);
+  padding: var(--space-8);
+  border: 1px dashed var(--color-control-border);
   border-radius: var(--radius-md);
-  background: var(--color-bg-muted);
+  background: var(--color-canvas);
   color: var(--color-text);
 }
 
 /* U3 (BR9.2): the link sheet; the link field never makes the page wider than the window. */
 .sheet {
   margin: var(--space-4) 0;
-  padding: var(--space-4);
+  padding: var(--space-4) var(--space-6);
   border: 1px solid var(--color-line);
   border-radius: var(--radius-md);
-  background: var(--color-canvas);
+  background: var(--color-brand-tint);
   color: var(--color-text);
 }
 
 .sheet__link {
   width: 100%;
-  font-family: ui-monospace, monospace;
-  font-size: var(--font-size-sm);
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 13px;
 }
 
-/* ---- Narrow windows (BR9.1, 360 px) ---------------------------------------------------- */
+/* ===== Narrow windows (BR9.1, 360 px) ========================================================== */
 
-@media (max-width: 600px) {
+@media (max-width: 760px) {
   .shell__header {
     padding: var(--space-2) var(--space-4);
   }
@@ -518,89 +996,42 @@ button:disabled {
   }
 
   .shell__main [data-testid="screen"] {
-    padding: var(--space-4);
+    padding: var(--space-6) var(--space-4);
+  }
+
+  .shell__main h2 {
+    font-size: 24px;
   }
 
   .shell__main form[data-testid="orders-filter-form"],
-  .shell__main form[data-testid="orders-quick-add"] {
+  .shell__main form[data-testid="orders-quick-add"],
+  .summary {
     display: flex;
     flex-direction: column;
     align-items: stretch;
   }
+
+  .summary > :nth-child(n + 3) {
+    border-inline-start: 0;
+  }
+
+  .summary > .money-cell {
+    padding-bottom: var(--space-3);
+  }
+
+  .shell__main ol[data-testid="manual-lines"] > li,
+  .shell__main ol[data-testid="paste-items"] > li {
+    grid-template-columns: minmax(0, 1fr);
+    padding: var(--space-4);
+  }
+
+  .shell__main table[data-testid="order-detail-items"] + div {
+    margin-inline-start: 0;
+  }
 }
 
-/* ---- Order detail ---------------------------------------------------------------------- */
-
-.shell__main [data-testid="order-detail-header"] {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-2) var(--space-3);
-  margin-bottom: var(--space-2);
+/* A line's "fill in item, quantity and price" note is a quiet hint until the line is valid. */
+.shell__main ol[data-testid="manual-lines"] > li > span[role="alert"] {
+  font-size: 13px;
   color: var(--color-text-2);
-}
-
-.shell__main [data-testid="order-detail-contact"] p {
-  margin-bottom: var(--space-1);
-}
-
-/* The items table is class-free in OrderDetail.tsx; it gets the same look as `.table`. */
-.shell__main table[data-testid="order-detail-items"] {
-  width: 100%;
-  margin-bottom: var(--space-4);
-  border-collapse: collapse;
-  font-size: var(--font-size-sm);
-}
-
-.shell__main table[data-testid="order-detail-items"] td,
-.shell__main table[data-testid="order-detail-items"] th {
-  padding: var(--space-2) var(--space-3);
-  text-align: start;
-  border-bottom: 1px solid var(--color-line);
-}
-
-/* Discount, delivery and total: a label + figure per row, right under the items. */
-.shell__main table[data-testid="order-detail-items"] + div {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  align-items: center;
-  gap: var(--space-2) var(--space-4);
-  max-width: 520px;
-  margin-bottom: var(--space-6);
-  padding: var(--space-3) var(--space-4);
-  border-radius: var(--radius-sm);
-  background: var(--color-canvas);
-}
-
-.shell__main [data-testid="order-detail-actions"] {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-2);
-  padding-top: var(--space-4);
-  border-top: 1px solid var(--color-line);
-}
-
-.shell__main [data-testid="order-detail-actions"] > span {
-  margin-inline-end: var(--space-2);
-  font-weight: 600;
-}
-
-/* The back link on a sub-screen: above the title, clearly a way out. */
-.screen__back {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-  margin-bottom: var(--space-3);
-  padding: var(--space-1) var(--space-3) var(--space-1) var(--space-2);
-  border-radius: var(--radius-sm);
-  font-size: var(--font-size-sm);
-  font-weight: 600;
-  text-decoration: none;
-  color: var(--color-link);
-  background: var(--color-canvas);
-}
-
-.screen__back:hover {
-  text-decoration: underline;
 }

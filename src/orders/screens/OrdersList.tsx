@@ -26,7 +26,8 @@ import { ORDER_STATUSES, type Locale, type OrderStatus } from "../../data/enums.
 import type { ShownErrorKind } from "../../i18n/error-copy.js";
 import { MoneyCell } from "../../pres/MoneyCell.js";
 import { RequestState, type RequestPhase } from "../../pres/RequestState.js";
-import { statusText } from "../../pres/status-labels.js";
+import { Pill } from "../../pres/Pill.js";
+import { statusText, statusTone } from "../../pres/status-labels.js";
 import { Screen } from "../../pres/Screen.js";
 import { useSubmitGuard } from "../../pres/use-submit-guard.js";
 import { buildQuickAddOrder } from "../input-modes.js";
@@ -320,7 +321,9 @@ export const OrdersList = (props: OrdersListProps): React.ReactElement => {
               {orders.map((o) => (
                 <tr key={o.id} data-testid="orders-row" data-order-id={o.id} data-status={o.status}>
                   <td>{o.orderNo}</td>
-                  <td>{statusText(o.status, locale)}</td>
+                  <td>
+                    <Pill kind={statusTone(o.status)} label={statusText(o.status, locale)} />
+                  </td>
                   <td data-testid="orders-row-source">{o.source}</td>
                   <td>
                     <MoneyCell

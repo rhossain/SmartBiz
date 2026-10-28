@@ -39,6 +39,14 @@ const pairs: Array<{ fg: string; bg: string; minRatio: number; label: string }> 
   { fg: "#0a5b44", bg: "#ffffff", minRatio: 4.5, label: "secondary button text on surface" },
   // --color-line is a decorative rule line (no contrast floor); text placed on it still reads.
   { fg: "#1a1a1a", bg: "#e4e0d8", minRatio: 4.5, label: "text on line tint" },
+  {
+    fg: "#8c8272",
+    bg: "#ffffff",
+    minRatio: 3.0,
+    label: "control border on surface (non-text 3:1)",
+  },
+  { fg: "#f3f1ec", bg: "#2a343c", minRatio: 4.5, label: "header text on active nav" },
+  { fg: "#0a5b44", bg: "#eff7f3", minRatio: 4.5, label: "brand text on brand tint" },
 ];
 
 const channel = (hex2: string): number => {

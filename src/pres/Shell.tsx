@@ -40,6 +40,8 @@ export interface ShellProps {
   readonly user?: ShellUser | null;
   /** The links this role may open, already filtered by App from the route map (BR2.1). */
   readonly nav?: ReadonlyArray<NavItem>;
+  /** The current hash path; the nav link it falls under is marked `aria-current="page"`. */
+  readonly currentPath?: string;
   /** The Shell-level toast (BR6.2), or nothing. */
   readonly toast?: React.ReactNode;
   readonly onSignOut?: () => void;
@@ -54,6 +56,10 @@ const ROLE_LABEL: Readonly<Record<Role, LKey>> = {
   accountant: "role.accountant",
 };
 
+/** A nav link is current on its own path and on every path beneath it (`/orders/new`). */
+const isCurrent = (to: string, path: string | undefined): boolean =>
+  path !== undefined && (path === to || path.startsWith(`${to}/`));
+
 export const Shell = (props: ShellProps): React.ReactElement => {
   const { locale, onLocaleChange, user, onSignOut, children } = props;
   const signedIn = user !== null && user !== undefined;
@@ -65,7 +71,12 @@ export const Shell = (props: ShellProps): React.ReactElement => {
         {signedIn ? (
           <nav aria-label="Primary" data-testid="shell-nav" className="shell__nav">
             {nav.map((n) => (
-              <a key={n.to} href={`#${n.to}`} data-testid={`nav-${n.to}`}>
+              <a
+                key={n.to}
+                href={`#${n.to}`}
+                data-testid={`nav-${n.to}`}
+                {...(isCurrent(n.to, props.currentPath) ? { "aria-current": "page" as const } : {})}
+              >
                 {lookup(n.label, locale)}
               </a>
             ))}

@@ -42,3 +42,26 @@ export const statusLabel = (status: OrderStatus): StatusLabel => {
 /** The label in the given locale. */
 export const statusText = (status: OrderStatus, locale: Locale): string =>
   locale === "bn" ? statusLabel(status).bn : statusLabel(status).en;
+
+/** The pill tone of a status: money in hand is success, a lost sale is danger, a split order
+ * is a warning, and work still moving is neutral. The label always carries the meaning; the
+ * tone only reinforces it (NFR9.9). Exhaustive like `statusLabel`. */
+export const statusTone = (status: OrderStatus): "neutral" | "success" | "warning" | "danger" => {
+  switch (status) {
+    case "delivered":
+    case "settled":
+      return "success";
+    case "cancelled":
+    case "returned":
+      return "danger";
+    case "partial":
+      return "warning";
+    case "new":
+    case "confirmed":
+    case "packed":
+    case "shipped":
+      return "neutral";
+    default:
+      return assertNever(status, "order status");
+  }
+};

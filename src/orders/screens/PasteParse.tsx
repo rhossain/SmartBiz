@@ -95,17 +95,31 @@ const ItemRow = (props: {
         value={item.text}
         onChange={(e) => props.onText(e.target.value)}
       />
-      <span data-testid="paste-item-quantity">{item.quantity}</span>
-      <span data-testid="paste-item-size">{item.size ?? "—"}</span>
-      <span data-testid="paste-item-colour">{item.colour ?? "—"}</span>
-      {item.incomplete ? <Pill kind="warning" label={tr("paste.incomplete", locale)} /> : null}
-      <input
-        aria-label={`${tr("orders.quick.price", locale)} ${item.lineNo}`}
-        data-testid={`paste-item-price-${item.lineNo}`}
-        inputMode="decimal"
-        value={price}
-        onChange={(e) => props.onPrice(e.target.value)}
-      />
+      <div className="paste-item__facts">
+        <span className="fact">
+          <span className="fact__label">{tr("orders.quick.quantity", locale)}</span>
+          <span data-testid="paste-item-quantity">{item.quantity}</span>
+        </span>
+        <span className="fact">
+          <span className="fact__label">{tr("paste.size", locale)}</span>
+          <span data-testid="paste-item-size">{item.size ?? "—"}</span>
+        </span>
+        <span className="fact">
+          <span className="fact__label">{tr("paste.colour", locale)}</span>
+          <span data-testid="paste-item-colour">{item.colour ?? "—"}</span>
+        </span>
+        {item.incomplete ? <Pill kind="warning" label={tr("paste.incomplete", locale)} /> : null}
+      </div>
+      <label className="paste-item__price">
+        {tr("orders.quick.price", locale)}
+        <input
+          aria-label={`${tr("orders.quick.price", locale)} ${item.lineNo}`}
+          data-testid={`paste-item-price-${item.lineNo}`}
+          inputMode="decimal"
+          value={price}
+          onChange={(e) => props.onPrice(e.target.value)}
+        />
+      </label>
     </li>
   );
 };

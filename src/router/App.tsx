@@ -448,6 +448,7 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
           : null
       }
       nav={nav}
+      currentPath={path}
       toast={toast}
       onSignOut={onSignOut}
       signingOut={signingOut}
