@@ -23,6 +23,22 @@ const pairs: Array<{ fg: string; bg: string; minRatio: number; label: string }> 
   { fg: "#1a1a1a", bg: "#f5f5f5", minRatio: 4.5, label: "lock text on bg-muted" },
   { fg: "#1457b2", bg: "#f5f5f5", minRatio: 4.5, label: "link on bg-muted" },
   { fg: "#1457b2", bg: "#ffffff", minRatio: 3.0, label: "focus outline on bg (non-text 3:1)" },
+  // The brand surface (tokens.css "Brand surface"): every text pair components.css uses.
+  { fg: "#1a1a1a", bg: "#f6f5f1", minRatio: 4.5, label: "text on canvas" },
+  { fg: "#1457b2", bg: "#f6f5f1", minRatio: 4.5, label: "link on canvas" },
+  { fg: "#414a52", bg: "#ffffff", minRatio: 4.5, label: "text-2 on surface" },
+  { fg: "#414a52", bg: "#f6f5f1", minRatio: 4.5, label: "text-2 on canvas" },
+  { fg: "#f3f1ec", bg: "#131a20", minRatio: 4.5, label: "header text on header" },
+  { fg: "#a8b2ba", bg: "#131a20", minRatio: 4.5, label: "header muted on header" },
+  { fg: "#ffffff", bg: "#0a5b44", minRatio: 4.5, label: "button text on brand" },
+  { fg: "#ffffff", bg: "#06382a", minRatio: 4.5, label: "button text on brand hover" },
+  { fg: "#0a5b44", bg: "#deefe8", minRatio: 4.5, label: "success pill" },
+  { fg: "#8f5c11", bg: "#f8ebd3", minRatio: 4.5, label: "warning pill" },
+  { fg: "#414a52", bg: "#efede7", minRatio: 4.5, label: "neutral pill" },
+  { fg: "#a4252b", bg: "#fbeaea", minRatio: 4.5, label: "danger pill" },
+  { fg: "#0a5b44", bg: "#ffffff", minRatio: 4.5, label: "secondary button text on surface" },
+  // --color-line is a decorative rule line (no contrast floor); text placed on it still reads.
+  { fg: "#1a1a1a", bg: "#e4e0d8", minRatio: 4.5, label: "text on line tint" },
 ];
 
 const channel = (hex2: string): number => {

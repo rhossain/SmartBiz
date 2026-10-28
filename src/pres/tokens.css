@@ -44,6 +44,27 @@
 
   /* U2 (BR9.1): the widest a fixed box may be; anything wider scrolls inside .scroll-x. */
   --width-max-fixed: 360px;
+
+  /* Brand surface, carried from the prototype palette (prototype/css/tokens.css): a warm
+   * ledger canvas, an ink header and money green as the primary action colour. Every
+   * text pair below is listed in tests/unit/contrast.test.ts. */
+  --color-canvas: #f6f5f1; /* #1a1a1a on it: 15.2:1; #1457b2 on it: 6.5:1 */
+  --color-surface: #ffffff;
+  --color-line: #e4e0d8; /* decorative rule line; control borders keep --color-border */
+  --color-text-2: #414a52; /* 8.2:1 on #ffffff; 7.6:1 on #f6f5f1 */
+  --color-header-bg: #131a20;
+  --color-header-text: #f3f1ec; /* 15.9:1 on #131a20 */
+  --color-header-muted: #a8b2ba; /* 8.4:1 on #131a20 */
+  --color-brand: #0a5b44; /* #ffffff on it: 7.6:1 */
+  --color-brand-dark: #06382a; /* #ffffff on it: 12.0:1 (hover) */
+  --color-bg-success: #deefe8; /* #0a5b44 on it: 6.5:1 */
+  --color-warning: #8f5c11;
+  --color-bg-warning: #f8ebd3; /* #8f5c11 on it: 4.9:1 */
+  --color-bg-neutral: #efede7; /* #414a52 on it: 7.0:1 */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-pill: 999px;
+  --shadow-card: 0 1px 2px rgba(11, 16, 20, 0.06), 0 4px 16px rgba(11, 16, 20, 0.06);
 }
 
 /* Body baseline. */
