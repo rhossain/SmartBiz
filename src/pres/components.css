@@ -1149,3 +1149,15 @@ button:disabled {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* Quick add: the confirmation sits under the row it confirms, across the whole form. */
+.shell__main form[data-testid="orders-quick-add"] > p[data-testid="quick-add-saved"] {
+  grid-row: 4;
+  grid-column: 1 / span 5;
+  margin: var(--space-2) 0 0;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  color: var(--color-brand);
+  background: var(--color-bg-success);
+}

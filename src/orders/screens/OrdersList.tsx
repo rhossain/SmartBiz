@@ -212,7 +212,19 @@ const QuickAdd = ({
       data-testid="orders-quick-add"
       onSubmit={(e) => {
         e.preventDefault();
-        void guard.submit(() => saveDraftGuarded(draft, onSave));
+        void guard.submit(async () => {
+          const saved = await saveDraftGuarded(draft, onSave);
+          // After a save the form starts over for the next order. Keeping the saved values
+          // left a greyed-out Save button that looked frozen (the draft was already sent).
+          // A refused save keeps what was typed (BR6.3).
+          if (saved) {
+            setDescription("");
+            setQuantity("1");
+            setPrice("");
+            setDelivery("0");
+          }
+          return saved;
+        });
       }}
     >
       <h3>{tr("orders.quick.title", locale)}</h3>
@@ -268,6 +280,11 @@ const QuickAdd = ({
         {tr("orders.save", locale)}
       </button>
       <DraftStatus draft={state} locale={locale} showSaved={notice !== "saved"} />
+      {guard.state === "saved" ? (
+        <p role="status" data-testid="quick-add-saved">
+          {tr("orders.quick.saved", locale)}
+        </p>
+      ) : null}
     </form>
   );
 };

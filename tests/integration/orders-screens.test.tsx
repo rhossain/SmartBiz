@@ -521,3 +521,65 @@ describe("U1 — list and detail request states", () => {
     expect(down.getByTestId("error-banner-retry")).toBeDefined();
   });
 });
+
+// Demo review (2026-10-28): after a quick-add save the form looked frozen — it kept the saved
+// values and a greyed-out Save. A saved order now clears the form and confirms under it; a
+// refused save keeps what was typed (BR6.3).
+describe("quick add after a save", () => {
+  const props = {
+    nextCursor: null,
+    locale: "en" as const,
+    canMutate: true,
+    onOpen: noop,
+    onLoadMore: noop,
+    onFilter: noop,
+  };
+  const fill = (view: ReturnType<typeof render>): void => {
+    fireEvent.change(view.getByTestId("quick-add-description"), { target: { value: "Kurti" } });
+    fireEvent.change(view.getByTestId("quick-add-price"), { target: { value: "500" } });
+  };
+  const value = (view: ReturnType<typeof render>, id: string): string =>
+    (view.getByTestId(id) as HTMLInputElement).value;
+
+  test("a saved order clears the form and says where the new order is", async () => {
+    const stub = makeSqlStub();
+    const saved = await seed(stub);
+    const view = render(
+      <OrdersList
+        {...props}
+        orders={[]}
+        draft={createOrderDraftStore()}
+        onSave={async () => ({ ok: true as const, value: saved })}
+      />,
+    );
+    fill(view);
+    await act(async () => {
+      fireEvent.click(view.getByTestId("quick-add-save"));
+    });
+    expect(value(view, "quick-add-description")).toBe("");
+    expect(value(view, "quick-add-price")).toBe("");
+    expect(value(view, "quick-add-quantity")).toBe("1");
+    expect(value(view, "quick-add-delivery")).toBe("0");
+    expect(view.getByTestId("quick-add-saved").textContent).toContain("top of the list");
+    fireEvent.change(view.getByTestId("quick-add-description"), { target: { value: "Next" } });
+    expect(view.queryByTestId("quick-add-saved")).toBeNull();
+  });
+
+  test("a refused save keeps what was typed and shows no confirmation", async () => {
+    const view = render(
+      <OrdersList
+        {...props}
+        orders={[]}
+        draft={createOrderDraftStore()}
+        onSave={async () => ({ ok: false as const, error: { kind: "unreachable" } }) as never}
+      />,
+    );
+    fill(view);
+    await act(async () => {
+      fireEvent.click(view.getByTestId("quick-add-save"));
+    });
+    expect(value(view, "quick-add-description")).toBe("Kurti");
+    expect(value(view, "quick-add-price")).toBe("500");
+    expect(view.queryByTestId("quick-add-saved")).toBeNull();
+  });
+});

@@ -30,6 +30,10 @@ const COPY = {
   "orders.total": L("মোট", "Total"),
   "orders.source": L("উৎস", "Source"),
   "orders.quick.title": L("দ্রুত অর্ডার", "Quick add"),
+  "orders.quick.saved": L(
+    "✓ সংরক্ষণ হয়েছে — নতুন অর্ডারটি তালিকার একদম উপরে",
+    "✓ Saved — the new order is at the top of the list",
+  ),
   "orders.quick.description": L("পণ্য", "Item"),
   "orders.quick.quantity": L("পরিমাণ", "Quantity"),
   "orders.quick.price": L("দাম (৳)", "Price (৳)"),
