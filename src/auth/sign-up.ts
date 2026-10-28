@@ -29,6 +29,7 @@ import { auditSignUp } from "./audit.js";
 import type { HashGate, HashGateFull } from "./hash-gate.js";
 import { toPublicUser } from "./public-user.js";
 import { insertSession, type NewSession } from "./session.js";
+import { isValidEmail } from "./schemas.js";
 import { businessExists } from "./setup.js";
 import type { PublicUser } from "./types.js";
 
@@ -58,13 +59,11 @@ export interface SignUpDeps {
   readonly correlationId?: string;
 }
 
-/** One `@`, something before it, a dot somewhere after it; no whitespace (BR2.4). */
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-export const EMAIL_MAX_LENGTH = 254;
 export const BUSINESS_NAME_MAX_LENGTH = 120;
 
-export const isValidEmail = (email: string): boolean =>
-  email.length >= 3 && email.length <= EMAIL_MAX_LENGTH && EMAIL_RE.test(email);
+// U3: the email rule (BR2.4) moved to the browser-safe schemas module, so the recover screen
+// and invite share it; it is re-exported here for the existing callers.
+export { isValidEmail };
 
 const isUniqueViolation = (e: unknown): boolean =>
   typeof e === "object" && e !== null && (e as { code?: unknown }).code === "23505";

@@ -139,8 +139,8 @@ is implemented, together with the full existing suite, before the next layer sta
 
 ### Step 7 — Business logic: implement (BR1.1–BR1.3, BR2.3–BR2.5; S20; NFR1.9, NFR1.10, NFR1.12)
 
-- [ ] `src/auth/delegation.ts`: `INVITABLE`, `canResetTarget`, `canSupersede`; used by invite, reset link and the staff list (`invitableRoles`, `canReset`).
-- [ ] `src/auth/schemas.ts`: C6 request schemas (strict; email trim + lower-case transform) and response schemas (B1–B5), shared with the client.
+- [x] `src/auth/delegation.ts`: `INVITABLE`, `canResetTarget`, `canSupersede`; used by invite, reset link and the staff list (`invitableRoles`, `canReset`).
+- [x] `src/auth/schemas.ts`: C6 request schemas (strict; email trim + lower-case transform) and response schemas (B1–B5), shared with the client.
 
 ### Step 8 — Business logic: write and run its tests
 

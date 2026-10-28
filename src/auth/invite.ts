@@ -45,7 +45,7 @@ import {
   type StaffRole,
 } from "./delegation.js";
 import { hashToken, INVITATION_TTL_MS, linkFor, newToken } from "./one-time-token.js";
-import { isValidEmail } from "./sign-up.js";
+import { isValidEmail } from "./schemas.js";
 import type { TxHooks } from "./types.js";
 
 /** BR2.5, NFR6.22: at most this many members and invitations per answer. */
