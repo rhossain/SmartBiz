@@ -6,22 +6,49 @@
 
 ## Tokens used
 
+> **Updated 2026-10-28 (visual refresh before the demo).** The first version of this table listed a
+> plain link-blue palette and "no new colour token". The shipped stylesheet now carries the
+> prototype's ledger palette (`prototype/css/tokens.css`) as brand tokens. Every text pair is
+> measured in `tests/unit/contrast.test.ts`, and the warning gap below is closed.
+
 | Token | Value | Used for |
 |-------|-------|----------|
-| `--color-text` | `#1a1a1a` (16.1:1 on white) | body text |
-| `--color-bg` / `--color-bg-muted` | `#ffffff` / `#f5f5f5` | page / card and skeleton |
-| `--color-link` | `#1457b2` (7.0:1) | links, primary button background (`--color-on-primary` text 7.5:1) |
-| `--color-error` | `#a4252b` (6.8:1) | error text, banners, `danger` pill |
-| `--color-success` | `#1f6f3d` (5.4:1) | saved toast, `success` pill |
-| `--color-border` | `#6b6b6b` (4.9:1) | input borders, dividers (meets 3:1 for UI) |
-| `--space-1…8` | 4–32 px | all spacing; gutter `--space-4` |
-| `--font-ui` | Hind Siliguri, Noto Sans Bengali, system-ui | all text (offline fallback chain kept) |
-| `--font-size-sm/base/lg/xl` | 14/16/20/24 px | hint / body / h2 / h1 |
-| `--focus-ring` | 3 px `rgba(20,87,178,.4)` | every focusable element |
+| `--color-text` | `#1a1a1a` (16.1:1 on white) | body text, figures |
+| `--color-text-2` | `#414a52` (8.2:1 on white, 7.6:1 on canvas) | labels, secondary text, table heads |
+| `--color-canvas` | `#f6f5f1` | page background (warm ledger paper), panels inside cards |
+| `--color-surface` | `#ffffff` | screen cards, inputs, secondary buttons |
+| `--color-line` | `#e4e0d8` | decorative rules and card borders (no contrast floor) |
+| `--color-control-border` | `#8c8272` (3.6:1) | borders that bound a control (WCAG 1.4.11) |
+| `--color-header-bg` / `-text` / `-muted` / `-active` | `#131a20` / `#f3f1ec` (15.9:1) / `#a8b2ba` (8.4:1) / `#2a343c` | ink header, nav links, current page |
+| `--color-brand` / `--color-brand-dark` | `#0a5b44` (white on it 7.6:1) / `#06382a` | primary buttons, brand mark, focused input; hover |
+| `--color-brand-tint` | `#eff7f3` (brand on it 7.0:1) | row hover, contact strip, link sheet |
+| `--color-bg-success` | `#deefe8` (brand on it 6.5:1) | `success` pill, role badge, saved toast |
+| `--color-warning` / `--color-bg-warning` | `#8f5c11` / `#f8ebd3` (4.9:1) | `warning` pill, incomplete paste item border |
+| `--color-error` / `--color-bg-error` | `#a4252b` / `#fbeaea` (6.3:1) | `danger` pill, error banners |
+| `--color-bg-neutral` | `#efede7` (text-2 on it 7.0:1) | `neutral` pill, fact chips |
+| `--color-link` | `#1457b2` (7.0:1) | inline links only (no longer the primary button colour) |
+| `--radius-sm/md/lg/pill` | 8 / 12 / 16 / 999 px | controls / panels / screen cards / pills |
+| `--shadow-card`, `--shadow-raised`, `--shadow-button`, `--ring-brand` | layered soft shadows | cards, buttons, primary buttons, focus halo |
+| `--space-1…8` | 4–32 px | all spacing; card padding `--space-8`, gutter `--space-4` on phones |
+| `--font-ui` | system-ui, Hind Siliguri, Noto Sans Bengali, Kohinoor Bangla | Latin from the platform face; Bangla through the offline chain |
+| `--focus-ring-outline` | 3 px solid link colour | every focusable element (unchanged) |
 
-**Gap:** there is no `warning` colour token yet, but `Pill` has a `warning` kind. The functional design
-must add `--color-warning` with a measured ratio ≥ 4.5:1 on white (for example `#8a5a00`, 5.9:1), and
-the contrast harness must cover it before `RiskChip` level 2 or `LowStockMark` ship.
+**Warning gap: closed.** `--color-warning` `#8f5c11` on `--color-bg-warning` measures 4.9:1 and is in
+the contrast harness.
+
+### Visual language
+
+- **Type scale:** screen title 28 px / 700 (24 px on phones); section heading 17 px / 700; labels
+  13 px / 600 in `--color-text-2`; body 15–16 px; stat figures 26 px / 700 with tabular numerals.
+- **Surfaces:** canvas page → white screen card (radius 16, `--shadow-card`) → canvas panels inside
+  the card (filters, totals, line cards) with a `--color-line` border.
+- **Controls:** 44 px inputs and primary buttons, 40 px secondary buttons, 32 px row buttons. A
+  focused input gets the brand border plus `--ring-brand`.
+- **Buttons:** one filled brand button per area; the rest are white with a control border. "New
+  order" (orders list) and "Repeat order" (order detail) are the primary actions on their screens.
+- **Pills:** 12 px / 600 with a leading dot in the pill's colour; the text always carries the
+  meaning (NFR9.9). Order status uses `statusTone`: delivered and settled → success; cancelled and
+  returned → danger; partial → warning; new, confirmed, packed and shipped → neutral.
 
 ## Screen → components
 
@@ -50,6 +77,10 @@ the contrast harness must cover it before `RiskChip` level 2 or `LowStockMark` s
 | `card flush` + `list-item` CSS | kept as BEM-ish classes in the production stylesheet; the `classes` harness gap (team.md) gets these as its first targets |
 
 ## Classes the new screens add
+
+Added by the 2026-10-28 refresh: `screen__back` (the back link on sub-screens), `paste-item__facts`,
+`fact`, `fact__label` (labelled quantity, size and colour chips) and `paste-item__price`.
+
 `api-state`, `api-state__banner`, `api-state__skeleton`, `link-sheet`, `link-sheet__field`,
 `search-box`, `list-item`, `list-item__lead`, `list-item__body`, `chip--selectable`, `variant-row`,
 `variant-row--low`. Each must be reachable from a rendered screen (the `classes` harness rule).

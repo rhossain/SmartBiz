@@ -310,3 +310,164 @@ The same panel follows any email (AC1.6.1); no link ever appears here. The comma
 | সেটিংস (Settings) | ✓ | — | — | — |
 
 The header shows the signed-in email and role name, and a "সাইন আউট" button (US1.4).
+
+## 16. Visual refresh, as built (2026-10-28)
+
+> Added after the pre-demo review found the screens plain and, in places, run together ("2Mনীল",
+> "লাইন 1পণ্য"). These mockups record the shipped look at desktop width (≥ 760 px); below 760 px every
+> multi-column row stacks into one column (verified at 360 px by `scripts/browser-check.ts`, 16
+> screens). Tokens and the visual language are in `design-system-mapping.md` §Tokens used. Where this
+> section and §1–§15 differ on *look*, this section wins; behaviour, copy and states in §1–§15 are
+> unchanged.
+
+### 16.1 Shell header (every signed-in screen)
+
+```
+┌──────────────────────────────────────────────────────────────────────────────────────┐
+│ [৳] SmartBiz BD  (অর্ডার) দৈনিক কার্ড  অডিট ট্রেইল  কর্মী  ব্যবসা  সেটিংস    ভাষা [বাংলা ▾]  owner@… (মালিক) [সাইন আউট] │
+└──────────────────────────────────────────────────────────────────────────────────────┘
+  ink bar, sticky, 64 px     (…) = current page: filled --color-header-active, 600 weight
+```
+Elements: brand tile (`৳` on brand green) + name; nav links (muted; the current page is filled and
+marked `aria-current="page"`, including its sub-pages such as `/orders/new`); language label and
+select grouped with a gap; email in muted text; role as a green pill badge; sign-out as a quiet
+outlined button.
+
+### 16.2 Orders list — `/orders`
+
+```
+┌ screen card (white, radius 16) ─────────────────────────────────────────────────────┐
+│ অর্ডার                                                                     28 px    │
+│ [নতুন অর্ডার]  [মেসেজ থেকে]  [আগের অর্ডার থেকে]     first = filled brand, others outline │
+│ ┌──────────────────────┬──────────────────────┬──────────────────────┐              │
+│ │ আয় (অর্জিত)           │ হাতে এসেছে             │ চলমান                 │  stat tiles │
+│ │ ৳১৫,০৬০.০০            │ ৳১২,৫৯০.০০            │ ৳২১,১৮০.০০            │  26 px      │
+│ │ ●earned ●partial      │ ●realized ●partial    │ ●pipeline ●partial    │             │
+│ └──────────────────────┴──────────────────────┴──────────────────────┘              │
+│ ┌ canvas panel ───────────────────────────────────────────────────────────────────┐ │
+│ │ অবস্থা        কাস্টমার আইডি     শুরুর তারিখ      শেষ তারিখ                        │ │
+│ │ [সব     ▾]   [__________]   [dd/mm/yyyy]   [dd/mm/yyyy]   [   ছাঁকুন   ]       │ │
+│ └─────────────────────────────────────────────────────────────────────────────────┘ │
+│ ┌ table ──────────────────────────────────────────────────────────────────────────┐ │
+│ │ #          অবস্থা              উৎস          মোট                                   │ │
+│ │ ORD-1016   ●টাকা পাওয়া গেছে    manual       ৳৫,৮৬০.০০ ●realized ●complete  [খুলুন] │ │
+│ │ ORD-1015   ●ফেরত               paste-parse  ৳১,৪৭০.০০ ●no sale ●unknown    [খুলুন] │ │
+│ │ ORD-1013   ●আংশিক              manual       ৳২,৩৪০.০০ ●pipeline ●partial   [খুলুন] │ │
+│ └─────────────────────────────────────────────────────────────────────────────────┘ │
+│ ┌ canvas panel ───────────────────────────────────────────────────────────────────┐ │
+│ │ দ্রুত অর্ডার                                                                       │ │
+│ │ পণ্য           পরিমাণ          দাম (৳)         ডেলিভারি চার্জ (৳)                   │ │
+│ │ [__________]  [1_______]    [________]     [0_________]     [  সংরক্ষণ  ]        │ │
+│ └─────────────────────────────────────────────────────────────────────────────────┘ │
+└──────────────────────────────────────────────────────────────────────────────────────┘
+```
+Elements: title; three action links styled as buttons; the summary as three stat tiles (label over
+figure over basis and completeness pills, tiles split by a rule); filter and quick-add as one-row
+canvas panels (labels above controls); the table with uppercase heads, the order number in 600
+weight, the status as a tone-coded pill (green settled/delivered, red cancelled/returned, amber
+partial, neutral otherwise) and a small row button at the far end; rows tint brand on hover.
+
+### 16.3 Order detail — `/orders/:id`
+
+```
+┌ screen card ───────────────────────────────────────────────────────────────────────┐
+│ (← অর্ডারে ফিরুন)                                            pill-shaped back link   │
+│ ORD-1013                                                                            │
+│ ●আংশিক   উৎস: manual                                                               │
+│ ┌ contact (canvas) ─────────────┐                                                   │
+│ │ যোগাযোগ                       │                                                   │
+│ │ Sadia Afrin          (600)    │                                                   │
+│ │ 01922113344                   │                                                   │
+│ │ Mymensingh Sadar              │                                                   │
+│ └───────────────────────────────┘                                                   │
+│ পণ্যসমূহ                                                                             │
+│ ┌──────────────────────────────────────────────────────────────────────────────┐   │
+│ │ 1   Kids' panjabi set        2   ৳১,৯৮০.০০ ●pipeline ●partial               │   │
+│ │ 2   Tupi cap                 2   ৳২৪০.০০   ●pipeline ●partial               │   │
+│ └──────────────────────────────────────────────────────────────────────────────┘   │
+│                                              ┌ totals (canvas) ──────────────────┐ │
+│                                              │ ছাড়              ৳০.০০            │ │
+│                                              │ ডেলিভারি চার্জ      ৳১২০.০০          │ │
+│                                              │ ─────────────────────────────────  │ │
+│                                              │ মোট  (700)        ৳২,৩৪০.০০        │ │
+│                                              └────────────────────────────────────┘ │
+│ ───────────────────────────────────────────────────────────────────────────────── │
+│ অবস্থা বদলান  [ডেলিভারি হয়েছে] [টাকা পাওয়া গেছে] [ফেরত] [বাতিল]     [আবার অর্ডার করুন] │
+└──────────────────────────────────────────────────────────────────────────────────────┘
+```
+Elements: back link; order number as title; status pill + source; contact card; bordered items
+table; right-aligned totals panel with the total row ruled off and bold; action bar under a rule
+with the status moves as outline buttons and Repeat as the one filled button at the far end.
+
+### 16.4 New order — `/orders/new`
+
+```
+┌ screen card ─────────────────────────────────────────┐
+│ (← অর্ডারে ফিরুন)                                     │
+│ নতুন অর্ডার                                           │
+│ ┌ line card (canvas) ───────────────────────────────┐ │
+│ │ লাইন 1                       brand, uppercase 13 px │ │
+│ │ পণ্য                                               │ │
+│ │ [_______________________________________________] │ │
+│ │ ভ্যারিয়েন্ট (ঐচ্ছিক)        পরিমাণ                    │ │
+│ │ [____________________]   [1___________________]   │ │
+│ │ দাম (৳)                  লাইনের ছাড় (৳)             │ │
+│ │ [____________________]   [0___________________]   │ │
+│ │ পণ্য, পরিমাণ ও দাম ঠিকভাবে লিখুন      quiet hint     │ │
+│ └───────────────────────────────────────────────────┘ │
+│ [লাইন যোগ করুন]                                        │
+│ অর্ডারের ছাড় (৳)  [__________]                          │
+│ ডেলিভারি চার্জ (৳) [__________]                          │
+│ [   সংরক্ষণ   ]  primary                               │
+└───────────────────────────────────────────────────────┘
+```
+Elements: each line is its own card — heading, description across the card, then a two-column
+grid (variant | quantity, price | line discount), then the line total or the hint; the "Line n"
+heading no longer runs into the first label.
+
+### 16.5 Order from a message — `/orders/new/paste-parse` (after "পড়ুন")
+
+```
+┌ screen card ───────────────────────────────────────────────────────────────────────┐
+│ (← অর্ডারে ফিরুন)                                                                    │
+│ মেসেজ থেকে অর্ডার                                                                     │
+│ মেসেজ                                                                                │
+│ [ the pasted message, 160 px min ............................................ ]     │
+│ [  পড়ুন  ]  primary                                                                   │
+│ ──────────────────────────────────────────────────────────────────────────────────  │
+│ ▌মিতু দাস · 01811002233 · গুলশান ২, ঢাকা           brand-tint strip, brand left rule │
+│ ●ক্যাশ অন ডেলিভারি                                                                    │
+│ ┌ item card (amber border: incomplete) ──────────────────────────────────────────┐ │
+│ │ [লাল বা কালো শাড়ি ১টা                                                       ]   │ │
+│ │ (পরিমাণ 1) (সাইজ —) (রং —) ●বিস্তারিত বেছে নিন              দাম (৳)            │ │
+│ │                                                          [__________]        │ │
+│ └────────────────────────────────────────────────────────────────────────────────┘ │
+│ ┌ item card ─────────────────────────────────────────────────────────────────────┐ │
+│ │ [নীল কুর্তি M সাইজ ২টা                                                      ]   │ │
+│ │ (পরিমাণ 2) (সাইজ M) (রং নীল)                               দাম (৳)             │ │
+│ │                                                          [__________]        │ │
+│ └────────────────────────────────────────────────────────────────────────────────┘ │
+│ ডেলিভারি চার্জ (৳)  [0_______]                                                        │
+│ [  সংরক্ষণ  ]  primary, disabled until every item has a price                        │
+└──────────────────────────────────────────────────────────────────────────────────────┘
+```
+Elements: contact strip; cash-on-delivery pill when detected; one card per item — its own words in
+an editable field, then quantity, size and colour as labelled chips (`(label value)`; `—` when the
+parser left it empty), the "pick the details" warning pill when incomplete, and a labelled price
+input. These chips replace the run-together "2Mনীল" text.
+
+### 16.6 Signed-out screens — `/sign-up`, `/sign-in`, `/recover`, `/reset`, `/accept-invite`
+
+The form sits in a 480 px card centred 48 px below the header (no nav in the header), with the same
+44 px fields and one filled primary button. Layout and copy otherwise follow §1–§4.
+
+### 16.7 Lists with a row action — repeat a past order, staff
+
+```
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ ORD-1016  ৳৫,৮৬০.০০ ●realized ●complete                          [বেছে নিন]  │
+│ ORD-1015  ৳১,৪৭০.০০ ●no sale ●unknown                             [বেছে নিন]  │
+└──────────────────────────────────────────────────────────────────────────────┘
+```
+Elements: a bordered list; each row spaces its figures with a gap, puts its button at the far end
+and tints brand on hover. Staff and audit tables use the §16.2 table style.
