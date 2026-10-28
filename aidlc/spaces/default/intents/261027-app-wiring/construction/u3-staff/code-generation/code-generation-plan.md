@@ -158,10 +158,10 @@ is implemented, together with the full existing suite, before the next layer sta
 ### Step 10 — API / endpoint: write and run its tests (NFR1.11, NFR3.17–NFR3.19, NFR4.3, NFR5.9)
 
 - [ ] `tests/spec/role-table.ts`: six API rows (staff routes owner/manager; three public), `/staff` screen row (owner, manager; feature "কর্মী"; heading), `LINK_ALLOW_LIST` = the two staff POST routes; `tests/spec/fixtures.ts`: success bodies for the six routes.
-- [ ] `tests/integration/staff-routes.test.ts`: identical 410 bodies byte for byte (unknown, used, expired, inactive); 403 for every matrix refusal; 409 for an existing member and an inactive reset target; `Cache-Control: no-store` on both link responses; `Referrer-Policy: no-referrer` on `GET /`; log capture: no token, link, password or email in any line.
-- [ ] `tests/unit/server-deps.test.ts`: `startServer`'s deps carry no `hooks`.
-- [ ] The U2 walks (server, client, no-secret) pass with the new rows and allow-lists.
-- [ ] `tests/realdb/outage.realdb.test.ts` (extend): accept answers 503 with the token unused.
+- [x] `tests/integration/staff-routes.test.ts`: identical 410 bodies byte for byte (unknown, used, expired, inactive); 403 for every matrix refusal; 409 for an existing member and an inactive reset target; `Cache-Control: no-store` on both link responses; `Referrer-Policy: no-referrer` on `GET /`; log capture: no token, link, password or email in any line.
+- [x] `tests/unit/server-deps.test.ts`: `startServer`'s deps carry no `hooks`.
+- [x] The U2 walks (server, client, no-secret) pass with the new rows and allow-lists.
+- [x] `tests/realdb/outage.realdb.test.ts` (extend): accept answers 503 with the token unused.
 
 ### Step 11 — Frontend behaviour: implement (BR7.1, BR9.1–BR9.5; S24 client side; D-02)
 
