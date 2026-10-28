@@ -174,10 +174,10 @@ is implemented, together with the full existing suite, before the next layer sta
 
 ### Step 12 — Frontend behaviour: write and run its tests (NFR5.8, NFR9.10, NFR9.11)
 
-- [ ] `tests/integration/staff-screen.test.tsx`: tables, role select limited to `invitableRoles`, reset button only where `canReset`, link sheet shown once and cleared on close, 409 message, Sales Staff lock.
-- [ ] `tests/integration/token-screens.test.tsx`: `t` removed from `location.hash` before the first fetch (stubbed fetch log), no request URL carries the token, 410 message, accept → `/orders`, reset → `/sign-in` with the notice, recover always the neutral sentence.
-- [ ] `tests/unit/link-sheet.test.tsx`: copy with Enter, focus, Bangla copy.
-- [ ] Every existing U1/U2 test stays green; the client walk covers `/staff`.
+- [x] `tests/integration/staff-screen.test.tsx`: tables, role select limited to `invitableRoles`, reset button only where `canReset`, link sheet shown once and cleared on close, 409 message, Sales Staff lock.
+- [x] `tests/integration/token-screens.test.tsx`: `t` removed from `location.hash` before the first fetch (stubbed fetch log), no request URL carries the token, 410 message, accept → `/orders`, reset → `/sign-in` with the notice, recover always the neutral sentence.
+- [x] `tests/unit/link-sheet.test.tsx`: copy with Enter, focus, Bangla copy.
+- [x] Every existing U1/U2 test stays green; the client walk covers `/staff`.
 
 ### Step 13 — Environment / build configuration (S25, NFR3.25, NFR7.20, NFR8.19, NFR6.19–NFR6.21; I-03, I-04)
 
