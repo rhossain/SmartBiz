@@ -65,6 +65,7 @@ import {
   type OrdersStore,
 } from "../client/orders-store.js";
 import {
+  accountCreated,
   needsSignIn,
   passwordChanged,
   rememberRoute,
@@ -355,6 +356,7 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
       draft.set(EMPTY_DRAFT);
       passwordChanged(sessions);
     },
+    onAccountCreated: () => accountCreated(sessions),
     navigate,
   };
 

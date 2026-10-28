@@ -114,7 +114,13 @@ export const signInRoute = defineRoute<Record<string, never>, Record<string, nev
       const r = await signIn(
         deps.sql,
         { email: ctx.body.email, password: ctx.body.password, presentedToken: ctx.presentedToken },
-        { limiter: deps.limiter, hashGate: deps.hashGate, correlationId: ctx.correlationId },
+        {
+          limiter: deps.limiter,
+          hashGate: deps.hashGate,
+          correlationId: ctx.correlationId,
+          // U3 G-01: the race test's pause point; production never sets it (P-02).
+          ...(deps.hooks !== undefined ? { hooks: deps.hooks } : {}),
+        },
       );
       if (!r.ok) {
         return r.error.kind === "rate_limited"

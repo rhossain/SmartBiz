@@ -204,3 +204,63 @@ describe("sign-in (W4)", () => {
     expect(audit).toBeLessThan(indexOf(stub.calls, /INSERT INTO sessions/));
   });
 });
+
+/*
+ * U3 review G-01 (BR4.3, NFR3.21): a password reset or a deactivation that commits between
+ * the verify and the session transaction wins. Restated: the transaction locks the business
+ * then the user row before it reads the hash and `active` again; a changed hash or an inactive
+ * user issues no session, answers the identical `invalid_credentials` and audits the failure
+ * with its reason code. (The real race on Postgres is in tests/realdb/staff.realdb.test.ts.)
+ */
+describe("sign-in re-checks the user under its lock (G-01)", () => {
+  const raced = async (change: (owner: Record<string, unknown>) => void) => {
+    const stub = await seedOwner();
+    const owner = stub.state.users[0] as Record<string, unknown>;
+    const r = await signIn(
+      stub.sql,
+      { email: OWNER_EMAIL, password: OWNER_PASSWORD, presentedToken: null },
+      {
+        ...authDeps(),
+        hooks: {
+          beforeTransaction: async () => {
+            change(owner);
+          },
+        },
+      },
+    );
+    return { stub, r };
+  };
+
+  test("a hash changed after the verify: invalid_credentials, no session, bad_password audited", async () => {
+    const { stub, r } = await raced((owner) => {
+      owner["password_hash"] = "$argon2id$v=19$changed-by-a-reset";
+    });
+    expect(r).toEqual({ ok: false, error: { kind: "invalid_credentials" } });
+    expect(stub.state.sessions).toHaveLength(0);
+    expect(stub.state.auditLog.map((a) => [a["action"], JSON.parse(String(a["payload"]))])).toEqual(
+      [["auth.sign_in.failure", { reason: "bad_password" }]],
+    );
+  });
+
+  test("a user deactivated after the verify: invalid_credentials, no session, inactive audited", async () => {
+    const { stub, r } = await raced((owner) => {
+      owner["active"] = false;
+    });
+    expect(r).toEqual({ ok: false, error: { kind: "invalid_credentials" } });
+    expect(stub.state.sessions).toHaveLength(0);
+    expect(JSON.parse(String(stub.state.auditLog[0]?.["payload"]))).toEqual({ reason: "inactive" });
+  });
+
+  test("the lock order is business (key share) → user row, before any write", async () => {
+    const { stub, r } = await raced(() => undefined);
+    expect(r.ok).toBe(true);
+    const order = [
+      /FROM businesses WHERE id = \? FOR KEY SHARE/,
+      /SELECT password_hash, active FROM users WHERE id = \? FOR UPDATE/,
+      /INSERT INTO audit_log/,
+      /INSERT INTO sessions/,
+    ].map((re) => indexOf(stub.calls, re));
+    expect(order.every((i) => i >= 0)).toBe(true);
+    expect([...order].sort((a, b) => a - b)).toEqual(order);
+  });
+});

@@ -20,6 +20,9 @@
  *     orders list (BR9.5);
  *   - reset (204, every session of the person ended): this tab is signed out and sign-in
  *     opens with "পাসওয়ার্ড বদলানো হয়েছে; নতুন পাসওয়ার্ড দিয়ে সাইন ইন করুন" (BR9.5);
+ *   - accept answering 500 `internal` (review G-05): the account and the spent invitation
+ *     commit before the session is created (as U1's sign-up does), so sign-in opens with
+ *     "অ্যাকাউন্ট তৈরি হয়েছে; সাইন ইন করুন". Every other refusal keeps its own message;
  *   - recover (202): the neutral sentence, for every answer and every failure (BR9.4); an
  *     email that is not an email is refused here, before anything is sent.
  */
@@ -39,6 +42,8 @@ export interface TokenRouteState {
   readonly onAccepted: () => Promise<void>;
   /** After a 204 from reset: this tab is signed out, with the password-changed notice. */
   readonly onPasswordChanged: () => void;
+  /** After a 500 from accept (G-05): signed out, with the account-created notice. */
+  readonly onAccountCreated: () => void;
   /**
    * The hash router's `navigate`, passed in by App: importing hash-router here would close an
    * import cycle (hash-router → routes → this module). Where to go is decided here.
@@ -79,6 +84,14 @@ const AcceptInviteRoute = ({ state }: { readonly state: TokenRouteState }): Reac
   const { token, hasToken } = useLinkToken("/accept-invite");
   const onSubmit = async (password: string): Promise<ApiFailure | null> => {
     const r = await state.staff.accept({ token: token.current ?? "", password });
+    if (!r.ok && r.kind === "internal") {
+      // G-05: the account and the spent invitation commit before the session is created, so
+      // a 500 most likely left a working account: send the person to sign in, saying so.
+      token.current = null;
+      state.onAccountCreated();
+      state.navigate("/sign-in");
+      return null;
+    }
     if (!r.ok) return r;
     token.current = null;
     await state.onAccepted();

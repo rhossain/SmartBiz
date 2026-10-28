@@ -18,6 +18,12 @@
  *      first), delete the session this browser presented (fixation defence, BR3.3) and
  *      insert the new one. The B1 zero-UUID business fallback is gone: the business comes
  *      from `users.business_id` (U1 migration 0011).
+ *   5. U3 review G-01 (BR4.3, NFR3.21): that transaction first takes the U3 lock order —
+ *      the business row (key share), then the user row FOR UPDATE — and re-reads the hash
+ *      and `active`. A password reset or a deactivation that committed while the password
+ *      was being verified makes it issue no session and answer the identical
+ *      `invalid_credentials`, audited as a failure; otherwise a sign-in racing a reset could
+ *      outlive it. The attempt reservation is cleared only after a session was issued.
  */
 import type { Sql } from "../db/client.js";
 import type { Locale, Role } from "../data/enums.js";
@@ -31,7 +37,7 @@ import type { HashGate, HashGateFull } from "./hash-gate.js";
 import { toPublicUser } from "./public-user.js";
 import { deleteSessionByToken, insertSession, type NewSession } from "./session.js";
 import { theBusinessId } from "./setup.js";
-import type { PublicUser, UserRecord } from "./types.js";
+import type { PublicUser, TxHooks, UserRecord } from "./types.js";
 
 export type SignInError =
   | { readonly kind: "invalid_credentials" }
@@ -55,6 +61,8 @@ export interface SignInDeps {
   readonly limiter: AttemptLimiter;
   readonly hashGate: HashGate;
   readonly correlationId?: string;
+  /** U3 G-01: test-only pause point between the verify and the session transaction. */
+  readonly hooks?: TxHooks;
 }
 
 interface UserRow {
@@ -119,11 +127,29 @@ export const signIn = async (
     return err(INVALID);
   }
 
-  deps.limiter.clear(key);
-  const session = await sql.begin(async (tx) => {
+  await deps.hooks?.beforeTransaction?.();
+  const outcome = await sql.begin(async (tx): Promise<NewSession | SignInFailureReason> => {
+    // U3 G-01: a reset that commits while the password is being verified must win. The U3
+    // lock order is business → users: a key-share lock on the business (sign-ins do not
+    // queue behind each other, but wait for an invite or reset holding it), then the user
+    // row FOR UPDATE, then the hash and `active` are read again. If either changed since the
+    // verify, no session is issued.
+    await tx`SELECT id FROM businesses WHERE id = ${user.businessId} FOR KEY SHARE`;
+    const [current] = await tx<{ password_hash: string; active: boolean }[]>`
+      SELECT password_hash, active FROM users WHERE id = ${user.id} FOR UPDATE
+    `;
+    if (current === undefined || !current.active) return "inactive";
+    if (current.password_hash !== user.passwordHash) return "bad_password";
     await auditSignIn(tx, user.businessId, user.id, deps.correlationId);
     if (input.presentedToken !== null) await deleteSessionByToken(tx, input.presentedToken);
     return insertSession(tx, { userId: user.id, businessId: user.businessId, at: now() });
   });
+  if (typeof outcome === "string") {
+    // The same answer as any failed sign-in (BR4.1); the failure is audited as usual.
+    await recordFailure(sql, user, outcome, deps.correlationId);
+    return err(INVALID);
+  }
+  const session = outcome;
+  deps.limiter.clear(key);
   return ok({ user: toPublicUser(user), businessId: user.businessId, session });
 };

@@ -283,6 +283,17 @@ const handleStaff = (
     sessions: Row[];
   },
 ): Row[] | undefined => {
+  // U3 G-01: sign-in's session transaction (business key share, then the user row).
+  if (/^\s*SELECT id FROM businesses WHERE id = \? FOR KEY SHARE\s*$/i.test(text)) {
+    const [id] = params;
+    return state.businesses.filter((b) => b["id"] === id).map((b) => ({ id: b["id"] }));
+  }
+  if (/^\s*SELECT password_hash, active FROM users WHERE id = \? FOR UPDATE\s*$/i.test(text)) {
+    const [id] = params;
+    return state.users
+      .filter((u) => u["id"] === id)
+      .map((u) => ({ password_hash: u["password_hash"], active: u["active"] }));
+  }
   if (/^\s*SELECT id FROM businesses WHERE id = \? FOR UPDATE\s*$/i.test(text)) {
     const [id] = params;
     return state.businesses.filter((b) => b["id"] === id).map((b) => ({ id: b["id"] }));

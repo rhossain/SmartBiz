@@ -91,11 +91,5 @@ export {
   SIGN_IN_LIMIT,
   type AttemptLimiter,
 } from "./attempt-limiter.js";
-export {
-  sendInviteEmail,
-  noopEmailGateway,
-  failingEmailGateway,
-  type EmailGateway,
-  type SmtpError,
-} from "./email.js";
+// U3 review G-06: the B1 email gateway (src/auth/email.ts) is deleted; no email is ever sent.
 export type { PublicUser, SessionView, TxHooks, UserRecord } from "./types.js";

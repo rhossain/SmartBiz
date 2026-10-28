@@ -23,14 +23,20 @@
  *   - a completed reset deletes every session of the user and closes the user's other open
  *     resets (NFR3.21); a new link closes the earlier one (NFR3.22);
  *   - a deadlock injected twice answers `gone` with nothing written; once, it succeeds;
- *   - only the token's SHA-256 is stored, never the token (NFR3.16).
+ *   - only the token's SHA-256 is stored, never the token (NFR3.16);
+ *   - review G-01: a sign-in that verified the old password and pauses before its session
+ *     transaction, while a reset commits, answers 401 and leaves no session (NFR3.21);
+ *   - review G-03: an email that became a user after the invite makes accept 409
+ *     `email_taken` from real Postgres's unique index, the invitation unused (NFR7.21);
+ *   - review G-04: `listStaff`'s query on Postgres — role order, used and expired invitations
+ *     filtered, 200 rows and `truncated` (NFR6.22).
  * Every case gets its own fresh database. Database URLs come from the realdb environment.
  */
-import { afterAll, describe, expect, test } from "bun:test";
+import { afterAll, describe, expect, setDefaultTimeout, test } from "bun:test";
 import type postgres from "postgres";
 import { acceptInvitation } from "../../src/auth/accept-invite.js";
 import { createHashGate } from "../../src/auth/hash-gate.js";
-import { createInvitation } from "../../src/auth/invite.js";
+import { createInvitation, listStaff } from "../../src/auth/invite.js";
 import { completeReset, createResetLink } from "../../src/auth/password-reset.js";
 import { insertSession, resolveSession } from "../../src/auth/session.js";
 import { sha256 } from "../../src/auth/sha256.js";
@@ -40,6 +46,8 @@ import type { Sql } from "../../src/db/client.js";
 import type { Role } from "../../src/data/enums.js";
 import type { Uuid } from "../../src/data/uuid.js";
 import { authDeps } from "../helpers/auth-fixtures.js";
+import { harness, request } from "../helpers/server-harness.js";
+import { makeSqlStub } from "../helpers/sql-stub.js";
 import { deferred, NEW_PASSWORD, tokenOf } from "../helpers/staff-fixtures.js";
 import { freshDatabase, realdbEnabled, sqlState, type FreshDatabase } from "./fresh-database.js";
 
@@ -48,6 +56,10 @@ const SALES = "c3000000-0000-4000-8000-0000000000c3" as Uuid;
 const WAIT_MS = 10_000;
 
 const opened: FreshDatabase[] = [];
+
+// Several cases migrate two fresh databases and hash with argon2; on a loaded machine that
+// passes bun's 5 s default. This is a test time-out, not a quality target.
+setDefaultTimeout(30_000);
 
 interface World {
   readonly db: FreshDatabase;
@@ -462,5 +474,103 @@ describe.skipIf(!realdbEnabled)("staff flows on real Postgres (U3)", () => {
       { t: string }[]
     >`SELECT string_agg(payload::text, ' ') AS t FROM audit_log`;
     expect((audit?.t ?? "").includes("@")).toBe(false); // … the audit payloads never (BR8.1)
+  });
+
+  // ---------------------------------------------------------------- review fixes (G-01, G-03, G-04)
+
+  test("a sign-in racing a reset cannot outlive it: 401 and no session (G-01, NFR3.21)", async () => {
+    const w = await world("signinrace");
+    const link = await createResetLink(w.db.app, {
+      via: "terminal",
+      by: null,
+      email: "owner@realdb.test",
+      now: now(),
+      port: 3000,
+    });
+    if (!link.ok) throw new Error(link.error.kind);
+    // Sign-in has verified the OLD password and pauses before its session transaction.
+    const reached = deferred();
+    const release = deferred();
+    const h = harness(makeSqlStub(), {
+      sql: w.db.app,
+      clock: () => new Date(),
+      hooks: {
+        beforeTransaction: async () => {
+          reached.resolve();
+          await release.promise;
+        },
+      },
+    });
+    const signingIn = h.send(
+      request("POST", "/api/auth/sign-in", {
+        body: { email: "owner@realdb.test", password: NEW_PASSWORD },
+      }),
+    );
+    await reached.promise;
+    // The reset commits: new hash, every session of the Owner deleted.
+    expect((await reset(w, tokenOf(link.value.link))).ok).toBe(true);
+    release.resolve();
+    const answer = await signingIn;
+    expect([answer.status, await answer.text()]).toEqual([401, '{"error":"invalid_credentials"}']);
+    expect(answer.headers.get("Set-Cookie")).toBeNull();
+    expect(await count(w, `SELECT count(*) FROM sessions WHERE user_id = '${w.owner.id}'`)).toBe(0);
+    expect(
+      await count(
+        w,
+        "SELECT count(*) FROM audit_log WHERE action = 'auth.sign_in.failure' AND payload->>'reason' = 'bad_password'",
+      ),
+    ).toBe(1);
+  });
+
+  test("accept when the email became a user meanwhile: 409 email_taken, invitation unused (G-03)", async () => {
+    const w = await world("emailrace");
+    const token = await invitedToken(w, "late@realdb.test");
+    // Created after the invite's member check, before accept: only the unique index sees it.
+    await w.db.admin`
+      INSERT INTO users (id, business_id, email, password_hash, role, active, locale)
+      VALUES (gen_random_uuid(), ${w.businessId}, 'LATE@realdb.test', 'x', 'accountant', true, 'bn')
+    `;
+    expect(await accept(w, token)).toEqual({ ok: false, error: { kind: "email_taken" } });
+    expect(await count(w, "SELECT count(*) FROM invitations WHERE used_at IS NULL")).toBe(1);
+    expect(await auditCount(w, "auth.invite_accepted")).toBe(0);
+  });
+
+  test("listStaff on Postgres: role order, used and expired filtered, 200 and truncated (G-04)", async () => {
+    const w = await world("liststaff");
+    await w.db.admin`
+      INSERT INTO users (id, business_id, email, password_hash, role, active, locale)
+      VALUES (gen_random_uuid(), ${w.businessId}, 'Acc@realdb.test', 'x', 'accountant', false, 'bn')
+    `;
+    const pending = await invitedToken(w, "pending@realdb.test");
+    expect(pending.length).toBe(43);
+    await w.db.admin`
+      INSERT INTO invitations (id, business_id, email, role, accept_token_hash, expires_at, used_at, created_by)
+      VALUES (gen_random_uuid(), ${w.businessId}, 'expired@realdb.test', 'accountant', 'h-expired',
+              now() - interval '1 minute', NULL, ${w.owner.id}),
+             (gen_random_uuid(), ${w.businessId}, 'used@realdb.test', 'accountant', 'h-used',
+              now() + interval '1 day', now(), ${w.owner.id})
+    `;
+    const list = await listStaff(w.db.app, {
+      businessId: w.businessId,
+      actor: w.manager,
+      now: now(),
+    });
+    expect(list.members.map((m) => [m.role, m.email, m.canReset])).toEqual([
+      ["owner", "owner@realdb.test", false],
+      ["manager", "manager@realdb.test", false],
+      ["sales_staff", "sales@realdb.test", true],
+      ["accountant", "Acc@realdb.test", false],
+    ]);
+    expect(list.invitations.map((i) => i.email)).toEqual(["pending@realdb.test"]);
+    expect(list.truncated).toBe(false);
+    await w.db.admin`
+      INSERT INTO users (id, business_id, email, password_hash, role, active, locale)
+      SELECT gen_random_uuid(), ${w.businessId}, 'bulk' || g || '@realdb.test', 'x', 'sales_staff', true, 'bn'
+      FROM generate_series(1, 200) AS g
+    `;
+    const big = await listStaff(w.db.app, { businessId: w.businessId, actor: w.owner, now: now() });
+    expect(big.members).toHaveLength(200);
+    expect(big.truncated).toBe(true);
+    expect(big.members[0]?.role).toBe("owner");
   });
 });

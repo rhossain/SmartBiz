@@ -74,6 +74,11 @@ export const SignInScreen = ({ signIn, onSignedIn, notice }: SignInProps): React
             {t("sign_in.password_changed")}
           </p>
         ) : null}
+        {notice === "account_created" && failure === null ? (
+          <p role="status" data-testid="sign-in-account-created">
+            {t("sign_in.account_created")}
+          </p>
+        ) : null}
         {failure !== null && isBannerFailure(failure) ? (
           <ErrorBanner kind={failure.kind} locale={locale} correlationId={failure.correlationId} />
         ) : null}

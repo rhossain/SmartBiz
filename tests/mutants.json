@@ -224,6 +224,54 @@
       "find": "  handler: async (ctx) => {\n    const outcome = recover(ctx.body);",
       "replace": "  handler: async (ctx, deps) => {\n    await deps.sql`SELECT id FROM users WHERE lower(email) = ${ctx.body.email} LIMIT 1`;\n    const outcome = recover(ctx.body);",
       "test": "tests/integration/staff-routes.test.ts"
+    },
+    {
+      "id": "sign-in-skips-recheck",
+      "why": "Sign-in re-reads the hash and active flag under the user-row lock before issuing a session (U3 review G-01, BR4.3, NFR3.21); without it a sign-in racing a reset outlives the reset.",
+      "file": "src/auth/sign-in.ts",
+      "find": "    if (current === undefined || !current.active) return \"inactive\";\n    if (current.password_hash !== user.passwordHash) return \"bad_password\";\n",
+      "replace": "",
+      "test": "tests/realdb/staff.realdb.test.ts"
+    },
+    {
+      "id": "invite-ignores-supersede-guard",
+      "why": "A Manager may replace only a pending invitation it could have issued (U3 NFR1.12, F-02, review G-02).",
+      "file": "src/auth/invite.ts",
+      "find": "        if (pending.some((p) => !canSupersede(input.actor.role, p.role))) {",
+      "replace": "        if (pending.some((p) => p.role === \"owner\")) {",
+      "test": "tests/unit/invite.test.ts"
+    },
+    {
+      "id": "reset-link-ignores-target-guard",
+      "why": "Reset links follow the delegation matrix: never the Owner, never oneself, a Manager never another Manager (U3 BR1.3, NFR1.10, review G-02).",
+      "file": "src/auth/password-reset.ts",
+      "find": "  if (!canResetTarget(input.by, row)) return err({ kind: \"forbidden\" });\n",
+      "replace": "",
+      "test": "tests/unit/password-reset.test.ts"
+    },
+    {
+      "id": "accept-skips-locked-recheck",
+      "why": "Accept re-checks used and expired under the invitation lock (U3 S19, NFR7.16, review G-02); without it a racing accept acts on its stale unlocked read.",
+      "file": "src/auth/accept-invite.ts",
+      "find": "        if (!usable(inv, input.now)) return err(GONE);\n",
+      "replace": "",
+      "test": "tests/realdb/staff.realdb.test.ts"
+    },
+    {
+      "id": "reset-skips-locked-recheck",
+      "why": "A reset re-checks the token and the user under the users and resets locks (U3 S19, NFR7.16, review G-02); without it a racing reset uses a spent link.",
+      "file": "src/auth/password-reset.ts",
+      "find": "        if (user === undefined || !user.active || mine === undefined) return err(GONE);\n        if (!isLive(mine.expires_at, input.now)) return err(GONE);\n",
+      "replace": "",
+      "test": "tests/realdb/staff.realdb.test.ts"
+    },
+    {
+      "id": "accept-keeps-invitation-unused",
+      "why": "An accepted invitation is marked used in the same transaction (U3 BR3.1, BR3.2, review G-02); left unused, its link works again.",
+      "file": "src/auth/accept-invite.ts",
+      "find": "        await tx`UPDATE invitations SET used_at = ${at}::timestamptz WHERE id = ${inv.id}`;\n",
+      "replace": "",
+      "test": "tests/unit/accept-invite.test.ts"
     }
   ]
 }

@@ -36,7 +36,7 @@ export type SessionStatus = "unknown" | "signed_out" | "signed_in";
  * What the sign-in screen says first: "আবার সাইন ইন করুন" after a session ended in use (W9),
  * or, since U3, "পাসওয়ার্ড বদলানো হয়েছে; …" after a completed reset (BR9.5).
  */
-export type SessionNotice = "reauth" | "password_changed" | null;
+export type SessionNotice = "reauth" | "password_changed" | "account_created" | null;
 
 export interface SessionState {
   readonly status: SessionStatus;
@@ -111,6 +111,14 @@ export const sessionEnded = (
  */
 export const passwordChanged = (store: SessionStore): void =>
   store.set({ status: "signed_out", session: null, notice: "password_changed", returnTo: null });
+
+/**
+ * U3 review G-05: accept answered 500. The account and the spent invitation commit before the
+ * session is created (as U1's sign-up does), so a 500 after that commit leaves an account the
+ * person can sign in to; sign-in opens with "অ্যাকাউন্ট তৈরি হয়েছে; সাইন ইন করুন".
+ */
+export const accountCreated = (store: SessionStore): void =>
+  store.set({ status: "signed_out", session: null, notice: "account_created", returnTo: null });
 
 /** W9 step 2: where to go after sign-in; clears the stored route so it is used once. */
 export const returnRoute = (store: SessionStore): string => {

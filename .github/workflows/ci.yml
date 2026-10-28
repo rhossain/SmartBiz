@@ -217,8 +217,8 @@ jobs:
       # Test stage 11 — E2E flows (smoke)
       # In B1 the E2E is the integration suite (no Playwright yet — that
       # lands with the U5 surface in B5). The integration tests cover
-      # the audit-append flow, reversal flow, single-tenant boundary,
-      # and email-gateway-failure graceful degradation.
+      # the audit-append flow, reversal flow and single-tenant boundary
+      # (U3 G-06 removed the email gateway and its test: no email is sent).
       - name: "11. e2e smoke (integration suite — UC-1.9, UC-1.10, BR1.4, BR3.4)"
         run: bun test tests/integration
 

@@ -139,6 +139,11 @@ export const L_TABLE: Translations = Object.freeze({
     "আপনার মালিক বা এই কম্পিউটারের টার্মিনাল থেকে রিসেট লিংক নিন",
     "Get a reset link from your owner or from the terminal on this computer",
   ),
+  // U3 review G-05: accept answered 500 after the account was committed.
+  "sign_in.account_created": L(
+    "অ্যাকাউন্ট তৈরি হয়েছে; সাইন ইন করুন",
+    "Your account has been created; please sign in",
+  ),
   "sign_in.password_changed": L(
     "পাসওয়ার্ড বদলানো হয়েছে; নতুন পাসওয়ার্ড দিয়ে সাইন ইন করুন",
     "The password has been changed; sign in with the new password",

@@ -89,6 +89,9 @@ const container = (
     onPasswordChanged: () => {
       done.push("password_changed");
     },
+    onAccountCreated: () => {
+      done.push("account_created");
+    },
     navigate: (to) => {
       done.push(`navigate ${to}`);
     },
@@ -259,6 +262,57 @@ describe("token screens (BR7.1, NFR5.8)", () => {
       expect(JSON.parse(calls[0]?.body ?? "{}")).toEqual({ email: "owner@acme.test" });
       expect(view.getByTestId("recover-sign-in").getAttribute("href")).toBe("#/sign-in");
       expect(document.body.innerHTML.includes("t=")).toBe(false);
+      cleanup();
+    }
+  });
+
+  test("accept 500: sign-in with 'অ্যাকাউন্ট তৈরি হয়েছে; সাইন ইন করুন' (review G-05)", async () => {
+    setLocale("bn");
+    await setHash(`#/accept-invite?t=${TOKEN}`);
+    const { view } = mountApp({
+      "GET /api/session": () => json(401, { error: "unauthenticated" }),
+      "GET /api/setup": () => json(200, { businessExists: true }),
+      "POST /api/invitations/accept": () =>
+        json(500, { error: "internal", correlationId: "0123456789abcdef" }),
+    });
+    await waitFor(() => expect(view.getByTestId("accept-form")).toBeDefined(), WAIT);
+    typePasswords(view);
+    await act(async () => {
+      fireEvent.click(view.getByTestId("accept-submit"));
+    });
+    await waitFor(() => expect(window.location.hash).toBe("#/sign-in"), WAIT);
+    await waitFor(
+      () =>
+        expect(view.getByTestId("sign-in-account-created").textContent).toBe(
+          "অ্যাকাউন্ট তৈরি হয়েছে; সাইন ইন করুন",
+        ),
+      WAIT,
+    );
+  });
+
+  test("accept: any other refusal keeps its own message and stays on the screen (G-05)", async () => {
+    setLocale("bn");
+    for (const [status, body] of [
+      [409, { error: "email_taken" }],
+      [503, { error: "db_unavailable" }],
+    ] as const) {
+      await setHash(`#/accept-invite?t=${TOKEN}`);
+      const { view, done } = container(renderAcceptInvite, {
+        "POST /api/invitations/accept": () => json(status, body),
+      });
+      typePasswords(view);
+      await act(async () => {
+        fireEvent.click(view.getByTestId("accept-submit"));
+      });
+      await waitFor(
+        () =>
+          expect(
+            view.queryByTestId("accept-error") ?? view.queryByTestId("error-banner"),
+          ).not.toBeNull(),
+        WAIT,
+      );
+      expect({ status, done }).toEqual({ status, done: [] });
+      expect(view.getByTestId("accept-form")).toBeDefined();
       cleanup();
     }
   });
