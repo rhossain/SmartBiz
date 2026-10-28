@@ -46,9 +46,8 @@ describe("not-available screen", () => {
       "/daily-card": "দৈনিক কার্ড",
       "/business": "ব্যবসা",
       "/settings": "সেটিংস",
-      "/accept-invite": "আমন্ত্রণ গ্রহণ",
-      "/reset": "নতুন পাসওয়ার্ড",
-      "/recover": "পাসওয়ার্ড পুনরুদ্ধার",
+      // U3 built /accept-invite, /reset and /recover; they are covered by
+      // tests/integration/token-screens.test.tsx.
     };
     for (const [path, name] of Object.entries(expected)) {
       const route = routes.get(path as never);

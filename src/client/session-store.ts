@@ -32,7 +32,11 @@ const NOT_A_RETURN_TARGET: ReadonlySet<string> = new Set([
 ]);
 
 export type SessionStatus = "unknown" | "signed_out" | "signed_in";
-export type SessionNotice = "reauth" | null;
+/**
+ * What the sign-in screen says first: "আবার সাইন ইন করুন" after a session ended in use (W9),
+ * or, since U3, "পাসওয়ার্ড বদলানো হয়েছে; …" after a completed reset (BR9.5).
+ */
+export type SessionNotice = "reauth" | "password_changed" | null;
 
 export interface SessionState {
   readonly status: SessionStatus;
@@ -100,6 +104,13 @@ export const sessionEnded = (
   });
   navigate("/sign-in");
 };
+
+/**
+ * U3 (W5, BR9.5): a reset succeeded. Every session of that person has ended on the server, so
+ * this tab is signed out too, and sign-in opens with the password-changed notice.
+ */
+export const passwordChanged = (store: SessionStore): void =>
+  store.set({ status: "signed_out", session: null, notice: "password_changed", returnTo: null });
 
 /** W9 step 2: where to go after sign-in; clears the stored route so it is used once. */
 export const returnRoute = (store: SessionStore): string => {

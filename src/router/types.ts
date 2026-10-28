@@ -26,6 +26,7 @@ export type RoutePath =
   | "/orders/:id/transition"
   | "/daily-card"
   | "/audit-trail"
+  | "/staff"
   | "/business"
   | "/settings"
   | "/lock"

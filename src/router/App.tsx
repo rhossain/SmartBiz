@@ -32,6 +32,15 @@
  *     list that follows a save;
  *   - `/audit-trail` gets the audit client (`deps.audit`, built over the same HTTP client
  *     when a caller does not pass one).
+ *
+ * U3 (BR9.1–BR9.5, BR10.1; review D-02):
+ *   - the navigation gains "কর্মী" (`/staff`), shown exactly to the roles its route opens for
+ *     (Owner, Manager), like every other item;
+ *   - App builds the staff client (`deps.staff`, over the same HTTP client when not given) and
+ *     passes it to the `/staff` container and to the three token containers, with what they
+ *     cannot do themselves: after an accepted invitation, load the session the new cookie
+ *     carries; after a reset, sign this tab out with the password-changed notice (every
+ *     session of the person has ended on the server); and the router's `navigate`.
  */
 import * as React from "react";
 import { hasCapability } from "../auth/capability.js";
@@ -39,6 +48,7 @@ import type { GateSession } from "../auth/three-layer-gate.js";
 import type { SessionResponse } from "../auth/schemas.js";
 import type { AuditRouteState } from "../audit/screens/AuditTrail.js";
 import { createAuditApi, type AuditApi } from "../client/audit-api.js";
+import { createStaffApi, type StaffApi } from "../client/staff-api.js";
 import type { AuthApi } from "../client/auth-api.js";
 import type { ApiFailure, ApiFailureKind, HttpClient } from "../client/http.js";
 import type { OrdersApi } from "../client/orders-api.js";
@@ -56,6 +66,7 @@ import {
 } from "../client/orders-store.js";
 import {
   needsSignIn,
+  passwordChanged,
   rememberRoute,
   returnRoute,
   sessionEnded,
@@ -84,6 +95,8 @@ import { Shell, type NavItem } from "../pres/Shell.js";
 import { Toast } from "../pres/Toast.js";
 import { dispatchPath } from "./dispatch.js";
 import { matchRoute, navigate } from "./hash-router.js";
+import type { StaffRouteState } from "./render-staff-route.js";
+import type { TokenRouteState } from "./render-token-routes.js";
 import { routes } from "./routes.js";
 import type { AuthRouteState } from "./screens/render-auth-route.js";
 import type { Route, RoutePath } from "./types.js";
@@ -97,6 +110,8 @@ export interface AppDeps {
   readonly draft: OrderDraftStore;
   /** The audit client (U2); built over `http` when not given. */
   readonly audit?: AuditApi;
+  /** The staff client (U3); built over `http` when not given. */
+  readonly staff?: StaffApi;
 }
 
 /** S12: the places in the header; each item's access is its route's, from the route map. */
@@ -104,6 +119,7 @@ export const NAV_ITEMS: ReadonlyArray<{ readonly to: RoutePath; readonly label: 
   { to: "/orders", label: "nav.orders" },
   { to: "/daily-card", label: "nav.daily_card" },
   { to: "/audit-trail", label: "nav.audit_trail" },
+  { to: "/staff", label: "nav.staff" },
   { to: "/business", label: "nav.business" },
   { to: "/settings", label: "nav.settings" },
 ];
@@ -171,6 +187,7 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
   // BR4.1: the feature a redirect to /lock was about, so the lock screen can name it.
   const [lockFeature, setLockFeature] = React.useState<LKey | null>(null);
   const audit = React.useMemo(() => deps.audit ?? createAuditApi(http), [deps.audit, http]);
+  const staff = React.useMemo(() => deps.staff ?? createStaffApi(http), [deps.staff, http]);
 
   // W9: a 401 while signed in remembers the route and opens sign-in with the notice.
   React.useEffect(() => {
@@ -322,6 +339,25 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
 
   const auditState: AuditRouteState = { kind: "audit", locale, load: audit.page, homeTo };
 
+  // U3 (BR9.1): the staff container loads its own list through the staff client.
+  const staffState: StaffRouteState = { kind: "staff", locale, staff, homeTo };
+
+  // U3 (BR9.5): what the token containers need from App after a success.
+  const tokenState: TokenRouteState = {
+    kind: "token",
+    staff,
+    onAccepted: async () => {
+      const r = await auth.session();
+      if (r.ok) signedIn(sessions, r.value);
+    },
+    onPasswordChanged: () => {
+      resetOrders(ordersStore);
+      draft.set(EMPTY_DRAFT);
+      passwordChanged(sessions);
+    },
+    navigate,
+  };
+
   const ordersState: OrdersRouteState = {
     kind: "orders",
     locale,
@@ -347,11 +383,16 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
     recent: list.recent,
   };
 
+  const TOKEN_ROUTES: ReadonlySet<string> = new Set(["/accept-invite", "/reset", "/recover"]);
   const routeState = routePath?.startsWith("/orders")
     ? ordersState
     : routePath === "/audit-trail"
       ? auditState
-      : authState;
+      : routePath === "/staff"
+        ? staffState
+        : TOKEN_ROUTES.has(routePath ?? "")
+          ? tokenState
+          : authState;
   const outcome =
     session.status === "unknown"
       ? null

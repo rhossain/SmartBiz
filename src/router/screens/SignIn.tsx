@@ -8,7 +8,9 @@
  * - A 400 puts each refused field's message under that field (BR8.2).
  * - The database being down or the server unreachable is a banner; the typed email and
  *   password stay in the form, and nothing is sent again by itself (BR8.4).
- * - After a session ended in use, the screen opens with "আবার সাইন ইন করুন" (W9).
+ * - After a session ended in use, the screen opens with "আবার সাইন ইন করুন" (W9); after a
+ *   completed password reset (U3 BR9.5), with "পাসওয়ার্ড বদলানো হয়েছে; নতুন পাসওয়ার্ড দিয়ে সাইন
+ *   ইন করুন".
  * The password field is never pre-filled and its value is never logged or stored.
  */
 import * as React from "react";
@@ -65,6 +67,11 @@ export const SignInScreen = ({ signIn, onSignedIn, notice }: SignInProps): React
         {notice === "reauth" && failure === null ? (
           <p role="status" data-testid="sign-in-notice">
             {locale === "bn" ? SIGN_IN_AGAIN.bn : SIGN_IN_AGAIN.en}
+          </p>
+        ) : null}
+        {notice === "password_changed" && failure === null ? (
+          <p role="status" data-testid="sign-in-password-changed">
+            {t("sign_in.password_changed")}
           </p>
         ) : null}
         {failure !== null && isBannerFailure(failure) ? (

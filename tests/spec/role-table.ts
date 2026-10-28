@@ -198,9 +198,9 @@ export const SCREEN_ROWS: ReadonlyArray<ScreenRow> = [
     heading: "সাইন ইন",
     landsOn: "/sign-in",
   }),
-  screen("/accept-invite", "public", "আমন্ত্রণ গ্রহণ", "AC5.1.4 (not available until U3)"),
-  screen("/reset", "public", "নতুন পাসওয়ার্ড", "AC5.1.4 (not available until U3)"),
-  screen("/recover", "public", "পাসওয়ার্ড পুনরুদ্ধার", "AC5.1.4 (not available until U3)"),
+  screen("/accept-invite", "public", "আমন্ত্রণ গ্রহণ", "AC5.1.4, US1.5 accept (U3)"),
+  screen("/reset", "public", "নতুন পাসওয়ার্ড", "AC5.1.4, US1.6 reset (U3)"),
+  screen("/recover", "public", "পাসওয়ার্ড পুনরুদ্ধার", "AC5.1.4, US1.6 recover (U3)"),
   screen("/lock", "public", "অ্যাক্সেস সীমাবদ্ধ", "BR4.1", { headingTestId: "lock-title" }),
   screen("/not-found", "public", "পাওয়া যায়নি", "AC1.7.2"),
   screen("/orders", EVERY, "অর্ডার", "US5.1 read", { nav: true }),
@@ -215,6 +215,9 @@ export const SCREEN_ROWS: ReadonlyArray<ScreenRow> = [
     nav: true,
   }),
   screen("/audit-trail", AUDIT_READERS, "অডিট ট্রেইল", "US5.1 audit trail", { nav: true }),
+  screen("/staff", STAFF_MANAGERS, "কর্মী", "US1.5, US1.6 staff screen (AC1.5.6, Q12)", {
+    nav: true,
+  }),
   screen("/business", BUSINESS_EDITORS, "ব্যবসা", "US5.1 business settings", { nav: true }),
   screen("/settings", EVERY, "সেটিংস", "US1.7 (F-07): own settings", { nav: true }),
 ];

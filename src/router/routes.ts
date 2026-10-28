@@ -17,13 +17,19 @@
  *     sign-in or first-run sign-up (App);
  *   - `/sign-in`, `/sign-up`, `/lock`, `/not-found` and the order screens are U1's;
  *   - `/audit-trail` is the audit trail screen (W4);
- *   - `/daily-card`, `/business`, `/settings` (B5) and `/accept-invite` (was `/accept`, Q2),
- *     `/reset`, `/recover` (U3) render the not-available screen naming their feature.
- * U3 adds `/staff`; U4 the catalog routes (AC5.1.4, units R-02).
+ *   - `/daily-card`, `/business`, `/settings` (B5) render the not-available screen naming
+ *     their feature.
+ * U3 (BR9.1–BR9.5, BR10.1; review D-02): `/accept-invite`, `/reset` and `/recover` leave the
+ * not-available screen for their real screens, rendered through the token containers
+ * (src/router/render-token-routes.tsx), and `/staff` is new, open to `staff.invite` (Owner,
+ * Manager) with the feature name "কর্মী", through its container
+ * (src/router/render-staff-route.tsx). U4 adds the catalog routes (AC5.1.4, units R-02).
  */
 import { renderAuditTrail } from "../audit/screens/AuditTrail.js";
 import { ORDER_MUTATE_CAPABILITIES, ORDER_READ_CAPABILITY } from "../orders/order-capability.js";
 import { renderOrdersScreen } from "../orders/screens/render-orders-route.js";
+import { renderStaffRoute } from "./render-staff-route.js";
+import { renderAcceptInvite, renderRecover, renderReset } from "./render-token-routes.js";
 import {
   renderLock,
   renderNotAvailable,
@@ -61,19 +67,19 @@ export const routes: ReadonlyMap<RoutePath, Route> = new Map<RoutePath, Route>([
     path: "/recover",
     requiredCapability: null,
     feature: "feature.recover",
-    render: renderNotAvailable("feature.recover"),
+    render: renderRecover,
   }),
   route({
     path: "/reset",
     requiredCapability: null,
     feature: "feature.reset",
-    render: renderNotAvailable("feature.reset"),
+    render: renderReset,
   }),
   route({
     path: "/accept-invite",
     requiredCapability: null,
     feature: "feature.accept_invite",
-    render: renderNotAvailable("feature.accept_invite"),
+    render: renderAcceptInvite,
   }),
   route({
     path: "/orders",
@@ -122,6 +128,12 @@ export const routes: ReadonlyMap<RoutePath, Route> = new Map<RoutePath, Route>([
     requiredCapability: "audit.view",
     feature: "feature.audit_trail",
     render: renderAuditTrail,
+  }),
+  route({
+    path: "/staff",
+    requiredCapability: "staff.invite",
+    feature: "feature.staff",
+    render: renderStaffRoute,
   }),
   route({
     path: "/business",

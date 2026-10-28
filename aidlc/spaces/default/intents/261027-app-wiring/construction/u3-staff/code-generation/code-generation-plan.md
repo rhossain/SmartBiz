@@ -157,7 +157,7 @@ is implemented, together with the full existing suite, before the next layer sta
 
 ### Step 10 — API / endpoint: write and run its tests (NFR1.11, NFR3.17–NFR3.19, NFR4.3, NFR5.9)
 
-- [ ] `tests/spec/role-table.ts`: six API rows (staff routes owner/manager; three public), `/staff` screen row (owner, manager; feature "কর্মী"; heading), `LINK_ALLOW_LIST` = the two staff POST routes; `tests/spec/fixtures.ts`: success bodies for the six routes.
+- [x] `tests/spec/role-table.ts`: six API rows (staff routes owner/manager; three public), `/staff` screen row (owner, manager; feature "কর্মী"; heading), `LINK_ALLOW_LIST` = the two staff POST routes; `tests/spec/fixtures.ts`: success bodies for the six routes.
 - [x] `tests/integration/staff-routes.test.ts`: identical 410 bodies byte for byte (unknown, used, expired, inactive); 403 for every matrix refusal; 409 for an existing member and an inactive reset target; `Cache-Control: no-store` on both link responses; `Referrer-Policy: no-referrer` on `GET /`; log capture: no token, link, password or email in any line.
 - [x] `tests/unit/server-deps.test.ts`: `startServer`'s deps carry no `hooks`.
 - [x] The U2 walks (server, client, no-secret) pass with the new rows and allow-lists.
@@ -165,12 +165,12 @@ is implemented, together with the full existing suite, before the next layer sta
 
 ### Step 11 — Frontend behaviour: implement (BR7.1, BR9.1–BR9.5; S24 client side; D-02)
 
-- [ ] `src/pres/LinkSheet.tsx`: props `{ link, expiresAt, onClose, locale }`; copy button (`navigator.clipboard.writeText`, select-all fallback); "এই লিংক একবারই দেখানো হবে"; focus moves to the link; "এই লিংক শুধু এই কম্পিউটারে কাজ করবে".
-- [ ] `src/router/screens/Staff.tsx` (new), `Accept.tsx`, `Reset.tsx`, `Recover.tsx` (rewritten): props-only.
-- [ ] `src/router/render-staff-route.tsx` and `src/router/render-token-routes.tsx`: own the `staff-api` calls, the `t` read and `history.replaceState` in the first effect before any fetch, the token in a `useRef`, navigation (accept → `/orders`; reset → `/sign-in` with the notice).
-- [ ] `src/client/staff-api.ts`: the six calls, parsing the shared schemas.
-- [ ] `src/router/routes.ts`: `/accept-invite`, `/reset`, `/recover` leave `NotAvailable`; `/staff` (access `staff.invite`, feature "কর্মী"). `src/router/App.tsx`: nav item `/staff` "কর্মী", the staff client.
-- [ ] `src/i18n/*`: U3 copy; audit-trail labels for the four actions and "টার্মিনাল".
+- [x] `src/pres/LinkSheet.tsx`: props `{ link, expiresAt, onClose, locale }`; copy button (`navigator.clipboard.writeText`, select-all fallback); "এই লিংক একবারই দেখানো হবে"; focus moves to the link; "এই লিংক শুধু এই কম্পিউটারে কাজ করবে".
+- [x] `src/router/screens/Staff.tsx` (new), `Accept.tsx`, `Reset.tsx`, `Recover.tsx` (rewritten): props-only.
+- [x] `src/router/render-staff-route.tsx` and `src/router/render-token-routes.tsx`: own the `staff-api` calls, the `t` read and `history.replaceState` in the first effect before any fetch, the token in a `useRef`, navigation (accept → `/orders`; reset → `/sign-in` with the notice).
+- [x] `src/client/staff-api.ts`: the six calls, parsing the shared schemas.
+- [x] `src/router/routes.ts`: `/accept-invite`, `/reset`, `/recover` leave `NotAvailable`; `/staff` (access `staff.invite`, feature "কর্মী"). `src/router/App.tsx`: nav item `/staff` "কর্মী", the staff client.
+- [x] `src/i18n/*`: U3 copy; audit-trail labels for the four actions and "টার্মিনাল".
 
 ### Step 12 — Frontend behaviour: write and run its tests (NFR5.8, NFR9.10, NFR9.11)
 

@@ -14,6 +14,8 @@
  *   every error view; a 403 shows the lock screen inside the Shell (BR4.2), a failed read
  *   offers retry (BR5.3).
  * - The wide table scrolls inside its own `.scroll-x` box, never the page (BR9.1).
+ * - U3 (O15): the four staff actions have Bangla labels in the catalogue, and a reset link
+ *   issued from the terminal shows "টার্মিনাল" as its actor (`actorLabel`).
  * A feature screen: data and callbacks arrive as props (BR7.4); the HTTP call is App's
  * (src/client/audit-api.ts), imported here only as a type.
  */
@@ -59,11 +61,25 @@ export const shownTime = (iso: string, locale: Locale): string => {
 
 const shortId = (id: string | null): string => (id === null ? "" : id.slice(0, 8));
 
+/**
+ * Who did it: the actor's email, else "সিস্টেম". U3 (O15, NFR8.16): a reset link with no actor
+ * was issued by the terminal command on this machine — staff links always name their actor
+ * (BR8.1 `by`) and users are never deleted — so that row says "টার্মিনাল". The page read
+ * carries no payload (U2 F-09), so this is read from the action and the missing actor.
+ */
+export const actorLabel = (entry: AuditEntryResponse, locale: Locale): string => {
+  if (entry.actorEmail !== null) return entry.actorEmail;
+  return lookup(
+    entry.action === "auth.reset_link_created" ? "audit.terminal" : "audit.system",
+    locale,
+  );
+};
+
 const Row = ({ entry, locale }: { entry: AuditEntryResponse; locale: Locale }) => (
   <tr data-testid="audit-row" data-entry-id={entry.id}>
     <td data-testid="audit-action">{actionLabel(entry.action, locale)}</td>
     <td data-testid="audit-time">{shownTime(entry.occurredAt, locale)}</td>
-    <td data-testid="audit-actor">{entry.actorEmail ?? lookup("audit.system", locale)}</td>
+    <td data-testid="audit-actor">{actorLabel(entry, locale)}</td>
     <td data-testid="audit-subject">
       {entry.subjectKind ?? ""} {shortId(entry.subjectId)}
     </td>

@@ -90,6 +90,59 @@ export const L_TABLE: Translations = Object.freeze({
   "audit.action.auth.sign_in": L("সাইন ইন", "Signed in"),
   "audit.action.auth.sign_in.failure": L("সাইন ইন ব্যর্থ", "Sign-in failed"),
   "audit.action.auth.sign_out": L("সাইন আউট", "Signed out"),
+  // U3 (O15; NFR8.16): the four staff actions and the terminal as an actor.
+  "audit.action.auth.invite_created": L("আমন্ত্রণ তৈরি", "Invitation created"),
+  "audit.action.auth.invite_accepted": L("আমন্ত্রণ গ্রহণ", "Invitation accepted"),
+  "audit.action.auth.reset_link_created": L("রিসেট লিংক তৈরি", "Reset link created"),
+  "audit.action.auth.password_reset": L("পাসওয়ার্ড রিসেট", "Password reset"),
+  "audit.terminal": L("টার্মিনাল", "Terminal"),
+  // U3 staff screen (frontend-components; BR9.1, BR9.2).
+  "nav.staff": L("কর্মী", "Staff"),
+  "feature.staff": L("কর্মী", "Staff"),
+  "staff.members": L("সদস্য", "Members"),
+  "staff.invitations": L("অপেক্ষমাণ আমন্ত্রণ", "Pending invitations"),
+  "staff.no_invitations": L("কোনো অপেক্ষমাণ আমন্ত্রণ নেই", "No pending invitations"),
+  "staff.col.email": L("ইমেইল", "Email"),
+  "staff.col.role": L("ভূমিকা", "Role"),
+  "staff.col.active": L("অবস্থা", "Status"),
+  "staff.col.expires": L("মেয়াদ শেষ", "Expires"),
+  "staff.active": L("সক্রিয়", "Active"),
+  "staff.inactive": L("নিষ্ক্রিয়", "Inactive"),
+  "staff.invite.title": L("নতুন কর্মী আমন্ত্রণ", "Invite a staff member"),
+  "staff.invite.submit": L("আমন্ত্রণ লিংক তৈরি করুন", "Create an invitation link"),
+  "staff.invite.exists": L("এই ইমেইল আগে থেকেই আছে", "This email is already a member"),
+  "staff.reset_link": L("রিসেট লিংক", "Reset link"),
+  "staff.truncated": L("প্রথম ২০০টি দেখানো হচ্ছে", "Showing the first 200"),
+  // U3 link sheet (BR9.2; F-08).
+  "link.once": L("এই লিংক একবারই দেখানো হবে", "This link is shown only once"),
+  "link.this_machine": L(
+    "এই লিংক শুধু এই কম্পিউটারে কাজ করবে",
+    "This link works on this computer only",
+  ),
+  "link.copy": L("কপি করুন", "Copy"),
+  "link.copied": L("কপি হয়েছে", "Copied"),
+  "link.selected": L("লিংকটি নির্বাচিত; কপি করে নিন", "The link is selected; copy it"),
+  "link.expires": L("মেয়াদ শেষ হবে", "Expires"),
+  "link.close": L("বন্ধ করুন", "Close"),
+  // U3 token and recovery screens (BR9.3–BR9.5; frontend-components "Validation").
+  "token.gone": L(
+    "লিংকটি আর কাজ করে না; নতুন লিংক চান",
+    "This link no longer works; ask for a new one",
+  ),
+  "token.password": L("নতুন পাসওয়ার্ড", "New password"),
+  "token.confirm": L("আবার পাসওয়ার্ড", "Password again"),
+  "token.mismatch": L("দুটি পাসওয়ার্ড মেলেনি", "The two passwords do not match"),
+  "token.accept.submit": L("আমন্ত্রণ গ্রহণ করুন", "Accept the invitation"),
+  "token.reset.submit": L("পাসওয়ার্ড বদলান", "Change the password"),
+  "recover.submit": L("রিসেট লিংক চান", "Ask for a reset link"),
+  "recover.neutral": L(
+    "আপনার মালিক বা এই কম্পিউটারের টার্মিনাল থেকে রিসেট লিংক নিন",
+    "Get a reset link from your owner or from the terminal on this computer",
+  ),
+  "sign_in.password_changed": L(
+    "পাসওয়ার্ড বদলানো হয়েছে; নতুন পাসওয়ার্ড দিয়ে সাইন ইন করুন",
+    "The password has been changed; sign in with the new password",
+  ),
 });
 
 /** True when the table has a row for `key` (labels that may be missing, e.g. audit actions). */
