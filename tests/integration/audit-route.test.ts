@@ -106,7 +106,11 @@ describe("GET /api/audit", () => {
     for (const role of ["owner", "manager", "accountant"] as const) {
       const r = await h.send(request("GET", "/api/audit", { token: tokens[role] }));
       const body = (await r.json()) as { entries: Array<Record<string, unknown>> };
-      expect(body.entries.map((e) => e["action"])).toEqual(["product.cost.set", "product.create"]);
+      // Both rows carry the frozen clock's instant, so their page order is a tie: compare as a set.
+      expect(body.entries.map((e) => e["action"]).sort()).toEqual([
+        "product.cost.set",
+        "product.create",
+      ]);
       for (const e of body.entries) expect(Object.hasOwn(e, "payload")).toBe(false);
       const text = JSON.stringify(body);
       expect([text.includes("87654"), text.includes("76543")]).toEqual([false, false]);
