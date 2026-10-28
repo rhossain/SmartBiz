@@ -120,7 +120,9 @@ describe.skipIf(!realdbEnabled)("reset-password command (W4)", () => {
       });
     }
     expect(await counts()).toEqual(before);
-  });
+    // A fresh database, two password hashes and three spawned commands: its own budget, so a
+    // busy gate run cannot time it out.
+  }, 30_000);
 
   test("configuration refusals: admin URL, missing DATABASE_URL, superuser login (NFR7.20)", async () => {
     const before = await counts();

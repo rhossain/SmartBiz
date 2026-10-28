@@ -50,7 +50,8 @@ describe.skipIf(!realdbEnabled)("sessions on real Postgres", () => {
     expect(text).not.toContain("Seq Scan");
     const s = await fresh();
     expect(await resolveSession(db.app, s.token, at(1_000))).not.toBeNull();
-  });
+    // 1 000 sequential inserts: its own budget, so a busy gate run cannot time it out.
+  }, 30_000);
 
   test("insert stores the hash only; resolve returns user, business and role", async () => {
     const s = await fresh();
