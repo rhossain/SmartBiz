@@ -319,6 +319,9 @@ The header shows the signed-in email and role name, and a "সাইন আউ�
 > screens). Tokens and the visual language are in `design-system-mapping.md` §Tokens used. Where this
 > section and §1–§15 differ on *look*, this section wins; behaviour, copy and states in §1–§15 are
 > unchanged.
+>
+> **Screenshots of every built screen** (desktop and phone, Bangla and English) are in
+> [`screenshots/`](screenshots/README.md), indexed by route and by the mockup section they show.
 
 ### 16.1 Shell header (every signed-in screen)
 
