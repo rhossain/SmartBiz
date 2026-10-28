@@ -106,7 +106,27 @@ The gate was not re-run after those two test additions. The Bolt merge still nee
 12. **Browser check covers the three token screens.** It walks `/accept-invite`, `/reset` and `/recover` signed out (NFR9.10). The plan named only `/staff`.
 13. **Secret-scan allow-list entry.** It covers `…/u3-staff/infrastructure-design/reviews/review-01.md` `url-password`, an earlier record that quotes the scan's own URL pattern in prose. It holds no credential.
 14. **Accept's address-bar handling.** App's session probe on load runs before the token container mounts, while `t` is still in the address bar. That probe uses a fixed URL, and browsers never send the fragment. The container then removes `t` before any request of its own; `token-screens.test.tsx` asserts both.
-15. **The email gateway (`src/auth/email.ts`) is kept, unused.** Its test was rewritten on the new invite API.
+15. **The email gateway (`src/auth/email.ts`) was deleted in the review fixes (G-06).** No path sends email. Its exports and `tests/integration/email-gateway-failure.test.ts`, the only test of it, went with it.
+16. **Session creation after an accept stays after the commit (G-05), as U1's sign-up does.**
+    - Accept commits the user, the used invitation and its audit row first, then issues the session. If that session step fails, the account exists but the response is a 500.
+    - The accept screen handles that case. On a 500 whose `kind` is `internal`, it drops the token and sends the person to sign-in with the notice "অ্যাকাউন্ট তৈরি হয়েছে; সাইন ইন করুন".
+    - Any other kind, such as 409 `email_taken`, 410 or 503, keeps the existing message on the form.
+    - The other option, one transaction that also inserts the session, would hold the business lock across the session insert and would differ from sign-up.
+
+## Review fixes (review-01, G-01..G-06)
+
+The decisions were made on the Owner's standing instruction. The code is in commit `7fd2bff`.
+
+| Id | Severity | Finding | Fix | Evidence |
+|----|----------|---------|-----|----------|
+| G-01 | Major | A sign-in that verified the old password could commit a session after a reset | `signIn` locks the business row (`FOR KEY SHARE`) and then the user row (`FOR UPDATE`), keeping the business → users order. It then re-reads `password_hash` and `active`. A changed hash or an inactive user gets the same `invalid_credentials`, no session, and an audited failure (`bad_password` / `inactive`). The limiter is cleared only after the session is issued. | `tests/unit/sign-in.test.ts` (hash changed, user deactivated, lock order). `tests/realdb/staff.realdb.test.ts`: sign-in paused through `hooks.beforeTransaction`, `completeReset` commits, then 401, no Set-Cookie, zero sessions, one `bad_password` row. Mutant `sign-in-skips-recheck` is killed by the realdb test |
+| G-02 | Major | Guards without mutants | New mutants: `invite-ignores-supersede-guard`, `reset-link-ignores-target-guard`, `accept-skips-locked-recheck` (realdb), `reset-skips-locked-recheck` (realdb), `accept-keeps-invitation-unused` | All 6 new mutants are killed (`--only` runs). In a throwaway worktree, each realdb mutant failed an assertion in its race test, not a timeout |
+| G-03 | Minor | No realdb case for an email taken after the pre-check | The admin inserts a user with the invited email (other case) after the invite. Accept then answers 409 `email_taken`, the invitation stays unused, and no `auth.invite_accepted` row is written. | `tests/realdb/staff.realdb.test.ts` |
+| G-04 | Minor | `listStaff` not tested on real Postgres | Tests role order (owner, manager, sales_staff, accountant), `canReset` false for an inactive member, the expired and used invitation filters, and that 200 bulk users give 200 members with `truncated: true` and the Owner first | `tests/realdb/staff.realdb.test.ts` |
+| G-05 | Minor | A 500 after an accept commit leaves the person stranded | Recorded as deviation 16: on a 500 `internal`, the screen goes to sign-in with the account-created notice; other kinds are unchanged | `tests/integration/token-screens.test.tsx` (500 → `#/sign-in` plus the notice; 409 and 503 keep the form) |
+| G-06 | Minor | Unused email gateway | `src/auth/email.ts`, its exports and its only test deleted; the ci.yml comment no longer names it | `tsc`, lint and the suite are clean |
+
+The realdb file sets `setDefaultTimeout(30_000)`, because two existing both-orders race cases hit bun's 5 s default while the machine was under outside load (about 29 on 8 cores, from other Playwright processes).
 
 ## Missed or deferred targets
 

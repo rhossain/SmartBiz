@@ -3,6 +3,7 @@
   "unit": "u3-staff",
   "version": 1,
   "writes": [
+    { "path": ".github/workflows/ci.yml" },
     { "path": "README.md" },
     { "path": "package.json" },
     { "path": "secret-scan.allow" },
@@ -22,6 +23,7 @@
     { "path": "src/auth/password-reset.ts" },
     { "path": "src/auth/recover.ts" },
     { "path": "src/auth/schemas.ts" },
+    { "path": "src/auth/sign-in.ts" },
     { "path": "src/auth/sign-up.ts" },
     { "path": "src/auth/types.ts" },
     { "path": "src/client/session-store.ts" },
@@ -51,7 +53,6 @@
     { "path": "tests/helpers/sql-stub.ts" },
     { "path": "tests/helpers/staff-fixtures.ts" },
     { "path": "tests/integration/audit-append-flow.test.ts" },
-    { "path": "tests/integration/email-gateway-failure.test.ts" },
     { "path": "tests/integration/no-secret-responses.test.ts" },
     { "path": "tests/integration/server-gate-absence.test.ts" },
     { "path": "tests/integration/staff-routes.test.ts" },
@@ -78,6 +79,7 @@
     { "path": "tests/unit/retry.test.ts" },
     { "path": "tests/unit/routes-table.test.ts" },
     { "path": "tests/unit/screens.test.tsx" },
+    { "path": "tests/unit/sign-in.test.ts" },
     { "path": "tests/unit/server-deps.test.ts" },
     { "path": "tests/unit/shell.test.tsx" },
     { "path": "tests/unit/smoke.test.ts" }
