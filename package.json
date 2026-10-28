@@ -23,7 +23,8 @@
     "mutants": "bun scripts/mutants.ts",
     "smoke": "bun scripts/smoke.ts",
     "gate": "bun scripts/gate.ts",
-    "logs:summary": "bun scripts/log-summary.ts"
+    "logs:summary": "bun scripts/log-summary.ts",
+    "reset-password": "bun --env-file=.env scripts/reset-password.ts"
   },
   "dependencies": {
     "argon2": "0.40.3",

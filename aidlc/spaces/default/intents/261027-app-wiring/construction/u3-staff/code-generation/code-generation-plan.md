@@ -97,9 +97,9 @@ is implemented, together with the full existing suite, before the next layer sta
 
 ### Step 1 — Project structure and production configuration skeleton (US1.5, US1.6)
 
-- [ ] Create the new module files with header comments: `src/auth/one-time-token.ts`, `src/auth/delegation.ts`, `src/db/retry.ts`, `src/server/handlers/staff.ts`, `src/client/staff-api.ts`, `src/router/screens/Staff.tsx`, `src/router/render-staff-route.tsx`, `src/router/render-token-routes.tsx`, `src/pres/LinkSheet.tsx`, `scripts/reset-password.ts`.
-- [ ] `package.json`: script `"reset-password": "bun --env-file=.env scripts/reset-password.ts"` only (dependencies unchanged).
-- [ ] Run `bun run type-check`, `bun run lint` and the existing suite.
+- [x] Create the new module files with header comments: `src/auth/one-time-token.ts`, `src/auth/delegation.ts`, `src/db/retry.ts`, `src/server/handlers/staff.ts`, `src/client/staff-api.ts`, `src/router/screens/Staff.tsx`, `src/router/render-staff-route.tsx`, `src/router/render-token-routes.tsx`, `src/pres/LinkSheet.tsx`, `scripts/reset-password.ts`.
+- [x] `package.json`: script `"reset-password": "bun --env-file=.env scripts/reset-password.ts"` only (dependencies unchanged).
+- [x] Run `bun run type-check`, `bun run lint` and the existing suite.
 
 ### Step 2 — Verify the test runner and record the unit-scoped command
 
