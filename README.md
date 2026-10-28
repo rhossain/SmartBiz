@@ -94,6 +94,15 @@ docker compose --env-file .env.migrate exec -T smartbiz-db createdb -U postgres 
 docker compose --env-file .env.migrate exec -T smartbiz-db pg_restore -U postgres -d smartbiz < backups/<pre-merge>.dump
 ```
 
+Migration 0017's two unique indexes stay after a code revert; older code does not mind them.
+If they must ever be dropped, drop them and delete their ledger row in the same admin session,
+so a later `bun run migrate` creates them again (U3 I-01):
+
+```bash
+docker compose --env-file .env.migrate exec -T smartbiz-db psql -U postgres -d smartbiz -c \
+  "DROP INDEX IF EXISTS invitations_accept_token_hash_idx, password_resets_token_hash_idx; DELETE FROM _migrations WHERE id = '0017_unique_token_hashes.sql';"
+```
+
 ## Rollback
 
 - **Code defect, schema fine:** `git revert <squash commit>` on `main`, push, `bun run start`

@@ -108,8 +108,8 @@ is implemented, together with the full existing suite, before the next layer sta
 
 ### Step 3 — Data model / database behaviour: implement (US1.5, US1.6; SC6; NFR6.24; I-01)
 
-- [ ] `src/db/migrations/0017_unique_token_hashes.sql`: header naming AuthComponent and U3; a `DO $$` guard that raises `duplicate_token_hash` if either table has a repeated hash; `CREATE UNIQUE INDEX IF NOT EXISTS invitations_accept_token_hash_idx ON invitations (accept_token_hash)` and `… password_resets_token_hash_idx ON password_resets (token_hash)`; no grant.
-- [ ] README "Backup and restore": the index-drop note pairs `DROP INDEX` with the `_migrations` ledger delete (I-01).
+- [x] `src/db/migrations/0017_unique_token_hashes.sql`: header naming AuthComponent and U3; a `DO $$` guard that raises `duplicate_token_hash` if either table has a repeated hash; `CREATE UNIQUE INDEX IF NOT EXISTS invitations_accept_token_hash_idx ON invitations (accept_token_hash)` and `… password_resets_token_hash_idx ON password_resets (token_hash)`; no grant.
+- [x] README "Backup and restore": the index-drop note pairs `DROP INDEX` with the `_migrations` ledger delete (I-01).
 
 ### Step 4 — Data model / database behaviour: write and run its tests
 
