@@ -1,0 +1,17 @@
+{
+  "stage": "nfr-requirements",
+  "unit": "u4-catalog",
+  "upstream_ids": ["NFR1", "NFR2", "NFR3", "NFR4", "NFR5", "NFR6", "NFR7", "NFR8", "NFR9", "NFR10"],
+  "coverage": [
+    { "id": "NFR1", "status": "OK", "target": "NFR1.13, NFR1.14, NFR1.15" },
+    { "id": "NFR2", "status": "OK", "target": "NFR2.6" },
+    { "id": "NFR3", "status": "OK", "target": "NFR3.26, NFR3.27, NFR3.28, NFR3.29" },
+    { "id": "NFR4", "status": "OK", "target": "NFR4.4" },
+    { "id": "NFR5", "status": "OK", "target": "NFR5.10" },
+    { "id": "NFR6", "status": "OK", "target": "NFR6.25, NFR6.26, NFR6.27, NFR6.28, NFR6.29, NFR6.30, NFR6.31, NFR6.32, NFR6.33" },
+    { "id": "NFR7", "status": "OK", "target": "NFR7.22, NFR7.23, NFR7.24, NFR7.25, NFR7.26, NFR7.27" },
+    { "id": "NFR8", "status": "OK", "target": "NFR8.20, NFR8.21, NFR8.22, NFR8.23, NFR8.24" },
+    { "id": "NFR9", "status": "OK", "target": "NFR9.12, NFR9.13" },
+    { "id": "NFR10", "status": "OK", "target": "NFR10.4" }
+  ]
+}
