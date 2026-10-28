@@ -289,10 +289,49 @@ const QuickAdd = ({
   );
 };
 
+/** Order ids already brought into view once in this page session: each new order flashes once. */
+const announced = new Set<string>();
+
+/** How long the new row stays highlighted. */
+const FLASH_MS = 2600;
+
+/**
+ * After a save (quick add here, or a create screen that returns to this list), scroll the new
+ * order's row into view and highlight it once. The id comes from the draft store's
+ * `savedOrderId`; the flash waits until the reloaded list contains that row.
+ */
+const useNewOrderFlash = (
+  draft: OrdersListProps["draft"],
+  orders: ReadonlyArray<OrderListRow>,
+): string | null => {
+  const saved = useOrderDraft(draft);
+  const newId = saved.status === "saved" ? saved.savedOrderId : null;
+  const [flash, setFlash] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (newId === null || announced.has(newId)) return;
+    if (!orders.some((o) => o.id === newId)) return;
+    announced.add(newId);
+    setFlash(newId);
+    const row = document.querySelector(`[data-order-id="${newId}"]`); // a UUID: safe in a selector;
+    const still = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
+    row?.scrollIntoView?.({ behavior: still ? "auto" : "smooth", block: "center" });
+  }, [newId, orders]);
+
+  React.useEffect(() => {
+    if (flash === null) return;
+    const t = setTimeout(() => setFlash(null), FLASH_MS);
+    return () => clearTimeout(t);
+  }, [flash]);
+
+  return flash;
+};
+
 export const OrdersList = (props: OrdersListProps): React.ReactElement => {
   const { orders, nextCursor, locale } = props;
   const totals = bucketTotals(orders);
   const phase = phaseOf(props);
+  const flash = useNewOrderFlash(props.draft, orders);
   return (
     <Screen title={tr("orders.title", locale)}>
       {/* U2 (F-05): the Shell hosts the announced toast; this marks the new row's list. */}
@@ -336,7 +375,13 @@ export const OrdersList = (props: OrdersListProps): React.ReactElement => {
             </thead>
             <tbody>
               {orders.map((o) => (
-                <tr key={o.id} data-testid="orders-row" data-order-id={o.id} data-status={o.status}>
+                <tr
+                  key={o.id}
+                  data-testid="orders-row"
+                  data-order-id={o.id}
+                  data-status={o.status}
+                  {...(o.id === flash ? { "data-new": "true", className: "row--new" } : {})}
+                >
                   <td>{o.orderNo}</td>
                   <td>
                     <Pill kind={statusTone(o.status)} label={statusText(o.status, locale)} />

@@ -583,3 +583,55 @@ describe("quick add after a save", () => {
     expect(view.queryByTestId("quick-add-saved")).toBeNull();
   });
 });
+
+// Demo review (2026-10-28): a newly saved order scrolls into view and flashes once.
+describe("a new order is highlighted once", () => {
+  const props = {
+    nextCursor: null,
+    locale: "en" as const,
+    canMutate: true,
+    onOpen: noop,
+    onLoadMore: noop,
+    onFilter: noop,
+    onSave: async () => ({ ok: false as const, error: { kind: "unreachable" } }) as never,
+  };
+
+  test("the saved order's row is marked new, scrolled to, and only the first time", async () => {
+    const stub = makeSqlStub();
+    const order = await seed(stub);
+    const scrolled: string[] = [];
+    const original = HTMLElement.prototype.scrollIntoView;
+    HTMLElement.prototype.scrollIntoView = function (this: HTMLElement) {
+      scrolled.push(this.getAttribute("data-order-id") ?? "");
+    };
+    try {
+      const draft = createOrderDraftStore({
+        pending: null,
+        status: "saved",
+        kind: null,
+        message: null,
+        fields: [],
+        savedOrderId: order.id,
+      });
+      const view = render(<OrdersList {...props} orders={[order]} draft={draft} />);
+      const row = view.getByTestId("orders-row");
+      expect(row.getAttribute("data-new")).toBe("true");
+      expect(row.className).toBe("row--new");
+      expect(scrolled).toEqual([order.id]);
+      cleanup();
+      // The same order shown again (for example after navigating back) does not flash again.
+      const again = render(<OrdersList {...props} orders={[order]} draft={draft} />);
+      expect(again.getByTestId("orders-row").getAttribute("data-new")).toBeNull();
+      expect(scrolled).toEqual([order.id]);
+    } finally {
+      HTMLElement.prototype.scrollIntoView = original;
+    }
+  });
+
+  test("no saved order, no highlight", async () => {
+    const stub = makeSqlStub();
+    const order = await seed(stub);
+    const view = render(<OrdersList {...props} orders={[order]} draft={createOrderDraftStore()} />);
+    expect(view.getByTestId("orders-row").getAttribute("data-new")).toBeNull();
+  });
+});

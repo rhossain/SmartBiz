@@ -1161,3 +1161,29 @@ button:disabled {
   color: var(--color-brand);
   background: var(--color-bg-success);
 }
+
+/* A just-saved order: its row flashes green once, then settles (it also scrolls into view). */
+@keyframes row-new-flash {
+  0%,
+  35% {
+    background: var(--color-bg-success);
+  }
+  100% {
+    background: transparent;
+  }
+}
+
+.table tbody tr.row--new td {
+  animation: row-new-flash 2.6s ease-out 1;
+}
+
+.table tbody tr.row--new td:first-child {
+  box-shadow: inset 4px 0 0 var(--color-brand);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .table tbody tr.row--new td {
+    animation: none;
+    background: var(--color-bg-success);
+  }
+}
