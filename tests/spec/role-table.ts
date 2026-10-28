@@ -17,9 +17,14 @@
  *   - US1.3: `GET /api/session` → any signed-in role;
  *   - US1.7 (F-07): every role that can sign in may open its own settings; the daily card is
  *     the business view, so every role;
- *   - C5 public_routes (U1's five) and AC5.1.4's public screens.
- * Paths use `:name` on both sides (C5's `{userId}` is written `:userId`). U3 and U4 append
- * their rows here.
+ *   - C5 public_routes (U1's five) and AC5.1.4's public screens;
+ *   - U3 (BR10.1, Q12; C6): the staff list, invitations and reset links → Owner and Manager
+ *     (AC1.5.6: Sales Staff and Accountants are refused); accepting an invitation, browser
+ *     recovery and the reset → public (C5 public_routes); the `/staff` screen → Owner and
+ *     Manager, with the navigation label "কর্মী"; the `link` allow-list is the two staff POST
+ *     routes (C5 link_allow_list).
+ * Paths use `:name` on both sides (C5's `{userId}` is written `:userId`). U4 appends its rows
+ * here.
  *
  * Screen rows also carry what the walks assert: `feature` (the Bangla name the lock and
  * not-available screens show), `heading` (the Bangla text of the screen's heading element
@@ -63,6 +68,8 @@ const EVERY: ReadonlyArray<Role> = ["owner", "manager", "sales_staff", "accounta
 const ORDER_WRITERS: ReadonlyArray<Role> = ["owner", "manager", "sales_staff"];
 const AUDIT_READERS: ReadonlyArray<Role> = ["owner", "manager", "accountant"];
 const BUSINESS_EDITORS: ReadonlyArray<Role> = ["owner"];
+/** U3 (AC1.5.1, AC1.5.6, AC1.6.4; Q12): who manages staff. */
+const STAFF_MANAGERS: ReadonlyArray<Role> = ["owner", "manager"];
 
 /** The order number of the recorded order fixture; the detail screen's heading. */
 export const FIXTURE_ORDER_NO = "ORD-1001";
@@ -111,10 +118,58 @@ export const API_ROWS: ReadonlyArray<ApiRow> = [
     allowed: AUDIT_READERS,
     source: "US5.1 audit trail (C4)",
   },
+  {
+    surface: "api",
+    method: "GET",
+    path: "/api/staff",
+    allowed: STAFF_MANAGERS,
+    source: "US1.5 staff list (C6, AC1.5.6)",
+  },
+  {
+    surface: "api",
+    method: "POST",
+    path: "/api/staff/invitations",
+    allowed: STAFF_MANAGERS,
+    source: "US1.5 invite (C6, AC1.5.1, AC1.5.6)",
+  },
+  {
+    surface: "api",
+    method: "POST",
+    path: "/api/staff/:userId/reset-links",
+    allowed: STAFF_MANAGERS,
+    source: "US1.6 staff reset link (C6, AC1.6.4)",
+  },
+  {
+    surface: "api",
+    method: "POST",
+    path: "/api/invitations/accept",
+    allowed: "public",
+    source: "C5 public_routes (US1.5 accept)",
+  },
+  {
+    surface: "api",
+    method: "POST",
+    path: "/api/auth/recover",
+    allowed: "public",
+    source: "C5 public_routes (US1.6 recover)",
+  },
+  {
+    surface: "api",
+    method: "POST",
+    path: "/api/auth/reset",
+    allowed: "public",
+    source: "C5 public_routes (US1.6 reset)",
+  },
 ];
 
-/** C5 `link_allow_list`: the only responses that may carry a raw token in `link`. Empty in U2. */
-export const LINK_ALLOW_LIST: ReadonlyArray<string> = [];
+/**
+ * C5 `link_allow_list`: the only responses that may carry a raw token, in field `link` — the
+ * two staff routes that create an invitation or a reset link, each returning it once (U3).
+ */
+export const LINK_ALLOW_LIST: ReadonlyArray<string> = [
+  "POST /api/staff/invitations",
+  "POST /api/staff/:userId/reset-links",
+];
 
 const screen = (
   path: string,

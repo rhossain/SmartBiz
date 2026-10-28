@@ -19,9 +19,13 @@
 import type { ZodType } from "zod";
 import { AuditPageResponseSchema } from "../../src/audit/schemas.js";
 import {
+  AcceptInviteResponseSchema,
   HealthResponseSchema,
+  InviteResponseSchema,
+  ResetLinkResponseSchema,
   SessionResponseSchema,
   SetupResponseSchema,
+  StaffListResponseSchema,
 } from "../../src/auth/schemas.js";
 import { OrderResponseSchema, OrdersPageResponseSchema } from "../../src/orders/schemas.js";
 import { FIXTURE_ORDER_NO, type Role } from "./role-table.js";
@@ -43,8 +47,9 @@ export interface ApiFixture {
   readonly badQuery?: string;
 }
 
-const userId = (role: Role): string =>
+const userIdFor = (role: Role): string =>
   `a${["owner", "manager", "sales_staff", "accountant"].indexOf(role) + 1}000000-0000-4000-8000-0000000000a1`;
+const userId = userIdFor;
 
 /** The C2 Session body for one role (the session the server resolved; no token, no hash). */
 export const sessionBody = (role: Role) => ({
@@ -139,6 +144,47 @@ export const AUDIT_PAGE_BODY = {
   nextCursor: null,
 };
 
+/*
+ * U3 (C6 with B2, B4; BR10.1). Restated from C6: the staff list as the Owner sees it, an
+ * invitation and a reset link with their one-time `link` (a placeholder token, not a real
+ * one), the public user accept answers with, and the bodiless 202 / 204 of recover and reset.
+ */
+export const STAFF_TARGET_ID = userIdFor("sales_staff");
+export const INVITE_REQUEST = { email: "new.staff@acme.test", role: "sales_staff" } as const;
+/** A well-formed token no invitation or reset was ever issued for: the walks expect 410. */
+export const UNISSUED_TOKEN = "U".repeat(43);
+export const TOKEN_REQUEST = { token: UNISSUED_TOKEN, password: "correct-horse-2" } as const;
+
+export const STAFF_LIST_BODY = {
+  members: (["owner", "manager", "sales_staff", "accountant"] as const).map((role) => ({
+    id: userIdFor(role),
+    email: `${role}@acme.test`,
+    role,
+    active: true,
+    canReset: role !== "owner",
+  })),
+  invitations: [
+    {
+      id: "0a0a0a0a-0a0a-4a0a-8a0a-0a0a0a0a0a0a",
+      email: "new.staff@acme.test",
+      role: "sales_staff",
+      expiresAt: "2026-11-03T08:30:00.000Z",
+    },
+  ],
+  invitableRoles: ["manager", "sales_staff", "accountant"],
+  truncated: false,
+};
+
+export const INVITE_BODY = {
+  invitation: STAFF_LIST_BODY.invitations[0],
+  link: "http://127.0.0.1:3000/#/accept-invite?t=fixture-placeholder",
+};
+
+export const RESET_LINK_BODY = {
+  link: "http://127.0.0.1:3000/#/reset?t=fixture-placeholder",
+  expiresAt: "2026-10-27T09:00:00.000Z",
+};
+
 export const SIGN_UP_REQUEST = {
   businessName: "Acme",
   email: "owner@acme.test",
@@ -222,6 +268,42 @@ export const API_FIXTURES: Readonly<Record<string, ApiFixture>> = {
     body: AUDIT_PAGE_BODY,
     schema: AuditPageResponseSchema,
     badQuery: "limit=0",
+  },
+  "GET /api/staff": { status: 200, body: STAFF_LIST_BODY, schema: StaffListResponseSchema },
+  "POST /api/staff/invitations": {
+    status: 201,
+    body: INVITE_BODY,
+    schema: InviteResponseSchema,
+    request: INVITE_REQUEST,
+    badRequest: { email: INVITE_REQUEST.email },
+  },
+  "POST /api/staff/:userId/reset-links": {
+    status: 201,
+    body: RESET_LINK_BODY,
+    schema: ResetLinkResponseSchema,
+    request: {},
+    badRequest: { userId: STAFF_TARGET_ID },
+  },
+  "POST /api/invitations/accept": {
+    status: 201,
+    body: sessionBody("sales_staff").user,
+    schema: AcceptInviteResponseSchema,
+    request: TOKEN_REQUEST,
+    badRequest: { token: UNISSUED_TOKEN },
+  },
+  "POST /api/auth/recover": {
+    status: 202,
+    body: null,
+    schema: null,
+    request: { email: "owner@acme.test" },
+    badRequest: {},
+  },
+  "POST /api/auth/reset": {
+    status: 204,
+    body: null,
+    schema: null,
+    request: TOKEN_REQUEST,
+    badRequest: { token: UNISSUED_TOKEN },
   },
 };
 

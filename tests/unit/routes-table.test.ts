@@ -4,8 +4,8 @@
  *
  * Restated: every route has an access rule; a capability list is never empty; every path is
  * under /api/; no method+path is registered twice; the public routes are exactly health,
- * setup, sign-up, sign-in and sign-out. `matchRoute` prefers literal paths, decodes params,
- * and refuses empty or malformed segments.
+ * setup, sign-up, sign-in and sign-out and, since U3 (BR10.1, C5), accept, recover and reset.
+ * `matchRoute` prefers literal paths, decodes params, and refuses empty or malformed segments.
  */
 import { describe, expect, test } from "bun:test";
 import {
@@ -23,6 +23,9 @@ const PUBLIC = [
   "POST /api/auth/sign-up",
   "POST /api/auth/sign-in",
   "POST /api/auth/sign-out",
+  "POST /api/invitations/accept",
+  "POST /api/auth/recover",
+  "POST /api/auth/reset",
 ];
 
 const extra = (over: Partial<RouteDef>): RouteDef =>
@@ -81,5 +84,12 @@ describe("route table", () => {
     expect(matchRoute(routes, "GET", "/api/orders/%E0%A4%A")).toBeNull();
     expect(matchRoute(routes, "DELETE", "/api/orders")).toBeNull();
     expect(matchRoute(routes, "GET", "/api/orders/x/status")).toBeNull();
+    // U3: the reset-link route captures the user id; the literal staff routes win.
+    expect(matchRoute(routes, "POST", "/api/staff/invitations")?.route.path).toBe(
+      "/api/staff/invitations",
+    );
+    expect(matchRoute(routes, "POST", "/api/staff/abc/reset-links")?.params).toEqual({
+      userId: "abc",
+    });
   });
 });

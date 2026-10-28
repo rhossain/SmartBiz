@@ -33,7 +33,7 @@ import {
   type ApiRow,
   type Role,
 } from "../spec/role-table.js";
-import { API_FIXTURES, ORDER_REQUEST } from "../spec/fixtures.js";
+import { API_FIXTURES, ORDER_REQUEST, STAFF_TARGET_ID } from "../spec/fixtures.js";
 import { makeSqlStub } from "../helpers/sql-stub.js";
 import {
   harness,
@@ -57,7 +57,13 @@ const check = (): void => {
 
 const gatedRows = API_ROWS.filter((r) => r.allowed !== "public");
 const writeRows = API_ROWS.filter((r) => WRITES.has(r.method));
-const concrete = (row: ApiRow, id: string): string => row.path.replace(":id", id);
+/**
+ * The row's path with its parameters filled: `:id` with an order, `:userId` (U3) with the
+ * Sales Staff member, whom both the Owner and a Manager may reset (BR1.3), so an inside probe
+ * answers its recorded success and never a delegation refusal (F-07).
+ */
+const concrete = (row: ApiRow, id: string): string =>
+  row.path.replace(":id", id).replace(":userId", STAFF_TARGET_ID);
 const bodyFor = (row: ApiRow): unknown => API_FIXTURES[apiKey(row)]?.request ?? {};
 
 /** True when any key anywhere in the body names money (`…Paise`). */

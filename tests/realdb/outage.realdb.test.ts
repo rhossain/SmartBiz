@@ -10,6 +10,8 @@
  * server restart (postgres.js reconnects on the next query).
  * U2 (R11, NFR7.14): `GET /api/audit` answers the same coded 503 during the outage, and the
  * same process serves it again afterwards.
+ * U3 (R15, NFR7.19): `POST /api/invitations/accept` answers the same 503 during the outage and
+ * leaves the token unused: the same link signs the invitee in once Postgres is back.
  *
  * It needs REALDB_CONTAINER (scripts/gate.ts sets it to the container it started); without
  * it, or without the realdb URLs, the file is skipped. It never touches any other container.
@@ -83,9 +85,30 @@ describe.skipIf(!enabled)("database outage and recovery", () => {
 
   const listOrders = () => fetch(`${base}/api/orders`, { headers: { Cookie: cookie } });
   const listAudit = () => fetch(`${base}/api/audit`, { headers: { Cookie: cookie } });
+  const postJson = (path: string, body: unknown, withCookie = false) =>
+    fetch(`${base}${path}`, {
+      method: "POST",
+      headers: {
+        Origin: base,
+        "Content-Type": "application/json",
+        ...(withCookie ? { Cookie: cookie } : {}),
+      },
+      body: JSON.stringify(body),
+    });
 
   test("503 while Postgres is down, health stays up, first success within 5 s of Postgres being back", async () => {
     expect((await listOrders()).status).toBe(200);
+    // U3: an invitation issued before the outage.
+    const invited = await postJson(
+      "/api/staff/invitations",
+      { email: "outage.staff@outage.test", role: "sales_staff" },
+      true,
+    );
+    expect(invited.status).toBe(201);
+    const token = /[?&]t=([A-Za-z0-9_-]+)/.exec(
+      ((await invited.json()) as { link: string }).link,
+    )?.[1];
+    const acceptBody = { token, password: "correct-horse-9" };
 
     expect(await docker("stop", "-t", "5", CONTAINER ?? "")).toBe(0);
     const during = await listOrders();
@@ -96,6 +119,12 @@ describe.skipIf(!enabled)("database outage and recovery", () => {
     // U2 (R11, NFR7.14): the audit trail read answers the same coded 503 during the outage.
     const auditDuring = await listAudit();
     expect({ status: auditDuring.status, body: await auditDuring.json() }).toEqual({
+      status: 503,
+      body: { error: "db_unavailable" },
+    });
+    // U3 (R15, NFR7.19): accept answers the same coded 503; nothing commits.
+    const acceptDuring = await postJson("/api/invitations/accept", acceptBody);
+    expect({ status: acceptDuring.status, body: await acceptDuring.json() }).toEqual({
       status: 503,
       body: { error: "db_unavailable" },
     });
@@ -125,5 +154,8 @@ describe.skipIf(!enabled)("database outage and recovery", () => {
     expect(await after.json()).toEqual({ status: "up", db: "up" });
     // The same process (never restarted) serves the audit trail again.
     expect((await listAudit()).status).toBe(200);
+    // U3: the token was left unused by the outage — the same link now signs the invitee in.
+    const acceptAfter = await postJson("/api/invitations/accept", acceptBody);
+    expect(acceptAfter.status).toBe(201);
   }, 90_000);
 });

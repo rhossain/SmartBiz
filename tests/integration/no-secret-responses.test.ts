@@ -9,11 +9,17 @@
  * 403 for a role outside its row, 400 where the route takes input, 404 where it takes an id —
  * and scans every body and header for:
  *   - the KNOWN secret values, read from the seeded rows after the run: every stored
- *     password hash, every live session token (raw) and its SHA-256 `token_hash`, and any
- *     invitation or reset token hash (none until U3). The raw session token may appear only
- *     in `Set-Cookie`; hashes never appear anywhere;
+ *     password hash, every live session token (raw) and its SHA-256 `token_hash`, and every
+ *     invitation and reset token hash (U3). The raw session token may appear only in
+ *     `Set-Cookie`; hashes never appear anywhere;
  *   - the key names `passwordHash`, `password_hash`, `token_hash` (and an argon2 prefix);
- *   - a key named `link` from a route not on the closed allow-list (`[]` in U2, BR8.2).
+ *   - a key named `link` from a route not on the closed allow-list (BR8.2; U3 BR10.1: the two
+ *     staff POST routes), and — U3 (NFR3.19, BR7.2) — any raw invitation or reset token
+ *     outside those two responses.
+ * U3: accept and reset succeed with real tokens issued through the API before the walk (an
+ * invitation, and a reset link for the Accountant, so the walk's own reset-link probe for
+ * the Sales Staff member does not close it); both also answer 410 for an unissued token, and
+ * the reset-link route answers 404 for an unknown user.
  * It prints the routes, responses and checks it covered and its duration (O12, NFR8.12).
  */
 import { describe, expect, test } from "bun:test";
@@ -141,6 +147,31 @@ describe("no secret leaves the server (every registered route)", () => {
           request("POST", `/api/orders/${packedId}/status`, { token: ownerToken, body: { to } }),
         );
       }
+      // U3: real tokens for the accept and reset success probes, issued through the API.
+      const idOf = (role: Role): string =>
+        `b${ROLES.indexOf(role)}000000-0000-4000-8000-0000000000b1`;
+      const tokenIn = (text: string): string => /[?&]t=([A-Za-z0-9_-]+)/.exec(text)?.[1] ?? "";
+      const issuedInvite = await h.send(
+        request("POST", "/api/staff/invitations", {
+          token: ownerToken,
+          body: { email: "walk.accept@acme.test", role: "accountant" },
+        }),
+      );
+      const issuedReset = await h.send(
+        request("POST", `/api/staff/${idOf("accountant")}/reset-links`, {
+          token: ownerToken,
+          body: {},
+        }),
+      );
+      const inviteToken = tokenIn(await issuedInvite.text());
+      const resetToken = tokenIn(await issuedReset.text());
+      expect([inviteToken.length, resetToken.length]).toEqual([43, 43]);
+      const linkTokens = new Set<string>();
+      const SUCCESS_BODY: Readonly<Record<string, unknown>> = {
+        "POST /api/invitations/accept": { token: inviteToken, password: "correct-horse-2" },
+        "POST /api/auth/reset": { token: resetToken, password: "correct-horse-3" },
+      };
+      const TOKEN_ROUTES = new Set(["POST /api/invitations/accept", "POST /api/auth/reset"]);
 
       const missingFixture: string[] = [];
       for (const route of routes) {
@@ -154,7 +185,7 @@ describe("no secret leaves the server (every registered route)", () => {
         const row = API_ROWS.find((r) => apiKey(r) === key);
         if (row === undefined) throw new Error(`no role-table row for ${key}`);
         const id = key === "POST /api/orders/:id/consignment" ? packedId : orderId;
-        const path = route.path.replace(":id", id);
+        const path = route.path.replace(":id", id).replace(":userId", idOf("sales_staff"));
         const inside = ROLES.find((r) => isAllowed(row.allowed, r)) ?? "owner";
         const outside = ROLES.find((r) => !isAllowed(row.allowed, r));
         const body = fixture.request;
@@ -169,7 +200,14 @@ describe("no secret leaves the server (every registered route)", () => {
           await send(key, "success", route.method, path, { token: s.token, body });
         } else if (key !== "POST /api/auth/sign-up") {
           const token = row.allowed === "public" ? null : tokens[inside];
-          await send(key, "success", route.method, path, { token, body });
+          await send(key, "success", route.method, path, {
+            token,
+            body: SUCCESS_BODY[key] ?? body,
+          });
+        }
+        if (TOKEN_ROUTES.has(key)) {
+          // U3 (NFR3.17): the fixture's request names a token that was never issued.
+          await send(key, "410 unissued token", route.method, path, { body });
         }
         if (row.allowed !== "public") {
           await send(key, "401", route.method, path, { token: null, body });
@@ -196,7 +234,22 @@ describe("no secret leaves the server (every registered route)", () => {
             body,
           });
         }
+        if (route.path.includes(":userId")) {
+          await send(key, "404", route.method, route.path.replace(":userId", UNKNOWN_ID), {
+            token,
+            body,
+          });
+        }
       }
+      // Every raw link token the walk saw: only the two allow-listed routes may carry one.
+      for (const rec of recorded) {
+        if (LINK_ALLOW_LIST.includes(rec.key)) {
+          const t = tokenIn(rec.body);
+          if (t !== "") linkTokens.add(t);
+        }
+      }
+      linkTokens.add(inviteToken);
+      linkTokens.add(resetToken);
 
       // The known secret values, read from the seeded rows (F-08).
       const hashes = [
@@ -261,6 +314,12 @@ describe("no secret leaves the server (every registered route)", () => {
           ...where,
           link: false,
         });
+        // U3 (BR7.2): a raw link token only ever in the body of its allow-listed response.
+        for (const t of linkTokens) {
+          checks += 1;
+          const leaked = headerText.includes(t) || (!linkAllowed && rec.body.includes(t));
+          expect({ ...where, linkToken: leaked }).toEqual({ ...where, linkToken: false });
+        }
       }
       // O12: rows × roles; the responses scanned are in the check count.
       reportWalk("no-secret", routes.length, ROLES.length, checks, performance.now() - started);

@@ -216,6 +216,14 @@
       "find": "    payload: { invitationId: input.invitationId, role: input.role, by: input.by },",
       "replace": "    payload: { ...input },",
       "test": "tests/unit/auth-audit-payloads.test.ts"
+    },
+    {
+      "id": "recover-looks-up-user",
+      "why": "Recover touches neither the database nor the hash gate (U3 D-01, NFR3.18); a lookup lets its timing reveal which emails exist.",
+      "file": "src/server/handlers/auth.ts",
+      "find": "  handler: async (ctx) => {\n    const outcome = recover(ctx.body);",
+      "replace": "  handler: async (ctx, deps) => {\n    await deps.sql`SELECT id FROM users WHERE lower(email) = ${ctx.body.email} LIMIT 1`;\n    const outcome = recover(ctx.body);",
+      "test": "tests/integration/staff-routes.test.ts"
     }
   ]
 }
