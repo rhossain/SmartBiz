@@ -144,9 +144,9 @@ is implemented, together with the full existing suite, before the next layer sta
 
 ### Step 8 — Business logic: write and run its tests
 
-- [ ] `tests/unit/delegation.test.ts`: every caller × role/target pair, including supersede of a pending `manager` invitation by a Manager (403) and self-reset (403).
-- [ ] `tests/unit/auth-audit-payloads.test.ts`: the four actions' payloads carry no `email` key and no `@`.
-- [ ] Add mutants: Manager may invite `manager`; accept takes the role from the request body; put `email` back in `auditInviteCreated`.
+- [x] `tests/unit/delegation.test.ts`: every caller × role/target pair, including supersede of a pending `manager` invitation by a Manager (403) and self-reset (403).
+- [x] `tests/unit/auth-audit-payloads.test.ts`: the four actions' payloads carry no `email` key and no `@`.
+- [x] Add mutants: Manager may invite `manager`; accept takes the role from the request body; put `email` back in `auditInviteCreated`.
 
 ### Step 9 — API / endpoint: implement (C6, B1–B5; BR10.1; S24, S25 server side)
 
