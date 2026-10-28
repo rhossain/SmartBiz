@@ -1035,3 +1035,117 @@ button:disabled {
   font-size: 13px;
   color: var(--color-text-2);
 }
+
+/* ===== Daily card (mockups §17.1) ============================================================ */
+
+.day-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+  margin: calc(-1 * var(--space-3)) 0 var(--space-6);
+}
+
+.day-head p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.day-tiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.day-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  min-height: 150px;
+  padding: var(--space-6);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-raised);
+}
+
+.shell__main .day-tile__label {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--color-text-2);
+}
+
+.day-tile .money-cell__amount,
+.day-tile__figure {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text);
+}
+
+.day-tile__figure--none {
+  color: var(--color-text-2);
+}
+
+.shell__main .day-tile__note {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-text-2);
+}
+
+.day-tile__pills {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.day-tile--skeleton {
+  background: var(--color-canvas);
+  box-shadow: none;
+}
+
+.status-strip {
+  margin-bottom: var(--space-6);
+  padding: var(--space-4) var(--space-6);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  background: var(--color-canvas);
+}
+
+.shell__main .status-strip h3 {
+  margin: 0 0 var(--space-3);
+  font-size: 13px;
+  color: var(--color-text-2);
+}
+
+.shell__main .status-strip ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.shell__main .status-strip li {
+  margin: 0;
+}
+
+.day-link {
+  font-weight: 600;
+  text-decoration: none;
+}
+
+@media (max-width: 760px) {
+  .day-tiles {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -500,6 +500,11 @@ and tints brand on hover. Staff and audit tables use the §16.2 table style.
 
 ### 17.1 Daily card — `/daily-card` (US3.1; MVP S12)
 
+> **Built 2026-10-28** (`src/daily-card/`, tests in `tests/unit/daily-card.test.tsx`), ahead of the
+> rest of B5, for the demo, outside the per-unit Construction stages. As built: the title is
+> "দৈনিক কার্ড", the same words as the nav link; the route is gated on the Owner-only `business.edit`,
+> so other roles see neither the link nor the money; the status-strip pills are not links yet.
+
 ```
 ┌ screen card ───────────────────────────────────────────────────────────────────────┐
 │ আজকের কার্ড                                                     [↻ রিফ্রেশ]          │

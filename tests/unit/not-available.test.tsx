@@ -43,7 +43,7 @@ describe("not-available screen", () => {
   test("each not-yet-built route of the map renders it with its own name (BR1.1)", () => {
     setLocale("bn");
     const expected: Record<string, string> = {
-      "/daily-card": "দৈনিক কার্ড",
+      // B5 built /daily-card (tests/unit/daily-card.test.tsx).
       "/business": "ব্যবসা",
       "/settings": "সেটিংস",
       // U3 built /accept-invite, /reset and /recover; they are covered by

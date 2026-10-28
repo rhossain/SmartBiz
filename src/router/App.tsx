@@ -47,6 +47,7 @@ import { hasCapability } from "../auth/capability.js";
 import type { GateSession } from "../auth/three-layer-gate.js";
 import type { SessionResponse } from "../auth/schemas.js";
 import type { AuditRouteState } from "../audit/screens/AuditTrail.js";
+import type { DailyRouteState } from "../daily-card/screens/DailyCard.js";
 import { createAuditApi, type AuditApi } from "../client/audit-api.js";
 import { createStaffApi, type StaffApi } from "../client/staff-api.js";
 import type { AuthApi } from "../client/auth-api.js";
@@ -340,6 +341,14 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
 
   const auditState: AuditRouteState = { kind: "audit", locale, load: audit.page, homeTo };
 
+  // B5 (US3.1): the daily card reads today's orders through the same orders client.
+  const dailyState: DailyRouteState = {
+    kind: "daily",
+    locale,
+    load: orders.list,
+    isOwner: role === "owner",
+  };
+
   // U3 (BR9.1): the staff container loads its own list through the staff client.
   const staffState: StaffRouteState = { kind: "staff", locale, staff, homeTo };
 
@@ -390,11 +399,13 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
     ? ordersState
     : routePath === "/audit-trail"
       ? auditState
-      : routePath === "/staff"
-        ? staffState
-        : TOKEN_ROUTES.has(routePath ?? "")
-          ? tokenState
-          : authState;
+      : routePath === "/daily-card"
+        ? dailyState
+        : routePath === "/staff"
+          ? staffState
+          : TOKEN_ROUTES.has(routePath ?? "")
+            ? tokenState
+            : authState;
   const outcome =
     session.status === "unknown"
       ? null

@@ -26,6 +26,7 @@
  * (src/router/render-staff-route.tsx). U4 adds the catalog routes (AC5.1.4, units R-02).
  */
 import { renderAuditTrail } from "../audit/screens/AuditTrail.js";
+import { renderDailyCard } from "../daily-card/screens/DailyCard.js";
 import { ORDER_MUTATE_CAPABILITIES, ORDER_READ_CAPABILITY } from "../orders/order-capability.js";
 import { renderOrdersScreen } from "../orders/screens/render-orders-route.js";
 import { renderStaffRoute } from "./render-staff-route.js";
@@ -119,9 +120,11 @@ export const routes: ReadonlyMap<RoutePath, Route> = new Map<RoutePath, Route>([
   }),
   route({
     path: "/daily-card",
-    requiredCapability: "business.view",
+    // B5 (US3.1, mockups §17.1): the daily card is the Owner's; `business.edit` is the Owner-only
+    // capability, so every other role meets the lock screen and no nav link (NFR6.6).
+    requiredCapability: "business.edit",
     feature: "feature.daily_card",
-    render: renderNotAvailable("feature.daily_card"),
+    render: renderDailyCard,
   }),
   route({
     path: "/audit-trail",

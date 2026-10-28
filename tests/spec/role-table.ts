@@ -211,9 +211,15 @@ export const SCREEN_ROWS: ReadonlyArray<ScreenRow> = [
   screen("/orders/:id/transition", ORDER_WRITERS, "অর্ডারের অবস্থা বদল", "US5.1 move", {
     heading: FIXTURE_ORDER_NO,
   }),
-  screen("/daily-card", EVERY, "দৈনিক কার্ড", "US1.7 (F-07); not available until B5", {
-    nav: true,
-  }),
+  screen(
+    "/daily-card",
+    BUSINESS_EDITORS,
+    "দৈনিক কার্ড",
+    "US3.1 daily card: Owner only (mockups §17.1)",
+    {
+      nav: true,
+    },
+  ),
   screen("/audit-trail", AUDIT_READERS, "অডিট ট্রেইল", "US5.1 audit trail", { nav: true }),
   screen("/staff", STAFF_MANAGERS, "কর্মী", "US1.5, US1.6 staff screen (AC1.5.6, Q12)", {
     nav: true,

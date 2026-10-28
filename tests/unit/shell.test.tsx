@@ -103,20 +103,10 @@ describe("Shell", () => {
       "#/business",
       "#/settings",
     ]);
-    expect(links("manager")).toEqual([
-      "#/orders",
-      "#/daily-card",
-      "#/audit-trail",
-      "#/staff",
-      "#/settings",
-    ]);
-    expect(links("accountant")).toEqual([
-      "#/orders",
-      "#/daily-card",
-      "#/audit-trail",
-      "#/settings",
-    ]);
-    expect(links("sales_staff")).toEqual(["#/orders", "#/daily-card", "#/settings"]);
+    // B5 (US3.1): the daily card is the Owner's; no other role gets its link.
+    expect(links("manager")).toEqual(["#/orders", "#/audit-trail", "#/staff", "#/settings"]);
+    expect(links("accountant")).toEqual(["#/orders", "#/audit-trail", "#/settings"]);
+    expect(links("sales_staff")).toEqual(["#/orders", "#/settings"]);
     const labels = navFor("owner").map((n) => lookup(n.label, "bn"));
     expect(new Set(labels).size).toBe(labels.length);
     expect(labels).toEqual(["অর্ডার", "দৈনিক কার্ড", "অডিট ট্রেইল", "কর্মী", "ব্যবসা", "সেটিংস"]);

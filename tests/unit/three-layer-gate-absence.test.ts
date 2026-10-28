@@ -286,8 +286,8 @@ describe("client role walk over the screen route map (role table, C5)", () => {
       WAIT,
     );
     check();
-    expect(card.view.getByTestId("not-available-message").textContent).toBe(
-      "এই অংশ পরের সংস্করণে আসবে",
-    );
+    // B5 built the card: the Owner gets its tiles, not the not-available message or a lock.
+    await waitFor(() => expect(card.view.getByTestId("daily-orders")).toBeTruthy(), WAIT);
+    expect(card.view.queryByTestId("lock-sheet")).toBeNull();
   });
 });
