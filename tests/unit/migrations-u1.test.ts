@@ -164,6 +164,40 @@ describe("U1 migrations 0011–0015 (text)", () => {
     }
   });
 
+  /*
+   * U3 (u3-staff): 0017 makes each token hash name one row (SC6; NFR3.16, NFR6.24; I-01, I-02).
+   * Restated: it runs right after 0016 and is the last file, opens with its AuthComponent / U3
+   * header, stops with `duplicate_token_hash` in a guarded block before building anything,
+   * creates exactly the two unique indexes with IF NOT EXISTS, and grants or revokes nothing
+   * (NFR2.5).
+   */
+  test("0017 runs right after 0016, last, and opens with its AuthComponent U3 header (C9)", () => {
+    const files = listMigrations();
+    const at = files.indexOf("0016_add_audit_log_keyset_idx.sql");
+    expect(files[at + 1]).toBe("0017_unique_token_hashes.sql");
+    expect(files.at(-1)).toBe("0017_unique_token_hashes.sql");
+    expect(read("0017_unique_token_hashes.sql").split("\n")[0]).toMatch(
+      /^-- 0017 — AuthComponent, U3 u3-staff/,
+    );
+  });
+
+  test("0017 is a guarded duplicate stop and two guarded unique indexes; no grant (NFR2.5)", () => {
+    const s17 = statements(read("0017_unique_token_hashes.sql"));
+    expect(s17).toHaveLength(3);
+    expect(s17[0]).toMatch(/^DO \$\$/);
+    expect(s17[0]).toMatch(/GROUP BY accept_token_hash HAVING count\(\*\) > 1/);
+    expect(s17[0]).toMatch(/GROUP BY token_hash HAVING count\(\*\) > 1/);
+    expect(s17[0]).toMatch(/RAISE EXCEPTION 'duplicate_token_hash'/);
+    expect(s17.slice(1)).toEqual([
+      "CREATE UNIQUE INDEX IF NOT EXISTS invitations_accept_token_hash_idx ON invitations (accept_token_hash)",
+      "CREATE UNIQUE INDEX IF NOT EXISTS password_resets_token_hash_idx ON password_resets (token_hash)",
+    ]);
+    for (const s of s17) {
+      expect(GUARDED.some((re) => re.test(s))).toBe(true);
+      expect(s).not.toMatch(/\b(GRANT|REVOKE)\b/i);
+    }
+  });
+
   test("0011 makes the business a singleton and the user reference deferrable (BR2.2, BR2.3)", () => {
     const s11 = read("0011_users_business_link.sql");
     expect(s11).toMatch(

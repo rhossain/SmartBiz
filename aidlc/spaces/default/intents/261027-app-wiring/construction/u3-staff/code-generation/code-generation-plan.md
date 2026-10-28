@@ -113,9 +113,9 @@ is implemented, together with the full existing suite, before the next layer sta
 
 ### Step 4 — Data model / database behaviour: write and run its tests
 
-- [ ] `tests/unit/migrations-u1.test.ts` (extend): 0017 ordered after 0016, guarded, grants nothing.
-- [ ] `tests/realdb/migrations.realdb.test.ts` (extend): both index definitions; with `SET enable_seqscan = off` both lookups use them; the duplicate stop (seed duplicates at 0016 → `duplicate_token_hash`, no ledger row, no index; remove the duplicate → 0017 applies) (I-02).
-- [ ] `tests/realdb/grants.realdb.test.ts` stays green (NFR2.5).
+- [x] `tests/unit/migrations-u1.test.ts` (extend): 0017 ordered after 0016, guarded, grants nothing.
+- [x] `tests/realdb/migrations.realdb.test.ts` (extend): both index definitions; with `SET enable_seqscan = off` both lookups use them; the duplicate stop (seed duplicates at 0016 → `duplicate_token_hash`, no ledger row, no index; remove the duplicate → 0017 applies) (I-02).
+- [x] `tests/realdb/grants.realdb.test.ts` stays green (NFR2.5).
 
 ### Step 5 — Repository / data access: implement (BR2.x, BR3.x, BR4.x, BR6.1; S18, S19, S22, S23; D-03, E-01; F-07)
 
