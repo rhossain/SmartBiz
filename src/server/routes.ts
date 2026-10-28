@@ -10,11 +10,19 @@
  * U2–U5 append their routes here.
  */
 import { auditRoute } from "./handlers/audit.js";
-import { signInRoute, signOutRoute, signUpRoute } from "./handlers/auth.js";
+import {
+  acceptInviteRoute,
+  recoverRoute,
+  resetRoute,
+  signInRoute,
+  signOutRoute,
+  signUpRoute,
+} from "./handlers/auth.js";
 import { healthRoute } from "./handlers/health.js";
 import { orderRoutes } from "./handlers/orders.js";
 import { sessionRoute } from "./handlers/session.js";
 import { setupRoute } from "./handlers/setup.js";
+import { staffRoutes } from "./handlers/staff.js";
 import type { HttpMethod, RouteDef } from "./types.js";
 
 export const routes: ReadonlyArray<RouteDef> = [
@@ -27,15 +35,26 @@ export const routes: ReadonlyArray<RouteDef> = [
   ...orderRoutes,
   // U2 (C4; BR7.5): the audit trail read, `audit.view` only. The public allow-list is unchanged.
   auditRoute,
+  // U3 (C6; BR10.1): the staff routes (`staff.invite`) and the three public token routes.
+  ...staffRoutes,
+  acceptInviteRoute,
+  recoverRoute,
+  resetRoute,
 ];
 
-/** The only routes that answer without a session (NFR1.1; C5 public_routes for U1). */
+/**
+ * The only routes that answer without a session (NFR1.1; C5 public_routes): U1's five and,
+ * since U3, accepting an invitation, browser recovery and the password reset (BR10.1).
+ */
 export const PUBLIC_ALLOW_LIST: ReadonlyArray<string> = [
   "GET /api/health",
   "GET /api/setup",
   "POST /api/auth/sign-up",
   "POST /api/auth/sign-in",
   "POST /api/auth/sign-out",
+  "POST /api/invitations/accept",
+  "POST /api/auth/recover",
+  "POST /api/auth/reset",
 ];
 
 export const routeKey = (route: Pick<RouteDef, "method" | "path">): string =>

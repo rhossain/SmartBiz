@@ -36,6 +36,20 @@ export interface RunningServer {
   readonly stop: () => Promise<void>;
 }
 
+/**
+ * The production dependencies of the request pipeline. U3 (P-02): built here, in one place,
+ * and never with `hooks` — the race-test pause points exist only in tests.
+ */
+export const serverDeps = (config: ServerConfig, sql: Sql, distDir: string | null): ServerDeps => ({
+  sql,
+  port: config.port,
+  limiter: createAttemptLimiter(SIGN_IN_LIMIT),
+  hashGate: createHashGate(),
+  distDir,
+  clock: now,
+  log,
+});
+
 /** Steps 2–4 of start-up, for a configuration that has already been read. */
 export const startServer = async (
   config: ServerConfig,
@@ -54,15 +68,7 @@ export const startServer = async (
   }
   // Computed once, in the background, so the first unknown-email sign-in costs the same.
   void getDummyHash();
-  const deps: ServerDeps = {
-    sql,
-    port: config.port,
-    limiter: createAttemptLimiter(SIGN_IN_LIMIT),
-    hashGate: createHashGate(),
-    distDir: options.distDir === undefined ? DIST_DIR : options.distDir,
-    clock: now,
-    log,
-  };
+  const deps = serverDeps(config, sql, options.distDir === undefined ? DIST_DIR : options.distDir);
   const server = Bun.serve({
     hostname: BIND_HOST,
     port: config.port,

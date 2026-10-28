@@ -11,6 +11,7 @@
 import type { AttemptLimiter } from "../auth/attempt-limiter.js";
 import type { HashGate } from "../auth/hash-gate.js";
 import type { ResolvedSession } from "../auth/session.js";
+import type { TxHooks } from "../auth/types.js";
 import type { Sql } from "../db/client.js";
 import type { Capability } from "../data/enums.js";
 import type { ErrorKind, FieldIssue } from "../data/error-kinds.js";
@@ -20,8 +21,9 @@ import type { ZodType } from "zod";
 export type HttpMethod = "GET" | "POST" | "PATCH";
 
 /**
- * Who may call a route: `public` (the five allow-listed routes), `session` (any signed-in
- * role) or the capabilities of which the role must hold at least one (NFR1.1).
+ * Who may call a route: `public` (the allow-listed routes: U1's five and, since U3, accept,
+ * recover and reset), `session` (any signed-in role) or the capabilities of which the role
+ * must hold at least one (NFR1.1).
  */
 export type Access = "public" | "session" | Capability | ReadonlyArray<Capability>;
 
@@ -61,6 +63,12 @@ export interface ServerDeps {
   readonly distDir: string | null;
   readonly clock: () => Date;
   readonly log: (payload: LogPayload) => void;
+  /**
+   * U3 (review P-02): test-only pause points handed to the staff write paths, so a realdb
+   * test can force a race. Production wiring never sets it: `serverDeps` in main.ts builds
+   * the deps without it, and tests/unit/server-deps.test.ts asserts that.
+   */
+  readonly hooks?: TxHooks;
 }
 
 export interface RouteSchemas<P, Q, B> {

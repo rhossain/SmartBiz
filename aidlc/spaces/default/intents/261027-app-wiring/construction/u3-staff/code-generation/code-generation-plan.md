@@ -150,10 +150,10 @@ is implemented, together with the full existing suite, before the next layer sta
 
 ### Step 9 — API / endpoint: implement (C6, B1–B5; BR10.1; S24, S25 server side)
 
-- [ ] `src/server/handlers/staff.ts`: `GET /api/staff`, `POST /api/staff/invitations`, `POST /api/staff/:userId/reset-links` (access `staff.invite`).
-- [ ] `src/server/handlers/auth.ts`: public `POST /api/invitations/accept` (201 public user + Set-Cookie), `POST /api/auth/recover` (202, empty body; no `sql`, no gate), `POST /api/auth/reset` (204).
-- [ ] `src/server/routes.ts`: register the six routes; `PUBLIC_ALLOW_LIST` gains the three public routes.
-- [ ] `src/server/types.ts`: optional `hooks` on the domain deps; `startServer` never sets it.
+- [x] `src/server/handlers/staff.ts`: `GET /api/staff`, `POST /api/staff/invitations`, `POST /api/staff/:userId/reset-links` (access `staff.invite`).
+- [x] `src/server/handlers/auth.ts`: public `POST /api/invitations/accept` (201 public user + Set-Cookie), `POST /api/auth/recover` (202, empty body; no `sql`, no gate), `POST /api/auth/reset` (204).
+- [x] `src/server/routes.ts`: register the six routes; `PUBLIC_ALLOW_LIST` gains the three public routes.
+- [x] `src/server/types.ts`: optional `hooks` on the domain deps; `startServer` never sets it.
 
 ### Step 10 — API / endpoint: write and run its tests (NFR1.11, NFR3.17–NFR3.19, NFR4.3, NFR5.9)
 
