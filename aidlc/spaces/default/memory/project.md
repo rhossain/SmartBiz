@@ -53,10 +53,14 @@
 
 <!-- Technology choices locked for this project. -->
 
+- Keep a single TypeScript stack: the API server runs on bun's built-in HTTP server, with no separate web framework, so the project stays zero-spend with one package.json. (learned 2026-10-27) <!-- cid:261027-app-wiring:feasibility:a023018f4c62fdfad6d7de8496ba003bdf758672e12723e13f4c0b8f71531595 -->
+
 ## Decided
 
 <!-- Decisions made in earlier stages that should not be re-asked. -->
 <!-- Format: DECIDED: [decision] (Stage [slug], [date]) -->
+
+- When the MVP bolt-plan.md and unit-of-work.md disagree on which stories a Bolt contains, follow unit-of-work.md and note the disagreement. (learned 2026-10-27) <!-- cid:261027-app-wiring:scope-definition:8a4504d3056a7f6497358608624b4e585bbe816b1f955665a68f601f800c3bdf -->
 
 ## Scope Overrides
 
@@ -68,11 +72,15 @@
 <!-- Format: NEVER [behavior] (affirmed [date]) -->
 <!-- Example: NEVER throw exceptions across service layer boundaries (affirmed 2026-05-17) -->
 
+- NEVER add a paid hosted service, database, CI runner or provider to SmartBiz; a free hosted service is allowed only when optional and the app degrades gracefully without it. (affirmed 2026-10-27)
+
 ## Mandated
 
 <!-- Populated by practices-discovery affirmation gate. -->
 <!-- Format: ALWAYS [behavior] (affirmed [date]) -->
 <!-- Example: ALWAYS use Result<T,E> for fallible operations in service layer (affirmed 2026-05-17) -->
+
+None. (affirmed 2026-10-27)
 
 ## Corrections
 
@@ -93,3 +101,4 @@
 - Chose AuthComponent owns the role × capability gate (Q4=A) over split (Auth owns matrix, UI owns gate) or shared kernel; the prototype's ui.js keeps matrix + gate in the same file for a reason — the matrix is meaningless without the gate. (learned 2026-10-11) (learned 2026-10-11) <!-- cid:261004-mvp:domain-design:445b594c64aa4508d21d97bf1043b48403cf67837c898b5668b240ba66d31c52 -->
 - Chose OrdersComponent owns the paste-parser segment-isolation (Q5=A) over CaptureComponent or pure-function PasteParserComponent; the prototype's screens-orders.js line 141–262 is the only place segment-isolation is implemented and the test-after discipline (NFR6.3) keeps the parser tests next to the parser. (learned 2026-10-11) (learned 2026-10-11) <!-- cid:261004-mvp:domain-design:2a9ceedd915f071dd0353bd80bc9b296d158a384ffefa6988d29a3ff4c0bdaaf -->
 - Chose the 3 deferred input modes (US1.14/15/16) listed as placeholders in the catalogue (Q6=A) over full now or excluded entirely; the catalogue is complete (every story has at least one component), the wiring is named, and the vendor selection is gated in Construction. (learned 2026-10-11) (learned 2026-10-11) <!-- cid:261004-mvp:domain-design:49d7c4a93e0c16cfa9e0132fe71a7aa55ad02d8d233ed64692b4f70a374598bb -->
+- When the Owner answers a question with "Decide for me", record the option chosen and state in the answer that it was chosen on the Owner's instruction, so later stages never treat it as the Owner's own wording. (learned 2026-10-27) <!-- cid:261027-app-wiring:intent-capture:cd8c82b2a78097efc3d9d836f72371688e494505a52a8627f647f88c73de4d0d -->

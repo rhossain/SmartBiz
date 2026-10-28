@@ -1,0 +1,31 @@
+{
+  "stage": "functional-design",
+  "unit": "u3-staff",
+  "upstream_ids": [
+    "AC1.5.1", "AC1.5.2", "AC1.5.3", "AC1.5.4", "AC1.5.5", "AC1.5.6", "AC1.5.7",
+    "AC1.6.1", "AC1.6.2", "AC1.6.3", "AC1.6.4", "AC1.6.5", "AC1.6.6", "AC1.6.7"
+  ],
+  "coverage": [
+    { "id": "AC1.5.1", "status": "OK", "target": "BR1.2, BR2.1, BR9.1, BR9.2" },
+    { "id": "AC1.5.2", "status": "OK", "target": "BR2.1, BR7.2" },
+    { "id": "AC1.5.3", "status": "OK", "target": "BR3.1, BR7.1, BR9.5" },
+    { "id": "AC1.5.4", "status": "OK", "target": "BR3.1, BR3.5" },
+    { "id": "AC1.5.5", "status": "OK", "target": "BR2.2, BR3.2, BR9.3" },
+    { "id": "AC1.5.6", "status": "OK", "target": "BR1.1, BR10.1" },
+    { "id": "AC1.5.7", "status": "OK", "target": "BR8.1" },
+    { "id": "AC1.6.1", "status": "OK", "target": "BR5.1, BR9.4" },
+    { "id": "AC1.6.2", "status": "OK", "target": "BR5.1" },
+    { "id": "AC1.6.3", "status": "OK", "target": "BR6.1" },
+    { "id": "AC1.6.4", "status": "OK", "target": "BR1.3, BR4.1, BR9.2" },
+    { "id": "AC1.6.5", "status": "OK", "target": "BR4.2, BR9.3" },
+    { "id": "AC1.6.6", "status": "OK", "target": "BR4.3, BR8.1" },
+    { "id": "AC1.6.7", "status": "OK", "target": "BR7.1" }
+  ],
+  "reverse": [
+    { "id": "BR2.3", "status": "N/A", "target": "contract C6 409 for an existing member" },
+    { "id": "BR2.4", "status": "N/A", "target": "decision Q5: supersede a pending invitation" },
+    { "id": "BR2.5", "status": "N/A", "target": "contract C6 GET /api/staff and R-08 row cap" },
+    { "id": "BR3.3", "status": "N/A", "target": "decision Q6: email race on accept" },
+    { "id": "BR3.4", "status": "N/A", "target": "contract C6 password minLength 10" }
+  ]
+}

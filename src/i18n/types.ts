@@ -1,7 +1,7 @@
 /**
  * src/i18n/types.ts — Translation entry type.
  */
-import type { Locale } from "../auth/types.js";
+import type { Locale } from "../data/enums.js";
 
 export interface Translation {
   readonly bn: string;

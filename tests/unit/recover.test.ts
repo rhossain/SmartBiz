@@ -1,79 +1,47 @@
 /**
- * tests/unit/recover.test.ts — UC-1.3, BR1.3.
+ * tests/unit/recover.test.ts — browser recovery does nothing, identically for every email
+ * (U3 W6; BR5.1; S21 as revised by D-01; NFR3.18; review F-07).
+ *
+ * Restated: `recover` takes the parsed body only — no `sql`, no hash gate — and answers the
+ * same 202 outcome for a known and an unknown email; it writes no row of any table. The
+ * module imports neither the database client nor the hash gate, so a lookup cannot be added
+ * without changing its signature (the HTTP-level spies are in tests/integration/
+ * staff-routes.test.ts). The retired B1 exports are gone.
  */
-import { beforeEach, describe, expect, test } from "bun:test";
-import { signUp } from "../../src/auth/sign-up.js";
-import { requestRecovery, resetPassword } from "../../src/auth/recover.js";
-import { makeSqlStub } from "../helpers/sql-stub.js";
-import { setTestClock, FROZEN_TEST_NOW, resetTestClock } from "../../src/data/clock.js";
-import { resetBuckets } from "../../src/auth/rate-limit.js";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import { describe, expect, test } from "bun:test";
+import * as recoverModule from "../../src/auth/recover.js";
+import { recover, RECOVER_OUTCOME } from "../../src/auth/recover.js";
+import { staffWorld } from "../helpers/staff-fixtures.js";
 
-const setup = async () => {
-  resetBuckets();
-  setTestClock(FROZEN_TEST_NOW);
-  const seeded = makeSqlStub();
-  await signUp(seeded.sql, {
-    email: "owner@example.com",
-    password: "verysecret",
-    businessName: "Acme",
-    locale: "bn",
-  });
-  return makeSqlStub({ users: seeded.state.users, businesses: seeded.state.businesses });
-};
-
-describe("password recovery (UC-1.3)", () => {
-  beforeEach(() => {
-    resetBuckets();
-    resetTestClock();
+describe("recover (W6, D-01)", () => {
+  test("a known and an unknown email get the identical 202 outcome", () => {
+    const known = recover({ email: "owner@acme.test" });
+    const unknown = recover({ email: "nobody@acme.test" });
+    expect(known).toEqual({ status: 202 });
+    expect(JSON.stringify(unknown)).toBe(JSON.stringify(known));
+    expect(known).toBe(RECOVER_OUTCOME);
   });
 
-  test("request returns identical shape regardless of email presence", async () => {
-    const stub = await setup();
-    const a = await requestRecovery(stub.sql, "owner@example.com", FROZEN_TEST_NOW.getTime());
-    const b = await requestRecovery(stub.sql, "noone@example.com", FROZEN_TEST_NOW.getTime());
-    expect(a.ok).toBe(true);
-    expect(b.ok).toBe(true);
-    if (a.ok && b.ok) {
-      expect(typeof a.value.token === "string" || a.value.token === null).toBe(true);
-      expect(typeof b.value.token === "string" || b.value.token === null).toBe(true);
-      expect(a.value.token).not.toBeNull();
-      expect(b.value.token).toBeNull();
-    }
+  test("it takes one argument — the body — and no sql or gate (S21)", () => {
+    expect(recover.length).toBe(1);
+    const source = readFileSync(join(import.meta.dir, "../../src/auth/recover.ts"), "utf8");
+    const imports = source.split("\n").filter((l) => /^import /.test(l));
+    expect(imports).toEqual([]);
   });
 
-  test("reset with valid token succeeds and marks used", async () => {
-    const stub = await setup();
-    const r = await requestRecovery(stub.sql, "owner@example.com", FROZEN_TEST_NOW.getTime());
-    if (!r.ok || !r.value.token) throw new Error("no token");
-    const reset = await resetPassword(
-      stub.sql,
-      r.value.token,
-      "newsecret1",
-      FROZEN_TEST_NOW.getTime() + 1000,
-    );
-    expect(reset.ok).toBe(true);
+  test("nothing is written to any table for either email (NFR3.18)", async () => {
+    const w = await staffWorld();
+    const before = JSON.stringify(w.stub.state);
+    const calls = w.stub.calls.length;
+    recover({ email: "owner@acme.test" });
+    recover({ email: "nobody@acme.test" });
+    expect(w.stub.calls.length).toBe(calls);
+    expect(JSON.stringify(w.stub.state)).toBe(before);
   });
 
-  test("reset with expired token rejected", async () => {
-    const stub = await setup();
-    const r = await requestRecovery(stub.sql, "owner@example.com", FROZEN_TEST_NOW.getTime());
-    if (!r.ok || !r.value.token) throw new Error("no token");
-    const reset = await resetPassword(
-      stub.sql,
-      r.value.token,
-      "newsecret1",
-      FROZEN_TEST_NOW.getTime() + 60 * 60 * 1000 + 1000,
-    );
-    expect(reset.ok).toBe(false);
-    if (reset.ok) return;
-    expect(reset.error.kind).toBe("expired_token");
-  });
-
-  test("reset inserts an audit row (UC-1.9)", async () => {
-    const stub = await setup();
-    const r = await requestRecovery(stub.sql, "owner@example.com", FROZEN_TEST_NOW.getTime());
-    if (!r.ok || !r.value.token) throw new Error("no token");
-    await resetPassword(stub.sql, r.value.token, "newsecret1", FROZEN_TEST_NOW.getTime() + 1000);
-    expect(stub.state.auditLog.some((a) => a["action"] === "auth.recover.reset")).toBe(true);
+  test("the retired B1 recovery exports are gone (F-07)", () => {
+    expect(Object.keys(recoverModule).sort()).toEqual(["RECOVER_OUTCOME", "recover"]);
   });
 });

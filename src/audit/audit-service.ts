@@ -5,11 +5,10 @@
  * The DB-level INSERT-only invariant (BR3.1) is enforced by the
  * migration (`bun run migrate` → 0007_grants.sql).
  */
-import type { Queryable, Sql } from "../db/client.js";
+import type { Queryable } from "../db/client.js";
 import { newCorrelationId } from "../observability/correlation.js";
 import { now } from "../data/clock.js";
-import type { Uuid } from "../types/uuid.js";
-import { uuid } from "../types/uuid.js";
+import { uuid, type Uuid } from "../data/uuid.js";
 
 const FIVE_YEARS_MS = 5 * 365 * 24 * 60 * 60 * 1000;
 
@@ -61,34 +60,9 @@ export const auditRetentionFilter = (asOf: Date = now()): { readonly retentionBe
   retentionBefore: asOf.toISOString(),
 });
 
-/** Append-only read projection (UC-1.9 / Contract #4). */
-export const listAuditForBusiness = async (
-  sql: Sql,
-  businessId: Uuid,
-  limit = 100,
-): Promise<ReadonlyArray<Record<string, unknown>>> => {
-  const rows = await sql<
-    Array<{
-      id: string;
-      business_id: string;
-      actor_user_id: string | null;
-      correlation_id: string;
-      action: string;
-      subject_kind: string | null;
-      subject_id: string | null;
-      payload: Record<string, unknown>;
-      reverses_id: string | null;
-      occurred_at: string;
-      retention_until: string;
-    }>
-  >`
-    SELECT id, business_id, actor_user_id, correlation_id, action,
-           subject_kind, subject_id, payload, reverses_id,
-           occurred_at, retention_until
-    FROM audit_log
-    WHERE business_id = ${businessId}
-    ORDER BY occurred_at DESC
-    LIMIT ${limit}
-  `;
-  return rows;
-};
+/*
+ * U2 (F-09, D-06): the unfiltered `listAuditForBusiness` read is gone. It read past
+ * retention and returned the payload; the API page read is src/audit/audit-read.ts
+ * (retention-filtered, no payload) and the export has its own retention-filtered read in
+ * src/audit/audit-export.ts.
+ */

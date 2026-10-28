@@ -10,11 +10,11 @@
  * knows which screen to redirect to (auth → /sign-in,
  * capability → /lock, business → inline error).
  */
-import { err, ok, type Result } from "../types/result.js";
+import type { Capability, Role } from "../data/enums.js";
+import { err, ok, type Result } from "../data/result.js";
 import { hasCapability } from "./capability.js";
 import type { BusinessRule } from "./business-rule.js";
 import type { BusinessRuleError } from "./business-rule-error.js";
-import type { Capability, Role } from "./types.js";
 
 export type GateError =
   | { readonly kind: "not_authenticated" }

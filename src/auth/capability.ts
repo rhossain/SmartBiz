@@ -4,9 +4,7 @@
  * single source of truth. Tests assert gating by absence over
  * every route.
  */
-import type { Capability, Role } from "./types.js";
-
-export type { Capability } from "./types.js";
+import type { Capability, Role } from "../data/enums.js";
 
 export const capabilitiesFor = (role: Role): ReadonlySet<Capability> => {
   switch (role) {

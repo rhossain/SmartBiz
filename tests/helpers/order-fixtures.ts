@@ -6,9 +6,9 @@
  * no test shares mutable fixture state. The clock is frozen by each test
  * (team.md §TP-11), not here.
  */
-import type { Role } from "../../src/auth/types.js";
+import type { Role } from "../../src/data/enums.js";
 import type { CreateOrderInput, OrderContext, OrderItemInput } from "../../src/orders/types.js";
-import type { Uuid } from "../../src/types/uuid.js";
+import type { Uuid } from "../../src/data/uuid.js";
 
 export const BUSINESS_A = "a0000000-0000-4000-8000-00000000000a" as Uuid;
 export const BUSINESS_B = "b0000000-0000-4000-8000-00000000000b" as Uuid;

@@ -13,5 +13,13 @@
     "scope": "mvp",
     "status": "complete",
     "request": "af9ca986"
+  },
+  {
+    "uuid": "01a17bf7-283a-7c9f-b4d4-e51a0966f4c9",
+    "slug": "app-wiring",
+    "dirName": "261027-app-wiring",
+    "scope": "feature",
+    "status": "in-flight",
+    "request": "59861da2"
   }
 ]

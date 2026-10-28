@@ -5,21 +5,21 @@
  * should pass typed values; zod is for the edges.
  */
 import { z } from "zod";
-import { COURIERS, ORDER_SOURCES, ORDER_STATUSES } from "../orders/types.js";
+import { CAPABILITIES, COURIERS, LOCALES, ORDER_SOURCES, ORDER_STATUSES, ROLES } from "./enums.js";
 
-export const RoleSchema = z.enum(["owner", "manager", "sales_staff", "accountant"]);
-export const LocaleSchema = z.enum(["bn", "en"]);
+export const RoleSchema = z.enum(ROLES);
+export const LocaleSchema = z.enum(LOCALES);
 export const UuidSchema = z.string().uuid();
 
-export const UserSchema = z.object({
+/**
+ * The public user (C2 `User`; U1 BR4.4): no password hash, by construction. The private
+ * record with the hash stays inside AuthComponent and has no schema here.
+ */
+export const PublicUserSchema = z.object({
   id: UuidSchema,
-  email: z.string().email(),
-  passwordHash: z.string().min(1),
+  email: z.string(),
   role: RoleSchema,
-  active: z.boolean(),
   locale: LocaleSchema,
-  createdAt: z.string(),
-  updatedAt: z.string(),
 });
 
 export const BusinessSchema = z.object({
@@ -43,13 +43,11 @@ export const InvitationSchema = z.object({
   createdAt: z.string(),
 });
 
-export const SessionSchema = z.object({
-  id: UuidSchema,
-  userId: UuidSchema,
+/** The C2 `Session` body: never the session id or token, which travel only in Set-Cookie. */
+export const SessionViewSchema = z.object({
+  user: PublicUserSchema,
   businessId: UuidSchema,
-  issuedAt: z.string(),
-  expiresAt: z.string(),
-  lastSeenAt: z.string(),
+  capabilities: z.array(z.enum(CAPABILITIES)),
 });
 
 export const AuditEntrySchema = z.object({
@@ -78,7 +76,7 @@ export const PasswordResetSchema = z.object({
 /*
  * U3-orders boundary validators (B2).
  *
- * The enum lists are imported from src/orders/types.ts rather than
+ * The enum lists are imported from src/data/enums.ts rather than
  * restated, so the zod enum and the TypeScript union cannot drift: a
  * tenth status added to ORDER_STATUSES reaches both. Money is integer
  * paise, and each single field is capped at MAX_PAISE (10^12 paise),
@@ -141,7 +139,8 @@ export const ListOrdersFilterSchema = z.object({
   from: z.string().datetime().nullable().optional(),
   to: z.string().datetime().nullable().optional(),
   cursor: z.string().max(200).nullable().optional(),
-  limit: z.number().int().min(1).max(1000).nullable().optional(),
+  // C1 paging: 1..50, default 50 (U1; was 1..1000 in B2).
+  limit: z.number().int().min(1).max(50).nullable().optional(),
 });
 
 export const OrderItemSchema = OrderItemInputSchema.extend({
@@ -160,6 +159,7 @@ export const OrderSchema = z.object({
   status: OrderStatusSchema,
   source: OrderSourceSchema,
   repeatOfOrderId: UuidSchema.nullable(),
+  itemsRevision: z.number().int().min(1),
   items: z.array(OrderItemSchema).max(MAX_ORDER_ITEMS),
   orderDiscountPaise: PaiseSchema,
   deliveryChargePaise: PaiseSchema,

@@ -7,8 +7,8 @@
  * `NotFound`, so no B2 code path can depend on a price or stock figure
  * that U2 has not produced yet.
  */
-import { err, type Result } from "../types/result.js";
-import type { Uuid } from "../types/uuid.js";
+import { err, type Result } from "../data/result.js";
+import type { Uuid } from "../data/uuid.js";
 import type { NotFound } from "./types.js";
 
 export interface Variant {

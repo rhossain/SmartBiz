@@ -1,41 +1,27 @@
 /**
- * src/router/screens/Accept.tsx — accept invitation.
+ * src/router/screens/Accept.tsx — accept an invitation, `/accept-invite` (U3 W2; BR3.4, BR9.3,
+ * BR9.5; frontend-components "AcceptInviteScreen"; review D-02).
+ *
+ * Rewritten in place (it used to ask for the token in a text field). Props only: the
+ * container (src/router/render-token-routes.tsx) took the token out of the address bar and
+ * holds it; this screen asks for the new password twice and hands it to `onSubmit`. On
+ * success the container signs the person in and opens the orders list (BR9.5).
  */
 import * as React from "react";
-import { Screen } from "../../pres/Screen.js";
-import { Field } from "../../pres/Field.js";
-import { useTranslations } from "../../i18n/useTranslations.js";
+import type { ApiFailure } from "../../client/http.js";
+import { PasswordLinkScreen } from "./PasswordLinkScreen.js";
 
 export interface AcceptProps {
-  readonly onSubmit: (token: string, password: string) => void;
+  readonly hasToken: boolean;
+  readonly onSubmit: (password: string) => Promise<ApiFailure | null>;
 }
 
-export const AcceptScreen = ({ onSubmit }: AcceptProps): React.ReactElement => {
-  const { t } = useTranslations();
-  const [token, setToken] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  return (
-    <Screen title={t("auth.accept.title")}>
-      <form
-        data-testid="accept-form"
-        onSubmit={(e) => {
-          e.preventDefault();
-          onSubmit(token, password);
-        }}
-      >
-        <Field label="token" name="token" value={token} onChange={setToken} required />
-        <Field
-          label="password"
-          name="password"
-          type="password"
-          value={password}
-          onChange={setPassword}
-          required
-        />
-        <button type="submit" data-testid="accept-submit">
-          {t("common.save")}
-        </button>
-      </form>
-    </Screen>
-  );
-};
+export const AcceptScreen = ({ hasToken, onSubmit }: AcceptProps): React.ReactElement => (
+  <PasswordLinkScreen
+    titleKey="auth.accept.title"
+    submitKey="token.accept.submit"
+    testId="accept"
+    hasToken={hasToken}
+    onSubmit={onSubmit}
+  />
+);

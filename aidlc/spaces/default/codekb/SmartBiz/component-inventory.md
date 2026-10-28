@@ -1,6 +1,175 @@
 # SmartBiz BD — Component Inventory
 
-## Scope
+> **Store history.** Prototype inventory (30 items) from intent `261004-mvp` (2026-10-04). Production inventory (23 items) added by intent `261027-app-wiring` (2026-10-27). In the production half one component is one `src/` module directory (or a single file where it stands alone), matching the 1:1 module-to-component decomposition chosen at domain design (project.md §Corrections, Q1=A). Each heading carries the exact component name used in the Scope of Analysis block.
+
+## Production components
+
+### P.1 `./src/index.tsx` — Browser entry
+
+| | |
+|---|---|
+| **Type** | TSX entry, 40 lines |
+| **Owns** | `createRoot(#root).render(<App/>)`; `<App>` renders `<Shell>` with the current locale |
+| **Depends on** | `./src/pres/` (Shell, tokens.css), `./src/i18n/` (useLocale, setLocale) |
+| **State** | Hard-codes `userEmail="owner@example.com"` (line 20). Sign-out only sets `location.hash = "/sign-in"` (lines 21–23) and never calls `signOut`. Does **not** mount the router or dispatch. Outside the coverage denominator (no test imports it). |
+
+### P.2 `./src/pres/` — Presentation primitives
+
+| | |
+|---|---|
+| **Type** | 10 files, 331 lines (TSX + CSS) |
+| **Owns** | `Shell` (nav, locale switch, user menu, `children` slot), `Screen`, `Field`, `LockSheet`, `Pill`, `BasisPill`, `CompletenessControl`, `Toast`, `tokens.css`, `typography.ts` (font preload) |
+| **Depends on** | `./src/i18n/` |
+| **State** | All five nav items and the locale label use the `common.save` key, so each reads "Save" (Shell.tsx lines 49–56). The nav is not role-filtered and links to `/business` and `/settings`, which have no screens (P-9). Font preload href is likely not a valid stylesheet (P-14). |
+
+### P.3 `./src/router/` — Client routing and auth screens
+
+| | |
+|---|---|
+| **Type** | 12 files, 516 lines |
+| **Owns** | `routes` (`ReadonlyMap<RoutePath, Route>`, 17 paths), `hash-router.ts` (`matchRoute`, `navigate`, `onHashChange`, UUID-checked `:id`), `dispatch.ts` (`dispatchPath`, `dispatch`, `dispatchAndApply`), `types.ts`, `screens/` (SignIn, SignUp, Recover, Reset, Accept, Lock, AuditTrailPlaceholder, DailyCardPlaceholder) |
+| **Depends on** | `./src/auth/` (three-layer-gate, capability), `./src/orders/` (order-capability, screens/render-orders-route), `./src/types/` (uuid, node:crypto) |
+| **State** | Pure dispatcher well tested (R1.2 absence over every route × role). Auth screens exist but every non-order route renders `renderStub`. Cannot be bundled for the browser (P-1). `businessRule` read through `as unknown as` (line 58) although `Route` declares it (P-10). |
+
+### P.4 `./src/auth/` — AuthComponent
+
+| | |
+|---|---|
+| **Type** | 19 files, 1 039 lines |
+| **Owns** | sign-up, sign-in, sign-out, recover, password-reset, invite, accept-invite, session building and cookie formatting, argon2id hashing (m=64 MiB, t=3, p=1), process-local rate limiter, email gateway interface, role × capability matrix, three-layer gate, business-rule types, typed audit wrappers, barrel `index.ts` |
+| **Depends on** | `./src/db/`, `./src/audit/`, `./src/types/`, `./src/data/` (clock), argon2, postgres |
+| **State** | Domain complete for B1 but not production-ready on real Postgres: zero-UUID business ids (P-2), no staff membership (P-3), no session read path (P-4), no `app_role` grants on its tables (P-5), `signIn` returns `passwordHash` (P-16), mislabelled sign-out audit (P-8). `sign-out.ts` and `index.ts` are outside the coverage denominator. |
+
+### P.5 `./src/audit/` — AuditService
+
+| | |
+|---|---|
+| **Type** | 2 files, 108 lines |
+| **Owns** | `insertAudit(sql: Queryable, …)`, `listAuditForBusiness`, `exportAudit`, `auditRetentionFilter` |
+| **Depends on** | `./src/db/`, `./src/observability/` (correlation), `./src/types/` (uuid) |
+| **State** | Append-only contract held at the DB. `listAuditForBusiness` does not apply the retention filter (P-8). |
+
+### P.6 `./src/db/` — Persistence
+
+| | |
+|---|---|
+| **Type** | 13 files, 379 lines (TS + SQL) |
+| **Owns** | `client.ts` (postgres.js pool singleton, max 5, `prepare: false`, `DATABASE_URL`), `migrate.ts` (`bun run migrate`, `_migrations` ledger), `migrations/0001–0010`, `role-grants.ts` |
+| **Depends on** | postgres, `node:fs`, `node:path` |
+| **State** | `role-grants.ts` is never called although its header says migrate calls it (P-6). `client.ts` and `migrate.ts` are outside the coverage denominator. |
+
+### P.7 `./src/data/` — DataComponent shared kernel
+
+| | |
+|---|---|
+| **Type** | 4 files, 267 lines |
+| **Owns** | typed `StateContainer`, frozen test clock (`now`, `setTestClock`, `resetTestClock`), zod boundary schemas, re-exported entity types |
+| **Depends on** | zod |
+| **State** | Ready for a JSON API on the order side. |
+
+### P.8 `./src/money/` — MoneyEngine
+
+| | |
+|---|---|
+| **Type** | 7 files, 152 lines |
+| **Owns** | `MoneyFigure {paise, recognition, completeness}`, `money`, `add`/`subtract` with the basis guard, `econ`, `summary`, `risk`, `countByStatus`, `lowVariants` |
+| **Depends on** | — (pure) |
+| **State** | `lowVariants` is a stub that compares paise to a threshold and has no notion of stock (P-11). `risk`, `low-variants` and `count-by-status` are outside the coverage denominator. |
+
+### P.9 `./src/orders/` — OrdersComponent
+
+| | |
+|---|---|
+| **Type** | 34 files, 3 549 lines |
+| **Owns** | repository (`create-order`, `update-order`, `get-order`, `list-orders`, `transition-status`, `consignment`, `order-rows`, `order-audit`), status FSM and buckets, paste parser (`parse-message.ts`, `parse-message-segments.ts`), input modes, deferred photo/spreadsheet/voice bodies, `order-draft` store, `order-capability`, totals and money figure, `screens/` (OrdersList, ManualOrder, PasteParse, RepeatFromPast, OrderDetail, DraftStatus, MoneyCell, copy.ts, render-orders-route.tsx), B3/B4 read stubs |
+| **Depends on** | `./src/db/`, `./src/audit/`, `./src/data/`, `./src/money/`, `./src/observability/`, `./src/types/`, `./src/i18n/` |
+| **State** | Most complete component. `getCustomer`/`getVariant` stubs lack a `sql` parameter (P-11). `order-draft.ts → observability/log.ts` pulls node-only code into the browser closure (P-1). |
+
+### P.10 `./src/i18n/` — Localisation
+
+| | |
+|---|---|
+| **Type** | 5 files, 131 lines |
+| **Owns** | `L(bn, en)` table (13 keys), `lookup`, `bnDigits`, `toAsciiDigits`, locale store, `useTranslations` / `useLocale` hooks |
+| **State** | No nav keys (P-9). Order screens keep their own copy table in `src/orders/screens/copy.ts`. Locale store is a module singleton (P-15). |
+
+### P.11 `./src/observability/` — Logging and correlation
+
+| | |
+|---|---|
+| **Type** | 2 files, 53 lines |
+| **Owns** | JSON-line logger on `process.stdout.write`; correlation ids from `node:crypto.randomBytes` |
+| **State** | Server-only as written but imported by browser code (P-1). |
+
+### P.12 `./src/types/` — Shared primitives
+
+| | |
+|---|---|
+| **Type** | 3 files, 43 lines |
+| **Owns** | `Result<T,E>` with `ok`/`err`; branded `Uuid`, `uuid()` (`node:crypto.randomUUID`), `isUuid`; `sha256` (`node:crypto`) |
+| **State** | `isUuid` is browser-safe logic in a node-only file; that is the root of P-1. |
+
+### P.13 `./tests/unit/` — Unit suites
+
+36 files: R1.1 audit immutability (static SQL inspection), R1.2 three-layer gate absence over every route and role, recognition basis, money round-trip, parseMessage suites (segments, bad input, bench), status FSM, exhaustive status, buckets, role gate, role-lock reach, contrast, PCI deny-list, micro-benches, auth flows on the SQL stub.
+
+### P.14 `./tests/integration/` — Integration suites
+
+7 files: audit-append flow, reversal flow, single-tenant (asserts a local helper, not `signUp`, P-7), email-gateway failure, order-create, orders screens, manual-order screen.
+
+### P.15 `./tests/realdb/` — Real-Postgres suite
+
+`order-paths.realdb.test.ts`, 5 tests: app-role CRUD and audit, JSONB typing, keyset paging and tenant isolation, audit UPDATE/DELETE refused, `MAX_SAFE_INTEGER`. Orders and audit only; no auth, session or grant test (P-13).
+
+### P.16 `./tests/helpers/` — Test doubles and fixtures
+
+`sql-stub.ts` (536 lines, regex-dispatched imitation of postgres.js; blind to locks, FKs, grants, keyset cursors and JSONB typing) and `order-fixtures.ts` (54 lines).
+
+### P.17 `./tests/setup.ts` — Test preload
+
+23 lines. Installs happy-dom `window`, `document`, `navigator`, `HTMLElement` on `globalThis`. Its header mentions a clock reset that it does not perform.
+
+### P.18 `./.github/workflows/ci.yml` — CI pipeline
+
+337 lines, four jobs (`build`, `test`, `realdb`, `round-trip`). Push triggers list `main`, `b1-foundation`, `b2-orders`; PRs to `main`. Disabled on GitHub, so local runs of its gates are the merge evidence (project.md §Testing Posture).
+
+### P.19 `./package.json` — Package manifest
+
+Scripts `dev`, `build`, `migrate`, `test`, `lint`, `format`, `type-check`, `coverage`. Runtime deps: react, react-dom, postgres, argon2, zod. `@types/bun: "latest"` is unpinned (P-14).
+
+### P.20 `./tsconfig.json` — TypeScript config
+
+Strict plus `noImplicitAny`, `noImplicitReturns`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `noFallthroughCasesInSwitch`, `isolatedModules`; `noEmit`, `moduleResolution: bundler`, ES2022, `types: ["bun","react"]`. Includes `src/**/*` and `tests/**/*`. Because `types` includes `bun`, `node:crypto` and `process` type-check in browser files too; the architect infers this is why P-1 is not caught by `tsc` and only shows up in `vite build`.
+
+### P.21 `./vite.config.ts` — Bundler config
+
+React plugin, es2022, sourcemaps. Carries a vitest-style `test:` block that nothing reads (P-14).
+
+### P.22 `./bunfig.toml` — bun test config
+
+`[test] root="tests"`, `preload=["./tests/setup.ts"]`, `exact=false`. No coverage threshold.
+
+### P.23 `./.eslintrc.cjs` — Lint config
+
+ESLint 8 legacy format: eslint:recommended, @typescript-eslint/recommended, react, react-hooks; `no-explicit-any: error`, `no-console: error` (warn and error allowed); PCI identifier deny-list override for `src/orders/**`. Ignores prototype, `_bmad`, `.claude`, `aidlc`.
+
+### Cross-cutting concerns in production
+
+| Concern | Where it lives | Layers present |
+|---|---|---|
+| Role × capability gate | `./src/auth/` (`capability.ts`, `three-layer-gate.ts`) consumed by `./src/router/dispatch.ts` and `./src/orders/order-capability.ts` | Router-side gate, repository-side role check (`canMutateOrders`), absence-asserted test (R1.2). **Server-side per-request gate: missing** (there is no server). |
+| Recognition basis | `./src/money/money-figure.ts`, `BasisPill`, `CompletenessControl` | Type, runtime guard, component, test |
+| Audit append-only | `./src/audit/`, `0006`/`0007` migrations, R1.1 and realdb tests | DB grant, same-transaction append, static and real-DB tests |
+| Paste-parser segment isolation | `./src/orders/parse-message*.ts` | Implementation and dedicated suite |
+| Tenant scoping | `ctx.businessId` filter in every order query | Depends on a correct `businessId` from the session, which cannot be derived for staff today (P-3) |
+
+---
+
+## Prototype reference (`prototype/`, preserved from the 261004-mvp scan of 2026-10-04)
+
+The prose below was written by the 261004-mvp reverse-engineering run against `prototype/` and is kept unchanged except that every heading moved down one level. The prototype is read-only guidance (team.md §WoW-4); it was not re-read in depth by this run.
+
+### Scope
 
 This document lists **every component** in the prototype with responsibilities and dependencies. The unit of "component" is a single file (JS or CSS), plus a small set of cross-cutting concerns (the role × capability gate, the paste-parser, the recognition-basis invariant).
 
@@ -8,9 +177,9 @@ Total: 11 JS files + 3 CSS files + 8 test harnesses + 1 test README + 1 test `pa
 
 ---
 
-## 1. Application files
+### 1. Application files
 
-### 1.1 `prototype/index.html` — Entry HTML & presentation chrome
+#### 1.1 `prototype/index.html` — Entry HTML & presentation chrome
 
 | | |
 |---|---|
@@ -21,7 +190,7 @@ Total: 11 JS files + 3 CSS files + 8 test harnesses + 1 test README + 1 test `pa
 | **Depends on** | `css/tokens.css`, `css/app.css`, `css/screens.css`, all 11 JS modules (in declared order). |
 | **Notes** | The load-order comment at line 61 ("tokens → helpers → data → components → screens → router") is the dependency graph. The mockup-set file `screen-map.js` is loaded between `ui.js` and `screens-core.js` (line 66). |
 
-### 1.2 `prototype/css/tokens.css` — Design tokens
+#### 1.2 `prototype/css/tokens.css` — Design tokens
 
 | | |
 |---|---|
@@ -32,7 +201,7 @@ Total: 11 JS files + 3 CSS files + 8 test harnesses + 1 test README + 1 test `pa
 | **Depends on** | — |
 | **Notes** | Comment at line 1–3 documents the money-truth product thesis. The contrast floors are checked by `tests/contrast.js`. |
 
-### 1.3 `prototype/css/app.css` — Shell + primitive styles
+#### 1.3 `prototype/css/app.css` — Shell + primitive styles
 
 | | |
 |---|---|
@@ -42,7 +211,7 @@ Total: 11 JS files + 3 CSS files + 8 test harnesses + 1 test README + 1 test `pa
 | **Owns** | `#chrome`, `.seg`, `.chrome-mark`, `.sidebar` (`.sb-group`/`.sb-item`/`.sb-brand`/`.sb-foot`/`.sb-role`), `.tabbar`, `.topbar`, `.statusbar`, `.btn`, `.chip`, `.money`, `.basis` (`.earned`/`.realized`), `.completeness`, `.field`, `.toggle-row`, `.sheet`, `.toast`, `.empty`, `.scrim`, `.modal`. |
 | **Depends on** | `tokens.css` |
 
-### 1.4 `prototype/css/screens.css` — Per-screen compositions
+#### 1.4 `prototype/css/screens.css` — Per-screen compositions
 
 | | |
 |---|---|
@@ -52,7 +221,7 @@ Total: 11 JS files + 3 CSS files + 8 test harnesses + 1 test README + 1 test `pa
 | **Owns** | `.splash`, `.auth`, `.journey-*`, `.pc-`, `.cash-cell`, `.variant-axis`, `.matrix-grid`, `.settlement-*`, `.ratio-bar`, `.daygroup`, `.pc-ic`, `.path-card`, `.card.pad`, `.stack.g3/g4`, `.grid.c2`, `.empty`, `.empty.ico`, `.ratio-bar`, `.field.input`, `.provenance`, `.riskChip`, etc. |
 | **Depends on** | `tokens.css`, `app.css` |
 
-### 1.5 `prototype/js/i18n.js` — i18n + numeral layer
+#### 1.5 `prototype/js/i18n.js` — i18n + numeral layer
 
 | | |
 |---|---|
@@ -63,7 +232,7 @@ Total: 11 JS files + 3 CSS files + 8 test harnesses + 1 test README + 1 test `pa
 | **Depends on** | `App.TODAY` (from `data.js`, declared but referenced after load). |
 | **Notes** | Comment at line 1–4 documents the "only half translated" invariant. |
 
-### 1.6 `prototype/js/data.js` — Seed + computed domain
+#### 1.6 `prototype/js/data.js` — Seed + computed domain
 
 | | |
 |---|---|
@@ -74,7 +243,7 @@ Total: 11 JS files + 3 CSS files + 8 test harnesses + 1 test README + 1 test `pa
 | **Depends on** | `i18n.js` (`App.L`). |
 | **Notes** | `econ()` is **the** economic engine — used by every screen that shows money. Comment at line 215–220 documents the `declaredTotal` invariant (settlement: must equal the sum of row nets). |
 
-### 1.7 `prototype/js/ui.js` — Shared components & chrome
+#### 1.7 `prototype/js/ui.js` — Shared components & chrome
 
 | | |
 |---|---|
@@ -85,7 +254,7 @@ Total: 11 JS files + 3 CSS files + 8 test harnesses + 1 test README + 1 test `pa
 | **Depends on** | `i18n.js`, `data.js` (consumes `App.TODAY` via `ago`, `App.L`, `App.n`, `App.tk`). |
 | **Notes** | **The three-form Role capability matrix is encoded in `canReach`** at line 94–102 — `roles` + `money`/`price`/`cost`. |
 
-### 1.8 `prototype/js/screens-core.js` — Onboarding + dashboard + insight
+#### 1.8 `prototype/js/screens-core.js` — Onboarding + dashboard + insight
 
 | | |
 |---|---|
@@ -96,7 +265,7 @@ Total: 11 JS files + 3 CSS files + 8 test harnesses + 1 test README + 1 test `pa
 | **Depends on** | `i18n.js`, `data.js`, `ui.js`, `app.js` (consumes `App.canReach`, `App.seesProfit`, `App.L`, `App.tk`, `App.bnDigits`, `App.ui`, `App.econ`, `App.summary`, `App.parseMessage` (for `insights` routes)). |
 | **Notes** | The `dailySummary()` self-gate is the canonical example of Role-adaptive screen self-protection even though `home` cannot carry the `money` flag. |
 
-### 1.9 `prototype/js/screens-orders.js` — Order list, all seven capture paths, order detail
+#### 1.9 `prototype/js/screens-orders.js` — Order list, all seven capture paths, order detail
 
 | | |
 |---|---|
@@ -107,7 +276,7 @@ Total: 11 JS files + 3 CSS files + 8 test harnesses + 1 test README + 1 test `pa
 | **Depends on** | All earlier modules. |
 | **Notes** | **Most regression-prone code path** — segment-isolation rule at line 206–210 ("an item's details must come from the item's own words. … the sample's pink dupatta came out black"). The capture route carries `roles: ['owner','manager','sales']` and `price: true` so the router refuses it for inventory/acluv and for accountant. |
 
-### 1.10 `prototype/js/screens-catalog.js` — Customers, products, variant matrix, inventory
+#### 1.10 `prototype/js/screens-catalog.js` — Customers, products, variant matrix, inventory
 
 | | |
 |---|---|
@@ -118,7 +287,7 @@ Total: 11 JS files + 3 CSS files + 8 test harnesses + 1 test README + 1 test `pa
 | **Depends on** | All earlier modules. |
 | **Notes** | Leading block comment (line 1–6) explains the variant matrix rationale. |
 
-### 1.11 `prototype/js/screens-money.js` — COD, settlement, expenses, dues, suppliers, reports
+#### 1.11 `prototype/js/screens-money.js` — COD, settlement, expenses, dues, suppliers, reports
 
 | | |
 |---|---|
@@ -129,7 +298,7 @@ Total: 11 JS files + 3 CSS files + 8 test harnesses + 1 test README + 1 test `pa
 | **Depends on** | All earlier modules. |
 | **Notes** | `variance matched?` semantic — `matched` / `short` (courier paid 80 less than expected) / `unmatched` (no order carries the cn) / `duplicate` (already settled in a prior run). |
 
-### 1.12 `prototype/js/screens-system.js` — Audit trail, settings, flows
+#### 1.12 `prototype/js/screens-system.js` — Audit trail, settings, flows
 
 | | |
 |---|---|
@@ -140,7 +309,7 @@ Total: 11 JS files + 3 CSS files + 8 test harnesses + 1 test README + 1 test `pa
 | **Depends on** | All earlier modules. |
 | **Notes** | Leading block comment (line 1–8) explains the role×matrix rationale. The audit screen's `roles` vs `money` flag pattern is the canonical example of the third form of the capability matrix (line 38–44). |
 
-### 1.13 `prototype/js/screens-journeys.js` — Story-to-screen presentation
+#### 1.13 `prototype/js/screens-journeys.js` — Story-to-screen presentation
 
 | | |
 |---|---|
@@ -151,7 +320,7 @@ Total: 11 JS files + 3 CSS files + 8 test harnesses + 1 test README + 1 test `pa
 | **Depends on** | `window.SMARTBIZ_SCREEN_MAP` from the mockup set (loaded by `index.html` line 66). All other earlier modules. |
 | **Notes** | **Only file using ES2015+ syntax** (`const`, arrow functions, `Object.assign`, template literals). The contract (story IDs, titles, proofs) is loaded from the authoritative mockup set; this module never owns story IDs. |
 
-### 1.14 `prototype/js/app.js` — Router + chrome wiring
+#### 1.14 `prototype/js/app.js` — Router + chrome wiring
 
 | | |
 |---|---|
@@ -164,9 +333,9 @@ Total: 11 JS files + 3 CSS files + 8 test harnesses + 1 test README + 1 test `pa
 
 ---
 
-## 2. Cross-cutting concerns
+### 2. Cross-cutting concerns
 
-### 2.1 The Role × Capability gate — **three layers, encoded twice**
+#### 2.1 The Role × Capability gate — **three layers, encoded twice**
 
 | Layer | Where | What it does |
 |---|---|---|
@@ -176,7 +345,7 @@ Total: 11 JS files + 3 CSS files + 8 test harnesses + 1 test README + 1 test `pa
 
 **Architect must preserve all three layers or the leak returns.** ([code-quality](code-quality-assessment.md#6-three-layer-role-gate-by-design-tech-debt-signal--6) §6)
 
-### 2.2 The Recognition-Basis invariant — `App.RECOGNITION`, `basisPill`, `completeness`
+#### 2.2 The Recognition-Basis invariant — `App.RECOGNITION`, `basisPill`, `completeness`
 
 | Member | Where | What it does |
 |---|---|---|
@@ -189,31 +358,31 @@ Total: 11 JS files + 3 CSS files + 8 test harnesses + 1 test README + 1 test `pa
 
 **Architect must not collapse these.** ([code-quality](code-quality-assessment.md#7-the-recognition-basis-invariant-by-design) §7)
 
-### 2.3 The paste-parser — `App.parseMessage` (most regression-prone code path)
+#### 2.3 The paste-parser — `App.parseMessage` (most regression-prone code path)
 
 `prototype/js/screens-orders.js` line 141–262. Anchors on the 11-digit phone number, normalises Bangla digits to Latin, finds name/address relative to the phone, then **segments the message at natural item boundaries** so each product reads only its own words. The comment at line 206–210 documents a bug it prevented: *"the sample's pink dupatta came out black, because the kurti's কালো appeared later in the text and the last match won"*.
 
 **Architect must preserve this** if order capture remains in scope. The segment-isolation invariant is asserted once, in `flows.js` "parsed details come from the item they belong to" — architect should ensure production capture-flow tests assert the same.
 
-### 2.4 The audit trail — append-only
+#### 2.4 The audit trail — append-only
 
 `App.audit` (`data.js` line 262–273), 10 entries. **Reversals are new entries, never edits** — A-84 reverses E-199. Documented at `screens-system.js` line 1–8. **This is the contract**, not debt. Production must honour it or audit breaks.
 
-### 2.5 The `App.state` bag — free-form mutable
+#### 2.5 The `App.state` bag — free-form mutable
 
 All UI state parked under `App.state.*` with no schema. Tests reach into it directly (`tests/boot.js` line 60–69 sets and inspects `App.state.voice`). Production must formalise. ([api-documentation](api-documentation.md#2-appstate-uidestate-bag) §2)
 
-### 2.6 The frozen `App.TODAY` clock
+#### 2.6 The frozen `App.TODAY` clock
 
 `App.TODAY = '2026-09-07'` (`data.js` line 11) and `App.ago()` (`i18n.js` line 85–93) reads against it. `time()` (`i18n.js` line 60–70) reads hours from a stored timestamp. **No real `new Date()` anywhere in the data path.** Deliberate for seed arithmetic. Architect must decide whether production freezes TODAY or replaces with `new Date()`.
 
-### 2.7 The presentation chrome (`#chrome`)
+#### 2.7 The presentation chrome (`#chrome`)
 
 The `<header id="chrome">` (lines 17–52) with 5 toggles — Device / Language / Role / AI / Flows — wired by `wireChrome()` (line 221–266). **Not part of the product** — it is a reviewer / presenter convenience. Comment at line 16.
 
 ---
 
-## 3. Test harnesses (8)
+### 3. Test harnesses (8)
 
 | Component | Lines | Catches | Blind to |
 |---|---|---|---|
@@ -238,7 +407,7 @@ Plus:
 
 ---
 
-## 4. The `App.I` icon set (35+ icons)
+### 4. The `App.I` icon set (35+ icons)
 
 `ui.js` line 23–67. Each icon is a function `f(size) → string` returning an inline SVG. Categories:
 
@@ -248,7 +417,7 @@ Plus:
 
 ---
 
-## 5. Role × Capability matrix (PRD §6.2 — restated in `truth.js`)
+### 5. Role × Capability matrix (PRD §6.2 — restated in `truth.js`)
 
 | Capability | Owner | Manager | Accountant | Inventory Staff | Sales Staff |
 |---|---|---|---|---|---|
@@ -265,6 +434,15 @@ Plus:
 ---
 
 ## Sources
+
+- `[dev-scan]` — this run's developer scan: packages, build system, test coverage, technical debt
+- `[repo tree]` — file and line counts per module, measured by the architect on 2026-10-27
+- `[src/index.tsx]`, `[src/router/routes.ts]`, `[src/router/dispatch.ts]`, `[src/auth/capability.ts]`, `[src/auth/role-matrix.ts]`, `[src/auth/three-layer-gate.ts]`, `[src/money/money-figure.ts]`, `[src/orders/create-order.ts]`, `[src/orders/transition-status.ts]` — re-read by the architect
+- `[.github/workflows/ci.yml]` — triggers (lines 12–16, re-read by the architect)
+- `[package.json]` — scripts and ranges (re-read by the architect)
+- `[project.md §Corrections]` — Q1–Q5 component ownership decisions from domain design
+
+### Prototype sources (preserved from the 261004-mvp scan)
 
 - `[dev-scan]` — full developer scan, packages, role × scope table
 - `[prototype:index.html]` — shell, chrome, load order

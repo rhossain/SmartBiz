@@ -21,6 +21,14 @@
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true
   },
-  "include": ["src/**/*", "tests/**/*"],
+  "include": [
+    "src/**/*",
+    "src/server/**/*",
+    "src/client/**/*",
+    "scripts/**/*",
+    "tests/**/*",
+    "tests/e2e/**/*",
+    "tests/perf/**/*"
+  ],
   "exclude": ["node_modules", "dist"]
 }

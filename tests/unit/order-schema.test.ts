@@ -143,8 +143,9 @@ describe("B2 migrations 0008–0010", () => {
     const files = readdirSync(migrationsDir)
       .filter((f) => f.endsWith(".sql"))
       .sort();
-    expect(files.length).toBe(10);
-    expect(files.slice(7)).toEqual([...B2_MIGRATIONS]);
+    // Later Units append 0011+ (U1 adds 0011–0015); B2's three stay in positions 8–10.
+    expect(files.length).toBeGreaterThanOrEqual(10);
+    expect(files.slice(7, 10)).toEqual([...B2_MIGRATIONS]);
   });
 
   test("the status CHECK lists exactly the nine affirmed values", () => {

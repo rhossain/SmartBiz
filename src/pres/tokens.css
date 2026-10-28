@@ -28,15 +28,54 @@
   --space-8: 32px;
 
   /* Typography. */
-  --font-ui: "Hind Siliguri", "Noto Sans Bengali", system-ui, sans-serif;
+  /* Latin from the platform UI face; Bangla falls through to Hind Siliguri / Noto Sans Bengali
+   * when installed, else the macOS Kohinoor Bangla, so no hosted font is needed offline. */
+  --font-ui:
+    system-ui, -apple-system, "Segoe UI", "Hind Siliguri", "Noto Sans Bengali", "Kohinoor Bangla",
+    sans-serif;
   --font-size-sm: 14px;
   --font-size-base: 16px;
   --font-size-lg: 20px;
   --font-size-xl: 24px;
   --line-height: 1.5;
 
-  /* Focus ring. */
+  /* Focus ring. U2 (BR9.3, NFR9.7): a visible outline in the link colour plus the soft halo. */
   --focus-ring: 0 0 0 3px rgba(20, 87, 178, 0.4);
+  --focus-ring-outline: 3px solid var(--color-link); /* 7.0:1 on #ffffff */
+
+  /* U2 (NFR9.9): the error banner's tinted surface; error text on it stays above 4.5:1. */
+  --color-bg-error: #fbeaea; /* #a4252b on it: 6.27:1; #1a1a1a on it: 14.97:1 */
+
+  /* U2 (BR9.1): the widest a fixed box may be; anything wider scrolls inside .scroll-x. */
+  --width-max-fixed: 360px;
+
+  /* Brand surface, carried from the prototype palette (prototype/css/tokens.css): a warm
+   * ledger canvas, an ink header and money green as the primary action colour. Every
+   * text pair below is listed in tests/unit/contrast.test.ts. */
+  --color-canvas: #f6f5f1; /* #1a1a1a on it: 15.2:1; #1457b2 on it: 6.5:1 */
+  --color-surface: #ffffff;
+  --color-line: #e4e0d8; /* decorative rule line; control borders keep --color-border */
+  --color-text-2: #414a52; /* 8.2:1 on #ffffff; 7.6:1 on #f6f5f1 */
+  --color-header-bg: #131a20;
+  --color-header-text: #f3f1ec; /* 15.9:1 on #131a20 */
+  --color-header-muted: #a8b2ba; /* 8.4:1 on #131a20 */
+  --color-brand: #0a5b44; /* #ffffff on it: 7.6:1 */
+  --color-brand-dark: #06382a; /* #ffffff on it: 12.0:1 (hover) */
+  --color-bg-success: #deefe8; /* #0a5b44 on it: 6.5:1 */
+  --color-warning: #8f5c11;
+  --color-bg-warning: #f8ebd3; /* #8f5c11 on it: 4.9:1 */
+  --color-bg-neutral: #efede7; /* #414a52 on it: 7.0:1 */
+  --color-control-border: #8c8272; /* 3.6:1 on #ffffff: bounds a control (WCAG 1.4.11) */
+  --color-header-active: #2a343c; /* #f3f1ec on it: 11.6:1 */
+  --color-brand-tint: #eff7f3; /* #0a5b44 on it: 7.0:1 */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+  --shadow-card: 0 1px 2px rgba(11, 16, 20, 0.05), 0 8px 24px rgba(11, 16, 20, 0.06);
+  --shadow-raised: 0 1px 2px rgba(11, 16, 20, 0.08), 0 2px 6px rgba(11, 16, 20, 0.06);
+  --shadow-button: 0 1px 2px rgba(6, 56, 42, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  --ring-brand: 0 0 0 3px rgba(10, 91, 68, 0.18);
 }
 
 /* Body baseline. */
@@ -49,9 +88,14 @@ body {
   background: var(--color-bg);
 }
 
+/* U2 (BR9.3, NFR9.7): focus is always visible on every focusable element, from the token. */
 button:focus-visible,
 input:focus-visible,
-a:focus-visible {
-  outline: none;
+select:focus-visible,
+textarea:focus-visible,
+a:focus-visible,
+[tabindex]:focus-visible {
+  outline: var(--focus-ring-outline);
+  outline-offset: 2px;
   box-shadow: var(--focus-ring);
 }

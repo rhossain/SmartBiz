@@ -16,24 +16,31 @@
  *   screen); a failed save keeps the draft.
  * - Every amount (line totals, order total) is shown through MoneyCell
  *   as a pipeline, partial figure: a new order is not earned yet.
+ * - U1 (BR8.2): when the server refuses the order with field paths
+ *   (`items.0.quantity`, `deliveryChargePaise`), each message appears
+ *   under its own input and the typed values stay; a path with no input
+ *   here is listed at form level by DraftStatus.
  */
 import * as React from "react";
-import type { Locale } from "../../auth/types.js";
+import type { Locale } from "../../data/enums.js";
 import { toAsciiDigits } from "../../i18n/bnDigits.js";
+import { useFocusOnFailure } from "../../pres/focus.js";
 import { Screen } from "../../pres/Screen.js";
+import { useSubmitGuard } from "../../pres/use-submit-guard.js";
 import { buildManualOrder } from "../input-modes.js";
 import {
-  saveDraft,
+  saveDraftGuarded,
   setPending,
   useOrderDraft,
+  type OrderDraft,
   type OrderDraftStore,
   type SaveOrder,
 } from "../order-draft.js";
 import { computeOrderTotal, lineTotalPaise, parseTakaToPaise } from "../order-total.js";
 import type { OrderItemInput } from "../types.js";
 import { tr } from "./copy.js";
-import { DraftStatus } from "./DraftStatus.js";
-import { MoneyCell } from "./MoneyCell.js";
+import { DraftStatus, FieldError } from "./DraftStatus.js";
+import { MoneyCell } from "../../pres/MoneyCell.js";
 import { unrecognized } from "../order-figure.js";
 
 export interface ManualOrderProps {
@@ -55,6 +62,27 @@ interface Form {
   readonly orderDiscount: string;
   readonly delivery: string;
 }
+
+/** The request field each line input becomes (C3 `items[n]`), for placing 400 messages. */
+const WIRE_FIELD: Readonly<Record<keyof LineFields, string>> = {
+  description: "description",
+  variantId: "variantId",
+  quantity: "quantity",
+  price: "unitPricePaise",
+  discount: "lineDiscountPaise",
+};
+
+const linePath = (n: number, key: keyof LineFields): string => `items.${n - 1}.${WIRE_FIELD[key]}`;
+
+const placedPaths = (lineCount: number): ReadonlySet<string> => {
+  const paths = new Set<string>(["orderDiscountPaise", "deliveryChargePaise"]);
+  for (let n = 1; n <= lineCount; n++) {
+    for (const key of Object.keys(WIRE_FIELD) as Array<keyof LineFields>) {
+      paths.add(linePath(n, key));
+    }
+  }
+  return paths;
+};
 
 const EMPTY_LINE: LineFields = {
   description: "",
@@ -135,6 +163,7 @@ const LineEditor = (props: {
   readonly line: LineFields;
   readonly item: OrderItemInput | null;
   readonly locale: Locale;
+  readonly draft: OrderDraft;
   readonly canRemove: boolean;
   readonly onChange: (next: LineFields) => void;
   readonly onRemove: () => void;
@@ -153,6 +182,7 @@ const LineEditor = (props: {
         {...(inputMode ? { inputMode } : {})}
         onChange={(e) => props.onChange({ ...line, [key]: e.target.value })}
       />
+      <FieldError draft={props.draft} path={linePath(n, key)} locale={locale} />
     </label>
   );
   const lineTotal = item ? lineTotalPaise(item) : null;
@@ -188,19 +218,29 @@ const LineEditor = (props: {
 
 export const ManualOrder = ({ locale, draft, onSave }: ManualOrderProps): React.ReactElement => {
   const state = useOrderDraft(draft);
+  // U2 (F-05, BR6.1, W3): one save at a time; an edit returns the guard to idle.
+  const guard = useSubmitGuard();
   const [form, setForm] = React.useState<Form>(INITIAL);
   const apply = (next: Form): void => {
     setForm(next);
     stage(draft, next);
+    guard.reset();
   };
   const result = evaluate(form);
+  const formRef = React.useRef<HTMLFormElement>(null);
+  // NFR9.2: after a refused save, focus the first refused input or the save message.
+  useFocusOnFailure(formRef, state.status === "error" ? state : null);
   return (
-    <Screen title={tr("manual.title", locale)}>
+    <Screen
+      title={tr("manual.title", locale)}
+      back={{ href: "#/orders", label: tr("orders.back", locale) }}
+    >
       <form
+        ref={formRef}
         data-testid="manual-order-form"
         onSubmit={(e) => {
           e.preventDefault();
-          void saveDraft(draft, onSave);
+          void guard.submit(() => saveDraftGuarded(draft, onSave));
         }}
       >
         <ol data-testid="manual-lines">
@@ -211,6 +251,7 @@ export const ManualOrder = ({ locale, draft, onSave }: ManualOrderProps): React.
               line={line}
               item={result.items[i] ?? null}
               locale={locale}
+              draft={state}
               canRemove={form.lines.length > 1}
               onChange={(next) =>
                 apply({ ...form, lines: form.lines.map((l, j) => (j === i ? next : l)) })
@@ -234,6 +275,7 @@ export const ManualOrder = ({ locale, draft, onSave }: ManualOrderProps): React.
             value={form.orderDiscount}
             onChange={(e) => apply({ ...form, orderDiscount: e.target.value })}
           />
+          <FieldError draft={state} path="orderDiscountPaise" locale={locale} />
         </label>
         <label>
           {tr("orders.quick.delivery", locale)}
@@ -243,6 +285,7 @@ export const ManualOrder = ({ locale, draft, onSave }: ManualOrderProps): React.
             value={form.delivery}
             onChange={(e) => apply({ ...form, delivery: e.target.value })}
           />
+          <FieldError draft={state} path="deliveryChargePaise" locale={locale} />
         </label>
         {result.problem !== null ? (
           <p role="alert" data-testid="manual-total-error">
@@ -262,11 +305,12 @@ export const ManualOrder = ({ locale, draft, onSave }: ManualOrderProps): React.
         <button
           type="submit"
           data-testid="manual-save"
-          disabled={state.pending === null || state.status === "saving"}
+          disabled={state.pending === null || guard.state === "saving"}
+          aria-busy={guard.state === "saving"}
         >
           {tr("orders.save", locale)}
         </button>
-        <DraftStatus draft={state} locale={locale} />
+        <DraftStatus draft={state} locale={locale} placedFields={placedPaths(form.lines.length)} />
       </form>
     </Screen>
   );

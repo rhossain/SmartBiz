@@ -1,0 +1,151 @@
+{
+  "stage": "domain-design",
+  "upstream_ids": [
+    "US1.1",
+    "US1.2",
+    "US1.3",
+    "US1.4",
+    "US1.5",
+    "US1.6",
+    "US1.7",
+    "US1.7a",
+    "US2.1a",
+    "US2.1b",
+    "US3.1",
+    "US3.2",
+    "US3.3",
+    "US3.4",
+    "US3.5",
+    "US3.6",
+    "US3.7",
+    "US4.1",
+    "US4.2",
+    "US5.1",
+    "US5.2a",
+    "US5.2b",
+    "US5.3",
+    "US5.4"
+  ],
+  "coverage": [
+    {
+      "id": "US1.1",
+      "status": "OK",
+      "target": "ApiServerComponent, PersistenceComponent"
+    },
+    {
+      "id": "US1.2",
+      "status": "OK",
+      "target": "AuthComponent (Business, User), RouterComponent"
+    },
+    {
+      "id": "US1.3",
+      "status": "OK",
+      "target": "AuthComponent (Session), ApiServerComponent, ApiClientComponent"
+    },
+    {
+      "id": "US1.4",
+      "status": "OK",
+      "target": "AuthComponent (Session), ApiServerComponent"
+    },
+    {
+      "id": "US1.5",
+      "status": "OK",
+      "target": "AuthComponent (Invitation), RouterComponent"
+    },
+    {
+      "id": "US1.6",
+      "status": "OK",
+      "target": "AuthComponent (PasswordReset), ApiServerComponent, RouterComponent"
+    },
+    {
+      "id": "US1.7",
+      "status": "OK",
+      "target": "RouterComponent, PresentationComponent, I18nComponent"
+    },
+    {
+      "id": "US1.7a",
+      "status": "OK",
+      "target": "DataComponent, ObservabilityComponent, ApiClientComponent"
+    },
+    {
+      "id": "US2.1a",
+      "status": "OK",
+      "target": "ApiServerComponent, OrdersComponent (Order, OrderItem, ConsignmentLink)"
+    },
+    {
+      "id": "US2.1b",
+      "status": "OK",
+      "target": "OrdersComponent, ApiClientComponent"
+    },
+    {
+      "id": "US3.1",
+      "status": "OK",
+      "target": "CatalogComponent (Customer)"
+    },
+    {
+      "id": "US3.2",
+      "status": "OK",
+      "target": "CatalogComponent (CustomerNote)"
+    },
+    {
+      "id": "US3.3",
+      "status": "OK",
+      "target": "CatalogComponent (Customer), ApiClientComponent"
+    },
+    {
+      "id": "US3.4",
+      "status": "OK",
+      "target": "CatalogComponent (Product, Variant)"
+    },
+    {
+      "id": "US3.5",
+      "status": "OK",
+      "target": "CatalogComponent (Variant)"
+    },
+    {
+      "id": "US3.6",
+      "status": "OK",
+      "target": "CatalogComponent (Supplier)"
+    },
+    {
+      "id": "US3.7",
+      "status": "OK",
+      "target": "CatalogComponent (Product), ApiServerComponent"
+    },
+    {
+      "id": "US4.1",
+      "status": "OK",
+      "target": "OrdersComponent (Order), CatalogComponent (Customer, Variant)"
+    },
+    {
+      "id": "US4.2",
+      "status": "OK",
+      "target": "OrdersComponent, CatalogComponent (Product)"
+    },
+    {
+      "id": "US5.1",
+      "status": "OK",
+      "target": "AuthComponent, ApiServerComponent, RouterComponent"
+    },
+    {
+      "id": "US5.2a",
+      "status": "OK",
+      "target": "ApiServerComponent, PersistenceComponent"
+    },
+    {
+      "id": "US5.2b",
+      "status": "OK",
+      "target": "CatalogComponent, PersistenceComponent"
+    },
+    {
+      "id": "US5.3",
+      "status": "OK",
+      "target": "ApiServerComponent, AuthComponent (User), ObservabilityComponent"
+    },
+    {
+      "id": "US5.4",
+      "status": "OK",
+      "target": "PresentationComponent, ApiClientComponent"
+    }
+  ]
+}

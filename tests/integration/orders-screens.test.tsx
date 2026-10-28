@@ -418,3 +418,220 @@ describe("U3 screens", () => {
     }
   });
 });
+
+// U1 (BR8.3, BR8.5): the list and detail now show the API request's state.
+describe("U1 — list and detail request states", () => {
+  const listProps = {
+    nextCursor: null,
+    locale: "bn" as const,
+    canMutate: true,
+    onOpen: noop,
+    onLoadMore: noop,
+    onFilter: noop,
+    onSave: async () => ({ ok: false as const, error: { kind: "unreachable" } }),
+  };
+
+  test("loading shows nothing for 300 ms, then the loading line", async () => {
+    const view = render(
+      <OrdersList {...listProps} orders={[]} draft={createOrderDraftStore()} loading />,
+    );
+    expect(view.queryByTestId("request-loading")).toBeNull();
+    expect(view.queryByTestId("orders-empty")).toBeNull();
+    await act(async () => {
+      await new Promise((r) => setTimeout(r, 320));
+    });
+    expect(view.getByTestId("request-loading").textContent).toBe("লোড হচ্ছে…");
+  });
+
+  test("empty says এখনো কোনো অর্ডার নেই with the new-order links, only for roles that may create", () => {
+    const view = render(<OrdersList {...listProps} orders={[]} draft={createOrderDraftStore()} />);
+    expect(view.getByTestId("orders-empty").textContent).toBe("এখনো কোনো অর্ডার নেই");
+    expect(view.getByTestId("orders-new-manual").getAttribute("href")).toBe("#/orders/new");
+    cleanup();
+    const readOnly = render(
+      <OrdersList {...listProps} canMutate={false} orders={[]} draft={createOrderDraftStore()} />,
+    );
+    expect(readOnly.queryByTestId("orders-new-links")).toBeNull();
+  });
+
+  test("an error shows the banner and retry calls back; no rows are shown", () => {
+    let retried = 0;
+    const view = render(
+      <OrdersList
+        {...listProps}
+        orders={[]}
+        draft={createOrderDraftStore()}
+        errorKind="db_unavailable"
+        onRetry={() => {
+          retried += 1;
+        }}
+      />,
+    );
+    expect(view.getByTestId("error-banner-message").textContent).toBe(
+      "ডাটাবেস চালু নেই। কিছুক্ষণ পর আবার চেষ্টা করুন।",
+    );
+    expect(view.queryByTestId("orders-empty")).toBeNull();
+    fireEvent.click(view.getByTestId("error-banner-retry"));
+    expect(retried).toBe(1);
+  });
+
+  test("summary rows render, and the saved notice sits at the top", () => {
+    const row = {
+      id: "0f0f0f0f-0f0f-4f0f-8f0f-0f0f0f0f0f0f",
+      orderNo: "ORD-1001",
+      status: "new" as const,
+      source: "manual" as const,
+      totalPaise: 55_000,
+    };
+    const view = render(
+      <OrdersList {...listProps} orders={[row]} draft={createOrderDraftStore()} notice="saved" />,
+    );
+    expect(view.getByTestId("orders-saved-notice").textContent).toBe("সংরক্ষণ হয়েছে");
+    expect(view.getAllByTestId("orders-row")[0]?.getAttribute("data-order-id")).toBe(row.id);
+    expect(assertEveryMoneyHasBasis(view.container)).toBeGreaterThan(0);
+  });
+
+  test("detail: loading, then not found without a retry; another error offers retry", async () => {
+    const base: OrdersRouteState = {
+      kind: "orders",
+      locale: "bn",
+      canMutate: true,
+      draft: createOrderDraftStore(),
+      page: { orders: [], nextCursor: null },
+      current: null,
+      onOpen: noop,
+      onLoadMore: noop,
+      onFilter: noop,
+      onSave: listProps.onSave,
+      onTransition: noop,
+      onRepeat: noop,
+      onRetryCurrent: noop,
+    };
+    const loading = render(renderOrdersScreen("detail", { ...base, currentLoading: true })!);
+    await act(async () => {
+      await new Promise((r) => setTimeout(r, 320));
+    });
+    expect(loading.getByTestId("request-loading")).toBeDefined();
+    cleanup();
+    const missing = render(renderOrdersScreen("detail", { ...base, currentError: "not_found" })!);
+    expect(missing.getByTestId("error-banner-message").textContent).toBe("পাওয়া যায়নি");
+    expect(missing.queryByTestId("error-banner-retry")).toBeNull();
+    cleanup();
+    const down = render(renderOrdersScreen("detail", { ...base, currentError: "unreachable" })!);
+    expect(down.getByTestId("error-banner-retry")).toBeDefined();
+  });
+});
+
+// Demo review (2026-10-28): after a quick-add save the form looked frozen — it kept the saved
+// values and a greyed-out Save. A saved order now clears the form and confirms under it; a
+// refused save keeps what was typed (BR6.3).
+describe("quick add after a save", () => {
+  const props = {
+    nextCursor: null,
+    locale: "en" as const,
+    canMutate: true,
+    onOpen: noop,
+    onLoadMore: noop,
+    onFilter: noop,
+  };
+  const fill = (view: ReturnType<typeof render>): void => {
+    fireEvent.change(view.getByTestId("quick-add-description"), { target: { value: "Kurti" } });
+    fireEvent.change(view.getByTestId("quick-add-price"), { target: { value: "500" } });
+  };
+  const value = (view: ReturnType<typeof render>, id: string): string =>
+    (view.getByTestId(id) as HTMLInputElement).value;
+
+  test("a saved order clears the form and says where the new order is", async () => {
+    const stub = makeSqlStub();
+    const saved = await seed(stub);
+    const view = render(
+      <OrdersList
+        {...props}
+        orders={[]}
+        draft={createOrderDraftStore()}
+        onSave={async () => ({ ok: true as const, value: saved })}
+      />,
+    );
+    fill(view);
+    await act(async () => {
+      fireEvent.click(view.getByTestId("quick-add-save"));
+    });
+    expect(value(view, "quick-add-description")).toBe("");
+    expect(value(view, "quick-add-price")).toBe("");
+    expect(value(view, "quick-add-quantity")).toBe("1");
+    expect(value(view, "quick-add-delivery")).toBe("0");
+    expect(view.getByTestId("quick-add-saved").textContent).toContain("top of the list");
+    fireEvent.change(view.getByTestId("quick-add-description"), { target: { value: "Next" } });
+    expect(view.queryByTestId("quick-add-saved")).toBeNull();
+  });
+
+  test("a refused save keeps what was typed and shows no confirmation", async () => {
+    const view = render(
+      <OrdersList
+        {...props}
+        orders={[]}
+        draft={createOrderDraftStore()}
+        onSave={async () => ({ ok: false as const, error: { kind: "unreachable" } }) as never}
+      />,
+    );
+    fill(view);
+    await act(async () => {
+      fireEvent.click(view.getByTestId("quick-add-save"));
+    });
+    expect(value(view, "quick-add-description")).toBe("Kurti");
+    expect(value(view, "quick-add-price")).toBe("500");
+    expect(view.queryByTestId("quick-add-saved")).toBeNull();
+  });
+});
+
+// Demo review (2026-10-28): a newly saved order scrolls into view and flashes once.
+describe("a new order is highlighted once", () => {
+  const props = {
+    nextCursor: null,
+    locale: "en" as const,
+    canMutate: true,
+    onOpen: noop,
+    onLoadMore: noop,
+    onFilter: noop,
+    onSave: async () => ({ ok: false as const, error: { kind: "unreachable" } }) as never,
+  };
+
+  test("the saved order's row is marked new, scrolled to, and only the first time", async () => {
+    const stub = makeSqlStub();
+    const order = await seed(stub);
+    const scrolled: string[] = [];
+    const original = HTMLElement.prototype.scrollIntoView;
+    HTMLElement.prototype.scrollIntoView = function (this: HTMLElement) {
+      scrolled.push(this.getAttribute("data-order-id") ?? "");
+    };
+    try {
+      const draft = createOrderDraftStore({
+        pending: null,
+        status: "saved",
+        kind: null,
+        message: null,
+        fields: [],
+        savedOrderId: order.id,
+      });
+      const view = render(<OrdersList {...props} orders={[order]} draft={draft} />);
+      const row = view.getByTestId("orders-row");
+      expect(row.getAttribute("data-new")).toBe("true");
+      expect(row.className).toBe("row--new");
+      expect(scrolled).toEqual([order.id]);
+      cleanup();
+      // The same order shown again (for example after navigating back) does not flash again.
+      const again = render(<OrdersList {...props} orders={[order]} draft={draft} />);
+      expect(again.getByTestId("orders-row").getAttribute("data-new")).toBeNull();
+      expect(scrolled).toEqual([order.id]);
+    } finally {
+      HTMLElement.prototype.scrollIntoView = original;
+    }
+  });
+
+  test("no saved order, no highlight", async () => {
+    const stub = makeSqlStub();
+    const order = await seed(stub);
+    const view = render(<OrdersList {...props} orders={[order]} draft={createOrderDraftStore()} />);
+    expect(view.getByTestId("orders-row").getAttribute("data-new")).toBeNull();
+  });
+});

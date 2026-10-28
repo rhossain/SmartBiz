@@ -1,84 +1,126 @@
 /**
- * src/pres/Shell.tsx — chrome + Noto Sans Bengali preload.
- * Renders the navigation, the security `<meta>` headers (CSP
- * via Vite plugin; X-Content-Type-Options, Referrer-Policy),
- * and the `<link rel="preload">` for the Bengali font subset.
+ * src/pres/Shell.tsx — the app chrome: title, navigation, language, the signed-in person and
+ * the save toast (BR8.6; FR4.1, FR2.4; AC5.2a.1; U2 BR2.1–BR2.3, BR6.2; S12; review F-01,
+ * F-05).
+ *
+ * - The header shows the signed-in email and role, from `GET /api/session` — never a
+ *   hard-coded address (BR2.3). Signed out, it shows neither, and no navigation.
+ * - U2 (F-01, S12): the navigation is a PROP. App (RouterComponent) builds the `NavItem`
+ *   list from the screen route map and keeps only the items the role may open (BR2.1); the
+ *   Shell renders exactly what it is given, each with its own label in the chosen language
+ *   (BR2.2). It holds no capability list and imports neither the router, the API client nor
+ *   `src/auth`.
+ * - U2 (F-05, BR6.2): the toast renders here, at Shell level, so a "সংরক্ষণ হয়েছে" shown
+ *   after a save outlives the route change that follows it; the toast announces itself
+ *   politely (Toast.tsx).
+ * - Sign-out is a button that calls the caller's `onSignOut`, which posts to
+ *   `/api/auth/sign-out`; it is disabled while that call runs.
+ * - No external font is preloaded: the CSP is `default-src 'self'`, and the Bengali font is
+ *   self-hosted or taken from the local fallback chain (team.md Code Style "Bengali font
+ *   available offline").
  */
 import * as React from "react";
-import { NOTO_SANS_BENGALI_HREF } from "./typography.js";
+import type { Locale, Role } from "../data/enums.js";
 import { lookup, type LKey } from "../i18n/L.js";
-import { useTranslations } from "../i18n/useTranslations.js";
-import type { Locale } from "../auth/types.js";
+
+export interface ShellUser {
+  readonly email: string;
+  readonly role: Role;
+}
+
+/** One navigation link: the route it opens and its label key (entities.md NavItem). */
+export interface NavItem {
+  readonly to: string;
+  readonly label: LKey;
+}
 
 export interface ShellProps {
   readonly locale: Locale;
   readonly onLocaleChange: (l: Locale) => void;
-  readonly userEmail?: string;
+  readonly user?: ShellUser | null;
+  /** The links this role may open, already filtered by App from the route map (BR2.1). */
+  readonly nav?: ReadonlyArray<NavItem>;
+  /** The current hash path; the nav link it falls under is marked `aria-current="page"`. */
+  readonly currentPath?: string;
+  /** The Shell-level toast (BR6.2), or nothing. */
+  readonly toast?: React.ReactNode;
   readonly onSignOut?: () => void;
+  readonly signingOut?: boolean;
   readonly children?: React.ReactNode;
 }
 
-const NavItem = ({ to, label }: { to: string; label: LKey }): React.ReactElement => {
-  const { locale } = useTranslations();
-  return (
-    <a href={`#${to}`} data-testid={`nav-${to}`}>
-      {lookup(label, locale)}
-    </a>
-  );
+const ROLE_LABEL: Readonly<Record<Role, LKey>> = {
+  owner: "role.owner",
+  manager: "role.manager",
+  sales_staff: "role.sales_staff",
+  accountant: "role.accountant",
 };
 
-export const Shell = (props: ShellProps): React.ReactElement => {
-  const { locale, onLocaleChange, userEmail, onSignOut, children } = props;
-  React.useEffect(() => {
-    const link = document.createElement("link");
-    link.rel = "preload";
-    link.as = "style";
-    link.href = NOTO_SANS_BENGALI_HREF;
-    link.crossOrigin = "anonymous";
-    document.head.appendChild(link);
-    return () => {
-      document.head.removeChild(link);
-    };
-  }, []);
+/** A nav link is current on its own path and on every path beneath it (`/orders/new`). */
+const isCurrent = (to: string, path: string | undefined): boolean =>
+  path !== undefined && (path === to || path.startsWith(`${to}/`));
 
+export const Shell = (props: ShellProps): React.ReactElement => {
+  const { locale, onLocaleChange, user, onSignOut, children } = props;
+  const signedIn = user !== null && user !== undefined;
+  const nav = props.nav ?? [];
   return (
-    <div data-testid="shell">
-      <header data-testid="shell-header">
+    <div data-testid="shell" className="shell">
+      <header data-testid="shell-header" className="shell__header">
         <h1>SmartBiz BD</h1>
-        <nav aria-label="Primary">
-          <NavItem to="/orders" label="common.save" />
-          <NavItem to="/daily-card" label="common.save" />
-          <NavItem to="/audit-trail" label="common.save" />
-          <NavItem to="/business" label="common.save" />
-          <NavItem to="/settings" label="common.save" />
-        </nav>
+        {signedIn ? (
+          <nav aria-label="Primary" data-testid="shell-nav" className="shell__nav">
+            {nav.map((n) => (
+              <a
+                key={n.to}
+                href={`#${n.to}`}
+                data-testid={`nav-${n.to}`}
+                {...(isCurrent(n.to, props.currentPath) ? { "aria-current": "page" as const } : {})}
+              >
+                {lookup(n.label, locale)}
+              </a>
+            ))}
+          </nav>
+        ) : null}
         <div>
-          <label htmlFor="locale-select">{lookup("common.save", locale)}</label>
+          <label htmlFor="locale-select">{lookup("nav.language", locale)}</label>
           <select
             id="locale-select"
             data-testid="locale-select"
             value={locale}
             onChange={(e) => onLocaleChange(e.target.value as Locale)}
           >
-            <option value="bn">bn</option>
-            <option value="en">en</option>
+            <option value="bn">বাংলা</option>
+            <option value="en">English</option>
           </select>
         </div>
-        {userEmail ? (
+        {signedIn ? (
           <div data-testid="user-info">
-            <span>{userEmail}</span>
+            <span data-testid="user-email">{user.email}</span>{" "}
+            <span data-testid="user-role" data-role={user.role}>
+              {lookup(ROLE_LABEL[user.role], locale)}
+            </span>
             {onSignOut ? (
-              <button type="button" onClick={onSignOut} data-testid="sign-out">
-                {lookup("auth.sign_out.title", locale) as string}
+              <button
+                type="button"
+                onClick={onSignOut}
+                disabled={props.signingOut ?? false}
+                data-testid="sign-out"
+              >
+                {lookup("auth.sign_out.title", locale)}
               </button>
             ) : null}
           </div>
         ) : null}
       </header>
-      <main data-testid="shell-main">{children}</main>
+      {props.toast ? (
+        <div data-testid="shell-toast" className="shell__toast">
+          {props.toast}
+        </div>
+      ) : null}
+      <main data-testid="shell-main" className="shell__main">
+        {children}
+      </main>
     </div>
   );
 };
-
-// kept for tests
-export const LKEY_FOR_TEST = "common.save";

@@ -7,8 +7,8 @@
  * the caller may not see.
  */
 import type { Queryable } from "../db/client.js";
-import { err, ok, type Result } from "../types/result.js";
-import { isUuid } from "../types/uuid.js";
+import { err, ok, type Result } from "../data/result.js";
+import { isUuid } from "../data/uuid.js";
 import { canReadOrders } from "./order-capability.js";
 import { selectOrder } from "./order-rows.js";
 import type { Forbidden, NotFound, Order, OrderContext } from "./types.js";

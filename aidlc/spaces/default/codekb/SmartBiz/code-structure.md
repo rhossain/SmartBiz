@@ -1,6 +1,124 @@
 # SmartBiz BD — Code Structure
 
-## Package layout
+> **Store history.** Prototype sections from intent `261004-mvp` (2026-10-04). Production sections added by intent `261027-app-wiring` (2026-10-27).
+
+## Production package layout
+
+One package, `smartbiz-bd@0.1.0` (`"type": "module"`, private), with a single top-level `package.json` covering runtime and test dependencies (team.md §CS-4). 101 TypeScript/TSX files under `src/` (about 6 600 lines including SQL and CSS) and 47 files under `tests/` (about 5 300 lines). [dev-scan §"Packages Found"] [line counts measured by the architect]
+
+```
+./
+├── package.json          (scripts: dev, build, migrate, test, lint, format, type-check, coverage)
+├── bun.lock              (exact resolved versions)
+├── tsconfig.json         (26 lines — strict + noUncheckedIndexedAccess + exactOptionalPropertyTypes, noEmit)
+├── vite.config.ts        (18 lines — react plugin, es2022, sourcemaps, unused vitest-style test block)
+├── bunfig.toml           (9 lines — [test] root="tests", preload ./tests/setup.ts)
+├── .eslintrc.cjs         (48 lines — ESLint 8 legacy config, PCI deny-list for src/orders/**)
+├── .prettierrc, .c8rc.json (unused), index.html (Vite entry → /src/index.tsx), README.md (B1-era)
+├── .github/workflows/ci.yml  (337 lines — build, test, realdb, round-trip jobs)
+├── src/
+│   ├── index.tsx         (40 lines — mounts <Shell> only)
+│   ├── pres/             (10 files, 331 lines — Shell, Screen, Field, LockSheet, Pill, BasisPill,
+│   │                      CompletenessControl, Toast, tokens.css, typography.ts)
+│   ├── router/           (12 files, 516 lines — routes.ts, hash-router.ts, dispatch.ts, types.ts,
+│   │                      screens/{SignIn,SignUp,Recover,Reset,Accept,Lock,
+│   │                      AuditTrailPlaceholder,DailyCardPlaceholder}.tsx)
+│   ├── auth/             (19 files, 1 039 lines — sign-up, sign-in, sign-out, recover,
+│   │                      password-reset, invite, accept-invite, session, argon2, rate-limit,
+│   │                      email, capability, role-matrix, three-layer-gate, business-rule,
+│   │                      business-rule-error, audit, types, index)
+│   ├── audit/            (2 files, 108 lines — audit-service.ts, audit-export.ts)
+│   ├── db/               (13 files, 379 lines — client.ts, migrate.ts, role-grants.ts,
+│   │                      migrations/0001…0010 *.sql)
+│   ├── data/             (4 files, 267 lines — state-container, clock, zod-schemas, types)
+│   ├── money/            (7 files, 152 lines — money-figure, econ, summary, risk,
+│   │                      count-by-status, low-variants (stub), types)
+│   ├── orders/           (34 files, 3 549 lines — repository, FSM, parser, input modes,
+│   │                      deferred/{photo,spreadsheet,voice}-order.ts, screens/ (9 files))
+│   ├── i18n/             (5 files, 131 lines — L, bnDigits, locale, useTranslations, types)
+│   ├── observability/    (2 files, 53 lines — log.ts, correlation.ts)
+│   └── types/            (3 files, 43 lines — result.ts, uuid.ts, sha256.ts)
+└── tests/
+    ├── setup.ts          (23 lines — happy-dom globals; no clock reset despite its header)
+    ├── helpers/          (sql-stub.ts 536 lines, order-fixtures.ts 54 lines)
+    ├── unit/             (36 files)
+    ├── integration/      (7 files)
+    └── realdb/           (order-paths.realdb.test.ts, 186 lines, 5 tests)
+```
+
+There is **no `src/server/`**, no server entry, no API route table and no `.env.example` (the README's `cp .env.example .env` names a file that does not exist).
+
+## Module classification (production)
+
+| Module | Kind | Runs on | Largest files |
+|---|---|---|---|
+| `src/index.tsx` | entry | browser | — |
+| `src/pres/` | UI primitives (React TSX) | browser | `Shell.tsx` |
+| `src/router/` | client routing + auth screens | browser (blocked, P-1) | `dispatch.ts` 87 |
+| `src/auth/` | domain services + pure gate | server (gate: both) | `audit.ts` 152, `sign-in.ts` 100 |
+| `src/audit/` | AuditService | server | `audit-service.ts` |
+| `src/db/` | persistence | server | `migrate.ts` |
+| `src/data/` | shared kernel (typed state, clock, zod) | both | `zod-schemas.ts` |
+| `src/money/` | MoneyEngine (pure) | both | `econ.ts` |
+| `src/orders/` | OrdersComponent (repository + pure + screens) | mixed | `OrdersList.tsx` 294, `ManualOrder.tsx` 273, `orders/types.ts` 217, `parse-message.ts` 214, `PasteParse.tsx` 214 |
+| `src/i18n/` | localisation | both | `L.ts` (13 keys) |
+| `src/observability/` | logging, correlation ids | server as written | — |
+| `src/types/` | `Result`, branded `Uuid`, `sha256` | server as written | — |
+
+## Code patterns (production)
+
+- **ES modules with explicit `.js` import suffixes**, `moduleResolution: bundler`, target ES2022, `jsx: react-jsx`. No `var`, no IIFEs, no globals (team.md §CS-2).
+- **`Result<T, E>` everywhere a business outcome can fail.** Typed failures are values (`{kind: "not_found" | "forbidden" | "invalid_input" | "invalid_transition" | …}`). DB faults are thrown, on purpose: "a lost connection is not a business outcome" (`create-order.ts` header).
+- **DB handle as first parameter.** `Sql` for functions that open their own transaction, `Queryable` (`postgres.ISql`) for functions that can join one.
+- **Discriminated string-literal unions** for the vocabularies: `Role`, `Capability` (10 values), `OrderStatus` (9 values), `Recognition`, `Completeness`. Status switches are exhaustive with a `never` default (team.md §TP-4).
+- **Typed registries, one per concern**: `routes: ReadonlyMap<RoutePath, Route>`, `ROLE_CAPABILITY_MATRIX: ReadonlyMap<Role, ReadonlySet<Capability>>`, `StateContainer` (team.md §CS-6, §CS-7).
+- **Injected callbacks for screens**: `SaveOrder` and the `OrdersRouteState` contract keep screens free of I/O, so they test under happy-dom without a DB.
+- **Design-rationale header comment on every module** citing FR, NFR, BR and ADR ids (team.md §CS-11 holds).
+- **Branded ids**: `Uuid` is a branded string; `isUuid` validates `:id` route params.
+
+## Naming conventions (production)
+
+- Files kebab-case (`create-order.ts`, `three-layer-gate.ts`); React components PascalCase (`OrdersList.tsx`).
+- Routes are kebab-case absolute hash paths (`/orders/new/paste-parse`, `/audit-trail`, `/daily-card`).
+- Capabilities are dotted (`business.view`, `money.mutate.price`, `settings.edit.own`).
+- Audit actions are dotted (`auth.sign_in`, `order.status.transition`).
+- Order numbers keep the prototype format `ORD-####` from a global sequence starting at 1001 (team.md §CS-5).
+- Migrations are numbered `NNNN_verb_noun.sql`.
+
+## Internal dependency graph (production)
+
+From the developer's import scan (no circular imports found among the files read):
+
+```
+index.tsx → pres/Shell, i18n/useTranslations
+router/routes → orders/order-capability, orders/screens/render-orders-route
+             → orders/screens/* → orders/{order-draft, input-modes, parse-message*,
+                                          status-*, order-total, order-figure}
+             → observability/log → observability/correlation (node:crypto)
+router/hash-router → types/uuid (node:crypto)
+router/dispatch → auth/{three-layer-gate, capability}, router/{hash-router, routes}
+auth/* → db/client (postgres), audit/audit-service, types/{uuid, sha256} (node:crypto),
+         auth/argon2 (native), data/clock
+orders/{create,update,…} → db/client, audit/audit-service, data/zod-schemas (zod), orders/order-rows
+audit/audit-service → db/client, observability/correlation, types/uuid
+```
+
+The two `node:crypto` edges reachable from `router/` are what make a browser build of the router fail (P-1).
+
+## Test layout (production)
+
+- `bun test tests/unit tests/integration` is the default suite (220 tests, 45 files, about 18 s on 2026-10-27).
+- `tests/realdb/` runs only when `REALDB_ADMIN_URL` and `REALDB_APP_URL` point at a Postgres 18 instance; CI provides one in the `realdb` job.
+- `tests/helpers/sql-stub.ts` is a regex-dispatched imitation of postgres.js used by the unit and integration suites. It records calls but cannot model locks, `ANY(uuid[])`, keyset cursors, grants, foreign keys or JSONB typing (project.md §Testing Posture).
+- The prototype's eight-harness shape survives as named suites: arithmetic and basis (`recognition-basis`, `money-engine-round-trip`), gating by absence (`three-layer-gate-absence`, `role-lock-reach`), flows (`orders-screens`, `manual-order-screen`), contrast (`contrast.test.ts`) and parser segment isolation (`parseMessage-segments`). There is no CSS-class reachability or story-coverage analogue yet.
+
+---
+
+## Prototype reference (`prototype/`, preserved from the 261004-mvp scan of 2026-10-04)
+
+The prose below was written by the 261004-mvp reverse-engineering run against `prototype/` and is kept unchanged except that every heading moved down one level. The prototype is read-only guidance (team.md §WoW-4); it was not re-read in depth by this run.
+
+### Package layout
 
 The prototype is **one package, no module system**. All source lives in `prototype/`, namespaced onto a single `window.App` global. There is no `package.json` at `prototype/`, no `node_modules` for runtime, no bundler. Only the test subdirectory (`prototype/tests/`) is a self-contained npm package (`smartbiz-prototype-tests`). [dev-scan §"Packages Found"]
 
@@ -37,7 +155,7 @@ prototype/
     └── measure.js
 ```
 
-## Screen-file split
+### Screen-file split
 
 | File | §5 module(s) | Routes registered |
 |---|---|---|
@@ -50,7 +168,7 @@ prototype/
 
 The split is **by capability surface, not by business module**: money / orders / catalogue / system. The dashboard (`home/...`) sits in `screens-core.js` because its purpose is to compose the foundational surfaces; reports are in `screens-money.js` because they are read together with the figures they total.
 
-## File classification
+### File classification
 
 | File | Type | Language | Lines | Role |
 |---|---|---|---|---|
@@ -81,7 +199,7 @@ The split is **by capability surface, not by business module**: money / orders /
 | `tests/README.md` | harness rationale | Markdown | 35 | Mutual-blindness table + two load-bearing rules |
 | `tests/package.json` | npm scripts | JSON | 21 | `npm test` runs `smoke && auth-zero && truth && flows && classes && contrast && story-coverage`; `npm run shots` / `npm run measure` invoke CDP harnesses |
 
-## Code patterns
+### Code patterns
 
 - **ES5 IIFE module pattern.** Every `js/` file begins with `window.App = window.App || {};` then `(function (App) { 'use strict'; ... })(window.App);`. There are no `import` statements. [ui.js line 5–7]
 - **Strict ES5 only** (`var`, no `let`/`const`; no arrow functions; no `class`; no template literals; no destructuring in module bodies). String concat everywhere, heavy `L(bn, en)` for bilingual copy, `App.esc()` for HTML escape. [ui.js line 71–75]
@@ -91,14 +209,14 @@ The split is **by capability surface, not by business module**: money / orders /
 - **No JSDoc, no type annotations.** Pure ES5 IIFE module pattern.
 - **Hash-router contract.** `#/<route>/<arg0>/<arg2>/…` parsed by `parse()` (line 22–26): first segment = route, rest = args. [app.js line 22–26]
 
-## Naming conventions
+### Naming conventions
 
 - Routes: kebab-case noun (`orders`, `capture`, `customer-detail`) and snake-arg (`ORD-1035`).
 - Actions: kebab-case verb (`order-filter`, `paste-parse`, `pick-variant`, `do-repeat`, `voice-toggle`, `mic-toggle`, `disposition`, `variance-matched`, `disposition-save`, `advance`, `cust-band`, `vstock`, `vactive`, `vprice`, `share-card`, `ai-ask`, `ai-run`, `audit-filter`, `completeness-why`, `basis-why`, `pick-lang`, `journey-action`, `journey-proof-toast`).
 - Data IDs: `ORD-####`, `P-###`, `C-##`, `D-##`, `E-###`, `S-##`, `A-##`, `STL-####`, consignment `PT-####` / `SF-#####` / `RX-#####`.
 - CSS classes: BEM-ish single-class with a tail for state (`.cash-cell`, `.basis.realized`, `.basis.earned`, `.completeness.full`, `.chip.green.sm`, `.is-on` / `.has-…` paired with their base).
 
-## Dependencies between files
+### Dependencies between files
 
 There are no `import` statements. The dependency graph is the **load order** declared in `index.html` lines 62–73:
 
@@ -112,17 +230,27 @@ Every screen module declares `window.App = window.App || {};` so the global is a
 
 `app.js` is the only file that mutates the presentation chrome (`#chrome` toggles) and boots the router. `screens-journeys.js` consumes `window.SMARTBIZ_SCREEN_MAP` declared by the mockup-set file `screen-map.js` (loaded by `index.html` line 66 between `ui.js` and the screens).
 
-## Test layout
+### Test layout
 
 Each harness is a self-contained executable (`node smoke.js`, etc.) registered as an npm script in `prototype/tests/package.json` line 6. They are independent of each other by design — *"each one is blind to what the others catch"* (README line 8). The npm script chain `npm test` runs seven of the eight; the CDP harnesses (`shot`, `measure`) are separate because they need a real Chrome.
 
 The `tests/.gitignore` excludes `node_modules/` and `shots/`. The `shots/` directory is the output of `shot.js` screenshots and is gitignored by design.
 
-## What lives outside this codekb
+### What lives outside this codekb
 
 - The mockup-set file `screen-map.js` (`_bmad-output/planning-artifacts/ux-designs/ux-SmartBiz-2026-09-07/mockups/screen-map.js`) is loaded by `index.html` line 66 and consumed by `screens-journeys.js` and `tests/story-coverage.js`. It exports a `RAW_SCREENS` array of 76 stories. This is the **authoritative design contract** owned by the mockup set, not the prototype's source surface — only its head was opened to confirm exports.
 
 ## Sources
+
+- `[dev-scan]` — this run's developer scan: packages, build system, internal module graph, test directories
+- `[repo tree]` — file and line counts per `src/` module and for tests and config, measured by the architect on 2026-10-27
+- `[package.json]` — scripts and dependency ranges (re-read by the architect)
+- `[src/orders/create-order.ts]` — header on thrown DB faults (re-read by the architect)
+- `[src/router/routes.ts]` — typed route map (re-read by the architect)
+- `[team.md §CS-2, §CS-4, §CS-5, §CS-6, §CS-7, §CS-11, §TP-4]` — modern ES, single package.json, naming, typed registries, typed state, rationale comments, exhaustive status
+- `[project.md §Testing Posture]` — limits of the in-memory SQL stub
+
+### Prototype sources (preserved from the 261004-mvp scan)
 
 - `[dev-scan]` — full developer scan, packages, files, lines, role, scope
 - `[prototype:index.html]` — load order (line 61–73), presentation chrome

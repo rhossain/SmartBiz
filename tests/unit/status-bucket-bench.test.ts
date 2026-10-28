@@ -7,7 +7,7 @@
  */
 import { describe, expect, test } from "bun:test";
 import { bucketTotals } from "../../src/orders/status-bucket.js";
-import type { OrderStatus } from "../../src/orders/types.js";
+import type { OrderStatus } from "../../src/data/enums.js";
 
 const BUDGET_MS = 1;
 const limitMs = process.env["CI"] ? BUDGET_MS * 10 : BUDGET_MS;

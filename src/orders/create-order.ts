@@ -6,7 +6,8 @@
  *   2. a repeat source order must exist in the caller's business;
  *   3. the next `ORD-####` number is drawn from the sequence, so the
  *      audit row can carry the complete order;
- *   4. the audit row is appended (NFR5.7), then the order and its lines.
+ *   4. the audit row is appended (NFR5.7), then the order and its lines,
+ *      which are revision 1 of the order's append-only lines (BR6.8).
  * A failure at step 4 rolls back the audit row too. Database errors are
  * not caught here: they reach the caller as thrown errors, because a
  * lost connection is not a business outcome.
@@ -14,8 +15,8 @@
 import type { Queryable, Sql } from "../db/client.js";
 import { CreateOrderInputSchema } from "../data/zod-schemas.js";
 import { now } from "../data/clock.js";
-import { err, ok, type Result } from "../types/result.js";
-import { uuid, type Uuid } from "../types/uuid.js";
+import { err, ok, type Result } from "../data/result.js";
+import { uuid, type Uuid } from "../data/uuid.js";
 import { appendOrderAudit } from "./order-audit.js";
 import { canMutateOrders } from "./order-capability.js";
 import { contactJson, insertItems } from "./order-rows.js";
@@ -112,6 +113,7 @@ export const createOrder = async (
       status: "new",
       source: input.source,
       repeatOfOrderId: input.repeatOfOrderId,
+      itemsRevision: 1,
       items: materialiseItems(id, ctx.businessId, input.items),
       orderDiscountPaise: input.orderDiscountPaise,
       deliveryChargePaise: input.deliveryChargePaise,
@@ -125,13 +127,14 @@ export const createOrder = async (
     await tx`
       INSERT INTO orders (
         id, business_id, order_no, customer_id, contact, status, source,
-        repeat_of_order_id, order_discount_paise, delivery_charge_paise,
+        repeat_of_order_id, items_revision, order_discount_paise, delivery_charge_paise,
         total_paise, created_by, created_at, updated_at
       ) VALUES (
         ${order.id}, ${order.businessId}, ${order.orderNo}, ${order.customerId},
         ${contactJson(order.contact)}::text::jsonb, ${order.status}, ${order.source},
-        ${order.repeatOfOrderId}, ${order.orderDiscountPaise}, ${order.deliveryChargePaise},
-        ${order.totalPaise}, ${order.createdBy}, ${order.createdAt}, ${order.updatedAt}
+        ${order.repeatOfOrderId}, ${order.itemsRevision}, ${order.orderDiscountPaise},
+        ${order.deliveryChargePaise}, ${order.totalPaise}, ${order.createdBy}, ${order.createdAt},
+        ${order.updatedAt}
       )
     `;
     await insertItems(tx, order);

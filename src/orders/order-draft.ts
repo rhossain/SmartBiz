@@ -10,22 +10,36 @@
  *
  * `saveDraft` is the UI boundary of the order write. A typed failure
  * (invalid input, forbidden, …) becomes the draft's message. A thrown
- * error (the database is unreachable) is logged with its correlation id
- * and surfaced as "could not save", and the pending order is kept so
- * the person can retry without re-typing it.
+ * error (the server is unreachable) is surfaced as "could not save", and
+ * the pending order is kept so the person can retry without re-typing it.
+ *
+ * The store runs in the browser, so it imports no logger (domain-design
+ * follow-up R-03, BR7.1): the server logs the failure with its correlation
+ * id; here the failure is shown to the person, which is not a silent drop.
+ *
+ * U1 (BR8.2, W7): a save now goes over HTTP, so a failure carries the
+ * wire kind and, for a 400, the refused field paths. The draft keeps both,
+ * so each screen puts a field's message under that field and the rest at
+ * form level; the pending order is kept on every failure (nothing is
+ * resent by itself, BR8.4). `OrderError` from the domain still fits
+ * `SaveError`, so tests can save straight through `createOrder`.
  */
 import { useSyncExternalStore } from "react";
 import { createStateContainer, type StateContainer } from "../data/state-container.js";
-import { error as logError } from "../observability/log.js";
-import type { Result } from "../types/result.js";
-import type { CreateOrderInput, Order, OrderError } from "./types.js";
+import type { FieldIssue } from "../data/error-kinds.js";
+import type { Result } from "../data/result.js";
+import type { CreateOrderInput, Order } from "./types.js";
 
 export type DraftStatus = "idle" | "saving" | "saved" | "error";
 
 export interface OrderDraft {
   readonly pending: CreateOrderInput | null;
   readonly status: DraftStatus;
+  /** The failure's kind (`invalid_input`, `forbidden`, `unreachable`, …) or `save_failed`. */
+  readonly kind: string | null;
+  /** A domain detail for `invalid_input` without field paths; otherwise the kind. */
   readonly message: string | null;
+  readonly fields: ReadonlyArray<FieldIssue>;
   readonly savedOrderId: string | null;
 }
 
@@ -34,7 +48,9 @@ export type OrderDraftStore = StateContainer<OrderDraft>;
 export const EMPTY_DRAFT: OrderDraft = {
   pending: null,
   status: "idle",
+  kind: null,
   message: null,
+  fields: [],
   savedOrderId: null,
 };
 
@@ -42,26 +58,53 @@ export const createOrderDraftStore = (initial: OrderDraft = EMPTY_DRAFT): OrderD
   createStateContainer<OrderDraft>(initial);
 
 export const setPending = (store: OrderDraftStore, pending: CreateOrderInput | null): void =>
-  store.set({ pending, status: "idle", message: null, savedOrderId: null });
+  store.set({ ...EMPTY_DRAFT, pending });
 
-export type SaveOrder = (input: CreateOrderInput) => Promise<Result<Order, OrderError>>;
+/** Any failure with a kind; the domain `OrderError` and the client `ApiFailure` both fit. */
+export interface SaveError {
+  readonly kind: string;
+  readonly message?: string;
+  readonly fields?: ReadonlyArray<FieldIssue>;
+}
+
+export type SaveOrder = (input: CreateOrderInput) => Promise<Result<Order, SaveError>>;
 
 export const saveDraft = async (store: OrderDraftStore, save: SaveOrder): Promise<void> => {
   const { pending } = store.get();
   if (pending === null) return;
-  store.update((d) => ({ ...d, status: "saving", message: null }));
+  store.update((d) => ({ ...d, status: "saving", kind: null, message: null, fields: [] }));
   try {
     const r = await save(pending);
     if (r.ok) {
-      store.set({ pending: null, status: "saved", message: null, savedOrderId: r.value.id });
+      store.set({ ...EMPTY_DRAFT, status: "saved", savedOrderId: r.value.id });
     } else {
-      const message = r.error.kind === "invalid_input" ? r.error.message : r.error.kind;
-      store.update((d) => ({ ...d, status: "error", message }));
+      const { kind } = r.error;
+      const message =
+        kind === "invalid_input" && r.error.message !== undefined ? r.error.message : kind;
+      store.update((d) => ({
+        ...d,
+        status: "error",
+        kind,
+        message,
+        fields: r.error.fields ?? [],
+      }));
     }
-  } catch (e: unknown) {
-    logError("order_save_failed", { reason: e instanceof Error ? e.message : String(e) });
-    store.update((d) => ({ ...d, status: "error", message: "save_failed" }));
+  } catch {
+    store.update((d) => ({ ...d, status: "error", kind: "save_failed", message: "save_failed" }));
   }
+};
+
+/**
+ * U2 (F-05, BR6.1): the save as a `useSubmitGuard` run — `true` when the order was saved,
+ * `false` when it was refused or failed. The screens submit through the guard, so a second
+ * submit while this runs is ignored before it can reach `saveDraft`.
+ */
+export const saveDraftGuarded = async (
+  store: OrderDraftStore,
+  save: SaveOrder,
+): Promise<boolean> => {
+  await saveDraft(store, save);
+  return store.get().status === "saved";
 };
 
 export const useOrderDraft = (store: OrderDraftStore): OrderDraft =>

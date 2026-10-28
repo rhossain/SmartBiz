@@ -11,13 +11,14 @@
  */
 import type { Sql } from "../db/client.js";
 import { now } from "../data/clock.js";
-import { err, ok, type Result } from "../types/result.js";
-import { isUuid } from "../types/uuid.js";
+import type { OrderStatus } from "../data/enums.js";
+import { err, ok, type Result } from "../data/result.js";
+import { isUuid } from "../data/uuid.js";
 import { appendOrderAudit } from "./order-audit.js";
 import { canMutateOrders } from "./order-capability.js";
 import { selectOrder } from "./order-rows.js";
 import { canTransition, isOrderStatus } from "./status-fsm.js";
-import type { Order, OrderContext, OrderError, OrderStatus } from "./types.js";
+import type { Order, OrderContext, OrderError } from "./types.js";
 
 export const transitionStatus = async (
   sql: Sql,

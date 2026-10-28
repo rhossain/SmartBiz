@@ -1,0 +1,338 @@
+{
+  "stage": "nfr-design",
+  "unit": "u1-skeleton",
+  "upstream_ids": [
+    "NFR1.1",
+    "NFR1.2",
+    "NFR1.3",
+    "NFR2.1",
+    "NFR2.2",
+    "NFR2.3",
+    "NFR3.1",
+    "NFR3.2",
+    "NFR3.3",
+    "NFR3.4",
+    "NFR3.5",
+    "NFR3.6",
+    "NFR3.7",
+    "NFR3.8",
+    "NFR3.9",
+    "NFR4.1",
+    "NFR5.1",
+    "NFR5.2",
+    "NFR5.3",
+    "NFR5.4",
+    "NFR5.5",
+    "NFR6.1",
+    "NFR6.2",
+    "NFR6.3",
+    "NFR6.4",
+    "NFR6.5",
+    "NFR6.6",
+    "NFR6.7",
+    "NFR6.8",
+    "NFR6.9",
+    "NFR6.10",
+    "NFR6.11",
+    "NFR6.12",
+    "NFR7.1",
+    "NFR7.2",
+    "NFR7.3",
+    "NFR7.4",
+    "NFR7.5",
+    "NFR7.6",
+    "NFR7.7",
+    "NFR7.8",
+    "NFR8.1",
+    "NFR8.2",
+    "NFR8.3",
+    "NFR8.4",
+    "NFR8.5",
+    "NFR8.6",
+    "NFR8.7",
+    "NFR8.8",
+    "NFR8.9",
+    "NFR9.1",
+    "NFR9.2",
+    "NFR9.3",
+    "NFR9.4",
+    "NFR10.1"
+  ],
+  "coverage": [
+    {
+      "id": "NFR1.1",
+      "status": "OK",
+      "target": "security-design S1 (route table as data, start-up check)"
+    },
+    {
+      "id": "NFR1.2",
+      "status": "OK",
+      "target": "security-design S1 pipeline capability gate; wiring-check refusals (observability O9)"
+    },
+    {
+      "id": "NFR1.3",
+      "status": "OK",
+      "target": "security-design S1 context from the session"
+    },
+    {
+      "id": "NFR2.1",
+      "status": "OK",
+      "target": "security-design S8 start-up role check"
+    },
+    {
+      "id": "NFR2.2",
+      "status": "OK",
+      "target": "security-design S8 declared-grants exact-set test"
+    },
+    {
+      "id": "NFR2.3",
+      "status": "OK",
+      "target": "security-design S8 admin URL only for migrations"
+    },
+    {
+      "id": "NFR3.1",
+      "status": "OK",
+      "target": "security-design S2 password storage"
+    },
+    {
+      "id": "NFR3.2",
+      "status": "OK",
+      "target": "security-design S3 token and cookie"
+    },
+    {
+      "id": "NFR3.3",
+      "status": "OK",
+      "target": "security-design S3 resolve statement; S1 context"
+    },
+    {
+      "id": "NFR3.4",
+      "status": "OK",
+      "target": "security-design S3 fixation and sign-out"
+    },
+    {
+      "id": "NFR3.5",
+      "status": "OK",
+      "target": "security-design S2 attempt limiter, dummy-hash verify, identical failure"
+    },
+    {
+      "id": "NFR3.6",
+      "status": "OK",
+      "target": "security-design S4 PublicUser and no-secret test"
+    },
+    {
+      "id": "NFR3.7",
+      "status": "OK",
+      "target": "security-design S4 log redaction; observability O7"
+    },
+    {
+      "id": "NFR3.8",
+      "status": "OK",
+      "target": "security-design S4 secret-scan script"
+    },
+    {
+      "id": "NFR3.9",
+      "status": "OK",
+      "target": "security-design S4 secrets in the repo"
+    },
+    {
+      "id": "NFR4.1",
+      "status": "OK",
+      "target": "security-design S5 frozen header map"
+    },
+    {
+      "id": "NFR5.1",
+      "status": "OK",
+      "target": "security-design S7 Origin check"
+    },
+    {
+      "id": "NFR5.2",
+      "status": "OK",
+      "target": "security-design S1 size check and strict parse"
+    },
+    {
+      "id": "NFR5.3",
+      "status": "OK",
+      "target": "security-design S9 bind address"
+    },
+    {
+      "id": "NFR5.4",
+      "status": "OK",
+      "target": "security-design S6 static handler"
+    },
+    {
+      "id": "NFR5.5",
+      "status": "OK",
+      "target": "security-design S7 Host check"
+    },
+    {
+      "id": "NFR6.1",
+      "status": "OK",
+      "target": "performance-design P1 latency budget, P2 indexes, P7 benchmark"
+    },
+    {
+      "id": "NFR6.2",
+      "status": "OK",
+      "target": "performance-design P1 session resolve"
+    },
+    {
+      "id": "NFR6.3",
+      "status": "OK",
+      "target": "performance-design P4 hash gate"
+    },
+    {
+      "id": "NFR6.4",
+      "status": "OK",
+      "target": "performance-design P5 health"
+    },
+    {
+      "id": "NFR6.5",
+      "status": "OK",
+      "target": "performance-design P6 bundle gate"
+    },
+    {
+      "id": "NFR6.6",
+      "status": "OK",
+      "target": "performance-design P6 start-up"
+    },
+    {
+      "id": "NFR6.7",
+      "status": "OK",
+      "target": "performance-design P6 static caching (measured in U2 / Build and Test)"
+    },
+    {
+      "id": "NFR6.8",
+      "status": "OK",
+      "target": "scalability-design S1 concurrency"
+    },
+    {
+      "id": "NFR6.9",
+      "status": "OK",
+      "target": "scalability-design S3 data growth; performance-design P7 large profile"
+    },
+    {
+      "id": "NFR6.10",
+      "status": "OK",
+      "target": "scalability-design S3 sessions"
+    },
+    {
+      "id": "NFR6.11",
+      "status": "OK",
+      "target": "scalability-design S4 limiter bound"
+    },
+    {
+      "id": "NFR6.12",
+      "status": "OK",
+      "target": "scalability-design S2 hash gate"
+    },
+    {
+      "id": "NFR7.1",
+      "status": "OK",
+      "target": "reliability-design R1 classification and degraded mode"
+    },
+    {
+      "id": "NFR7.2",
+      "status": "OK",
+      "target": "reliability-design R1 reconnect without restart"
+    },
+    {
+      "id": "NFR7.3",
+      "status": "OK",
+      "target": "reliability-design R2 restart safety"
+    },
+    {
+      "id": "NFR7.4",
+      "status": "OK",
+      "target": "reliability-design R2 start-up order"
+    },
+    {
+      "id": "NFR7.5",
+      "status": "OK",
+      "target": "reliability-design R3 atomic writes"
+    },
+    {
+      "id": "NFR7.6",
+      "status": "OK",
+      "target": "reliability-design R4 migrations"
+    },
+    {
+      "id": "NFR7.7",
+      "status": "OK",
+      "target": "reliability-design R5 client behaviour"
+    },
+    {
+      "id": "NFR7.8",
+      "status": "OK",
+      "target": "reliability-design R6 backup and restore"
+    },
+    {
+      "id": "NFR8.1",
+      "status": "OK",
+      "target": "observability-design O1 request log line"
+    },
+    {
+      "id": "NFR8.2",
+      "status": "OK",
+      "target": "observability-design O2 correlation ids"
+    },
+    {
+      "id": "NFR8.3",
+      "status": "OK",
+      "target": "observability-design O3 error logging"
+    },
+    {
+      "id": "NFR8.4",
+      "status": "OK",
+      "target": "observability-design O4 audit events"
+    },
+    {
+      "id": "NFR8.5",
+      "status": "OK",
+      "target": "observability-design O5 rate-limit visibility"
+    },
+    {
+      "id": "NFR8.6",
+      "status": "OK",
+      "target": "observability-design O6 health"
+    },
+    {
+      "id": "NFR8.7",
+      "status": "OK",
+      "target": "observability-design O7 redaction test"
+    },
+    {
+      "id": "NFR8.8",
+      "status": "OK",
+      "target": "observability-design O8 coverage"
+    },
+    {
+      "id": "NFR8.9",
+      "status": "OK",
+      "target": "observability-design O9 wiring check"
+    },
+    {
+      "id": "NFR9.1",
+      "status": "OK",
+      "target": "performance-design P8 Bangla copy and digits"
+    },
+    {
+      "id": "NFR9.2",
+      "status": "OK",
+      "target": "performance-design P8 focus management"
+    },
+    {
+      "id": "NFR9.3",
+      "status": "OK",
+      "target": "performance-design P8 tokens only (contrast harness)"
+    },
+    {
+      "id": "NFR9.4",
+      "status": "OK",
+      "target": "performance-design P8 announced status messages"
+    },
+    {
+      "id": "NFR10.1",
+      "status": "OK",
+      "target": "security-design S10 free tooling"
+    }
+  ]
+}

@@ -1,49 +1,95 @@
 /**
- * src/auth/index.ts — the typed function-call surface (Contract #1,
- * #2, #3, #4 stubs). Each function is a typed function-call that
- * the router dispatches; there is no HTTP layer in B1 (the
- * frontend is a SPA that calls these directly through the
- * typed module container — see `team.md#Code Style §CS-7`).
+ * src/auth/index.ts — AuthComponent's typed function-call surface.
+ *
+ * Since U1 the browser no longer calls these directly: the bun server's handlers
+ * (src/server/handlers/) call them and the client reaches them over HTTP (C2). The module is
+ * server-only in effect, because several exports hash passwords or touch the database.
  */
-export { signUp, type SignUpInput, type SignUpOutput, type SignUpError } from "./sign-up.js";
-export { signIn, type SignInInput, type SignInOutput, type SignInError } from "./sign-in.js";
-export { signOut } from "./sign-out.js";
-export { requestRecovery, resetPassword, type RecoveryError } from "./recover.js";
-export { createInvite, type InviteInput, type InviteOutput, type InviteError } from "./invite.js";
 export {
-  acceptInvite,
-  type AcceptInviteInput,
-  type AcceptInviteOutput,
-  type AcceptInviteError,
+  signUp,
+  isValidEmail,
+  type SignUpInput,
+  type SignUpOutput,
+  type SignUpError,
+  type SignUpDeps,
+} from "./sign-up.js";
+export {
+  signIn,
+  type SignInInput,
+  type SignInOutput,
+  type SignInError,
+  type SignInDeps,
+} from "./sign-in.js";
+export { signOut, type SignOutOutput } from "./sign-out.js";
+export { businessExists, theBusinessId } from "./setup.js";
+export { toPublicUser, toSessionView } from "./public-user.js";
+export { recover, RECOVER_OUTCOME, type RecoverOutcome } from "./recover.js";
+export {
+  createInvitation,
+  listStaff,
+  normaliseEmail,
+  type InviteInput,
+  type InviteOutput,
+  type InviteError,
+  type StaffList,
+  type StaffMember,
+  type PendingInvitation,
+} from "./invite.js";
+export {
+  acceptInvitation,
+  type AcceptInvitationInput,
+  type AcceptInvitationOutput,
+  type AcceptInvitationError,
 } from "./accept-invite.js";
-export { buildSession, buildSetCookie, cookieOptions } from "./session.js";
+export {
+  createResetLink,
+  completeReset,
+  type ResetLinkInput,
+  type ResetLinkOutput,
+  type ResetLinkError,
+  type CompleteResetError,
+} from "./password-reset.js";
+export { newToken, hashToken, linkFor, type LinkKind } from "./one-time-token.js";
+export {
+  INVITABLE,
+  canInvite,
+  canResetTarget,
+  canSupersede,
+  type Actor,
+  type StaffRole,
+} from "./delegation.js";
+export {
+  generateSessionToken,
+  insertSession,
+  resolveSession,
+  deleteSessionByToken,
+  SESSION_MAX_AGE_MS,
+  SESSION_IDLE_MS,
+  type NewSession,
+  type ResolvedSession,
+} from "./session.js";
 export {
   auditSignUp,
   auditSignIn,
   auditSignInFailure,
-  auditRecoveryRequest,
-  auditRecoveryReset,
-  auditInvite,
-  auditAcceptInvite,
+  auditSignOut,
+  auditInviteCreated,
+  auditInviteAccepted,
+  auditResetLinkCreated,
+  auditPasswordReset,
   auditBusinessProfileChange,
   auditSettingsChange,
 } from "./audit.js";
-export { capabilitiesFor, hasCapability, type Capability } from "./capability.js";
+export { capabilitiesFor, hasCapability } from "./capability.js";
 export { ROLE_CAPABILITY_MATRIX } from "./role-matrix.js";
 export { evaluateGate, type GateError, type GateSession } from "./three-layer-gate.js";
-export { hashPassword, verifyPassword, PASSWORD_MIN_LENGTH } from "./argon2.js";
+export { hashPassword, verifyPassword, getDummyHash, PASSWORD_MIN_LENGTH } from "./argon2.js";
+export { createHashGate, type HashGate, type HashGateFull } from "./hash-gate.js";
 export {
-  sendInviteEmail,
-  noopEmailGateway,
-  failingEmailGateway,
-  type EmailGateway,
-  type SmtpError,
-} from "./email.js";
-export {
-  checkRateLimit,
-  resetBuckets,
-  LIMIT_SIGN_IN,
-  LIMIT_RECOVERY,
-  LIMIT_INVITE,
-  LIMIT_ACCEPT,
-} from "./rate-limit.js";
+  createAttemptLimiter,
+  signInKey,
+  SIGN_IN_LIMIT,
+  type AttemptLimiter,
+} from "./attempt-limiter.js";
+// U3 review G-06: the B1 email gateway (src/auth/email.ts) is deleted; no email is ever sent.
+export type { PublicUser, SessionView, TxHooks, UserRecord } from "./types.js";

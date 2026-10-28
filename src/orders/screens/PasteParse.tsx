@@ -17,13 +17,15 @@
  *   large) as a toast; nothing throws to the person.
  */
 import * as React from "react";
-import type { Locale } from "../../auth/types.js";
+import { assertNever } from "../../data/assert-never.js";
+import type { Locale } from "../../data/enums.js";
 import { Pill } from "../../pres/Pill.js";
 import { Screen } from "../../pres/Screen.js";
 import { Toast } from "../../pres/Toast.js";
+import { useSubmitGuard } from "../../pres/use-submit-guard.js";
 import { buildPasteParseOrder } from "../input-modes.js";
 import {
-  saveDraft,
+  saveDraftGuarded,
   setPending,
   useOrderDraft,
   type OrderDraftStore,
@@ -31,12 +33,7 @@ import {
 } from "../order-draft.js";
 import { parseTakaToPaise } from "../order-total.js";
 import { parseMessage, reparseItem } from "../parse-message.js";
-import {
-  assertNever,
-  type ParsedItem,
-  type ParsedMessage,
-  type ParseFailureReason,
-} from "../types.js";
+import type { ParsedItem, ParsedMessage, ParseFailureReason } from "../types.js";
 import { tr } from "./copy.js";
 import { DraftStatus } from "./DraftStatus.js";
 
@@ -98,17 +95,31 @@ const ItemRow = (props: {
         value={item.text}
         onChange={(e) => props.onText(e.target.value)}
       />
-      <span data-testid="paste-item-quantity">{item.quantity}</span>
-      <span data-testid="paste-item-size">{item.size ?? "—"}</span>
-      <span data-testid="paste-item-colour">{item.colour ?? "—"}</span>
-      {item.incomplete ? <Pill kind="warning" label={tr("paste.incomplete", locale)} /> : null}
-      <input
-        aria-label={`${tr("orders.quick.price", locale)} ${item.lineNo}`}
-        data-testid={`paste-item-price-${item.lineNo}`}
-        inputMode="decimal"
-        value={price}
-        onChange={(e) => props.onPrice(e.target.value)}
-      />
+      <div className="paste-item__facts">
+        <span className="fact">
+          <span className="fact__label">{tr("orders.quick.quantity", locale)}</span>
+          <span data-testid="paste-item-quantity">{item.quantity}</span>
+        </span>
+        <span className="fact">
+          <span className="fact__label">{tr("paste.size", locale)}</span>
+          <span data-testid="paste-item-size">{item.size ?? "—"}</span>
+        </span>
+        <span className="fact">
+          <span className="fact__label">{tr("paste.colour", locale)}</span>
+          <span data-testid="paste-item-colour">{item.colour ?? "—"}</span>
+        </span>
+        {item.incomplete ? <Pill kind="warning" label={tr("paste.incomplete", locale)} /> : null}
+      </div>
+      <label className="paste-item__price">
+        {tr("orders.quick.price", locale)}
+        <input
+          aria-label={`${tr("orders.quick.price", locale)} ${item.lineNo}`}
+          data-testid={`paste-item-price-${item.lineNo}`}
+          inputMode="decimal"
+          value={price}
+          onChange={(e) => props.onPrice(e.target.value)}
+        />
+      </label>
     </li>
   );
 };
@@ -118,10 +129,13 @@ export const PasteParse = ({ locale, draft, onSave }: PasteParseProps): React.Re
   const [text, setText] = React.useState("");
   const [failure, setFailure] = React.useState<ParseFailureReason | null>(null);
   const [edits, setEdits] = React.useState<Edits | null>(null);
+  // U2 (F-05, BR6.1, W3): one save at a time; an edit returns the guard to idle.
+  const guard = useSubmitGuard();
 
   const apply = (next: Edits): void => {
     setEdits(next);
     stagePending(draft, next);
+    guard.reset();
   };
 
   const read = (): void => {
@@ -138,7 +152,10 @@ export const PasteParse = ({ locale, draft, onSave }: PasteParseProps): React.Re
   };
 
   return (
-    <Screen title={tr("paste.title", locale)}>
+    <Screen
+      title={tr("paste.title", locale)}
+      back={{ href: "#/orders", label: tr("orders.back", locale) }}
+    >
       <label htmlFor="paste-box">{tr("paste.box", locale)}</label>
       <textarea
         id="paste-box"
@@ -201,8 +218,9 @@ export const PasteParse = ({ locale, draft, onSave }: PasteParseProps): React.Re
           <button
             type="button"
             data-testid="paste-save"
-            disabled={state.pending === null || state.status === "saving"}
-            onClick={() => void saveDraft(draft, onSave)}
+            disabled={state.pending === null || guard.state === "saving"}
+            aria-busy={guard.state === "saving"}
+            onClick={() => void guard.submit(() => saveDraftGuarded(draft, onSave))}
           >
             {tr("orders.save", locale)}
           </button>

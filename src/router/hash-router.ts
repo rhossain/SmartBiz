@@ -1,22 +1,54 @@
 /**
- * src/router/hash-router.ts — hash navigation.
- * Listens on `hashchange` and resolves the current path. The
- * dispatcher (src/router/dispatch.ts) is invoked on every
- * navigation; the route's render() is called only on Ok.
+ * src/router/hash-router.ts — hash navigation (RouterComponent; W1; BR1.3, BR1.4; S16;
+ * review F-06).
  *
- * B2 adds parameterised routes (`/orders/:id`). Matching rules:
- * an exact registry key always wins over a pattern (so `/orders/new`
- * is never read as an order id); a pattern matches segment by segment;
- * an `:id` segment must be a UUID, so a malformed id falls back to `/`
- * instead of reaching a screen. Anything after `?` is ignored.
+ * Listens on `hashchange` and resolves the current path. The dispatcher
+ * (src/router/dispatch.ts) is invoked on every navigation; the route's render() is called
+ * only on Ok.
+ *
+ * Matching rules:
+ *   - the query is split off FIRST: anything from `?` never takes part in matching, so
+ *     `#/orders?x=1` is `/orders` (F-06);
+ *   - an exact registry key always wins over a pattern (so `/orders/new` is never read as an
+ *     order id);
+ *   - a pattern matches segment by segment, and every `:name` segment is parsed by the
+ *     parser registered for THAT route and THAT parameter (`ROUTE_PARAMS`, keyed by route
+ *     path, then parameter name). `:id` is a UUID on every route that has one (F-06). A
+ *     value that fails its parser matches nothing, so the dispatcher sends it to
+ *     `/not-found` and no screen renders, which means no request is sent for it (BR1.3);
+ *   - a pattern with a parameter that has no parser fails the module at load, so a new
+ *     parameterised route cannot ship unparsed.
  */
-import { isUuid } from "../types/uuid.js";
+import { isUuid } from "../data/uuid.js";
 import { routes } from "./routes.js";
 import type { RouteMatch, RoutePath } from "./types.js";
 
-const PARAM_VALIDATORS: Readonly<Record<string, (value: string) => boolean>> = {
-  id: isUuid,
+/** Parses one path segment; null refuses it. */
+export type ParamParser = (value: string) => string | null;
+
+const uuidParam: ParamParser = (value) => (isUuid(value) ? value.toLowerCase() : null);
+
+/** BR1.3: one parser per route and per `:name` (U4 adds `/customers/:id`, `/products/:id`). */
+export const ROUTE_PARAMS: Readonly<
+  Partial<Record<RoutePath, Readonly<Record<string, ParamParser>>>>
+> = {
+  "/orders/:id": { id: uuidParam },
+  "/orders/:id/transition": { id: uuidParam },
 };
+
+/** Throws naming the first `:name` segment of a registered route with no parser. */
+export const assertParamParsers = (paths: Iterable<RoutePath>): void => {
+  for (const path of paths) {
+    for (const part of path.split("/")) {
+      if (!part.startsWith(":")) continue;
+      if (ROUTE_PARAMS[path]?.[part.slice(1)] === undefined) {
+        throw new Error(`route ${path} has no parser for ${part}`);
+      }
+    }
+  }
+};
+
+assertParamParsers(routes.keys());
 
 const matchPattern = (pattern: RoutePath, raw: string): Readonly<Record<string, string>> | null => {
   const want = pattern.split("/");
@@ -27,9 +59,9 @@ const matchPattern = (pattern: RoutePath, raw: string): Readonly<Record<string, 
     const value = got[i] ?? "";
     if (part.startsWith(":")) {
       const name = part.slice(1);
-      const valid = PARAM_VALIDATORS[name] ?? ((v: string) => v.length > 0);
-      if (!valid(value)) return null;
-      params[name] = value;
+      const parsed = ROUTE_PARAMS[pattern]?.[name]?.(value) ?? null;
+      if (parsed === null) return null;
+      params[name] = parsed;
     } else if (part !== value) {
       return null;
     }
@@ -37,9 +69,12 @@ const matchPattern = (pattern: RoutePath, raw: string): Readonly<Record<string, 
   return params;
 };
 
+/** The path part of a raw hash route: everything before `?` (F-06). */
+export const pathOf = (raw: string): string => (raw.split("?")[0] ?? "") || "/";
+
 /** Resolve a raw path (no `#`) to a registered route, or null. */
 export const matchRoute = (raw: string): RouteMatch | null => {
-  const path = (raw.split("?")[0] ?? "") || "/";
+  const path = pathOf(raw);
   if (routes.has(path as RoutePath)) return { path: path as RoutePath, params: {} };
   for (const pattern of routes.keys()) {
     if (!pattern.includes(":")) continue;

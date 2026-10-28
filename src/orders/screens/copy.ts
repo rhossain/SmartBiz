@@ -5,12 +5,17 @@
  * strings; the shape is the same `L(bn, en)` pair, and the key type is
  * closed, so a missing string is a type error, not a blank label.
  */
-import type { Locale } from "../../auth/types.js";
+import type { Locale } from "../../data/enums.js";
 import { L } from "../../i18n/L.js";
 
 const COPY = {
   "orders.title": L("অর্ডার", "Orders"),
-  "orders.empty": L("কোনো অর্ডার নেই", "No orders yet"),
+  // The back link on every orders sub-screen (detail, new, from a message, repeat).
+  "orders.back": L("অর্ডারে ফিরুন", "Back to orders"),
+  "orders.empty": L("এখনো কোনো অর্ডার নেই", "No orders yet"),
+  "orders.new": L("নতুন অর্ডার", "New order"),
+  "orders.paste": L("মেসেজ থেকে", "From a message"),
+  "orders.repeat": L("আগের অর্ডার থেকে", "Repeat a past order"),
   "orders.filter.status": L("অবস্থা", "Status"),
   "orders.filter.all": L("সব", "All"),
   "orders.filter.customer": L("কাস্টমার আইডি", "Customer id"),
@@ -25,12 +30,16 @@ const COPY = {
   "orders.total": L("মোট", "Total"),
   "orders.source": L("উৎস", "Source"),
   "orders.quick.title": L("দ্রুত অর্ডার", "Quick add"),
+  "orders.quick.saved": L(
+    "✓ সংরক্ষণ হয়েছে — নতুন অর্ডারটি তালিকার একদম উপরে",
+    "✓ Saved — the new order is at the top of the list",
+  ),
   "orders.quick.description": L("পণ্য", "Item"),
   "orders.quick.quantity": L("পরিমাণ", "Quantity"),
   "orders.quick.price": L("দাম (৳)", "Price (৳)"),
   "orders.quick.delivery": L("ডেলিভারি চার্জ (৳)", "Delivery charge (৳)"),
   "orders.save": L("সংরক্ষণ", "Save"),
-  "orders.saved": L("সংরক্ষিত হয়েছে", "Saved"),
+  "orders.saved": L("সংরক্ষণ হয়েছে", "Saved"),
   "orders.invalid": L("তথ্য ঠিক নেই", "Some details are not valid"),
   "orders.save_failed": L("সংরক্ষণ হয়নি, আবার চেষ্টা করুন", "Could not save, please try again"),
   "detail.items": L("পণ্যসমূহ", "Items"),
@@ -47,6 +56,8 @@ const COPY = {
   "paste.malformed": L("কোনো পণ্য পাওয়া যায়নি", "No item found in the message"),
   "paste.too_large": L("২০০টির বেশি পণ্য — ভাগ করে দিন", "More than 200 items — split the message"),
   "paste.cod": L("ক্যাশ অন ডেলিভারি", "Cash on delivery"),
+  "paste.size": L("সাইজ", "Size"),
+  "paste.colour": L("রং", "Colour"),
   "paste.unattached": L("এই বিবরণ কোনো পণ্যের সাথে মেলেনি", "These details matched no item"),
   "manual.title": L("নতুন অর্ডার", "New order"),
   "manual.line": L("লাইন", "Line"),

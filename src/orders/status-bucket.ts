@@ -24,7 +24,8 @@
 import { money, type MoneyFigure } from "../money/money-figure.js";
 import type { Completeness } from "../money/types.js";
 import { unrecognized, type OrderFigure, type UnrecognizedFigure } from "./order-figure.js";
-import type { Order, OrderBucket, OrderStatus } from "./types.js";
+import type { OrderStatus } from "../data/enums.js";
+import type { Order, OrderBucket } from "./types.js";
 
 export const EARNED_STATUSES: ReadonlySet<OrderStatus> = new Set<OrderStatus>([
   "delivered",

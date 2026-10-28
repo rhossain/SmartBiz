@@ -47,6 +47,8 @@ describe("R2.5 — deferred input modes log and decline", () => {
     expect(result).toEqual({ ok: false, reason: "deferred", source: "photo" });
     expect(logged).toEqual([
       {
+        // U1 (O1): every log line carries its time from the app clock.
+        ts: FROZEN_TEST_NOW.toISOString(),
         level: "info",
         message: "deferred_input_invoked",
         event: "deferred_input_invoked",

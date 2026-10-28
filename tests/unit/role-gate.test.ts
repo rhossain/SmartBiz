@@ -4,7 +4,7 @@
 import { describe, expect, test } from "bun:test";
 import { hasCapability, capabilitiesFor } from "../../src/auth/capability.js";
 import { evaluateGate } from "../../src/auth/three-layer-gate.js";
-import { err, ok } from "../../src/types/result.js";
+import { err, ok } from "../../src/data/result.js";
 
 describe("role × capability matrix (BR2.1, BR2.2, BR2.3, BR2.4)", () => {
   test("sales_staff cannot manage staff (BR2.3)", () => {

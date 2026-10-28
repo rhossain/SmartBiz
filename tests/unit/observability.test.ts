@@ -1,14 +1,10 @@
 /**
- * Coverage booster — observability + audit list / export + role-grants import.
+ * Coverage booster — observability + audit retention helper + role-grants import.
  */
 import { describe, expect, test } from "bun:test";
 import { info, warn, error } from "../../src/observability/log.js";
-import { newCorrelationId, resetCorrelationCounter } from "../../src/observability/correlation.js";
-import { listAuditForBusiness, auditRetentionFilter } from "../../src/audit/audit-service.js";
-import { exportAudit } from "../../src/audit/audit-export.js";
-import { makeSqlStub } from "../helpers/sql-stub.js";
-import { signUp } from "../../src/auth/sign-up.js";
-import { setTestClock, FROZEN_TEST_NOW, resetTestClock } from "../../src/data/clock.js";
+import { newCorrelationId } from "../../src/observability/correlation.js";
+import { auditRetentionFilter } from "../../src/audit/audit-service.js";
 import { hashPassword, verifyPassword } from "../../src/auth/argon2.js";
 import { PASSWORD_MIN_LENGTH } from "../../src/auth/argon2.js";
 import { capabilitiesFor } from "../../src/auth/capability.js";
@@ -34,42 +30,16 @@ describe("observability + audit read paths", () => {
     }
   });
 
-  test("correlation counter increments", () => {
-    resetCorrelationCounter();
+  test("correlation ids are 16 hex characters from Web Crypto and differ per call (O2)", () => {
     const a = newCorrelationId();
     const b = newCorrelationId();
+    expect(a).toMatch(/^[0-9a-f]{16}$/);
+    expect(b).toMatch(/^[0-9a-f]{16}$/);
     expect(a).not.toBe(b);
   });
 
-  test("listAuditForBusiness returns rows", async () => {
-    setTestClock(FROZEN_TEST_NOW);
-    const stub = makeSqlStub();
-    await signUp(stub.sql, {
-      email: "o@e.com",
-      password: "verysecret",
-      businessName: "A",
-      locale: "bn",
-    });
-    const businessId = stub.state.businesses[0]!["id"] as never;
-    const rows = await listAuditForBusiness(stub.sql, businessId);
-    expect(Array.isArray(rows)).toBe(true);
-    resetTestClock();
-  });
-
-  test("exportAudit delegates to listAuditForBusiness", async () => {
-    setTestClock(FROZEN_TEST_NOW);
-    const stub = makeSqlStub();
-    await signUp(stub.sql, {
-      email: "o@e.com",
-      password: "verysecret",
-      businessName: "A",
-      locale: "bn",
-    });
-    const businessId = stub.state.businesses[0]!["id"] as never;
-    const rows = await exportAudit(stub.sql, businessId);
-    expect(Array.isArray(rows)).toBe(true);
-    resetTestClock();
-  });
+  // U2 (D-06): the `listAuditForBusiness` and `exportAudit` cases moved to
+  // tests/unit/audit-read.test.ts and tests/unit/audit-export.test.ts.
 
   test("auditRetentionFilter returns a string", () => {
     const f = auditRetentionFilter(new Date("2026-09-07T00:00:00Z"));
@@ -77,7 +47,7 @@ describe("observability + audit read paths", () => {
   });
 
   test("argon2 PASSWORD_MIN_LENGTH + hash + verify", async () => {
-    expect(PASSWORD_MIN_LENGTH).toBe(8);
+    expect(PASSWORD_MIN_LENGTH).toBe(10); // U1 BR2.4 (was 8 in B1)
     const hash = await hashPassword("verysecret");
     expect(hash).toMatch(/^\$argon2id\$/);
     const ok = await verifyPassword(hash, "verysecret");

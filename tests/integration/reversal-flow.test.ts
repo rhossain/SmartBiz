@@ -7,19 +7,24 @@ import { describe, expect, test } from "bun:test";
 import { signUp } from "../../src/auth/sign-up.js";
 import { insertAudit } from "../../src/audit/audit-service.js";
 import { makeSqlStub } from "../helpers/sql-stub.js";
+import { authDeps } from "../helpers/auth-fixtures.js";
 import { setTestClock, FROZEN_TEST_NOW, resetTestClock } from "../../src/data/clock.js";
-import type { Uuid } from "../../src/types/uuid.js";
+import type { Uuid } from "../../src/data/uuid.js";
 
 describe("integration: reversal flow (UC-1.10)", () => {
   test("reversal is a NEW row referencing the original; original is unchanged", async () => {
     setTestClock(FROZEN_TEST_NOW);
     const stub = makeSqlStub();
-    const su = await signUp(stub.sql, {
-      email: "owner@example.com",
-      password: "verysecret",
-      businessName: "Acme",
-      locale: "bn",
-    });
+    const su = await signUp(
+      stub.sql,
+      {
+        email: "owner@example.com",
+        password: "verysecret",
+        businessName: "Acme",
+        locale: "bn",
+      },
+      authDeps(),
+    );
     if (!su.ok) throw new Error("signup");
     const businessId = su.value.businessId as Uuid;
     const userId = su.value.user.id as Uuid;

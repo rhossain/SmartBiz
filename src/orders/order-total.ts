@@ -13,7 +13,7 @@
  * written, because `toPaise` would then reject the row on every read.
  */
 import { toAsciiDigits } from "../i18n/bnDigits.js";
-import { err, ok, type Result } from "../types/result.js";
+import { err, ok, type Result } from "../data/result.js";
 import type { InvalidInput, OrderItemInput } from "./types.js";
 
 /**

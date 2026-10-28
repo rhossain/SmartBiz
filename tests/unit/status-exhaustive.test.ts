@@ -9,8 +9,10 @@
  * status into a throw and fails "every value is handled".
  */
 import { describe, expect, test } from "bun:test";
-import { ORDER_STATUSES, assertNever, type OrderStatus } from "../../src/orders/types.js";
-import { isEditable, nextStatuses, statusLabel } from "../../src/orders/status-fsm.js";
+import { assertNever } from "../../src/data/assert-never.js";
+import { ORDER_STATUSES, type OrderStatus } from "../../src/data/enums.js";
+import { isEditable, nextStatuses } from "../../src/orders/status-fsm.js";
+import { statusLabel } from "../../src/pres/status-labels.js";
 import { canLinkConsignment } from "../../src/orders/consignment.js";
 import { bucketOf, orderMoneyFigure } from "../../src/orders/status-bucket.js";
 

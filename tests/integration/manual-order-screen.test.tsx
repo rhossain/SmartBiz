@@ -199,4 +199,86 @@ describe("US1.11 — ManualOrder screen", () => {
       `৳${((2 * 125_000 - 5_000 - 10_000 + 6_000) / 100).toFixed(2)}`,
     );
   });
+
+  // U1 (BR8.2): the order goes over HTTP now; a 400 names the refused field paths.
+  test("a 400 puts each field's message under its input, keeps the typed values, and lists the rest", async () => {
+    const draft = createOrderDraftStore();
+    const { getByTestId, queryByTestId } = render(
+      <ManualOrder
+        locale="bn"
+        draft={draft}
+        onSave={async () => ({
+          ok: false,
+          error: {
+            kind: "invalid_input",
+            fields: [
+              { path: "items.1.unitPricePaise", message: "Too big" },
+              { path: "deliveryChargePaise", message: "Too big" },
+              { path: "contact.phone", message: "Invalid" },
+            ],
+          },
+        })}
+      />,
+    );
+    fillTwoLines(getByTestId);
+    await act(async () => {
+      fireEvent.submit(getByTestId("manual-order-form"));
+    });
+    expect(getByTestId("field-error-items.1.unitPricePaise").textContent).toBe(
+      "এই ঘরের তথ্য ঠিক নেই",
+    );
+    expect(getByTestId("field-error-deliveryChargePaise")).toBeDefined();
+    expect(queryByTestId("field-error-items.0.unitPricePaise")).toBeNull();
+    // The path with no input on this screen is listed at form level.
+    expect(getByTestId("toast").textContent).toBe("কিছু তথ্য ঠিক নেই: contact.phone");
+    // Every typed value is still there, and the draft is kept for the retry.
+    expect((getByTestId("manual-line-price-2") as HTMLInputElement).value).toBe("৬০০");
+    expect((getByTestId("manual-delivery") as HTMLInputElement).value).toBe("60");
+    expect(draft.get().pending?.source).toBe("manual");
+  });
+
+  // NFR9.2 / NFR9.4: focus goes to the first refused input; an error is announced as an alert.
+  test("a refused save focuses the first refused input; error toasts are alerts", async () => {
+    const { getByTestId } = render(
+      <ManualOrder
+        locale="bn"
+        draft={createOrderDraftStore()}
+        onSave={async () => ({
+          ok: false,
+          error: {
+            kind: "invalid_input",
+            fields: [{ path: "items.1.unitPricePaise", message: "x" }],
+          },
+        })}
+      />,
+    );
+    fillTwoLines(getByTestId);
+    await act(async () => {
+      fireEvent.submit(getByTestId("manual-order-form"));
+    });
+    expect(document.activeElement).toBe(getByTestId("manual-line-price-2"));
+    expect(getByTestId("toast").getAttribute("role")).toBe("alert");
+  });
+
+  test("a 503 or unreachable answer is the catalogue message, and nothing is resent", async () => {
+    let calls = 0;
+    const { getByTestId } = render(
+      <ManualOrder
+        locale="bn"
+        draft={createOrderDraftStore()}
+        onSave={async () => {
+          calls += 1;
+          return { ok: false, error: { kind: "db_unavailable" } };
+        }}
+      />,
+    );
+    fillTwoLines(getByTestId);
+    await act(async () => {
+      fireEvent.submit(getByTestId("manual-order-form"));
+    });
+    expect(getByTestId("toast").textContent).toBe(
+      "ডাটাবেস চালু নেই। কিছুক্ষণ পর আবার চেষ্টা করুন।",
+    );
+    expect(calls).toBe(1);
+  });
 });

@@ -1,0 +1,38 @@
+# docker-compose.yml — the live SmartBiz database on this machine (U1 u1-skeleton,
+# infrastructure-specification.md "Infrastructure Services").
+#
+# Start it with the admin variables from .env.migrate (compose reads only .env by itself):
+#   docker compose --env-file .env.migrate up -d
+#
+# - The image is pinned by digest to the postgres:18 image already on this machine, so no
+#   new image is pulled.
+# - The port is published on 127.0.0.1 only (team.md Deployment: nothing on the LAN).
+# - Data lives in the named volume `smartbiz-pgdata`; back it up with pg_dump (README).
+# - db/init/01-roles.sh runs once, on an empty volume: it creates the `smartbiz` database,
+#   the NOLOGIN group role `app_role` and the login `smartbiz_app` (a member of app_role,
+#   never a superuser). Table privileges come only from the numbered migrations (C9).
+name: smartbiz
+
+services:
+  smartbiz-db:
+    image: postgres:18.6@sha256:4ef4dbc939d61acea57712655ddb4b4ab27419c913f94cca0cd57cb3ea3c2280
+    container_name: smartbiz-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env.migrate}
+      SMARTBIZ_APP_PASSWORD: ${SMARTBIZ_APP_PASSWORD:?set SMARTBIZ_APP_PASSWORD in .env.migrate}
+    ports:
+      - "127.0.0.1:${SMARTBIZ_DB_PORT:-5432}:5432"
+    volumes:
+      # postgres:18 keeps its data under /var/lib/postgresql/18/docker; mounting the parent
+      # directory is what the image recommends for 18 and later.
+      - smartbiz-pgdata:/var/lib/postgresql
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d smartbiz"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  smartbiz-pgdata:
