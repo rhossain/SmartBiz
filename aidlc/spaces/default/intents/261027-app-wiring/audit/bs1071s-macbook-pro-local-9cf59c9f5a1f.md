@@ -18231,3 +18231,223 @@
 **Reply**: Approve
 
 ---
+
+## Unit Started
+**Timestamp**: 2026-10-28T18:19:11Z
+**Event**: UNIT_STARTED
+**Stage**: functional-design
+**Unit**: u4-catalog
+**Run floor**: WORKFLOW_STARTED:2026-10-27T06:05:58Z#1
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-10-28T18:21:00Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/functional-design/functional-design-questions.md
+**Context**: construction > u4-catalog > functional-design > functional-design-questions.md
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-10-28T18:21:30Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/functional-design/entities.md
+**Context**: construction > u4-catalog > functional-design > entities.md
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-10-28T18:23:03Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/functional-design/rules.md
+**Context**: construction > u4-catalog > functional-design > rules.md
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-10-28T18:23:45Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/functional-design/functional-spec.md
+**Context**: construction > u4-catalog > functional-design > functional-spec.md
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-10-28T18:24:08Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/functional-design/frontend-components.md
+**Context**: construction > u4-catalog > functional-design > frontend-components.md
+
+---
+
+## Review Requested
+**Timestamp**: 2026-10-28T18:24:40Z
+**Event**: REVIEW_REQUESTED
+**Stage**: functional-design
+**Reviewer**: aidlc-architecture-reviewer-agent
+**Unit**: u4-catalog
+**Iteration**: 1
+**Artifact Fingerprint**: sha256:d9228e20a61d311e98f9e8d3a730f69a7a24afc5058664ca97bb8f542aa950be
+**Request Id**: review:7636cfcfdba0f1b397b75c5e7372c5f2
+**Review File**: .aidlc-engine/reviews/functional-design/units/u4-catalog/2a103725fe9bdc2e/1.7636cfcfdba0f1b397b75c5e7372c5f2.review.md
+
+---
+
+## Reviewer Scope Blocked
+**Timestamp**: 2026-10-28T18:25:27Z
+**Event**: REVIEWER_SCOPE_BLOCKED
+**Tool**: Bash
+**Target**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/
+**Stage**: functional-design
+**Unit**: u4-catalog
+
+---
+
+## Reviewer Scope Blocked
+**Timestamp**: 2026-10-28T18:26:31Z
+**Event**: REVIEWER_SCOPE_BLOCKED
+**Tool**: Bash
+**Target**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/
+**Stage**: functional-design
+**Unit**: u4-catalog
+
+---
+
+## Reviewer Scope Blocked
+**Timestamp**: 2026-10-28T18:26:44Z
+**Event**: REVIEWER_SCOPE_BLOCKED
+**Tool**: Bash
+**Target**: <project-dir>
+**Stage**: functional-design
+**Unit**: u4-catalog
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-28T18:29:11Z
+**Event**: HUMAN_TURN
+**Session**: ad68d581-f655-4d07-81f3-9771a7c9410f
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-28T18:29:16Z
+**Event**: HUMAN_TURN
+**Session**: ad68d581-f655-4d07-81f3-9771a7c9410f
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-10-28T18:29:26Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/reviews/functional-design/units/u4-catalog/2a103725fe9bdc2e/1.7636cfcfdba0f1b397b75c5e7372c5f2.review.md
+**Context**: .aidlc-engine > reviews > functional-design > units > u4-catalog > 2a103725fe9bdc2e > 1.7636cfcfdba0f1b397b75c5e7372c5f2.review.md
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-28T18:29:32Z
+**Event**: HUMAN_TURN
+**Session**: ad68d581-f655-4d07-81f3-9771a7c9410f
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-28T18:29:35Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: aidlc-architecture-reviewer-agent
+**Agent ID**: a1412c680d515add6
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-28T18:29:39Z
+**Event**: HUMAN_TURN
+**Session**: ad68d581-f655-4d07-81f3-9771a7c9410f
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-28T18:29:40Z
+**Event**: HUMAN_TURN
+**Session**: ad68d581-f655-4d07-81f3-9771a7c9410f
+
+---
+
+## Review Completed
+**Timestamp**: 2026-10-28T18:29:49Z
+**Event**: REVIEW_COMPLETED
+**Stage**: functional-design
+**Reviewer**: aidlc-architecture-reviewer-agent
+**Unit**: u4-catalog
+**Iteration**: 1
+**Verdict**: READY
+**Request Fingerprint**: sha256:d9228e20a61d311e98f9e8d3a730f69a7a24afc5058664ca97bb8f542aa950be
+**Artifact Fingerprint**: sha256:d9228e20a61d311e98f9e8d3a730f69a7a24afc5058664ca97bb8f542aa950be
+**Request Id**: review:7636cfcfdba0f1b397b75c5e7372c5f2
+**Review Record**: .aidlc-engine/reviews/functional-design/units/u4-catalog/2a103725fe9bdc2e/1.json
+**Review Record Digest**: sha256:32b8c931ced7bd52ab5f97d32179bc671fbb2740d183f05770ba0b0186b47987
+
+---
+
+## Review Requested
+**Timestamp**: 2026-10-28T18:31:39Z
+**Event**: REVIEW_REQUESTED
+**Stage**: functional-design
+**Reviewer**: aidlc-architecture-reviewer-agent
+**Unit**: u4-catalog
+**Iteration**: 2
+**Recovery**: stale-receipt
+**Recovery Cause**: artifact
+**Artifact Fingerprint**: sha256:d302e1643e6ccdab7ef1614888cc980dd423eb99486a03628d32b2cd89073f92
+**Request Id**: review:142527596f160872afb2f8c823e46dea
+**Review File**: .aidlc-engine/reviews/functional-design/units/u4-catalog/2a103725fe9bdc2e/2.142527596f160872afb2f8c823e46dea.review.md
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-28T18:32:54Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: aidlc-architecture-reviewer-agent
+**Agent ID**: a67e6aaa3ced1cfde
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-28T18:32:54Z
+**Event**: HUMAN_TURN
+**Session**: ad68d581-f655-4d07-81f3-9771a7c9410f
+
+---
+
+## Review Completed
+**Timestamp**: 2026-10-28T18:33:03Z
+**Event**: REVIEW_COMPLETED
+**Stage**: functional-design
+**Reviewer**: aidlc-architecture-reviewer-agent
+**Unit**: u4-catalog
+**Iteration**: 2
+**Verdict**: READY
+**Request Fingerprint**: sha256:d302e1643e6ccdab7ef1614888cc980dd423eb99486a03628d32b2cd89073f92
+**Artifact Fingerprint**: sha256:d302e1643e6ccdab7ef1614888cc980dd423eb99486a03628d32b2cd89073f92
+**Request Id**: review:142527596f160872afb2f8c823e46dea
+**Review Record**: .aidlc-engine/reviews/functional-design/units/u4-catalog/2a103725fe9bdc2e/2.json
+**Review Record Digest**: sha256:920d607a07ced7acf05d4a87414ee01c094b20ddfce38bdd8088e8892ba790d7
+
+---
+
+## Unit Completed
+**Timestamp**: 2026-10-28T18:33:03Z
+**Event**: UNIT_COMPLETED
+**Stage**: functional-design
+**Unit**: u4-catalog
+**Run floor**: WORKFLOW_STARTED:2026-10-27T06:05:58Z#1
+
+---
