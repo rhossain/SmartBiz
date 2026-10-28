@@ -21,9 +21,18 @@
  * adds 20 000 for the business spread over 2 years, 2 000 for a second business and 1 000
  * past retention, runs `ANALYZE audit_log`, and asserts that the `EXPLAIN` plan of both
  * page queries names `audit_log_business_keyset_idx` (migration 0016).
+ * U3 (P15–P17; NFR6.19–NFR6.21): with 20 members and 50 pending invitations seeded,
+ * `GET /api/staff`, `POST /api/staff/invitations`, `POST /api/staff/:userId/reset-links` and
+ * `POST /api/auth/recover` join the timed routes (p95 ≤ 300 ms); 10 accepts and 10 resets with
+ * real tokens are timed one by one (max ≤ 1.5 s, one argon2 hash each); 10 unknown-token
+ * accepts answer 410 with p95 ≤ 50 ms, and the same 10 through the domain function make zero
+ * hash-gate calls (a spy); recover's median for a known and an unknown email over 50 calls
+ * each is printed, report-only (NFR6.21 revised: the structural test is the gate).
  * Prints p50/p95/max per route and one result line; exits 1 when any target is missed.
  */
 import postgres from "postgres";
+import { acceptInvitation } from "../../src/auth/accept-invite.js";
+import { createHashGate, type HashGate } from "../../src/auth/hash-gate.js";
 import { insertSession } from "../../src/auth/session.js";
 import { resetTestClock, setTestClock } from "../../src/data/clock.js";
 import type { Uuid } from "../../src/data/uuid.js";
@@ -39,6 +48,12 @@ import { startServer } from "../../src/server/main.js";
 export const ROUTE_P95_MS = 300;
 export const SESSION_P95_MS = 20;
 export const SIGN_IN_MAX_MS = 1_500;
+/** U3 (NFR6.20, F-01): an unknown token is refused without hashing. */
+export const UNKNOWN_TOKEN_P95_MS = 50;
+const STAFF_MEMBERS = 20;
+const STAFF_INVITATIONS = 50;
+const TOKEN_RUNS = 10;
+const RECOVER_RUNS = 50;
 const WARMUP = 10;
 const SAMPLES = 100;
 const CONCURRENT_CLIENTS = 5;
@@ -251,6 +266,31 @@ const main = async (): Promise<void> => {
     }
     const auditCursor = auditFirst.nextCursor;
 
+    // U3 (P15): 20 members and 50 pending invitations, seeded with the admin login.
+    const members: string[] = [];
+    const seeder = postgres(withDb(ADMIN, dbName), { max: 1, onnotice: () => undefined });
+    try {
+      for (let m = 0; m < STAFF_MEMBERS; m++) {
+        const id = crypto.randomUUID();
+        members.push(id);
+        await seeder`
+          INSERT INTO users (id, business_id, email, password_hash, role, active, locale)
+          VALUES (${id}, ${session.businessId}, ${`member${m}@bench.test`}, 'x',
+                  ${m % 2 === 0 ? "sales_staff" : "accountant"}, true, 'bn')
+        `;
+      }
+      for (let n = 0; n < STAFF_INVITATIONS; n++) {
+        await seeder`
+          INSERT INTO invitations (id, business_id, email, role, accept_token_hash, expires_at, created_by)
+          VALUES (gen_random_uuid(), ${session.businessId}, ${`pending${n}@bench.test`}, 'accountant',
+                  ${`bench-hash-${n}`}, now() + interval '7 days', ${session.user.id})
+        `;
+      }
+    } finally {
+      await seeder.end({ timeout: 5 });
+    }
+    const resetTarget = members[0] ?? "";
+
     let k = 0;
     const timed: Array<{ route: string; make: (i: number) => Promise<Response> }> = [
       { route: "GET /api/health", make: () => fetch(`${base}/api/health`) },
@@ -320,6 +360,40 @@ const main = async (): Promise<void> => {
             method: "POST",
             headers: { ...write, Cookie: cookie },
             body: JSON.stringify({ consignmentRef: `PT-${1000 + i}` }),
+          }),
+      },
+      // U3 (P15; NFR6.19): the staff routes and recover.
+      {
+        route: "GET /api/staff",
+        make: () => fetch(`${base}/api/staff`, { headers: { Cookie: cookie } }),
+      },
+      {
+        route: "POST /api/staff/invitations",
+        make: (i) =>
+          fetch(`${base}/api/staff/invitations`, {
+            method: "POST",
+            headers: { ...write, Cookie: cookie },
+            body: JSON.stringify({ email: `timed${i}@bench.test`, role: "sales_staff" }),
+          }),
+      },
+      {
+        route: "POST /api/staff/:userId/reset-links",
+        make: () =>
+          fetch(`${base}/api/staff/${resetTarget}/reset-links`, {
+            method: "POST",
+            headers: { ...write, Cookie: cookie },
+            body: "{}",
+          }),
+      },
+      {
+        route: "POST /api/auth/recover",
+        make: (i) =>
+          fetch(`${base}/api/auth/recover`, {
+            method: "POST",
+            headers: write,
+            body: JSON.stringify({
+              email: i % 2 === 0 ? "owner@bench.test" : `nobody${i}@bench.test`,
+            }),
           }),
       },
       {
@@ -413,6 +487,101 @@ const main = async (): Promise<void> => {
     if (signInMax > SIGN_IN_MAX_MS)
       misses.push(`sign-in max ${signInMax.toFixed(0)} ms > ${SIGN_IN_MAX_MS} ms`);
     if (signUpMs > SIGN_IN_MAX_MS) misses.push(`sign-up ${signUpMs} ms > ${SIGN_IN_MAX_MS} ms`);
+
+    // U3 (P16; NFR6.20): 10 accepts and 10 resets with real tokens, one argon2 hash each.
+    const tokenOf = async (r: Response): Promise<string> => {
+      const link = ((await r.json()) as { link: string }).link;
+      return /[?&]t=([A-Za-z0-9_-]{43})$/.exec(link)?.[1] ?? "";
+    };
+    const timeOne = async (path: string, body: unknown, want: number): Promise<number> => {
+      const started = performance.now();
+      const r = await fetch(`${base}${path}`, {
+        method: "POST",
+        headers: write,
+        body: JSON.stringify(body),
+      });
+      await r.arrayBuffer();
+      if (r.status !== want) throw new Error(`${path} answered ${r.status}`);
+      return performance.now() - started;
+    };
+    const accepts: number[] = [];
+    const resets: number[] = [];
+    for (let i = 0; i < TOKEN_RUNS; i++) {
+      const invited = await fetch(`${base}/api/staff/invitations`, {
+        method: "POST",
+        headers: { ...write, Cookie: cookie },
+        body: JSON.stringify({ email: `accept${i}@bench.test`, role: "accountant" }),
+      });
+      const t = await tokenOf(invited);
+      accepts.push(
+        await timeOne("/api/invitations/accept", { token: t, password: "correct-horse-7" }, 201),
+      );
+      const linked = await fetch(`${base}/api/staff/${members[1] ?? ""}/reset-links`, {
+        method: "POST",
+        headers: { ...write, Cookie: cookie },
+        body: "{}",
+      });
+      const r = await tokenOf(linked);
+      resets.push(await timeOne("/api/auth/reset", { token: r, password: "correct-horse-8" }, 204));
+    }
+    const acceptMax = Math.max(...accepts);
+    const resetMax = Math.max(...resets);
+    say(
+      `POST /api/invitations/accept | max of ${TOKEN_RUNS}: ${acceptMax.toFixed(0)} ms; POST /api/auth/reset | max of ${TOKEN_RUNS}: ${resetMax.toFixed(0)} ms`,
+    );
+    if (acceptMax > SIGN_IN_MAX_MS)
+      misses.push(`accept max ${acceptMax.toFixed(0)} ms > ${SIGN_IN_MAX_MS} ms`);
+    if (resetMax > SIGN_IN_MAX_MS)
+      misses.push(`reset max ${resetMax.toFixed(0)} ms > ${SIGN_IN_MAX_MS} ms`);
+
+    // U3 (F-01; NFR6.20): unknown tokens are refused fast and without any hashing.
+    const unknown: number[] = [];
+    for (let i = 0; i < TOKEN_RUNS; i++) {
+      const fake = `UnknownBenchToken${String(i).padStart(2, "0")}`.padEnd(43, "x");
+      unknown.push(
+        await timeOne("/api/invitations/accept", { token: fake, password: "correct-horse-7" }, 410),
+      );
+    }
+    const unknownP95 = percentile(unknown, 95);
+    let gateCalls = 0;
+    const inner = createHashGate();
+    const spy: HashGate = {
+      run: (work) => {
+        gateCalls += 1;
+        return inner.run(work);
+      },
+      inFlight: inner.inFlight,
+      waiting: inner.waiting,
+    };
+    for (let i = 0; i < TOKEN_RUNS; i++) {
+      const fake = `UnknownBenchToken${String(i).padStart(2, "0")}`.padEnd(43, "x");
+      const r = await acceptInvitation(
+        seedSql,
+        { token: fake, password: "correct-horse-7", presentedToken: null, now: new Date() },
+        { hashGate: spy },
+      );
+      if (r.ok || r.error.kind !== "gone") throw new Error("an unknown token was not gone");
+    }
+    say(
+      `unknown token | p95 of ${TOKEN_RUNS}: ${unknownP95.toFixed(1)} ms over HTTP; hash-gate calls: ${gateCalls}`,
+    );
+    if (unknownP95 > UNKNOWN_TOKEN_P95_MS)
+      misses.push(`unknown token p95 ${unknownP95.toFixed(1)} ms > ${UNKNOWN_TOKEN_P95_MS} ms`);
+    if (gateCalls !== 0) misses.push(`an unknown token reached the hash gate ${gateCalls} times`);
+
+    // U3 (P17; NFR6.21 revised): recover timing parity, printed only.
+    const recoverMs = async (email: (i: number) => string): Promise<number[]> => {
+      const out: number[] = [];
+      for (let i = 0; i < RECOVER_RUNS; i++)
+        out.push(await timeOne("/api/auth/recover", { email: email(i) }, 202));
+      return out;
+    };
+    const known = percentile(await recoverMs(() => "owner@bench.test"), 50);
+    const unknownEmail = percentile(await recoverMs((i) => `nobody${i}@bench.test`), 50);
+    say(
+      `POST /api/auth/recover | median known ${known.toFixed(1)} ms, unknown ${unknownEmail.toFixed(1)} ms, difference ${Math.abs(known - unknownEmail).toFixed(1)} ms (report-only)`,
+    );
+
     if (misses.length > 0) {
       process.stderr.write(`bench FAILED: ${misses.join("; ")}\n`);
       process.exitCode = 1;

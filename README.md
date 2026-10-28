@@ -40,9 +40,35 @@ decision.
 | `bun run test` | unit + integration suites (in-memory SQL stub that fails closed) |
 | `bun run check:coverage` | 80 % line floor over every `src` file |
 | `bun run gate` | the full local gate run — the merge evidence (see below) |
-| `bun run smoke` | post-merge check of the running server (build SHA, health, sign-in, orders, sign-out) |
+| `bun run smoke` | post-merge check of the running server (build SHA, health, sign-in, orders, staff list, sign-out) |
 | `bun run migrate` | apply migrations with `.env.migrate` (idempotent) |
 | `bun run logs:summary` | requests, statuses and p95 per route from today's log |
+| `bun run reset-password <email>` | print a 30-minute password-reset link for any active user (see below) |
+
+## Staff, invitations and lost passwords
+
+No email is sent, ever. On **কর্মী** (`/staff`) the Owner invites a Manager, Sales Staff member
+or Accountant, and a Manager invites Sales Staff or Accountants; the app shows the invitation
+link **once** — copy it and hand it to the person yourself. It works for 7 days and only once;
+inviting the same email again replaces it. The same screen creates a 30-minute reset link for
+a staff member who forgot their password (never for the Owner, never for yourself; a Manager
+only for Sales Staff and Accountants). A new reset link closes the person's older ones, and
+completing a reset signs that person out everywhere.
+
+Links point at `http://127.0.0.1:<PORT>`, so **they work on this computer only** until reaching
+the server from other devices is decided.
+
+The Owner's own way back in is the terminal on this machine:
+
+```bash
+bun run reset-password owner@example.com
+```
+
+It reads `DATABASE_URL` and `PORT` from `.env` (the app login, never the admin URL — it refuses
+to run when `MIGRATE_DATABASE_URL` is set), prints exactly one line, the link, and exits 0. An
+unknown or inactive email prints `no active account for that email` and exits 1 without writing
+anything. `/recover` in the browser only tells people to ask the Owner or this terminal for a
+link; it looks nothing up.
 
 ## The gate (before every merge to `main`)
 
@@ -103,12 +129,26 @@ docker compose --env-file .env.migrate exec -T smartbiz-db psql -U postgres -d s
   "DROP INDEX IF EXISTS invitations_accept_token_hash_idx, password_resets_token_hash_idx; DELETE FROM _migrations WHERE id = '0017_unique_token_hashes.sql';"
 ```
 
+## Merging Bolt 1 (`app-wiring`: U1, U2, U3)
+
+1. Take and verify the `pg_dump` of the live database (Backup and restore, above).
+2. `bun run gate --large` — green, with `browser: ok` in the result line.
+3. Squash-merge `app-wiring` into `main`, with the gate's result line in the commit body.
+4. `bun run migrate` — applies 0011–0017 to the live database.
+5. `bun run start`, then `bun run smoke` (it now also checks the staff list).
+
 ## Rollback
 
 - **Code defect, schema fine:** `git revert <squash commit>` on `main`, push, `bun run start`
   (it rebuilds because `BUILD_SHA` no longer matches HEAD), then `bun run smoke`.
 - **A migration broke the live database:** restore the pre-merge dump (above), check out the
   previous `main` commit, `bun run start`.
+- **The whole of Bolt 1:** stop the server, restore the pre-merge dump, `git revert` the squash
+  commit, `bun run start`. A code revert alone leaves migrations 0011–0017 applied; they are
+  additive or guarded, and older code works with them.
+- **A leaked invitation or reset link:** invite the same email again (the old link stops
+  working), or create a new reset link for the person (it closes the old one); otherwise a reset
+  link dies after 30 minutes.
 - Migration 0012 replaces the session store: everyone signs in again once. That is expected.
 
 ## Layout
@@ -117,7 +157,8 @@ docker compose --env-file .env.migrate exec -T smartbiz-db psql -U postgres -d s
 src/
   server/   bun HTTP entry, request pipeline, route table, handlers, cookies, headers
   client/   browser HTTP client, auth and orders APIs, session and orders stores
-  auth/     sign-up, sign-in, sign-out, sessions, attempt limiter, hash gate, role gate
+  auth/     sign-up, sign-in, sign-out, sessions, attempt limiter, hash gate, role gate,
+            invitations, reset links, one-time tokens, delegation matrix
   orders/   order domain functions, paste parser, status machine, order screens
   router/   the App, typed route map, hash router, three-layer gate dispatch
   pres/     Shell and presentation primitives

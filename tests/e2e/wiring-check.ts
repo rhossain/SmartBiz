@@ -25,6 +25,12 @@
  *     (`/`, `/sign-in`, `/sign-up`) send a signed-in Owner on to the orders list;
  *   - one `GET /api/audit` as the Owner is read for the C1 headers, `Cache-Control:
  *     no-store` and `X-Correlation-Id` included.
+ * U3 (NFR8.19, O18; NFR4.3, NFR3.20): step 5 fills `:userId` with the Sales Staff member;
+ * then, over HTTP, the Owner invites a Sales Staff member (201 with the link, `no-store`), the
+ * invitee accepts (201, signed in as sales_staff), the Owner creates a reset link for them,
+ * they reset their password (204), and their old cookie then answers 401; the four audit rows
+ * exist and none of their payloads holds an `@`. Step 7 renders `/staff` and the token
+ * screens through the role table's screen rows.
  * The child server and the database are always removed. One result line; exit 1 on failure.
  */
 import postgres from "postgres";
@@ -216,9 +222,11 @@ const main = async (): Promise<void> => {
     const [biz] = await admin<{ id: string }[]>`SELECT id FROM businesses LIMIT 1`;
     const hash = await hashPassword("role-password-1");
     const tokens: Partial<Record<Role, string>> = { owner };
+    const ids: Partial<Record<Role, string>> = {};
     for (const role of ["manager", "sales_staff", "accountant"] as const) {
+      ids[role] = crypto.randomUUID();
       await admin`INSERT INTO users (id, business_id, email, password_hash, role, active, locale)
-        VALUES (${crypto.randomUUID()}, ${biz?.id ?? ""}, ${`${role}@wiring.test`}, ${hash}, ${role}, true, 'bn')`;
+        VALUES (${ids[role] ?? ""}, ${biz?.id ?? ""}, ${`${role}@wiring.test`}, ${hash}, ${role}, true, 'bn')`;
       const r = await call("POST", "/api/auth/sign-in", {
         body: { email: `${role}@wiring.test`, password: "role-password-1" },
       });
@@ -234,10 +242,9 @@ const main = async (): Promise<void> => {
       const row = API_ROWS.find((r) => apiKey(r) === routeKey(route));
       if (row === undefined || row.allowed === "public") continue;
       for (const role of ALL) {
-        const r = await call(route.method, route.path.replace(":id", order.id), {
-          cookie: tokens[role] ?? "",
-          body: {},
-        });
+        // U3: `:userId` is the Sales Staff member, whom the Owner and a Manager may reset.
+        const path = route.path.replace(":id", order.id).replace(":userId", ids.sales_staff ?? "");
+        const r = await call(route.method, path, { cookie: tokens[role] ?? "", body: {} });
         const allowed = isAllowed(row.allowed, role);
         check(
           allowed ? r.status !== 401 && r.status !== 403 : r.status === 403,
@@ -266,7 +273,8 @@ const main = async (): Promise<void> => {
     );
 
     // U2 (NFR4.2): the audit read carries the C1 headers like every API answer.
-    const audit = await call("GET", "/api/audit?limit=5", { cookie: owner });
+    // U3: the role walk now also writes reset-link rows, so read a full page, not five.
+    const audit = await call("GET", "/api/audit?limit=50", { cookie: owner });
     check(audit.status === 200, `GET /api/audit answered ${audit.status}`);
     check(audit.headers.get("cache-control") === "no-store", "audit answer is cacheable");
     check(
@@ -279,6 +287,67 @@ const main = async (): Promise<void> => {
       "the audit trail does not show the order",
     );
     facts.push("audit read with C1 headers");
+
+    // U3 (NFR8.19): invite → accept (signed in) → reset link → reset → the old cookie is dead.
+    const tokenIn = (link: string): string => /[?&]t=([A-Za-z0-9_-]{43})$/.exec(link)?.[1] ?? "";
+    const invited = await call("POST", "/api/staff/invitations", {
+      cookie: owner,
+      body: { email: "New.Staff@Wiring.test", role: "sales_staff" },
+    });
+    check(invited.status === 201, `invite answered ${invited.status}`);
+    check(invited.headers.get("cache-control") === "no-store", "the invitation link is cacheable");
+    const inviteLink = ((await invited.json()) as { link: string }).link;
+    check(
+      inviteLink.startsWith(`${base}/#/accept-invite?t=`) && tokenIn(inviteLink) !== "",
+      "the invitation link is not a link to this server",
+    );
+    const accepted = await call("POST", "/api/invitations/accept", {
+      body: { token: tokenIn(inviteLink), password: "staff-password-1" },
+    });
+    check(accepted.status === 201, `accept answered ${accepted.status}`);
+    const staffUser = (await accepted.json()) as { id: string; email: string; role: string };
+    check(
+      staffUser.email === "new.staff@wiring.test" && staffUser.role === "sales_staff",
+      `accept made ${staffUser.email} ${staffUser.role}`,
+    );
+    const staffCookie = cookieOf(accepted);
+    const staffSession = await call("GET", "/api/session", { cookie: staffCookie });
+    check(staffSession.status === 200, "the invitee is not signed in after accepting");
+    const linked = await call("POST", `/api/staff/${staffUser.id}/reset-links`, {
+      cookie: owner,
+      body: {},
+    });
+    check(linked.status === 201, `reset link answered ${linked.status}`);
+    check(linked.headers.get("cache-control") === "no-store", "the reset link is cacheable");
+    const resetLink = ((await linked.json()) as { link: string }).link;
+    const reset = await call("POST", "/api/auth/reset", {
+      body: { token: tokenIn(resetLink), password: "staff-password-2" },
+    });
+    check(reset.status === 204, `reset answered ${reset.status}`);
+    check(
+      (await call("GET", "/api/session", { cookie: staffCookie })).status === 401,
+      "the staff member's old cookie still works after the reset",
+    );
+    const staffAudit = await admin<{ action: string; payload: string }[]>`
+      SELECT action, payload::text AS payload FROM audit_log
+      WHERE action IN ('auth.invite_created', 'auth.invite_accepted', 'auth.reset_link_created',
+                       'auth.password_reset')
+      ORDER BY occurred_at
+    `;
+    // The role walk above wrote reset-link rows of its own first; this flow's four come last.
+    check(
+      staffAudit
+        .slice(-4)
+        .map((a) => a.action)
+        .join(",") ===
+        "auth.invite_created,auth.invite_accepted,auth.reset_link_created,auth.password_reset",
+      `staff audit rows: ${staffAudit.map((a) => a.action).join(",")}`,
+    );
+    check(
+      staffAudit.every((a) => !a.payload.includes("@")),
+      "a staff audit payload holds an email",
+    );
+    facts.push("invite → accept → reset link → reset → old cookie 401; audit without email");
 
     // 7. the real App in happy-dom against the real server, as the Owner.
     const rendered = await renderAllRoutes(base, order.id, order.orderNo);

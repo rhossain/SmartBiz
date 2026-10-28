@@ -18,7 +18,8 @@
  *   4. NFR6.14 / BR10.1: 5 cold loads of `/`, each in a fresh browser context with the cache
  *      off, polling `performance.timing.loadEventEnd` until it is above 0 (10 s per load);
  *      the median of `loadEventEnd − navigationStart` must be ≤ 2 000 ms;
- *   5. NFR9.6 / BR9.1: at 360 × 740 (scale 1), sign-in and not-found with no session, then
+ *   5. NFR9.6 / BR9.1: at 360 × 740 (scale 1), sign-in and not-found with no session (U3, NFR9.10:
+ *      and `/accept-invite`, `/reset`, `/recover`), then
  *      sign-in through the real form (`Input.insertText`, Enter), then every screen row of
  *      tests/spec/role-table.ts the Owner may open; on each it waits up to 5 s for the row's
  *      heading and asserts `scrollWidth <= clientWidth`.
@@ -309,6 +310,13 @@ const screenWalk = async (
     const notFound = byPath("/not-found");
     await visit(cdp, page, "/nowhere", notFound, notFound.heading);
     screens += 2;
+    // U3 (NFR9.10): the public token and recovery screens at 360 px, signed out. `/staff` is
+    // walked below with the Owner's other rows.
+    for (const path of ["/accept-invite", "/reset", "/recover"]) {
+      const row = byPath(path);
+      await visit(cdp, page, path, row, row.heading);
+      screens += 1;
+    }
     await evaluate(cdp, page, `location.hash = "/sign-in"; true`);
     await waitUntil(
       cdp,

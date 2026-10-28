@@ -181,13 +181,13 @@ is implemented, together with the full existing suite, before the next layer sta
 
 ### Step 13 — Environment / build configuration (S25, NFR3.25, NFR7.20, NFR8.19, NFR6.19–NFR6.21; I-03, I-04)
 
-- [ ] `scripts/reset-password.ts`: refuse with `MIGRATE_DATABASE_URL` set or `DATABASE_URL` missing (exit 1, naming it); role check; `createResetLink` with `by: null`, `via: "terminal"`; one stdout line; unknown or inactive → stderr, exit 1, nothing written.
-- [ ] `tests/realdb/reset-password-script.realdb.test.ts`: stdout one line; audit row; admin-only URL → exit 1. URLs come from the realdb env or a password-less placeholder (I-03).
-- [ ] `tests/e2e/wiring-check.ts`: invite Sales Staff, accept (signed in), Owner reset link, reset, old staff cookie → 401, audit rows without email (NFR8.19).
-- [ ] `scripts/smoke.ts`: `GET /api/staff` as the Owner → 200, with its test (I-04).
-- [ ] `scripts/browser-check.ts`: `/staff` in the 360 px walk (via the role table).
-- [ ] `tests/perf/order-api.bench.ts`: staff routes and recover p95 ≤ 300 ms; accept and reset max of 10 ≤ 1.5 s; unknown-token gate-spy count 0; recover median difference printed.
-- [ ] README: `bun run reset-password <email>`, the links-on-this-machine note, the Bolt 1 merge steps (dump, `gate --large`, squash, migrate, start, smoke) and the whole-Bolt rollback (I-05).
+- [x] `scripts/reset-password.ts`: refuse with `MIGRATE_DATABASE_URL` set or `DATABASE_URL` missing (exit 1, naming it); role check; `createResetLink` with `by: null`, `via: "terminal"`; one stdout line; unknown or inactive → stderr, exit 1, nothing written.
+- [x] `tests/realdb/reset-password-script.realdb.test.ts`: stdout one line; audit row; admin-only URL → exit 1. URLs come from the realdb env or a password-less placeholder (I-03).
+- [x] `tests/e2e/wiring-check.ts`: invite Sales Staff, accept (signed in), Owner reset link, reset, old staff cookie → 401, audit rows without email (NFR8.19).
+- [x] `scripts/smoke.ts`: `GET /api/staff` as the Owner → 200, with its test (I-04).
+- [x] `scripts/browser-check.ts`: `/staff` in the 360 px walk (via the role table).
+- [x] `tests/perf/order-api.bench.ts`: staff routes and recover p95 ≤ 300 ms; accept and reset max of 10 ≤ 1.5 s; unknown-token gate-spy count 0; recover median difference printed.
+- [x] README: `bun run reset-password <email>`, the links-on-this-machine note, the Bolt 1 merge steps (dump, `gate --large`, squash, migrate, start, smoke) and the whole-Bolt rollback (I-05).
 - [ ] Run `bun run gate` end to end and record its result line.
 
 ### Step 14 — Documentation and traceability
