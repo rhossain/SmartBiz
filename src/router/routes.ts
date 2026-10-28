@@ -23,9 +23,17 @@
  * not-available screen for their real screens, rendered through the token containers
  * (src/router/render-token-routes.tsx), and `/staff` is new, open to `staff.invite` (Owner,
  * Manager) with the feature name "কর্মী", through its container
- * (src/router/render-staff-route.tsx). U4 adds the catalog routes (AC5.1.4, units R-02).
+ * (src/router/render-staff-route.tsx). U4 adds the ten catalog routes (AC5.1.4, units R-02;
+ * BR13.1): reads open to `business.view`, the customer new/edit screens to the customer-write
+ * set, the product new/edit screens to `money.mutate.full`, from the same constants the
+ * server's catalog routes use (src/catalog/catalog-capability.ts, S26).
  */
 import { renderAuditTrail } from "../audit/screens/AuditTrail.js";
+import { CATALOG_MANAGE, CATALOG_READ, CUSTOMER_WRITE } from "../catalog/catalog-capability.js";
+import {
+  renderCatalogScreen,
+  type CatalogScreen,
+} from "../catalog/screens/render-catalog-route.js";
 import { renderDailyCard } from "../daily-card/screens/DailyCard.js";
 import { ORDER_MUTATE_CAPABILITIES, ORDER_READ_CAPABILITY } from "../orders/order-capability.js";
 import { renderOrdersScreen } from "../orders/screens/render-orders-route.js";
@@ -49,6 +57,11 @@ const repeatFromPast = (state: unknown): unknown => renderOrdersScreen("repeat",
 const orderDetail = (state: unknown): unknown => renderOrdersScreen("detail", state);
 
 const route = (r: Route): readonly [RoutePath, Route] => [r.path, r];
+
+const catalogScreen =
+  (screen: CatalogScreen) =>
+  (state: unknown): unknown =>
+    renderCatalogScreen(screen, state);
 
 export const routes: ReadonlyMap<RoutePath, Route> = new Map<RoutePath, Route>([
   route({ path: "/", requiredCapability: null, feature: "feature.home", render: renderEntry }),
@@ -117,6 +130,69 @@ export const routes: ReadonlyMap<RoutePath, Route> = new Map<RoutePath, Route>([
     requiredCapability: ORDER_MUTATE_CAPABILITIES,
     feature: "feature.order_transition",
     render: orderDetail,
+  }),
+  // U4 (BR13.1, S26; Q14): the catalog. Every role reads; the new and edit screens of
+  // customers need the customer-write set, those of products `money.mutate.full`. Each
+  // renders through src/catalog/screens/render-catalog-route.tsx.
+  route({
+    path: "/customers",
+    requiredCapability: CATALOG_READ,
+    feature: "feature.customers",
+    render: catalogScreen("customers"),
+  }),
+  route({
+    path: "/customers/new",
+    requiredCapability: CUSTOMER_WRITE,
+    feature: "feature.customer_new",
+    render: catalogScreen("customer-new"),
+  }),
+  route({
+    path: "/customers/:id",
+    requiredCapability: CATALOG_READ,
+    feature: "feature.customers",
+    render: catalogScreen("customer"),
+  }),
+  route({
+    path: "/customers/:id/edit",
+    requiredCapability: CUSTOMER_WRITE,
+    feature: "feature.customer_edit",
+    render: catalogScreen("customer-edit"),
+  }),
+  route({
+    path: "/products",
+    requiredCapability: CATALOG_READ,
+    feature: "feature.products",
+    render: catalogScreen("products"),
+  }),
+  route({
+    path: "/products/new",
+    requiredCapability: CATALOG_MANAGE,
+    feature: "feature.product_new",
+    render: catalogScreen("product-new"),
+  }),
+  route({
+    path: "/products/:id",
+    requiredCapability: CATALOG_READ,
+    feature: "feature.products",
+    render: catalogScreen("product"),
+  }),
+  route({
+    path: "/products/:id/edit",
+    requiredCapability: CATALOG_MANAGE,
+    feature: "feature.product_edit",
+    render: catalogScreen("product-edit"),
+  }),
+  route({
+    path: "/low-stock",
+    requiredCapability: CATALOG_READ,
+    feature: "feature.low_stock",
+    render: catalogScreen("low-stock"),
+  }),
+  route({
+    path: "/suppliers",
+    requiredCapability: CATALOG_READ,
+    feature: "feature.suppliers",
+    render: catalogScreen("suppliers"),
   }),
   route({
     path: "/daily-card",

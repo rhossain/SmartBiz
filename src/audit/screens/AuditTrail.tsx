@@ -16,6 +16,10 @@
  * - The wide table scrolls inside its own `.scroll-x` box, never the page (BR9.1).
  * - U3 (O15): the four staff actions have Bangla labels in the catalogue, and a reset link
  *   issued from the terminal shows "টার্মিনাল" as its actor (`actorLabel`).
+ * - U4 (O8, NFR8.20): the nine catalog actions have labels in the catalogue (mapped
+ *   exhaustively by src/catalog/catalog-audit.ts), and the four catalog subject kinds —
+ *   customer, supplier, product, variant — show their own labels (`subjectLabel`); any other
+ *   kind shows as stored.
  * A feature screen: data and callbacks arrive as props (BR7.4); the HTTP call is App's
  * (src/client/audit-api.ts), imported here only as a type.
  */
@@ -61,6 +65,13 @@ export const shownTime = (iso: string, locale: Locale): string => {
 
 const shortId = (id: string | null): string => (id === null ? "" : id.slice(0, 8));
 
+/** U4 (O8): the subject kind's label when the catalogue has one, else the raw kind. */
+export const subjectLabel = (kind: string | null, locale: Locale): string => {
+  if (kind === null) return "";
+  const key = `audit.subject.${kind}`;
+  return hasKey(key) ? lookup(key as LKey, locale) : kind;
+};
+
 /**
  * Who did it: the actor's email, else "সিস্টেম". U3 (O15, NFR8.16): a reset link with no actor
  * was issued by the terminal command on this machine — staff links always name their actor
@@ -81,7 +92,7 @@ const Row = ({ entry, locale }: { entry: AuditEntryResponse; locale: Locale }) =
     <td data-testid="audit-time">{shownTime(entry.occurredAt, locale)}</td>
     <td data-testid="audit-actor">{actorLabel(entry, locale)}</td>
     <td data-testid="audit-subject">
-      {entry.subjectKind ?? ""} {shortId(entry.subjectId)}
+      {subjectLabel(entry.subjectKind, locale)} {shortId(entry.subjectId)}
     </td>
     <td data-testid="audit-correlation" className="mono">
       {entry.correlationId}

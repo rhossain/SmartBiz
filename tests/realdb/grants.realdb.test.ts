@@ -64,6 +64,24 @@ describe.skipIf(!realdbEnabled)("app_role grants on real Postgres", () => {
     expect(await sqlState(() => db.app`DELETE FROM orders`)).toBe("42501");
   });
 
+  // U4 (BR12.2, NFR2.6, AC3.2.3): no DELETE on any catalog table; notes are insert-only.
+  test("as the app login: the catalog refuses DELETE, and customer_notes refuses UPDATE", async () => {
+    for (const table of ["customers", "customer_notes", "products", "variants", "suppliers"]) {
+      expect({ table, state: await sqlState(() => db.app.unsafe(`DELETE FROM ${table}`)) }).toEqual(
+        { table, state: "42501" },
+      );
+      expect({
+        table,
+        state: await sqlState(() => db.app.unsafe(`TRUNCATE ${table}`)),
+      }).toEqual({ table, state: "42501" });
+    }
+    expect(await sqlState(() => db.app`UPDATE customer_notes SET text = 'x'`)).toBe("42501");
+    // UPDATE stays allowed where it is declared (an edit of no rows succeeds).
+    expect(await sqlState(() => db.app`UPDATE customers SET name = name WHERE false`)).toBe(
+      "allowed",
+    );
+  });
+
   test("as the app login: DELETE on sessions is allowed (sign-out)", async () => {
     expect(await sqlState(() => db.app`DELETE FROM sessions WHERE token_hash = 'none'`)).toBe(
       "allowed",

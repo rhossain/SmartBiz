@@ -18,6 +18,7 @@ import {
   signOutRoute,
   signUpRoute,
 } from "./handlers/auth.js";
+import { catalogRoutes } from "./handlers/catalog.js";
 import { healthRoute } from "./handlers/health.js";
 import { orderRoutes } from "./handlers/orders.js";
 import { sessionRoute } from "./handlers/session.js";
@@ -40,6 +41,8 @@ export const routes: ReadonlyArray<RouteDef> = [
   acceptInviteRoute,
   recoverRoute,
   resetRoute,
+  // U4 (C7; S26): the catalog routes, none public; access from src/catalog/catalog-capability.ts.
+  ...catalogRoutes,
 ];
 
 /**

@@ -27,7 +27,21 @@ import {
   SetupResponseSchema,
   StaffListResponseSchema,
 } from "../../src/auth/schemas.js";
+import {
+  CustomerDetailResponseSchema,
+  CustomerListResponseSchema,
+  CustomerWriteResponseSchema,
+  LowStockResponseSchema,
+  NoteWriteResponseSchema,
+  ProductListResponseSchema,
+  ProductSchema,
+  ProductWriteResponseSchema,
+  SupplierListResponseSchema,
+  SupplierWriteResponseSchema,
+  VariantWriteResponseSchema,
+} from "../../src/catalog/schemas.js";
 import { OrderResponseSchema, OrdersPageResponseSchema } from "../../src/orders/schemas.js";
+import { CATALOG_IDS } from "../helpers/catalog-fixtures.js";
 import { FIXTURE_ORDER_NO, type Role } from "./role-table.js";
 
 export const FIXTURE_BUSINESS_ID = "a0000000-0000-4000-8000-00000000000a";
@@ -185,6 +199,83 @@ export const RESET_LINK_BODY = {
   expiresAt: "2026-10-27T09:00:00.000Z",
 };
 
+/*
+ * U4 (C7 with D1–D13; functional-spec §3a). Restated by hand: the seeded catalog rows of
+ * tests/helpers/catalog-fixtures.ts as the Owner sees them (cost present), and one request
+ * per write that the domain accepts. The recorded product create uses its own SKU; the server
+ * walk gives each inside probe a fresh one (a SKU is unique per business).
+ */
+const SUPPLIER = {
+  id: CATALOG_IDS.supplier,
+  name: "রহিম ট্রেডার্স",
+  phone: "01711000000",
+  productCount: 1,
+  createdAt: AT,
+  updatedAt: AT,
+};
+const CUSTOMER = {
+  id: CATALOG_IDS.customer,
+  name: "রিনা আক্তার",
+  phone: "01712345678",
+  address: null,
+  riskLevel: 1,
+  createdAt: AT,
+  updatedAt: AT,
+};
+const { updatedAt: _customerUpdated, ...CUSTOMER_ROW } = CUSTOMER;
+const NOTE = {
+  id: CATALOG_IDS.note,
+  text: "ভালো ক্রেতা",
+  revisesNoteId: null,
+  createdAt: AT,
+  authorName: "owner@acme.test",
+};
+const VARIANTS = [
+  {
+    id: CATALOG_IDS.variant,
+    axisValues: ["M"],
+    skuSuffix: "M",
+    fullSku: "KURTI-SEED-M",
+    stock: 1,
+    minimumStock: 3,
+    low: true,
+  },
+  {
+    id: CATALOG_IDS.variant2,
+    axisValues: ["L"],
+    skuSuffix: "L",
+    fullSku: "KURTI-SEED-L",
+    stock: 9,
+    minimumStock: 3,
+    low: false,
+  },
+];
+export const PRODUCT_BODY = {
+  id: CATALOG_IDS.product,
+  name: "সুতির কুর্তি",
+  sku: "KURTI-SEED",
+  category: null,
+  sellingPricePaise: 120_000,
+  purchaseCostPaise: 80_000,
+  axes: [{ name: "সাইজ", values: ["M", "L"] }],
+  variants: VARIANTS,
+  defaultSupplier: { id: SUPPLIER.id, name: SUPPLIER.name, phone: SUPPLIER.phone },
+  createdAt: AT,
+  updatedAt: AT,
+};
+export const PRODUCT_REQUEST = {
+  name: "লেডিস স্যান্ডেল",
+  sku: "WALK-SANDAL",
+  sellingPricePaise: 90_000,
+  purchaseCostPaise: 60_000,
+  axes: [{ name: "সাইজ", values: ["36", "37"] }],
+  variants: [
+    { axisValues: ["36"], stock: 4, minimumStock: 2 },
+    { axisValues: ["37"], stock: 1, minimumStock: 2 },
+  ],
+};
+const CUSTOMER_REQUEST = { name: "নতুন ক্রেতা", phone: "০১৮১২৩৪৫৬৭৮", riskLevel: 0 };
+
 export const SIGN_UP_REQUEST = {
   businessName: "Acme",
   email: "owner@acme.test",
@@ -304,6 +395,129 @@ export const API_FIXTURES: Readonly<Record<string, ApiFixture>> = {
     schema: null,
     request: TOKEN_REQUEST,
     badRequest: { token: UNISSUED_TOKEN },
+  },
+  // U4 catalog (C7).
+  "GET /api/customers": {
+    status: 200,
+    body: { customers: [CUSTOMER_ROW], nextCursor: null, total: 1 },
+    schema: CustomerListResponseSchema,
+    badQuery: "limit=0",
+  },
+  "POST /api/customers": {
+    status: 201,
+    body: { customer: CUSTOMER, duplicatePhoneOf: null },
+    schema: CustomerWriteResponseSchema,
+    request: CUSTOMER_REQUEST,
+    badRequest: { name: "নতুন ক্রেতা" },
+  },
+  "GET /api/customers/:id": {
+    status: 200,
+    body: { ...CUSTOMER, notes: [NOTE], notesTruncated: false },
+    schema: CustomerDetailResponseSchema,
+  },
+  "PATCH /api/customers/:id": {
+    status: 200,
+    body: { customer: CUSTOMER, duplicatePhoneOf: null },
+    schema: CustomerWriteResponseSchema,
+    request: { riskLevel: 2 },
+    badRequest: {},
+  },
+  "POST /api/customers/:id/notes": {
+    status: 201,
+    body: { note: NOTE },
+    schema: NoteWriteResponseSchema,
+    request: { text: "আবার অর্ডার করবেন" },
+    badRequest: { text: "" },
+  },
+  "GET /api/products": {
+    status: 200,
+    body: {
+      products: [
+        {
+          id: PRODUCT_BODY.id,
+          name: PRODUCT_BODY.name,
+          sku: PRODUCT_BODY.sku,
+          category: null,
+          sellingPricePaise: 120_000,
+          purchaseCostPaise: 80_000,
+          variantCount: 2,
+          totalStock: 10,
+          lowCount: 1,
+          defaultSupplier: { id: SUPPLIER.id, name: SUPPLIER.name },
+        },
+      ],
+      nextCursor: null,
+      total: 1,
+    },
+    schema: ProductListResponseSchema,
+    badQuery: "limit=0",
+  },
+  "POST /api/products": {
+    status: 201,
+    body: { product: PRODUCT_BODY },
+    schema: ProductWriteResponseSchema,
+    request: PRODUCT_REQUEST,
+    badRequest: { ...PRODUCT_REQUEST, variants: [] },
+  },
+  "GET /api/products/:id": { status: 200, body: PRODUCT_BODY, schema: ProductSchema },
+  "PATCH /api/products/:id": {
+    status: 200,
+    body: { product: PRODUCT_BODY },
+    schema: ProductWriteResponseSchema,
+    request: { sellingPricePaise: 125_000 },
+    badRequest: { sku: "OTHER" },
+  },
+  "PATCH /api/products/:id/cost": {
+    status: 200,
+    body: { product: PRODUCT_BODY },
+    schema: ProductWriteResponseSchema,
+    request: { purchaseCostPaise: 75_000 },
+    badRequest: { purchaseCostPaise: -1 },
+  },
+  "PATCH /api/variants/:id/stock": {
+    status: 200,
+    body: { variant: VARIANTS[0] },
+    schema: VariantWriteResponseSchema,
+    request: { stock: 4 },
+    badRequest: { stock: -1 },
+  },
+  "GET /api/low-stock": {
+    status: 200,
+    body: {
+      variants: [
+        {
+          variantId: CATALOG_IDS.variant,
+          productId: PRODUCT_BODY.id,
+          productName: PRODUCT_BODY.name,
+          axisValues: ["M"],
+          fullSku: "KURTI-SEED-M",
+          stock: 1,
+          minimumStock: 3,
+          supplier: { id: SUPPLIER.id, name: SUPPLIER.name, phone: SUPPLIER.phone },
+        },
+      ],
+      truncated: false,
+    },
+    schema: LowStockResponseSchema,
+  },
+  "GET /api/suppliers": {
+    status: 200,
+    body: { suppliers: [SUPPLIER], truncated: false },
+    schema: SupplierListResponseSchema,
+  },
+  "POST /api/suppliers": {
+    status: 201,
+    body: { supplier: { ...SUPPLIER, productCount: 0 } },
+    schema: SupplierWriteResponseSchema,
+    request: { name: "করিম হোলসেল", phone: "01811000000" },
+    badRequest: { name: "করিম হোলসেল" },
+  },
+  "PATCH /api/suppliers/:id": {
+    status: 200,
+    body: { supplier: SUPPLIER },
+    schema: SupplierWriteResponseSchema,
+    request: { name: "রহিম এন্টারপ্রাইজ" },
+    badRequest: {},
   },
 };
 

@@ -120,14 +120,36 @@ describe("U2 route parameters and queries", () => {
   });
 
   test("each :id route has its own UUID parser; a failure matches nothing", () => {
-    expect(Object.keys(ROUTE_PARAMS).sort()).toEqual(["/orders/:id", "/orders/:id/transition"]);
-    for (const raw of ["/orders/not-a-uuid", "/orders/ORD-1001", `/orders/${ID}x/transition`]) {
+    // U4 (BR1.3 of U2): the four catalog `:id` routes parse a UUID too.
+    expect(Object.keys(ROUTE_PARAMS).sort()).toEqual([
+      "/customers/:id",
+      "/customers/:id/edit",
+      "/orders/:id",
+      "/orders/:id/transition",
+      "/products/:id",
+      "/products/:id/edit",
+    ]);
+    for (const raw of [
+      "/orders/not-a-uuid",
+      "/orders/ORD-1001",
+      `/orders/${ID}x/transition`,
+      "/customers/not-a-uuid",
+      `/customers/${ID}x/edit`,
+      "/products/KURTI-1",
+      "/products/1/edit",
+    ]) {
       expect({ raw, m: matchRoute(raw) }).toEqual({ raw, m: null });
       const o = dispatchPath(raw, owner, 1, undefined);
       expect({ raw, to: o.kind === "redirect" && o.to }).toEqual({ raw, to: "/not-found" });
     }
     // The parser hands the screen a normalised value.
     expect(matchRoute(`/orders/${ID.toUpperCase()}`)?.params).toEqual({ id: ID });
+    expect(matchRoute(`/customers/${ID.toUpperCase()}/edit`)).toEqual({
+      path: "/customers/:id/edit",
+      params: { id: ID },
+    });
+    // An exact path wins over the pattern: "new" is never read as an id.
+    expect(matchRoute("/products/new")).toEqual({ path: "/products/new", params: {} });
   });
 
   test("a parameterised route without a parser fails at load", () => {

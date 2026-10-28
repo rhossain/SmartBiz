@@ -41,6 +41,14 @@
  *     cannot do themselves: after an accepted invitation, load the session the new cookie
  *     carries; after a reset, sign this tab out with the password-changed notice (every
  *     session of the person has ended on the server); and the router's `navigate`.
+ *
+ * U4 (BR13.1–BR13.3; BR3.3, BR5.4):
+ *   - the navigation gains ক্রেতা, পণ্য, কম মজুদ and সরবরাহকারী for every role;
+ *   - App builds the catalog client (`deps.catalog`, over the same HTTP client when not given)
+ *     and the catalog route state: what the role may do (from the S26 capability constants),
+ *     the route's id, a customer's order history read over the order list with each order's
+ *     status bucket, and what happens after a save — the toast on the route the save went to
+ *     and, for a customer, the duplicate-phone warning on its detail.
  */
 import * as React from "react";
 import { hasCapability } from "../auth/capability.js";
@@ -50,8 +58,18 @@ import type { AuditRouteState } from "../audit/screens/AuditTrail.js";
 import type { DailyRouteState } from "../daily-card/screens/DailyCard.js";
 import { createAuditApi, type AuditApi } from "../client/audit-api.js";
 import { createStaffApi, type StaffApi } from "../client/staff-api.js";
+import { createCatalogApi, type CatalogApi } from "../client/catalog-api.js";
+import {
+  canManageCatalog,
+  canReadCost,
+  canWriteCost,
+  canWriteCustomers,
+} from "../catalog/catalog-capability.js";
+import type { CatalogRouteState, DuplicateShown } from "../catalog/screens/render-catalog-route.js";
+import type { HistoryOrder } from "../catalog/types.js";
+import { bucketOf } from "../orders/status-bucket.js";
 import type { AuthApi } from "../client/auth-api.js";
-import type { ApiFailure, ApiFailureKind, HttpClient } from "../client/http.js";
+import type { ApiFailure, ApiFailureKind, ApiResult, HttpClient } from "../client/http.js";
 import type { OrdersApi } from "../client/orders-api.js";
 import {
   clearNotice,
@@ -114,11 +132,30 @@ export interface AppDeps {
   readonly audit?: AuditApi;
   /** The staff client (U3); built over `http` when not given. */
   readonly staff?: StaffApi;
+  /** The catalog client (U4); built over `http` when not given. */
+  readonly catalog?: CatalogApi;
+}
+
+const CATALOG_PREFIXES = ["/customers", "/products", "/low-stock", "/suppliers"] as const;
+
+const isCatalogPath = (path: string | null): boolean =>
+  path !== null && CATALOG_PREFIXES.some((p) => path === p || path.startsWith(`${p}/`));
+
+/** A catalog save's toast and BR3.3 warning, shown on the route the save went to. */
+interface CatalogNotice {
+  readonly path: string;
+  readonly message: string;
+  readonly duplicateOf: DuplicateShown | null;
 }
 
 /** S12: the places in the header; each item's access is its route's, from the route map. */
 export const NAV_ITEMS: ReadonlyArray<{ readonly to: RoutePath; readonly label: LKey }> = [
   { to: "/orders", label: "nav.orders" },
+  // U4 (BR13.2; mockups §15): the four catalog places, for every role.
+  { to: "/customers", label: "nav.customers" },
+  { to: "/products", label: "nav.products" },
+  { to: "/low-stock", label: "nav.low_stock" },
+  { to: "/suppliers", label: "nav.suppliers" },
   { to: "/daily-card", label: "nav.daily_card" },
   { to: "/audit-trail", label: "nav.audit_trail" },
   { to: "/staff", label: "nav.staff" },
@@ -190,6 +227,26 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
   const [lockFeature, setLockFeature] = React.useState<LKey | null>(null);
   const audit = React.useMemo(() => deps.audit ?? createAuditApi(http), [deps.audit, http]);
   const staff = React.useMemo(() => deps.staff ?? createStaffApi(http), [deps.staff, http]);
+  const catalog = React.useMemo(() => deps.catalog ?? createCatalogApi(http), [deps.catalog, http]);
+  const [catalogNotice, setCatalogNotice] = React.useState<CatalogNotice | null>(null);
+  // BR5.4: a customer's orders with their status bucket, read over C3's order list.
+  const customerOrders = React.useCallback(
+    async (customerId: string): Promise<ApiResult<ReadonlyArray<HistoryOrder>>> => {
+      const r = await orders.list({ customerId });
+      if (!r.ok) return r;
+      return {
+        ok: true,
+        status: r.status,
+        value: r.value.orders.map((o) => ({
+          id: o.id,
+          orderNo: o.orderNo,
+          status: o.status,
+          bucket: bucketOf(o.status),
+        })),
+      };
+    },
+    [orders],
+  );
 
   // W9: a 401 while signed in remembers the route and opens sign-in with the notice.
   React.useEffect(() => {
@@ -394,18 +451,44 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
     recent: list.recent,
   };
 
+  // U4 (BR13.1–BR13.3): the catalog screens' state. What the role may do comes from the same
+  // capability constants the server and the router use (S26); the screens never decide it.
+  const noticeHere = catalogNotice !== null && catalogNotice.path === path ? catalogNotice : null;
+  const catalogState: CatalogRouteState = {
+    kind: "catalog",
+    locale,
+    api: catalog,
+    customerOrders,
+    id: routeId,
+    can: {
+      writeCustomers: role !== null && canWriteCustomers(role),
+      manage: role !== null && canManageCatalog(role),
+      readCost: role !== null && canReadCost(role),
+      writeCost: role !== null && canWriteCost(role),
+    },
+    homeTo,
+    navigate,
+    onSaved: (to, message, duplicateOf = null) => {
+      setCatalogNotice({ path: to, message, duplicateOf });
+      navigate(to);
+    },
+    duplicateOf: noticeHere?.duplicateOf ?? null,
+  };
+
   const TOKEN_ROUTES: ReadonlySet<string> = new Set(["/accept-invite", "/reset", "/recover"]);
   const routeState = routePath?.startsWith("/orders")
     ? ordersState
-    : routePath === "/audit-trail"
-      ? auditState
-      : routePath === "/daily-card"
-        ? dailyState
-        : routePath === "/staff"
-          ? staffState
-          : TOKEN_ROUTES.has(routePath ?? "")
-            ? tokenState
-            : authState;
+    : isCatalogPath(routePath)
+      ? catalogState
+      : routePath === "/audit-trail"
+        ? auditState
+        : routePath === "/daily-card"
+          ? dailyState
+          : routePath === "/staff"
+            ? staffState
+            : TOKEN_ROUTES.has(routePath ?? "")
+              ? tokenState
+              : authState;
   const outcome =
     session.status === "unknown"
       ? null
@@ -429,6 +512,8 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
   const toast =
     list.notice === "saved" ? (
       <Toast message={lookup("common.saved", locale)} tone="success" />
+    ) : noticeHere !== null ? (
+      <Toast message={noticeHere.message} tone="success" />
     ) : null;
 
   let content: React.ReactNode;

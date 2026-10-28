@@ -6,6 +6,7 @@
  */
 import type { Sql } from "../../src/db/client.js";
 import type { Uuid } from "../../src/data/uuid.js";
+import { handleCatalog } from "./catalog-stub.js";
 
 export interface RecordedCall {
   readonly text: string;
@@ -24,6 +25,12 @@ export interface SqlStubOptions {
   consignmentLinks?: ReadonlyArray<Record<string, unknown>>;
   /* U1 sessions (token_hash, absolute and idle limits). */
   sessions?: ReadonlyArray<Record<string, unknown>>;
+  /* U4 catalog tables (snake_case rows, as Postgres returns them). */
+  suppliers?: ReadonlyArray<Record<string, unknown>>;
+  customers?: ReadonlyArray<Record<string, unknown>>;
+  customerNotes?: ReadonlyArray<Record<string, unknown>>;
+  products?: ReadonlyArray<Record<string, unknown>>;
+  variants?: ReadonlyArray<Record<string, unknown>>;
   /** Throw a simulated database error on the first statement whose text matches. */
   failOn?: RegExp;
   /**
@@ -624,6 +631,11 @@ export const makeSqlStub = (
     orderItems: Array<Record<string, unknown>>;
     consignmentLinks: Array<Record<string, unknown>>;
     sessions: Array<Record<string, unknown>>;
+    suppliers: Array<Record<string, unknown>>;
+    customers: Array<Record<string, unknown>>;
+    customerNotes: Array<Record<string, unknown>>;
+    products: Array<Record<string, unknown>>;
+    variants: Array<Record<string, unknown>>;
     seq: { n: number };
   };
 } => {
@@ -638,6 +650,11 @@ export const makeSqlStub = (
     orderItems: [...(opts.orderItems ?? [])],
     consignmentLinks: [...(opts.consignmentLinks ?? [])],
     sessions: [...(opts.sessions ?? [])],
+    suppliers: [...(opts.suppliers ?? [])],
+    customers: [...(opts.customers ?? [])],
+    customerNotes: [...(opts.customerNotes ?? [])],
+    products: [...(opts.products ?? [])],
+    variants: [...(opts.variants ?? [])],
     seq: { n: 1000 },
   };
   // 0015 defaults: rows seeded without a revision are revision 1, as after the migration.
@@ -743,6 +760,9 @@ export const makeSqlStub = (
     if (sessionRows !== undefined) return sessionRows;
     const staffRows = handleStaff(text, params, state);
     if (staffRows !== undefined) return staffRows;
+    // U4: the catalog statements (tests/helpers/catalog-stub.ts).
+    const catalogRows = handleCatalog(text, params, state);
+    if (catalogRows !== undefined) return catalogRows;
     // U1 users: business_id set on insert; one account per email ignoring case (0013).
     if (
       /INSERT INTO users \(id, business_id, email, password_hash, role, active, locale, created_at, updated_at\)/i.test(
@@ -920,6 +940,11 @@ export const makeSqlStub = (
     state.orderItems,
     state.consignmentLinks,
     state.sessions,
+    state.suppliers,
+    state.customers,
+    state.customerNotes,
+    state.products,
+    state.variants,
   ];
   (sql as unknown as { begin: (fn: (tx: Sql) => Promise<unknown>) => Promise<unknown> }).begin =
     async (fn: (tx: Sql) => Promise<unknown>) => {

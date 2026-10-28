@@ -27,6 +27,7 @@ import { insertSession } from "../../src/auth/session.js";
 import { sha256 } from "../../src/auth/sha256.js";
 import type { Uuid } from "../../src/data/uuid.js";
 import { routeKey, routes } from "../../src/server/routes.js";
+import { catalogPath, seedCatalog } from "../helpers/catalog-fixtures.js";
 import { makeSqlStub } from "../helpers/sql-stub.js";
 import { harness, NOW, request } from "../helpers/server-harness.js";
 import {
@@ -133,6 +134,8 @@ describe("no secret leaves the server (every registered route)", () => {
         tokens[role] = s.token;
         rawTokens.add(s.token);
       }
+      // U4: one supplier, customer (with a note) and product (with variants) to walk with.
+      seedCatalog(stub, business);
       const make = async (): Promise<string> => {
         const r = await h.send(
           request("POST", "/api/orders", { token: ownerToken, body: ORDER_REQUEST }),
@@ -185,7 +188,10 @@ describe("no secret leaves the server (every registered route)", () => {
         const row = API_ROWS.find((r) => apiKey(r) === key);
         if (row === undefined) throw new Error(`no role-table row for ${key}`);
         const id = key === "POST /api/orders/:id/consignment" ? packedId : orderId;
-        const path = route.path.replace(":id", id).replace(":userId", idOf("sales_staff"));
+        // U4: a catalog `:id` names the seeded catalog row (seedCatalog below the sign-up).
+        const path =
+          catalogPath(route.path) ??
+          route.path.replace(":id", id).replace(":userId", idOf("sales_staff"));
         const inside = ROLES.find((r) => isAllowed(row.allowed, r)) ?? "owner";
         const outside = ROLES.find((r) => !isAllowed(row.allowed, r));
         const body = fixture.request;

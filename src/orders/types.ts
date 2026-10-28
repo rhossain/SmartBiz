@@ -17,6 +17,7 @@
  *   never deletes the old ones (BR6.8).
  */
 import type { Courier, OrderSource, OrderStatus, Role } from "../data/enums.js";
+import type { NotFound } from "../data/not-found.js";
 import type { Uuid } from "../data/uuid.js";
 
 /** The three input modes whose bodies are deferred to a vendor decision. */
@@ -164,8 +165,12 @@ export type ParseResult =
   | ({ readonly ok: true } & ParsedMessage)
   | { readonly ok: false; readonly reason: ParseFailureReason };
 
-/* Typed failures returned (never thrown) by the order operations. */
-export type NotFound = { readonly kind: "not_found"; readonly entity: string; readonly id: string };
+/*
+ * Typed failures returned (never thrown) by the order operations. U4 (C8, F-10): `NotFound`
+ * lives in the shared kernel (src/data/not-found.ts) so the catalog can return it without
+ * importing this unit; it is re-exported here unchanged.
+ */
+export type { NotFound };
 export type Forbidden = { readonly kind: "forbidden"; readonly reason: string };
 export type InvalidTransition = {
   readonly kind: "invalid_transition";

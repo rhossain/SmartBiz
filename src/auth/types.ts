@@ -83,6 +83,13 @@ export interface AuditEntry {
 export interface TxHooks {
   readonly beforeTransaction?: () => Promise<void>;
   readonly afterLock?: () => Promise<void>;
+  /**
+   * U4 (R15; NFR-design review R-02): runs inside a product create's transaction after the
+   * change-log row and the product row, before the variants, so a realdb test can make the
+   * create fail there and prove nothing is left behind (NFR7.22). Like the others, it is an
+   * injected test dependency that production never sets.
+   */
+  readonly afterProductInsert?: () => Promise<void>;
 }
 
 export interface PasswordReset {

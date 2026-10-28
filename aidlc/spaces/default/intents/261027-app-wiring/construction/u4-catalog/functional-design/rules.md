@@ -205,7 +205,7 @@ rules:
     violation: "409 conflict; screen: এই কোড আগেই ব্যবহার হয়েছে"
     source: [AC3.4.2, FR6.2]
   - id: BR6.3
-    statement: "At most two axes, each named and with 1–20 distinct values."
+    statement: "At most two axes, each named and with 1–12 distinct values."
     category: validation
     applies_to: "POST /api/products axes"
     trigger: "request"

@@ -94,9 +94,12 @@ describe("Shell", () => {
   test("navigation: App's list per role is what the role can open, labels all different", () => {
     const links = (role: "owner" | "manager" | "accountant" | "sales_staff"): string[] =>
       navFor(role).map((n) => `#${n.to}`);
+    // U4 (BR13.2): the four catalog places follow the orders link, for every role.
+    const catalog = ["#/customers", "#/products", "#/low-stock", "#/suppliers"];
     // U3 (BR10.1): "কর্মী" for the Owner and the Manager only.
     expect(links("owner")).toEqual([
       "#/orders",
+      ...catalog,
       "#/daily-card",
       "#/audit-trail",
       "#/staff",
@@ -104,12 +107,29 @@ describe("Shell", () => {
       "#/settings",
     ]);
     // B5 (US3.1): the daily card is the Owner's; no other role gets its link.
-    expect(links("manager")).toEqual(["#/orders", "#/audit-trail", "#/staff", "#/settings"]);
-    expect(links("accountant")).toEqual(["#/orders", "#/audit-trail", "#/settings"]);
-    expect(links("sales_staff")).toEqual(["#/orders", "#/settings"]);
+    expect(links("manager")).toEqual([
+      "#/orders",
+      ...catalog,
+      "#/audit-trail",
+      "#/staff",
+      "#/settings",
+    ]);
+    expect(links("accountant")).toEqual(["#/orders", ...catalog, "#/audit-trail", "#/settings"]);
+    expect(links("sales_staff")).toEqual(["#/orders", ...catalog, "#/settings"]);
     const labels = navFor("owner").map((n) => lookup(n.label, "bn"));
     expect(new Set(labels).size).toBe(labels.length);
-    expect(labels).toEqual(["অর্ডার", "দৈনিক কার্ড", "অডিট ট্রেইল", "কর্মী", "ব্যবসা", "সেটিংস"]);
+    expect(labels).toEqual([
+      "অর্ডার",
+      "ক্রেতা",
+      "পণ্য",
+      "কম মজুদ",
+      "সরবরাহকারী",
+      "দৈনিক কার্ড",
+      "অডিট ট্রেইল",
+      "কর্মী",
+      "ব্যবসা",
+      "সেটিংস",
+    ]);
     expect(labels.some((l) => l === "সংরক্ষণ")).toBe(false);
     expect(homeFor("sales_staff")).toBe("/orders");
   });

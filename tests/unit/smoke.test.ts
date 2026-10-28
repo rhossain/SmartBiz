@@ -56,7 +56,7 @@ describe("runSmoke (I-04)", () => {
     });
     expect(r).toEqual({
       ok: true,
-      line: `smoke ok: ${HEAD.slice(0, 12)} on ${ORIGIN} (build-sha, health, sign-in, orders, staff, sign-out)`,
+      line: `smoke ok: ${HEAD.slice(0, 12)} on ${ORIGIN} (build-sha, health, sign-in, orders, staff, products, low stock, sign-out)`,
     });
   });
 
@@ -87,6 +87,23 @@ describe("runSmoke (I-04)", () => {
       fetch: w.fetch,
     });
     expect(r).toEqual({ ok: false, at: "GET /api/staff answered 403" });
+  });
+
+  test("a catalog read that refuses the Owner is caught (U4 step)", async () => {
+    const refusing = routes.map((r) =>
+      r.path === "/api/low-stock" && r.method === "GET"
+        ? ({ ...r, handler: async () => ({ kind: "error", error: "forbidden" }) } as RouteDef)
+        : r,
+    );
+    const w = await world(refusing);
+    const r = await runSmoke({
+      base: ORIGIN,
+      head: HEAD,
+      email: "owner@acme.test",
+      password: PASSWORD,
+      fetch: w.fetch,
+    });
+    expect(r).toEqual({ ok: false, at: "GET /api/low-stock answered 403" });
   });
 
   test("a wrong password stops at sign-in", async () => {

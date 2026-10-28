@@ -10,7 +10,8 @@
  *
  * Invariants restated: DELETE appears only on `sessions` (sign-out); `audit_log` is INSERT
  * and SELECT only (TC9, team.md Deployment); `order_items` is SELECT and INSERT only
- * (amendment A3: lines append by revision).
+ * (amendment A3: lines append by revision); U4's `customer_notes` is SELECT and INSERT only
+ * (append-only notes, BR12.2).
  */
 
 export const APP_ROLE = "app_role";
@@ -41,6 +42,13 @@ export const DECLARED_GRANTS: ReadonlyArray<DeclaredGrant> = [
   { relation: "order_items", kind: "table", privileges: ["SELECT", "INSERT"] },
   { relation: "consignment_link", kind: "table", privileges: ["SELECT", "INSERT"] },
   { relation: "orders_order_no_seq", kind: "sequence", privileges: ["USAGE", "SELECT"] },
+  // U4 (C9 amendment D9; BR12.1, BR12.2; NFR2.6): the catalog, never DELETE; notes are
+  // insert-only like the change log.
+  { relation: "suppliers", kind: "table", privileges: ["SELECT", "INSERT", "UPDATE"] },
+  { relation: "customers", kind: "table", privileges: ["SELECT", "INSERT", "UPDATE"] },
+  { relation: "customer_notes", kind: "table", privileges: ["SELECT", "INSERT"] },
+  { relation: "products", kind: "table", privileges: ["SELECT", "INSERT", "UPDATE"] },
+  { relation: "variants", kind: "table", privileges: ["SELECT", "INSERT", "UPDATE"] },
 ];
 
 /** `relation -> sorted privileges`, the shape the realdb gate compares against. */

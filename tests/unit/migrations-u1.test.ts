@@ -171,11 +171,10 @@ describe("U1 migrations 0011–0015 (text)", () => {
    * creates exactly the two unique indexes with IF NOT EXISTS, and grants or revokes nothing
    * (NFR2.5).
    */
-  test("0017 runs right after 0016, last, and opens with its AuthComponent U3 header (C9)", () => {
+  test("0017 runs right after 0016 and opens with its AuthComponent U3 header (C9)", () => {
     const files = listMigrations();
     const at = files.indexOf("0016_add_audit_log_keyset_idx.sql");
     expect(files[at + 1]).toBe("0017_unique_token_hashes.sql");
-    expect(files.at(-1)).toBe("0017_unique_token_hashes.sql");
     expect(read("0017_unique_token_hashes.sql").split("\n")[0]).toMatch(
       /^-- 0017 — AuthComponent, U3 u3-staff/,
     );
@@ -196,6 +195,126 @@ describe("U1 migrations 0011–0015 (text)", () => {
       expect(GUARDED.some((re) => re.test(s))).toBe(true);
       expect(s).not.toMatch(/\b(GRANT|REVOKE)\b/i);
     }
+  });
+
+  /*
+   * U4 (u4-catalog; BR12.1, BR12.2; S28, S29, SC8; NFR2.6, NFR10.4; infra R-01, R-02;
+   * NFR-design R-01, R-07). Restated: 0018–0022 run right after 0017 in foreign-key order and
+   * are the last files; each opens with its CatalogComponent / U4 header; every statement is
+   * guarded (CREATE TABLE IF NOT EXISTS with inline constraints, CREATE INDEX IF NOT EXISTS,
+   * GRANT), so applying a file twice changes nothing; each grants app_role exactly its
+   * declared set and never DELETE; no file creates an extension or touches audit_log.
+   */
+  const U4_MIGRATIONS = [
+    "0018_create_suppliers.sql",
+    "0019_create_customers.sql",
+    "0020_create_customer_notes.sql",
+    "0021_create_products.sql",
+    "0022_create_variants.sql",
+  ] as const;
+  const U4_GRANTS: Readonly<Record<string, string>> = {
+    "0018_create_suppliers.sql": "GRANT SELECT, INSERT, UPDATE ON suppliers TO app_role",
+    "0019_create_customers.sql": "GRANT SELECT, INSERT, UPDATE ON customers TO app_role",
+    "0020_create_customer_notes.sql": "GRANT SELECT, INSERT ON customer_notes TO app_role",
+    "0021_create_products.sql": "GRANT SELECT, INSERT, UPDATE ON products TO app_role",
+    "0022_create_variants.sql": "GRANT SELECT, INSERT, UPDATE ON variants TO app_role",
+  };
+
+  test("U4: 0018–0022 run right after 0017, in foreign-key order, and are last (D9)", () => {
+    const files = listMigrations();
+    const at = files.indexOf("0017_unique_token_hashes.sql");
+    expect(files.slice(at + 1)).toEqual([...U4_MIGRATIONS]);
+  });
+
+  test("U4: each opens with a comment naming CatalogComponent and U4 (C9, BR12.1)", () => {
+    for (const f of U4_MIGRATIONS) {
+      const first = read(f).split("\n")[0] ?? "";
+      expect({ f, first }).toMatchObject({
+        f,
+        first: expect.stringMatching(/^-- 00(1[89]|2[0-2]) — CatalogComponent, U4 u4-catalog/),
+      });
+    }
+  });
+
+  test("U4: every statement is guarded, so applying a file twice changes nothing (R-01)", () => {
+    const guarded = [/^CREATE TABLE IF NOT EXISTS /i, ...GUARDED];
+    for (const f of U4_MIGRATIONS) {
+      for (const s of statements(read(f))) {
+        expect({ f, statement: s.slice(0, 60), ok: guarded.some((re) => re.test(s)) }).toEqual({
+          f,
+          statement: s.slice(0, 60),
+          ok: true,
+        });
+        // An ALTER ... ADD CONSTRAINT outside a DO guard would fail on the second apply.
+        expect({ f, alter: /^ALTER TABLE/i.test(s) }).toEqual({ f, alter: false });
+      }
+    }
+  });
+
+  test("U4: exactly one grant each, the declared set, never DELETE, ALL or audit_log (BR12.2)", () => {
+    for (const f of U4_MIGRATIONS) {
+      const grants = statements(read(f)).filter((s) => /^(GRANT|REVOKE) /i.test(s));
+      expect({ f, grants }).toEqual({ f, grants: [U4_GRANTS[f] ?? "missing"] });
+      const body = statements(read(f)).join(";\n");
+      // `ON DELETE RESTRICT` on a reference is not a privilege; no statement may DELETE rows
+      // or grant the privilege.
+      expect(body.replace(/ON DELETE RESTRICT/g, "")).not.toMatch(/\bDELETE\b/i);
+      expect(body).not.toMatch(/GRANT\s+ALL\b/i);
+      expect(body).not.toMatch(/\baudit_log\b/i);
+      expect(body).not.toMatch(/CREATE\s+EXTENSION/i); // NFR10.4
+    }
+  });
+
+  test("U4: children reference parents by (business_id, id); notes revise within one customer", () => {
+    const notes = read("0020_create_customer_notes.sql");
+    expect(notes).toMatch(/UNIQUE \(business_id, customer_id, id\)/);
+    expect(notes).toMatch(
+      /CONSTRAINT customer_notes_revises_note_id_key UNIQUE \(revises_note_id\)/,
+    );
+    expect(notes).toMatch(
+      /FOREIGN KEY \(business_id, customer_id, revises_note_id\)\s+REFERENCES customer_notes \(business_id, customer_id, id\)/,
+    );
+    expect(notes).toMatch(
+      /FOREIGN KEY \(business_id, customer_id\)\s+REFERENCES customers \(business_id, id\)/,
+    );
+    expect(read("0022_create_variants.sql")).toMatch(
+      /FOREIGN KEY \(business_id, product_id\)\s+REFERENCES products \(business_id, id\)/,
+    );
+    expect(read("0021_create_products.sql")).toMatch(
+      /FOREIGN KEY \(business_id, default_supplier_id\)\s+REFERENCES suppliers \(business_id, id\)/,
+    );
+    for (const [f, table] of [
+      ["0018_create_suppliers.sql", "suppliers"],
+      ["0019_create_customers.sql", "customers"],
+      ["0021_create_products.sql", "products"],
+    ] as const) {
+      expect(read(f)).toMatch(
+        new RegExp(`CONSTRAINT ${table}_business_id_id_key UNIQUE \\(business_id, id\\)`),
+      );
+    }
+  });
+
+  test("U4: the SC8 and R-07 indexes exist, the SKU index is case-insensitive and unique", () => {
+    expect(read("0021_create_products.sql")).toMatch(
+      /CREATE UNIQUE INDEX IF NOT EXISTS products_business_sku_lower_key ON products \(business_id, lower\(sku\)\)/,
+    );
+    expect(read("0022_create_variants.sql")).toMatch(
+      /ON variants \(business_id\) WHERE stock < minimum_stock/,
+    );
+    expect(read("0019_create_customers.sql")).toMatch(
+      /ON customers \(business_id, created_at DESC, id DESC\)/,
+    );
+    expect(read("0019_create_customers.sql")).toMatch(/ON customers \(business_id, phone\)/);
+    expect(read("0020_create_customer_notes.sql")).toMatch(
+      /ON customer_notes \(customer_id, created_at DESC, id DESC\)/,
+    );
+    expect(read("0021_create_products.sql")).toMatch(
+      /ON products \(business_id, default_supplier_id\)/,
+    );
+    expect(read("0021_create_products.sql")).toMatch(
+      /ON products \(business_id, created_at DESC, id DESC\)/,
+    );
+    expect(read("0022_create_variants.sql")).toMatch(/ON variants \(business_id, product_id\)/);
   });
 
   test("0011 makes the business a singleton and the user reference deferrable (BR2.2, BR2.3)", () => {

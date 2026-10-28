@@ -40,7 +40,9 @@ decision.
 | `bun run test` | unit + integration suites (in-memory SQL stub that fails closed) |
 | `bun run check:coverage` | 80 % line floor over every `src` file |
 | `bun run gate` | the full local gate run — the merge evidence (see below) |
-| `bun run smoke` | post-merge check of the running server (build SHA, health, sign-in, orders, staff list, sign-out) |
+| `bun run smoke` | post-merge check of the running server (build SHA, health, sign-in, orders, staff list, products, low stock, sign-out) |
+| `bun run seed:demo` | fill an EMPTY local deployment with demo data, catalog included (accounts in `.env.demo`) |
+| `bun run seed:demo:catalog` | add the demo catalog to an EXISTING demo business (needs `.env.demo`; safe to run again) |
 | `bun run migrate` | apply migrations with `.env.migrate` (idempotent) |
 | `bun run logs:summary` | requests, statuses and p95 per route from today's log |
 | `bun run reset-password <email>` | print a 30-minute password-reset link for any active user (see below) |
@@ -69,6 +71,38 @@ to run when `MIGRATE_DATABASE_URL` is set), prints exactly one line, the link, a
 unknown or inactive email prints `no active account for that email` and exits 1 without writing
 anything. `/recover` in the browser only tells people to ask the Owner or this terminal for a
 link; it looks nothing up.
+
+## The catalog (customers, products, stock, suppliers)
+
+The navigation has **ক্রেতা** (customers), **পণ্য** (products), **কম মজুদ** (low stock) and
+**সরবরাহকারী** (suppliers) for everyone. Who may change what:
+
+| | Owner | Manager | Sales Staff | Accountant |
+|---|---|---|---|---|
+| read customers, products, low stock, suppliers | ✓ | ✓ | ✓ | ✓ |
+| record and edit customers, add notes | ✓ | ✓ | ✓ | — |
+| record and edit products, set stock, record suppliers | ✓ | ✓ | — | — |
+| see and change a product's purchase cost | ✓ | ✓ | — | ✓ |
+
+- **Phones** are stored as `01XXXXXXXXX` whatever is typed (Bangla digits, `+880`, spaces or
+  dashes) and shown in Bangla digits. A phone another customer already has is saved with a
+  warning that links to that customer — families share a number.
+- **Notes** are never edited or deleted: "সংশোধন" adds a new note over the earlier one, which
+  stays underneath as "আগের নোট". A note can be revised once.
+- **Products** have a code (SKU) that is unique ignoring case and fixed after creation, and up
+  to two variations (such as size and colour) of up to 12 values each; every combination is a
+  variant with its own code, stock and minimum. A variant is low when its stock is **below** its
+  minimum; **কম মজুদ** lists them with the supplier's call link.
+- **Purchase cost** never reaches Sales Staff — the server leaves it out of every answer. A cost
+  that was never recorded shows "দেওয়া হয়নি", never ৳০.
+- **Payments and dues** on a customer say "এখনো চালু হয়নি" until that work is built. A
+  customer's order history fills in once orders link to customers (the next unit, U5).
+- Every catalog change is in the audit trail (**অডিট ট্রেইল**) without any name, phone, address
+  or note text; nothing in the catalog is ever deleted.
+
+To try the catalog on the demo business you already have, start the app and run
+`bun run seed:demo:catalog`: it signs in with the accounts in `.env.demo`, adds four suppliers,
+six products and six customers, and skips whatever is already there.
 
 ## The gate (before every merge to `main`)
 
@@ -146,6 +180,14 @@ docker compose --env-file .env.migrate exec -T smartbiz-db psql -U postgres -d s
 - **The whole of Bolt 1:** stop the server, restore the pre-merge dump, `git revert` the squash
   commit, `bun run start`. A code revert alone leaves migrations 0011–0017 applied; they are
   additive or guarded, and older code works with them.
+- **The catalog (Bolt 2, migrations 0018–0022):** the five catalog tables are additive and older
+  code never reads them, so `git revert` of the squash commit runs fine with them still
+  applied. **But** once anyone has changed the catalog, the audit trail holds the nine catalog
+  actions (`customer.create`, `product.cost.set`, …), and older code has no label for them: the
+  audit trail would show their raw names. The clean rollback of Bolt 2 is therefore the
+  pre-merge dump: stop the server, restore the dump, `git revert`, `bun run start`. Dropping
+  the tables by hand is not part of a rollback (their ledger rows would have to go in the same
+  admin session).
 - **A leaked invitation or reset link:** invite the same email again (the old link stops
   working), or create a new reset link for the person (it closes the old one); otherwise a reset
   link dies after 30 minutes.
@@ -156,10 +198,12 @@ docker compose --env-file .env.migrate exec -T smartbiz-db psql -U postgres -d s
 ```
 src/
   server/   bun HTTP entry, request pipeline, route table, handlers, cookies, headers
-  client/   browser HTTP client, auth and orders APIs, session and orders stores
+  client/   browser HTTP client, auth, orders, staff, audit and catalog APIs, stores
   auth/     sign-up, sign-in, sign-out, sessions, attempt limiter, hash gate, role gate,
             invitations, reset links, one-time tokens, delegation matrix
   orders/   order domain functions, paste parser, status machine, order screens
+  catalog/  customers and notes, suppliers, products and variants, stock and cost, low stock,
+            the read functions orders use (index.ts), shared rules, catalog screens
   router/   the App, typed route map, hash router, three-layer gate dispatch
   pres/     Shell and presentation primitives
   db/       pool, migrations, declared grants

@@ -148,6 +148,35 @@ export const L_TABLE: Translations = Object.freeze({
     "পাসওয়ার্ড বদলানো হয়েছে; নতুন পাসওয়ার্ড দিয়ে সাইন ইন করুন",
     "The password has been changed; sign in with the new password",
   ),
+  // U4 (BR13.1, BR13.2; mockups §15): the four catalog places in the navigation, and the
+  // feature names of the ten catalog screen routes (lock and not-available screens).
+  "nav.customers": L("ক্রেতা", "Customers"),
+  "nav.products": L("পণ্য", "Products"),
+  "nav.low_stock": L("কম মজুদ", "Low stock"),
+  "nav.suppliers": L("সরবরাহকারী", "Suppliers"),
+  "feature.customers": L("ক্রেতা", "Customers"),
+  "feature.customer_new": L("নতুন ক্রেতা", "New customer"),
+  "feature.customer_edit": L("ক্রেতা সম্পাদনা", "Edit customer"),
+  "feature.products": L("পণ্য", "Products"),
+  "feature.product_new": L("নতুন পণ্য", "New product"),
+  "feature.product_edit": L("পণ্য সম্পাদনা", "Edit product"),
+  "feature.low_stock": L("কম মজুদ", "Low stock"),
+  "feature.suppliers": L("সরবরাহকারী", "Suppliers"),
+  // U4 (O8, NFR8.20): the nine catalog change-log actions and their subjects
+  // (src/catalog/catalog-audit.ts maps every action here, exhaustively).
+  "audit.action.customer.create": L("ক্রেতা যোগ", "Customer added"),
+  "audit.action.customer.update": L("ক্রেতা সম্পাদনা", "Customer edited"),
+  "audit.action.customer.note.add": L("নোট যোগ", "Note added"),
+  "audit.action.supplier.create": L("সরবরাহকারী যোগ", "Supplier added"),
+  "audit.action.supplier.update": L("সরবরাহকারী সম্পাদনা", "Supplier edited"),
+  "audit.action.product.create": L("পণ্য যোগ", "Product added"),
+  "audit.action.product.update": L("পণ্য সম্পাদনা", "Product edited"),
+  "audit.action.product.cost.set": L("ক্রয়মূল্য বদল", "Purchase cost changed"),
+  "audit.action.variant.stock.set": L("মজুদ বদল", "Stock changed"),
+  "audit.subject.customer": L("ক্রেতা", "Customer"),
+  "audit.subject.supplier": L("সরবরাহকারী", "Supplier"),
+  "audit.subject.product": L("পণ্য", "Product"),
+  "audit.subject.variant": L("ধরন", "Variant"),
 });
 
 /** True when the table has a row for `key` (labels that may be missing, e.g. audit actions). */

@@ -12,6 +12,9 @@
  *      `bun run start` and never reads `.env`;
  *   2. signs up the Owner `owner@browser.test` / `browser-pass-1` (throwaway credentials in a
  *      throwaway database, on the secret-scan allow-list) and creates one order over the API;
+ *      U4: also one customer and one product with two axes (one variant low), so the catalog
+ *      rows — `/customers`, `/products/:id` with its variant table, `/low-stock` among them —
+ *      are walked at 360 px with real data;
  *   3. launches Chrome with `--headless=new --remote-debugging-port=0 --user-data-dir=<temp
  *      smartbiz-browser-*> --no-first-run --no-default-browser-check` and reads the
  *      `DevTools listening on ws://…` line (15 s);
@@ -285,10 +288,16 @@ const signInThroughForm = async (cdp: Cdp, page: Page): Promise<void> => {
   await waitUntil(cdp, page, `location.hash === "#/orders"`, HEADING_TIMEOUT_MS, "signed in");
 };
 
+interface NamedRecord {
+  readonly id: string;
+  readonly name: string;
+}
+
 const screenWalk = async (
   cdp: Cdp,
   base: string,
   order: { readonly id: string; readonly orderNo: string },
+  catalog: { readonly customer: NamedRecord; readonly product: NamedRecord },
 ): Promise<number> => {
   const page = await openPage(cdp);
   try {
@@ -327,10 +336,25 @@ const screenWalk = async (
     );
     await signInThroughForm(cdp, page);
     // Every screen row the Owner may open (P11).
+    // U4: `/customers`, `/products/:id` (its variant table in `.scroll-x`) and `/low-stock`
+    // join the walk with the other catalog rows; a catalog `:id` is this run's customer or
+    // product, whose detail heading is its name.
     for (const row of SCREEN_ROWS) {
       if (row.allowed === "public" || !isAllowed(row.allowed, "owner")) continue;
-      const hash = row.path.replace(":id", order.id);
-      const heading = row.path.includes(":id") ? order.orderNo : row.heading;
+      const record = row.path.startsWith("/customers/:id")
+        ? catalog.customer
+        : row.path.startsWith("/products/:id")
+          ? catalog.product
+          : null;
+      const hash = row.path.replace(":id", record?.id ?? order.id);
+      const heading =
+        record !== null
+          ? row.path.endsWith("/edit")
+            ? row.heading
+            : record.name
+          : row.path.includes(":id")
+            ? order.orderNo
+            : row.heading;
       await visit(cdp, page, hash, row, heading);
       screens += 1;
     }
@@ -472,6 +496,37 @@ const main = async (): Promise<string> => {
   );
   if (created.status !== 201) throw new CheckFailed(`create order answered ${created.status}`);
   const order = (await created.json()) as { id: string; orderNo: string };
+  // U4: a customer and a product with two axes (one variant low), for the catalog screens.
+  const customerAt = await post(
+    "/api/customers",
+    { name: "রিনা আক্তার", phone: "01712345678", address: "মিরপুর ১০, ঢাকা", riskLevel: 2 },
+    cookie,
+  );
+  if (customerAt.status !== 201)
+    throw new CheckFailed(`create customer answered ${customerAt.status}`);
+  const customer = ((await customerAt.json()) as { customer: NamedRecord }).customer;
+  const sizes = ["S", "M", "L", "XL"];
+  const colours = ["লাল", "নীল", "সবুজ"];
+  const productAt = await post(
+    "/api/products",
+    {
+      name: "সুতির থ্রি-পিস কুর্তি",
+      sku: "BROWSER-KURTI",
+      sellingPricePaise: 145_000,
+      purchaseCostPaise: 98_000,
+      axes: [
+        { name: "সাইজ", values: sizes },
+        { name: "রং", values: colours },
+      ],
+      variants: sizes.flatMap((s, i) =>
+        colours.map((c) => ({ axisValues: [s, c], stock: i === 0 ? 1 : 12, minimumStock: 3 })),
+      ),
+    },
+    cookie,
+  );
+  if (productAt.status !== 201)
+    throw new CheckFailed(`create product answered ${productAt.status}`);
+  const product = ((await productAt.json()) as { product: NamedRecord }).product;
 
   // 3. Chrome.
   resources.profile = mkdtempSync(join(tmpdir(), "smartbiz-browser-"));
@@ -489,7 +544,7 @@ const main = async (): Promise<string> => {
   }
 
   // 5. the 360 px walk.
-  const screens = await screenWalk(resources.cdp, base, order);
+  const screens = await screenWalk(resources.cdp, base, order, { customer, product });
   return `browser ok: median ${mid} ms over ${COLD_LOADS} loads, ${screens} screens at 360 px`;
 };
 
