@@ -190,6 +190,18 @@ const handleOrders = (
     }
     return [];
   }
+  // Stock deduction (0024): the status change also writes the order's stock_deducted flag.
+  if (/UPDATE orders SET status = \?, updated_at = \?,\s+stock_deducted = \?/i.test(text)) {
+    const [status, updatedAt, deducted, id, businessId, from] = params;
+    for (const o of state.orders) {
+      if (o["id"] === id && o["business_id"] === businessId && o["status"] === from) {
+        o["status"] = status;
+        o["updated_at"] = new Date(String(updatedAt));
+        o["stock_deducted"] = deducted === true;
+      }
+    }
+    return [];
+  }
   if (/UPDATE orders SET status = \?/i.test(text)) {
     const [status, updatedAt, id, businessId, from] = params;
     for (const o of state.orders) {

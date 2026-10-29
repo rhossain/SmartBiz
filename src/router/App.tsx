@@ -403,7 +403,10 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
     if (!current) return;
     void (async () => {
       const r = await orders.transition(current.id, to);
-      if (r.ok) replaceOrder(ordersStore, r.value);
+      if (r.ok) {
+        setActionError(null);
+        replaceOrder(ordersStore, r.value);
+      } else if (r.kind === "insufficient_stock") setActionError(r);
       else routeFailure(r);
     })();
   };
@@ -603,6 +606,7 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
           kind={actionError.kind}
           locale={locale}
           correlationId={actionError.correlationId}
+          fields={actionError.fields}
           onRetry={() => setActionError(null)}
         />
       ) : null}

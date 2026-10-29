@@ -50,6 +50,7 @@ export const viewForKind = (kind: ShownErrorKind): KindView => {
     case "invalid_email":
     case "password_too_short":
       return "field";
+    case "insufficient_stock":
     case "invalid_credentials":
     case "email_taken":
     case "business_exists":

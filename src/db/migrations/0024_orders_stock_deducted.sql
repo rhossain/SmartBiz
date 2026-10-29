@@ -1,0 +1,11 @@
+-- 0024 — OrdersComponent: stock deduction on orders.
+--
+-- `orders.stock_deducted` records whether an order's lines have been taken off the shelf.
+-- The first transition into packed, shipped, delivered, settled or partial deducts the
+-- current revision's linked lines from variant stock and sets it true; a transition into
+-- cancelled or returned while it is true puts the stock back and sets it false. Orders that
+-- exist before this migration stay false, so they are never deducted or restored.
+--
+-- No grant changes: app_role already holds UPDATE on orders and variants.
+-- Idempotent: ADD COLUMN IF NOT EXISTS.
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS stock_deducted BOOLEAN NOT NULL DEFAULT false;

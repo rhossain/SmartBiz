@@ -73,6 +73,17 @@ const failure = (e: OrderError | LinkError): HandlerResult => {
     case "not_editable":
     case "already_linked":
       return { kind: "error", error: e.kind };
+    case "insufficient_stock":
+      // One field per short variant: the path names the SKU, the message carries the two
+      // numbers in a fixed English form the client parses into its Bangla message.
+      return {
+        kind: "error",
+        error: "insufficient_stock",
+        fields: e.items.map((i) => ({
+          path: `stock.${i.sku}`,
+          message: `required ${i.required}, available ${i.available}`,
+        })),
+      };
     default:
       return assertNever(e, "order error");
   }

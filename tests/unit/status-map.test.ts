@@ -22,6 +22,8 @@ const C1: Readonly<Record<string, number>> = {
   already_linked: 409,
   not_editable: 409,
   invalid_transition: 409,
+  // Stock deduction on orders: the move would take more than the shelf holds.
+  insufficient_stock: 409,
   business_exists: 409,
   email_taken: 409,
   gone: 410,

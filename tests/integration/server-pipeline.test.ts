@@ -26,6 +26,7 @@ const C1: Readonly<Record<ErrorKind, number>> = {
   already_linked: 409,
   not_editable: 409,
   invalid_transition: 409,
+  insufficient_stock: 409,
   business_exists: 409,
   email_taken: 409,
   gone: 410,

@@ -336,6 +336,30 @@
       "find": "  const product = single(matchProducts(segment, ascii, catalog));",
       "replace": "  const product = { value: matchProducts(segment, ascii, catalog)[0] ?? null, ambiguous: false };",
       "test": "tests/unit/parseMessage-catalog.test.ts"
+    },
+    {
+      "id": "stock-deducted-twice",
+      "why": "An order's stock is taken off the shelf once (stock deduction, 0024): ignoring the stock_deducted flag deducts again at shipped, delivered and settled.",
+      "file": "src/orders/stock-rules.ts",
+      "find": "  if (!deducted && takesStock(to)) return \"deduct\";",
+      "replace": "  if (takesStock(to)) return \"deduct\";",
+      "test": "tests/unit/order-stock.test.ts"
+    },
+    {
+      "id": "stock-restored-never-deducted",
+      "why": "Cancelling or returning puts stock back only if it was taken; an order from before 0024 or cancelled while new must not add stock that never left.",
+      "file": "src/orders/stock-rules.ts",
+      "find": "  if (deducted && givesStockBack(to)) return \"restore\";",
+      "replace": "  if (givesStockBack(to)) return \"restore\";",
+      "test": "tests/unit/order-stock.test.ts"
+    },
+    {
+      "id": "stock-shortage-unchecked",
+      "why": "Packing with too little stock is refused with insufficient_stock and writes nothing; dropping the comparison lets the shelf count go wrong.",
+      "file": "src/orders/stock-rules.ts",
+      "find": "    if (!row || available < quantity) {",
+      "replace": "    if (!row) {",
+      "test": "tests/unit/order-stock.test.ts"
     }
   ]
 }

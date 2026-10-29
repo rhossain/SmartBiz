@@ -12,6 +12,9 @@
  *     each; more than 50 is a programming error and throws (callers dedupe and chunk by 50 —
  *     one order page can name more than 50 variants); ids not found, or not UUIDs, are simply
  *     left out of the map. A label is "product name · value · value".
+ * Stock deduction on orders adds the only catalog writes another unit may call:
+ * `lockStockRows` / `writeStock` (order-stock.ts), inside the order's status-change
+ * transaction, which writes its own change-log row between them.
  * Infrastructure errors are thrown, never returned (C8 rules). Signatures are C8's,
  * unchanged; `NotFound` lives in src/data/not-found.ts so the catalog never imports orders.
  */
@@ -30,6 +33,9 @@ export type {
   Supplier,
   Variant,
 } from "./types.js";
+
+/** Stock deduction on orders: the two writes the order status change makes to variant stock. */
+export { lockStockRows, writeStock, type StockRow } from "./order-stock.js";
 
 /** BR14.2: the most ids one name or label lookup takes. */
 export const C8_MAX_IDS = 50;
