@@ -32,6 +32,9 @@
  * routes — every catalog read and write, the customer list's name and 4-digit searches, the
  * product search, and a customer's order history — at p95 ≤ 300 ms (≤ 600 ms for lists and
  * searches on `large`), plus the 144-variant product create at p95 of 20 after 5 ≤ 500 ms.
+ * U5 (P25; NFR6.34, NFR6.35): with the newest orders linked to customers and variants, the
+ * match index, a linked create (customer + 5 linked lines) and a linked detail join the timed
+ * routes at p95 ≤ 300 ms; the order list and detail now read their names through C8.
  * Prints p50/p95/max per route and one result line; exits 1 when any target is missed.
  */
 import postgres from "postgres";
@@ -144,6 +147,17 @@ const benchProduct = (sku: string, variants: 12 | 144) => {
   };
 };
 
+/*
+ * U5 (P25, NFR6.34, NFR6.35): linked orders. Besides U4's 200 history orders on one customer,
+ * the 200 NEWEST orders are linked to 200 different customers and every line of the 500
+ * newest orders to a variant (spread over the catalog), so the list's first page and the
+ * detail read real names; then `GET /api/catalog/match-index` (500 products × 12 variants on
+ * `base`), `POST /api/orders` with a linked customer and 5 linked lines, and the detail of a
+ * linked order are timed at p95 ≤ 300 ms.
+ */
+const LINKED_CUSTOMER_ORDERS = 200;
+const LINKED_LINE_ORDERS = 500;
+
 interface CatalogProfile {
   readonly customers: number;
   readonly products: number;
@@ -152,6 +166,8 @@ interface CatalogProfile {
   readonly productId: string;
   readonly variantId: string;
   readonly supplierId: string;
+  /** U5: five variants of one product, for the linked create. */
+  readonly variantIds: ReadonlyArray<string>;
 }
 
 /** P23: the catalog rows in a few set-based statements (admin login), then ANALYZE. */
@@ -214,13 +230,16 @@ const seedCatalogProfile = async (
       `;
     });
     const [picked] = await admin<
-      { customer: string; product: string; variant: string; supplier: string }[]
+      { customer: string; product: string; variant: string; supplier: string; five: string[] }[]
     >`
       SELECT (SELECT id FROM customers WHERE business_id = ${businessId} ORDER BY created_at DESC LIMIT 1) AS customer,
              (SELECT id FROM products WHERE business_id = ${businessId} AND sku = 'BP-100') AS product,
              (SELECT v.id FROM variants v JOIN products p ON p.id = v.product_id
               WHERE p.sku = 'BP-100' AND v.sku_suffix = '2') AS variant,
-             (SELECT id FROM suppliers WHERE business_id = ${businessId} ORDER BY name LIMIT 1) AS supplier
+             (SELECT id FROM suppliers WHERE business_id = ${businessId} ORDER BY name LIMIT 1) AS supplier,
+             (SELECT array_agg(v.id::text ORDER BY v.sku_suffix) FROM variants v
+              JOIN products p ON p.id = v.product_id
+              WHERE p.sku = 'BP-200' AND v.sku_suffix IN ('3', '4', '5', '6', '7')) AS five
     `;
     if (picked === undefined) throw new Error("the catalog profile seeded nothing");
     await admin`
@@ -228,6 +247,27 @@ const seedCatalogProfile = async (
       WHERE id IN (SELECT id FROM orders WHERE business_id = ${businessId}
                    ORDER BY created_at LIMIT ${CATALOG_HISTORY_ORDERS})
     `;
+    // U5 (NFR6.34): the newest orders on distinct customers, and their lines on variants.
+    await admin`
+      UPDATE orders o SET customer_id = c.id
+      FROM (SELECT id, row_number() OVER (ORDER BY created_at, id) AS n FROM customers
+            WHERE business_id = ${businessId}) c,
+           (SELECT id, row_number() OVER (ORDER BY created_at DESC, id DESC) AS n FROM orders
+            WHERE business_id = ${businessId} ORDER BY created_at DESC, id DESC
+            LIMIT ${LINKED_CUSTOMER_ORDERS}) r
+      WHERE o.id = r.id AND c.n = r.n
+    `;
+    await admin`
+      UPDATE order_items i SET variant_id = v.id
+      FROM (SELECT id, row_number() OVER (ORDER BY created_at DESC, id DESC) AS m FROM orders
+            WHERE business_id = ${businessId} ORDER BY created_at DESC, id DESC
+            LIMIT ${LINKED_LINE_ORDERS}) o,
+           (SELECT id, row_number() OVER (ORDER BY id) - 1 AS n FROM variants
+            WHERE business_id = ${businessId}) v
+      WHERE i.order_id = o.id AND v.n = (o.m * 5 + i.line_no) % ${products * 12}
+    `;
+    await admin`ANALYZE orders`;
+    await admin`ANALYZE order_items`;
     await admin`ANALYZE customers`;
     await admin`ANALYZE customer_notes`;
     await admin`ANALYZE products`;
@@ -241,6 +281,7 @@ const seedCatalogProfile = async (
       productId: picked.product,
       variantId: picked.variant,
       supplierId: picked.supplier,
+      variantIds: picked.five,
     };
   } finally {
     await admin.end({ timeout: 5 });
@@ -451,6 +492,22 @@ const main = async (): Promise<void> => {
         body: JSON.stringify(body),
       });
     const catRead = (path: string) => fetch(`${base}${path}`, { headers: { Cookie: cookie } });
+    // U5 (NFR6.34): one order linked to a customer and 5 variants, for the linked detail.
+    if (cat.variantIds.length !== 5) throw new Error("the catalog profile has no 5 variants");
+    const linkedLines = cat.variantIds.map((variantId, n) => ({
+      variantId,
+      description: `লাইন ${n + 1}`,
+      quantity: 1,
+      unitPricePaise: 50_000,
+      lineDiscountPaise: 0,
+    }));
+    const linked = await createOrder(seedSql, ctx, {
+      ...orderInput(0),
+      customerId: cat.customerId,
+      items: linkedLines,
+    });
+    if (!linked.ok) throw new Error(`linked order: ${JSON.stringify(linked.error)}`);
+    const linkedOrderId = linked.value.id;
     // NFR6.27: on the large profile, lists and searches may take up to 600 ms (p95).
     const listLimit = large ? CATALOG_LARGE_LIST_P95_MS : ROUTE_P95_MS;
     const catalogTimed: Array<{
@@ -532,6 +589,26 @@ const main = async (): Promise<void> => {
       {
         route: "PATCH /api/suppliers/:id",
         make: (i) => catWrite("PATCH", `/api/suppliers/${cat.supplierId}`, { name: `S ${i}` }),
+      },
+      // U5 (NFR6.35): the paste screen's match index over the whole catalog profile.
+      {
+        route: "GET /api/catalog/match-index",
+        make: () => catRead("/api/catalog/match-index"),
+        limit: listLimit,
+      },
+      // U5 (NFR6.34): a create linked to a customer with 5 linked lines, and a linked detail.
+      {
+        route: "POST /api/orders (linked customer, 5 linked lines)",
+        make: (i) =>
+          catWrite("POST", "/api/orders", {
+            ...orderInput(i),
+            customerId: cat.customerId,
+            items: linkedLines,
+          }),
+      },
+      {
+        route: "GET /api/orders/:id (linked)",
+        make: () => catRead(`/api/orders/${linkedOrderId}`),
       },
     ];
 

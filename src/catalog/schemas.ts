@@ -323,3 +323,22 @@ export const LowStockResponseSchema = z.object({
   truncated: z.boolean(),
 });
 export type LowStockResponse = z.infer<typeof LowStockResponseSchema>;
+
+/**
+ * U5 (contract C7 amendment E3; BR5.1; S36): the paste screen's match index. Ids, names,
+ * the SKU, axis names and each variant's axis values only — no cost and no stock, so the
+ * shape itself cannot carry them (NFR1.17).
+ */
+export const MatchIndexResponseSchema = z.object({
+  products: z.array(
+    z.object({
+      productId: z.string(),
+      name: z.string(),
+      sku: z.string(),
+      axisNames: z.array(z.string()),
+      variants: z.array(z.object({ variantId: z.string(), axisValues: z.array(z.string()) })),
+    }),
+  ),
+  truncated: z.boolean(),
+});
+export type MatchIndexResponse = z.infer<typeof MatchIndexResponseSchema>;

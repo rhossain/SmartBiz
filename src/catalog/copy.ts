@@ -24,6 +24,8 @@ const COPY = {
   "cat.total": L("মোট", "Total"),
   "cat.truncated": L("প্রথম ২০০টি দেখানো হচ্ছে", "Showing the first 200"),
   "cat.saved": L("সংরক্ষণ হয়েছে", "Saved"),
+  // U5 (BR8.1, U4 review R-02): the money cap, said under the field instead of a generic 400.
+  "cat.money_cap": L("সর্বোচ্চ ৳১,০০,০০,০০০", "At most ৳10,000,000"),
   "cat.back.customers": L("ক্রেতা তালিকায় ফিরুন", "Back to customers"),
   "cat.back.customer": L("ক্রেতায় ফিরুন", "Back to the customer"),
   "cat.back.products": L("পণ্য তালিকায় ফিরুন", "Back to products"),

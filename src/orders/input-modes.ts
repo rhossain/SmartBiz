@@ -92,14 +92,19 @@ export const buildRepeatOrder = (past: Order): CreateOrderInput => ({
 
 /**
  * Turn a parse into an order once the person has priced each line
- * (unit prices come from the screen until the B3 catalog supplies them).
+ * (the match index carries no price, so unit prices come from the screen).
  * An item still marked incomplete must be fixed first: saving it would
  * store a size, colour or quantity the parser refused to guess.
+ * U5 (W3 step 4; BR5.3, BR6.1): each line carries the variant the parser
+ * picked from that item's own words (or the person picked), and the order
+ * carries the customer the phone suggestion selected; the server checks
+ * both (BR1.1). The line's description stays the person's own words (BR1.3).
  */
 export const buildPasteParseOrder = (
   parsed: ParsedMessage,
   unitPricesPaise: ReadonlyArray<number>,
   deliveryChargePaise: number,
+  customerId: string | null = null,
 ): Result<CreateOrderInput, InvalidInput> => {
   if (unitPricesPaise.length !== parsed.items.length) {
     return err({ kind: "invalid_input", message: "one unit price is needed per parsed item" });
@@ -113,13 +118,11 @@ export const buildPasteParseOrder = (
   }
   return ok({
     source: "paste-parse",
-    customerId: null,
+    customerId,
     contact: parsed.contact,
     repeatOfOrderId: null,
-    // variantId stays null: the parser knows a product, not a variant, and
-    // the B3 catalog resolves the variant from the line's own words.
     items: parsed.items.map((item, index) => ({
-      variantId: null,
+      variantId: item.variantId,
       description: item.text,
       quantity: item.quantity,
       unitPricePaise: unitPricesPaise[index] ?? 0,

@@ -28,7 +28,15 @@ import { Screen } from "../../pres/Screen.js";
 import { useSubmitGuard } from "../../pres/use-submit-guard.js";
 import { digits, taka, tr } from "../copy.js";
 import type { ProductResponse, VariantResponse } from "../schemas.js";
-import { FormFailure, LoadState, parseCount, parseTaka, takaText, useLoad } from "./parts.js";
+import {
+  FormFailure,
+  LoadState,
+  parseCount,
+  parseTaka,
+  takaProblem,
+  takaText,
+  useLoad,
+} from "./parts.js";
 import type { CatalogRouteState } from "./render-catalog-route.js";
 
 interface Typed {
@@ -73,7 +81,7 @@ const CostAction = ({
           setLocal(null);
           const paise = parseTaka(text);
           if (paise === null) {
-            setLocal(lookup("common.error", locale));
+            setLocal(takaProblem(text, locale));
             return false;
           }
           const r = await api.products.setCost(product.id, { purchaseCostPaise: paise });

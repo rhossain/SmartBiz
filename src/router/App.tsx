@@ -49,6 +49,11 @@
  *     the route's id, a customer's order history read over the order list with each order's
  *     status bucket, and what happens after a save — the toast on the route the save went to
  *     and, for a customer, the duplicate-phone warning on its detail.
+ *
+ * U5 (BR4.1, BR4.2, BR5.1, BR6.1): App builds the order screens' catalog loaders over the same
+ * catalog client — customer search, product search, a product's variants with their labels
+ * and selling price, the match index, and the customers of one phone — and passes them in the
+ * orders route state, so the screens stay free of the client (BR7.4).
  */
 import * as React from "react";
 import { hasCapability } from "../auth/capability.js";
@@ -109,6 +114,8 @@ import {
   type SaveOrder,
 } from "../orders/order-draft.js";
 import type { OrdersRouteState } from "../orders/screens/render-orders-route.js";
+import type { CustomerChoice, OrdersCatalog } from "../orders/screens/OrderLinks.js";
+import { variantLabel } from "../catalog/index.js";
 import type { Order } from "../orders/types.js";
 import { ErrorBanner, RequestState } from "../pres/RequestState.js";
 import { Shell, type NavItem } from "../pres/Shell.js";
@@ -229,6 +236,47 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
   const staff = React.useMemo(() => deps.staff ?? createStaffApi(http), [deps.staff, http]);
   const catalog = React.useMemo(() => deps.catalog ?? createCatalogApi(http), [deps.catalog, http]);
   const [catalogNotice, setCatalogNotice] = React.useState<CatalogNotice | null>(null);
+  // U5 (BR4.1, BR4.2, BR5.1, BR6.1): the order screens' catalog loaders, over the same
+  // catalog client; a failed request is null, which the screens show as "search failed".
+  const ordersCatalog = React.useMemo<OrdersCatalog>(() => {
+    const customerChoices = async (
+      q: string,
+      limit: number,
+    ): Promise<ReadonlyArray<CustomerChoice> | null> => {
+      const r = await catalog.customers.list({ q, limit });
+      return r.ok
+        ? r.value.customers.map((c) => ({
+            id: c.id,
+            name: c.name,
+            phone: c.phone,
+            address: c.address,
+          }))
+        : null;
+    };
+    return {
+      searchCustomers: (q) => customerChoices(q, 10),
+      customersByPhone: (phone) => customerChoices(phone, 50),
+      searchProducts: async (q) => {
+        const r = await catalog.products.list({ q, limit: 10 });
+        return r.ok ? r.value.products.map((p) => ({ id: p.id, name: p.name, sku: p.sku })) : null;
+      },
+      productVariants: async (productId) => {
+        const r = await catalog.products.get(productId);
+        if (!r.ok) return null;
+        const product = r.value;
+        return product.variants.map((v) => ({
+          productId: product.id,
+          variantId: v.id,
+          label: variantLabel(product.name, v.axisValues),
+          sellingPricePaise: product.sellingPricePaise,
+        }));
+      },
+      matchIndex: async () => {
+        const r = await catalog.matchIndex();
+        return r.ok ? r.value : null;
+      },
+    };
+  }, [catalog]);
   // BR5.4: a customer's orders with their status bucket, read over C3's order list.
   const customerOrders = React.useCallback(
     async (customerId: string): Promise<ApiResult<ReadonlyArray<HistoryOrder>>> => {
@@ -449,6 +497,7 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
       if (routeId !== null) void openOrder(ordersStore, orders, routeId);
     },
     recent: list.recent,
+    catalog: ordersCatalog,
   };
 
   // U4 (BR13.1–BR13.3): the catalog screens' state. What the role may do comes from the same

@@ -10,6 +10,9 @@
  *   total) goes through MoneyCell and carries the order's basis and
  *   completeness: an order's money is earned until it is settled.
  * - Mutating controls are shown only when the role may mutate orders.
+ * - U5 (E5, BR3.1): the customer shown is the linked customer's current name
+ *   (`customerName`), else the contact's; each line shows its variant's label, else its
+ *   own description.
  */
 import * as React from "react";
 import type { Locale, OrderStatus } from "../../data/enums.js";
@@ -22,11 +25,12 @@ import { orderMoneyFigure } from "../status-bucket.js";
 import { MoneyCell } from "../../pres/MoneyCell.js";
 import { statusText, statusTone } from "../../pres/status-labels.js";
 import { nextStatuses } from "../status-fsm.js";
-import type { Order } from "../types.js";
+import type { NamedOrder, Order } from "../types.js";
 import { tr } from "./copy.js";
 
 export interface OrderDetailProps {
-  readonly order: Order;
+  /** U5 (E5): with the linked customer's name and each line's label when the server gave them. */
+  readonly order: NamedOrder;
   readonly locale: Locale;
   readonly canMutate: boolean;
   readonly onTransition: (to: OrderStatus) => void;
@@ -56,12 +60,14 @@ export const OrderDetail = ({
           {tr("orders.source", locale)}: {order.source}
         </span>
       </div>
-      {order.contact ? (
+      {order.contact || order.customerName ? (
         <div data-testid="order-detail-contact">
           <h3>{tr("detail.contact", locale)}</h3>
-          <p>{order.contact.name ?? ""}</p>
-          <p>{order.contact.phone ?? ""}</p>
-          <p>{order.contact.address ?? ""}</p>
+          <p data-testid="order-detail-customer">
+            {order.customerName ?? order.contact?.name ?? ""}
+          </p>
+          <p>{order.contact?.phone ?? ""}</p>
+          <p>{order.contact?.address ?? ""}</p>
         </div>
       ) : null}
       <h3>{tr("detail.items", locale)}</h3>
@@ -70,7 +76,7 @@ export const OrderDetail = ({
           {order.items.map((item) => (
             <tr key={item.id} data-testid="order-detail-item">
               <td>{item.lineNo}</td>
-              <td>{item.description}</td>
+              <td data-testid="order-detail-item-label">{item.label ?? item.description}</td>
               <td>{item.quantity}</td>
               <td>
                 <MoneyCell

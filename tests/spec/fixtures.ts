@@ -32,6 +32,7 @@ import {
   CustomerListResponseSchema,
   CustomerWriteResponseSchema,
   LowStockResponseSchema,
+  MatchIndexResponseSchema,
   NoteWriteResponseSchema,
   ProductListResponseSchema,
   ProductSchema,
@@ -499,6 +500,27 @@ export const API_FIXTURES: Readonly<Record<string, ApiFixture>> = {
       truncated: false,
     },
     schema: LowStockResponseSchema,
+  },
+  // U5 (C7 amendment E3): ids, names, SKU and axes only — no cost, no stock.
+  "GET /api/catalog/match-index": {
+    status: 200,
+    body: {
+      products: [
+        {
+          productId: PRODUCT_BODY.id,
+          name: PRODUCT_BODY.name,
+          sku: "KURTI-SEED",
+          axisNames: ["সাইজ"],
+          variants: [
+            { variantId: CATALOG_IDS.variant, axisValues: ["M"] },
+            { variantId: CATALOG_IDS.variant2, axisValues: ["L"] },
+          ],
+        },
+      ],
+      truncated: false,
+    },
+    schema: MatchIndexResponseSchema,
+    badQuery: "q=x",
   },
   "GET /api/suppliers": {
     status: 200,

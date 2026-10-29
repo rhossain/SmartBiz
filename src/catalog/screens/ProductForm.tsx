@@ -42,6 +42,7 @@ import {
   LoadState,
   parseCount,
   parseTaka,
+  takaProblem,
   takaText,
   useLoad,
 } from "./parts.js";
@@ -176,7 +177,14 @@ const NewProduct = ({
       }));
       const countsOk = variants.every((v) => v.stock !== null && v.minimumStock !== null);
       if (price === null || (values.cost.trim() !== "" && cost === null) || !countsOk) {
-        setLocal(lookup("common.error", locale));
+        // U5 (BR8.1): an amount above the cap says so; anything else is "not valid".
+        setLocal(
+          price === null
+            ? takaProblem(values.price, locale)
+            : values.cost.trim() !== "" && cost === null
+              ? takaProblem(values.cost, locale)
+              : lookup("common.error", locale),
+        );
         return false;
       }
       const body = {
@@ -406,7 +414,7 @@ const EditProduct = ({
       setLocal(null);
       const price = parseTaka(values.price);
       if (price === null) {
-        setLocal(lookup("common.error", locale));
+        setLocal(takaProblem(values.price, locale));
         return false;
       }
       const patch = productPatch(product, values, price);

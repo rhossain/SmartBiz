@@ -29,8 +29,10 @@ export {
   type Consignment,
   type LinkConsignmentInput,
 } from "./consignment.js";
-export { getCustomer, type Customer } from "./customer.js";
-export { getVariant, type Variant } from "./variant.js";
+// U5 (BR1.2, O14): the B2 catalog stubs are gone; orders read the catalog through C8
+// (src/catalog/index.ts) inside checkLinks and enrichSummaries.
+export { checkLinks, linksToCheck } from "./check-links.js";
+export { enrichSummaries, orderNames, withNames } from "./enrich-summaries.js";
 export {
   canTransition,
   nextStatuses,
@@ -59,8 +61,11 @@ export { parseMessage, MAX_PARSE_ITEMS, MAX_PARSE_CHARS } from "./parse-message.
 export {
   splitSegments,
   readSegment,
+  prepareCatalog,
+  pickVariant,
   CONNECTORS,
   type CatalogEntry,
+  type MatchIndexInput,
 } from "./parse-message-segments.js";
 export {
   buildManualOrder,
@@ -72,7 +77,7 @@ export {
 } from "./input-modes.js";
 export { deferInput, DEFERRED_INPUT_EVENT, type DeferredInputResult } from "./deferred-input.js";
 export { parseTakaToPaise } from "./order-total.js";
-export { reparseItem } from "./parse-message.js";
+export { reparseItem, linkItem } from "./parse-message.js";
 export {
   createOrderDraftStore,
   saveDraft,

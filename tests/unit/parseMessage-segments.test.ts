@@ -14,7 +14,7 @@
  */
 import { describe, expect, test } from "bun:test";
 import { parseMessage } from "../../src/orders/parse-message.js";
-import { splitSegments } from "../../src/orders/parse-message-segments.js";
+import { prepareCatalog, splitSegments } from "../../src/orders/parse-message-segments.js";
 import type { ParsedItem } from "../../src/orders/types.js";
 
 interface Expected {
@@ -273,16 +273,20 @@ describe("R2.2 — segment isolation: an item's details come from the item's own
   });
 
   test("a catalog resolves the product from the segment's own words only", () => {
-    const catalog = [
-      { productId: "P-001", words: ["কুর্তি"] },
-      { productId: "P-002", words: ["ওড়না"] },
-    ];
+    // U5 (BR5.2): the match index, prepared once; each product's whole name is its key.
+    const catalog = prepareCatalog({
+      products: [
+        { productId: "P-001", name: "কুর্তি", sku: "KRT", axisNames: [], variants: [] },
+        { productId: "P-002", name: "ওড়না", sku: "ODN", axisNames: [], variants: [] },
+      ],
+    });
     const r = parseMessage("কালো কুর্তি M ১টা আর গোলাপি ওড়না ১টা", catalog);
     expect(r.ok && r.items.map((i) => i.productId)).toEqual(["P-001", "P-002"]);
     const both = parseMessage("কুর্তি ওড়না সেট ১টা", catalog);
     expect(both.ok && both.items[0]).toMatchObject({ productId: null, incomplete: true });
+    // BR5.2 "none → unlinked": an item matching no product is unlinked, not blocked (Q4).
     const unknown = parseMessage("লাল জুতা ১টা", catalog);
-    expect(unknown.ok && unknown.items[0]).toMatchObject({ productId: null, incomplete: true });
+    expect(unknown.ok && unknown.items[0]).toMatchObject({ productId: null, incomplete: false });
   });
 
   test("contact is read from whole lines, and those lines never become items", () => {

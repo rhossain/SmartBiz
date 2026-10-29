@@ -11,6 +11,7 @@
  * with its supplier or null, by product name, and stops at 200 with `truncated`.
  */
 import { describe, expect, test } from "bun:test";
+import { resetTestClock, setTestClock } from "../../src/data/clock.js";
 import { listLowStock } from "../../src/catalog/low-stock.js";
 import { createProduct } from "../../src/catalog/products.js";
 import { setCost, setStock } from "../../src/catalog/stock.js";
@@ -107,10 +108,31 @@ describe("setCost (W9, BR9.1, BR1.4)", () => {
       subjectId: product.id,
       payload: { before: null, after: 70_000 },
     });
+    // U5 (BR8.1): the cost and the updated time, nothing else.
     const updates = stub.calls.filter((c) => /UPDATE products/.test(c.text));
     expect(updates.map((c) => c.text.replace(/\s+/g, " ").trim())).toEqual([
-      "UPDATE products SET purchase_cost_paise = ? WHERE id = ? AND business_id = ?",
+      "UPDATE products SET purchase_cost_paise = ?, updated_at = ? WHERE id = ? AND business_id = ?",
     ]);
+  });
+
+  test("U5 BR8.1: a cost change moves the product's updated time; a no-op does not", async () => {
+    setTestClock(new Date("2026-10-27T08:00:00.000Z"));
+    try {
+      const { stub, product } = await withProduct();
+      setTestClock(new Date("2026-10-28T09:30:00.000Z"));
+      const same = must(await setCost(stub.sql, owner, product.id, { purchaseCostPaise: 80_000 }));
+      expect(same.updatedAt).toBe("2026-10-27T08:00:00.000Z");
+      const changed = must(
+        await setCost(stub.sql, owner, product.id, { purchaseCostPaise: 85_000 }),
+      );
+      expect([changed.purchaseCostPaise, changed.updatedAt]).toEqual([
+        85_000,
+        "2026-10-28T09:30:00.000Z",
+      ]);
+      expect(changed.createdAt).toBe("2026-10-27T08:00:00.000Z");
+    } finally {
+      resetTestClock();
+    }
   });
 
   test("the same cost writes nothing; Sales Staff is refused; the body is exactly the cost", async () => {

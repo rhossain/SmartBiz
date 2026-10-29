@@ -320,6 +320,22 @@
       "find": "export const isLow = (stock: number, minimumStock: number): boolean => stock < minimumStock;",
       "replace": "export const isLow = (stock: number, minimumStock: number): boolean => stock <= minimumStock;",
       "test": "tests/unit/catalog-product-shape.test.ts"
+    },
+    {
+      "id": "variant-labels-drops-business-filter",
+      "why": "An order links only to the session's business's variants: checkLinks asks C8's variantLabels, which must filter by business (U5 BR1.1, S34, NFR1.16, O15). Without the filter another business's variant passes the check and the composite key throws 23503 instead of the expected 404.",
+      "file": "src/catalog/index.ts",
+      "find": "WHERE v.business_id = ${ctx.businessId} AND v.id = ANY(${sql.array(wanted)}::uuid[])",
+      "replace": "WHERE v.id = ANY(${sql.array(wanted)}::uuid[])",
+      "test": "tests/realdb/orders-catalog.realdb.test.ts"
+    },
+    {
+      "id": "paste-links-first-of-several",
+      "why": "Words matching several products leave the item unlinked and incomplete for the person to pick (U5 BR5.2, AC4.2.3, NFR5.11, review R-01); linking the first match guesses.",
+      "file": "src/orders/parse-message-segments.ts",
+      "find": "  const product = single(matchProducts(segment, ascii, catalog));",
+      "replace": "  const product = { value: matchProducts(segment, ascii, catalog)[0] ?? null, ambiguous: false };",
+      "test": "tests/unit/parseMessage-catalog.test.ts"
     }
   ]
 }

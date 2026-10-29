@@ -1234,6 +1234,68 @@ button:disabled {
   color: var(--color-text-2);
 }
 
+/* U5 (NFR9.14): CatalogPicker — a search input over a list of options; at 360 px the list
+   wraps its text and never widens the page. */
+.picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-bottom: var(--space-3);
+  max-width: 100%;
+}
+
+.picker input {
+  min-width: 0;
+}
+
+.picker__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--color-control-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  overflow-wrap: anywhere;
+}
+
+.picker__list[hidden] {
+  display: none;
+}
+
+.picker__option {
+  padding: var(--space-2) var(--space-3);
+  cursor: pointer;
+}
+
+.picker__option--active {
+  background: var(--color-bg-neutral);
+  color: var(--color-text);
+}
+
+.shell__main .picker__note {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-text-2);
+}
+
+/* U5 (BR4.1, BR4.2, BR6.1): a linked customer or line, with its change and unlink actions. */
+.link-chip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-success);
+  color: var(--color-text);
+  overflow-wrap: anywhere;
+}
+
+.link-chip__name {
+  font-weight: 600;
+}
+
 .cat-head {
   display: flex;
   flex-wrap: wrap;

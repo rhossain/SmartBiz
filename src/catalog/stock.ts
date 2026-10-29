@@ -13,7 +13,8 @@
  *
  * `setCost` (W9): `money.mutate.cost` or `money.mutate.full` (Owner, Manager, Accountant;
  * BR1.4). The body is exactly the cost (BR9.1). Lock the product, write `product.cost.set`
- * {before, after} (before may be null = not recorded), update ONLY the cost column, answer
+ * {before, after} (before may be null = not recorded), update the cost and (U5 BR8.1) the
+ * product's updated time — nothing else — and answer
  * the whole product — through `productView` in the handler, so the cost reaches only roles
  * that may see it (BR9.2).
  */
@@ -106,8 +107,9 @@ export const setCost = async (
         ctx,
         productCostSet(before.id, { before: before.purchaseCostPaise, after: cost }),
       );
+      // U5 (BR8.1, U4 review R-01): the cost change moves the product's updated time too.
       await tx`
-        UPDATE products SET purchase_cost_paise = ${cost}
+        UPDATE products SET purchase_cost_paise = ${cost}, updated_at = ${now().toISOString()}
         WHERE id = ${before.id} AND business_id = ${ctx.businessId}
       `;
     }

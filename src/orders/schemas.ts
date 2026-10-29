@@ -19,6 +19,7 @@ import {
   MAX_ORDER_ITEMS,
   OrderContactSchema,
   OrderItemInputSchema,
+  OrderItemSchema,
   OrderSchema,
   OrderSourceSchema,
   OrderStatusSchema,
@@ -71,9 +72,15 @@ export const ListOrdersQuerySchema = z
   .strict();
 export type ListOrdersQuery = z.infer<typeof ListOrdersQuerySchema>;
 
-/** The B2 Order as JSON, plus its consignment link once one exists (C3 `Order`). */
+/**
+ * The B2 Order as JSON, plus its consignment link once one exists (C3 `Order`). U5 (E5,
+ * BR3.1): plus the linked customer's current name and each line's label, read from the
+ * catalog at answer time (additive and optional, so an older body still parses).
+ */
 export const OrderResponseSchema = OrderSchema.extend({
   consignment: ConsignmentLinkSchema.nullable(),
+  customerName: z.string().nullable().optional(),
+  items: z.array(OrderItemSchema.extend({ label: z.string().optional() })).max(MAX_ORDER_ITEMS),
 });
 export type OrderResponse = z.infer<typeof OrderResponseSchema>;
 

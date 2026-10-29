@@ -15,6 +15,7 @@ import { transitionStatus } from "../../src/orders/transition-status.js";
 import { linkConsignment } from "../../src/orders/consignment.js";
 import type { Order } from "../../src/orders/types.js";
 import { makeSqlStub, type RecordedCall } from "../helpers/sql-stub.js";
+import { CATALOG_IDS, catalogWorld, seedCatalog } from "../helpers/catalog-fixtures.js";
 import {
   BUSINESS_A,
   OWNER_A,
@@ -77,6 +78,42 @@ describe("R-05 — no customer PII in the audit log", () => {
     expect(edit.contactChanged).toBe(true);
     expect(edit.after.contact).toEqual({ present: true, fields: ["name", "phone"] });
     expect(noEdit.contactChanged).toBe(false);
+  });
+
+  test("U5 (NFR3.30, S38): a linked order's rows carry the ids, never the catalog's names or phones", async () => {
+    const stub = await catalogWorld();
+    seedCatalog(stub);
+    const r = await createOrder(
+      stub.sql,
+      ctx,
+      createInput({
+        customerId: CATALOG_IDS.customer,
+        items: [itemInput({ variantId: CATALOG_IDS.variant })],
+      }),
+    );
+    if (!r.ok) throw new Error(JSON.stringify(r.error));
+    await updateOrder(stub.sql, ctx, r.value.id, {
+      items: [itemInput({ variantId: CATALOG_IDS.variant2 })],
+    });
+    const payloads = stub.state.auditLog
+      .filter((a) => String(a["action"]).startsWith("order."))
+      .map((a) => String(a["payload"]));
+    expect(payloads).toHaveLength(2);
+    for (const raw of payloads) {
+      for (const value of ["রিনা আক্তার", "01712345678", "সুতির কুর্তি"]) {
+        expect({ value, inAudit: raw.includes(value) }).toEqual({ value, inAudit: false });
+      }
+    }
+    const created = JSON.parse(payloads[0] ?? "{}") as {
+      after: { customerId: string; items: Array<{ variantId: string }> };
+    };
+    expect(created.after.customerId).toBe(CATALOG_IDS.customer);
+    expect(created.after.items.map((i) => i.variantId)).toEqual([CATALOG_IDS.variant]);
+    // The payload's shape is unchanged by the link: no name or label keys were added.
+    const plain = makeSqlStub();
+    await seedOrder(plain);
+    const plainAfter = auditPayload(plain.state.auditLog[0] ?? {}).after as object;
+    expect(Object.keys(created.after).sort()).toEqual(Object.keys(plainAfter).sort());
   });
 });
 

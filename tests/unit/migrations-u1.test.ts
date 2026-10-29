@@ -220,10 +220,89 @@ describe("U1 migrations 0011–0015 (text)", () => {
     "0022_create_variants.sql": "GRANT SELECT, INSERT, UPDATE ON variants TO app_role",
   };
 
-  test("U4: 0018–0022 run right after 0017, in foreign-key order, and are last (D9)", () => {
+  test("U4: 0018–0022 run right after 0017, in foreign-key order (D9)", () => {
     const files = listMigrations();
     const at = files.indexOf("0017_unique_token_hashes.sql");
-    expect(files.slice(at + 1)).toEqual([...U4_MIGRATIONS]);
+    expect(files.slice(at + 1, at + 6)).toEqual([...U4_MIGRATIONS]);
+  });
+
+  /*
+   * U5 (u5-orders-catalog; BR2.1; S35, R21; NFR2.7, NFR7.28; contract C9 amendment E4).
+   * Restated: 0023 runs right after 0022 and is the last file; it opens with its
+   * OrdersComponent / U5 header; it is four DO blocks only (no bare ALTER, so a second apply
+   * changes nothing): the variants (business_id, id) key and the two composite foreign keys
+   * each added only when pg_constraint lacks their fixed name, and each column nulled on the
+   * TEXT side then turned into uuid only while information_schema still says `text`; it
+   * grants and revokes nothing, deletes nothing and never names audit_log.
+   */
+  const U5_FILE = "0023_link_orders_to_catalog.sql";
+
+  test("U5: 0023 runs right after 0022 and is last; its header names OrdersComponent and U5", () => {
+    const files = listMigrations();
+    const at = files.indexOf("0022_create_variants.sql");
+    expect(files.slice(at + 1)).toEqual([U5_FILE]);
+    expect(read(U5_FILE).split("\n")[0]).toMatch(
+      /^-- 0023 — OrdersComponent, U5 u5-orders-catalog/,
+    );
+  });
+
+  test("U5: 0023 is four guarded DO blocks; no grant, delete, extension or audit_log (NFR2.7)", () => {
+    const s23 = statements(read(U5_FILE));
+    expect(s23).toHaveLength(4);
+    for (const s of s23) expect(s).toMatch(/^DO \$\$[\s\S]*\$\$$/);
+    const body = s23.join(";\n");
+    expect(body).not.toMatch(/\b(GRANT|REVOKE)\b/i);
+    expect(body.replace(/ON DELETE RESTRICT/g, "")).not.toMatch(/\bDELETE\b/i);
+    expect(body).not.toMatch(/\baudit_log\b/i);
+    expect(body).not.toMatch(/CREATE\s+EXTENSION/i);
+  });
+
+  test("U5: each constraint has a fixed name and is added only when absent (review R-02)", () => {
+    const s23 = read(U5_FILE);
+    for (const [name, def] of [
+      ["variants_business_id_id_key", /UNIQUE \(business_id, id\)/],
+      [
+        "orders_customer_fkey",
+        /FOREIGN KEY \(business_id, customer_id\)\s+REFERENCES customers \(business_id, id\)/,
+      ],
+      [
+        "order_items_variant_fkey",
+        /FOREIGN KEY \(business_id, variant_id\)\s+REFERENCES variants \(business_id, id\)/,
+      ],
+    ] as const) {
+      expect(s23).toMatch(
+        new RegExp(`IF NOT EXISTS \\(SELECT 1 FROM pg_constraint WHERE conname = '${name}'\\)`),
+      );
+      expect(s23).toMatch(new RegExp(`ADD CONSTRAINT ${name} `));
+      expect(s23).toMatch(def);
+    }
+  });
+
+  test("U5: each column is nulled on the text side, then made uuid, only while it is text", () => {
+    const s23 = read(U5_FILE);
+    for (const [table, column, parent, alias] of [
+      ["orders", "customer_id", "customers", "o"],
+      ["order_items", "variant_id", "variants", "i"],
+    ] as const) {
+      expect(s23).toMatch(
+        new RegExp(
+          `table_name = '${table}'\\s+AND column_name = '${column}' AND data_type = 'text'`,
+        ),
+      );
+      // The comparison casts the PARENT's uuid to text; the TEXT id is never cast before nulling.
+      expect(s23).toMatch(
+        new RegExp(
+          `FROM ${parent} \\w\\s+WHERE \\w\\.business_id = ${alias}\\.business_id AND \\w\\.id::text = lower\\(${alias}\\.${column}\\)`,
+        ),
+      );
+      expect(s23).toMatch(
+        new RegExp(`ALTER TABLE ${table} ALTER COLUMN ${column} TYPE uuid USING ${column}::uuid`),
+      );
+      const nulling = s23.indexOf(`UPDATE ${table} ${alias} SET ${column} = NULL`);
+      const altering = s23.indexOf(`ALTER TABLE ${table} ALTER COLUMN ${column}`);
+      expect(nulling).toBeGreaterThan(0);
+      expect(nulling).toBeLessThan(altering);
+    }
   });
 
   test("U4: each opens with a comment naming CatalogComponent and U4 (C9, BR12.1)", () => {

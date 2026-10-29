@@ -38,7 +38,7 @@ import {
   type DuplicateShown,
 } from "../../src/catalog/screens/render-catalog-route.js";
 import { noteChains } from "../../src/catalog/screens/CustomerDetail.js";
-import { parseCount, parseTaka, takaText } from "../../src/catalog/screens/parts.js";
+import { parseCount, parseTaka, takaProblem, takaText } from "../../src/catalog/screens/parts.js";
 import { splitValues } from "../../src/catalog/screens/ProductForm.js";
 import type { HistoryOrder } from "../../src/catalog/types.js";
 import { browserFetch } from "../helpers/browser-fetch.js";
@@ -704,6 +704,19 @@ describe("input helpers (BR5.6, BR7.1)", () => {
       parseCount("-1"),
     ]).toEqual([7, 1_000_000, null, null]);
     expect(splitValues(" M, L ,, XL ")).toEqual(["M", "L", "XL"]);
+  });
+
+  test("U5 BR8.1: an amount above ৳১,০০,০০,০০০ is refused with the cap message, at the cap accepted", () => {
+    // Restated: the server's cap is 1 000 000 000 paise (৳10,000,000).
+    expect(parseTaka("10000000")).toBe(1_000_000_000);
+    expect(parseTaka("১,০০,০০,০০০")).toBe(1_000_000_000);
+    expect(parseTaka("10000000.01")).toBeNull();
+    expect(parseTaka("99999999")).toBeNull();
+    expect(takaProblem("10000000.01", "bn")).toBe("সর্বোচ্চ ৳১,০০,০০,০০০");
+    expect(takaProblem("99999999", "en")).toBe("At most ৳10,000,000");
+    // A malformed amount keeps the plain "not valid" message, never the cap.
+    expect(takaProblem("abc", "bn")).not.toBe("সর্বোচ্চ ৳১,০০,০০,০০০");
+    expect(takaProblem("1.234", "en")).not.toBe("At most ৳10,000,000");
   });
 });
 

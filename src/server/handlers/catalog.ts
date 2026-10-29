@@ -14,6 +14,7 @@
  *   PATCH /api/products/:id/cost      → 200 { product }
  *   PATCH /api/variants/:id/stock     → 200 { variant }
  *   GET   /api/low-stock              → 200 { variants, truncated }
+ *   GET   /api/catalog/match-index    → 200 { products, truncated }   (U5, E3)
  *   GET   /api/suppliers              → 200 { suppliers, truncated }
  *   POST  /api/suppliers              → 201 { supplier }
  *   PATCH /api/suppliers/:id          → 200 { supplier }
@@ -49,6 +50,7 @@ import {
   updateCustomer,
 } from "../../catalog/customers.js";
 import { listLowStock } from "../../catalog/low-stock.js";
+import { matchIndex } from "../../catalog/match-index.js";
 import { addNote } from "../../catalog/notes.js";
 import {
   createProduct,
@@ -283,6 +285,22 @@ const lowStockRoute = defineRoute<None, None, undefined>({
   },
 });
 
+/**
+ * U5 (C7 amendment E3; BR5.1; S36, NFR1.17): the paste screen's match index — every role
+ * (`business.view`), the session's business only, no cost and no stock. It takes no query:
+ * an unknown query key is a 400 like any other route's.
+ */
+const matchIndexRoute = defineRoute<None, None, undefined>({
+  method: "GET",
+  path: "/api/catalog/match-index",
+  access: CATALOG_READ,
+  schemas: {},
+  handler: async (ctx, deps) => {
+    const r = await matchIndex(deps.sql, catalogContext(ctx.session, ctx.correlationId));
+    return r.ok ? ok(200, r.value) : failure(r.error);
+  },
+});
+
 /* ------------------------------------------------------------------ suppliers */
 
 const suppliersListRoute = defineRoute<None, None, undefined>({
@@ -323,7 +341,7 @@ const supplierUpdateRoute = defineRoute<IdParams, None, SupplierUpdate>({
   },
 });
 
-/** C7: the fifteen catalog routes, appended to the server's route table (S26). */
+/** C7: the sixteen catalog routes (U5 adds the match index), appended to the route table (S26). */
 export const catalogRoutes = [
   customersListRoute,
   customerCreateRoute,
@@ -337,6 +355,7 @@ export const catalogRoutes = [
   costRoute,
   stockRoute,
   lowStockRoute,
+  matchIndexRoute,
   suppliersListRoute,
   supplierCreateRoute,
   supplierUpdateRoute,

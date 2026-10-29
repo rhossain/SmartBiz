@@ -25,7 +25,9 @@
  *      and `/accept-invite`, `/reset`, `/recover`), then
  *      sign-in through the real form (`Input.insertText`, Enter), then every screen row of
  *      tests/spec/role-table.ts the Owner may open; on each it waits up to 5 s for the row's
- *      heading and asserts `scrollWidth <= clientWidth`.
+ *      heading and asserts `scrollWidth <= clientWidth`. U5 (NFR9.14): then `/orders/new` again,
+ *      with the customer picker's list open and a line's variant choices shown (the run's own
+ *      customer and product), asserting the same.
  * Exit codes (I-01): 0 pass; 2 ONLY when no file exists at `CHROME_PATH` ("not run", never a
  * pass); 1 for anything else — a launch failure, a timeout, a protocol error, an assertion.
  * Clean-up (I-02) runs in `finally` and on SIGINT/SIGTERM: Chrome is sent SIGTERM, then
@@ -358,6 +360,55 @@ const screenWalk = async (
       await visit(cdp, page, hash, row, heading);
       screens += 1;
     }
+    // U5 (NFR9.14): `/orders/new` with the customer picker's list open, then a line's product
+    // picked and its variant choices shown — at 360 px nothing scrolls sideways.
+    const manual = byPath("/orders/new");
+    await visit(cdp, page, "/orders/new", manual, manual.heading);
+    const typeInto = async (testId: string, text: string): Promise<void> => {
+      await evaluate(
+        cdp,
+        page,
+        `document.querySelector('[data-testid="${testId}"]').focus(); true`,
+      );
+      await cdp.send("Input.insertText", { text }, page.sessionId);
+    };
+    const shown = (testId: string): string =>
+      `document.querySelectorAll('[data-testid="${testId}"]').length > 0`;
+    const fits = async (what: string): Promise<void> => {
+      const fit = await evaluate(cdp, page, NO_SIDEWAYS);
+      if (fit !== "ok") throw new CheckFailed(`#/orders/new ${what} at 360 px: ${String(fit)}`);
+    };
+    await typeInto("manual-customer-picker-input", "রিনা");
+    await waitUntil(
+      cdp,
+      page,
+      shown("manual-customer-picker-option"),
+      HEADING_TIMEOUT_MS,
+      "customer options",
+    );
+    await fits("with the customer list open");
+    await typeInto("manual-line-variant-1-picker-input", "কুর্তি");
+    await waitUntil(
+      cdp,
+      page,
+      shown("manual-line-variant-1-picker-option"),
+      HEADING_TIMEOUT_MS,
+      "product options",
+    );
+    await evaluate(
+      cdp,
+      page,
+      `document.querySelector('[data-testid="manual-line-variant-1-picker-option"]').click(); true`,
+    );
+    await waitUntil(
+      cdp,
+      page,
+      shown("manual-line-variant-1-variant"),
+      HEADING_TIMEOUT_MS,
+      "variant choices",
+    );
+    await fits("with the variant choices shown");
+    screens += 1;
     return screens;
   } finally {
     await closePage(cdp, page);

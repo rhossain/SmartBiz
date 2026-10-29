@@ -444,14 +444,18 @@ const handleProducts = (text: string, params: ReadonlyArray<unknown>, state: Cat
     }
     return [];
   }
+  // U5 (BR8.1): the cost update moves updated_at with the cost.
   if (
-    /^\s*UPDATE products SET purchase_cost_paise = \?\s+WHERE id = \? AND business_id = \?\s*$/i.test(
+    /^\s*UPDATE products SET purchase_cost_paise = \?, updated_at = \?\s+WHERE id = \? AND business_id = \?\s*$/i.test(
       text,
     )
   ) {
-    const [cost, id, businessId] = params;
+    const [cost, updatedAt, id, businessId] = params;
     const p = productRow(state, businessId, id);
-    if (p) p["purchase_cost_paise"] = String(cost);
+    if (p) {
+      p["purchase_cost_paise"] = String(cost);
+      p["updated_at"] = new Date(String(updatedAt));
+    }
     return [];
   }
   const listShape =
@@ -590,6 +594,65 @@ const handleVariants = (text: string, params: ReadonlyArray<unknown>, state: Cat
   return undefined;
 };
 
+/**
+ * U5 (P26, P28a): the match index — one business's products ordered by name then id, each with
+ * its variants ordered by axis values, whole products up to the cap on a running variant
+ * count, the first product always; every row carries the business's total variant count.
+ * The business filter is read from the SQL TEXT (`p.business_id = ?` and
+ * `v.business_id = ?`), so a change that drops either one shows in the unit tests too.
+ */
+const handleMatchIndex = (
+  text: string,
+  params: ReadonlyArray<unknown>,
+  state: CatalogState,
+): Row[] | undefined => {
+  if (!/^\s*WITH counted AS \([\s\S]*FROM running r\s+JOIN variants v/i.test(text))
+    return undefined;
+  const scoped = /WHERE p\.business_id = \?/.test(text);
+  const variantsScoped = /JOIN variants v ON v\.business_id = \? AND v\.product_id = r\.id/.test(
+    text,
+  );
+  if (params.length !== (scoped ? 1 : 0) + (variantsScoped ? 1 : 0) + 1) {
+    throw new Error("sql-stub: the match-index statement's parameters changed shape");
+  }
+  const businessId = scoped ? params[0] : null;
+  const cap = Number(params[params.length - 1]);
+  const variantsOf = (p: Row): Row[] =>
+    state.variants
+      .filter(
+        (v) =>
+          v["product_id"] === p["id"] &&
+          v["business_id"] === p["business_id"] &&
+          (!variantsScoped || v["business_id"] === businessId),
+      )
+      .sort((a, b) =>
+        byteCompare(JSON.stringify(a["axis_values"]), JSON.stringify(b["axis_values"])),
+      );
+  const products = state.products
+    .filter((p) => businessId === null || p["business_id"] === businessId)
+    .filter((p) => variantsOf(p).length > 0)
+    .sort(
+      (a, b) =>
+        byteCompare(String(a["name"]), String(b["name"])) ||
+        byteCompare(String(a["id"]), String(b["id"])),
+    );
+  const total = products.reduce((sum, p) => sum + variantsOf(p).length, 0);
+  let upto = 0;
+  return products.flatMap((p, i) => {
+    upto += variantsOf(p).length;
+    if (upto > cap && i > 0) return [];
+    return variantsOf(p).map((v) => ({
+      product_id: p["id"],
+      name: p["name"],
+      sku: p["sku"],
+      axes: p["axes"],
+      total: String(total),
+      variant_id: v["id"],
+      axis_values: [...(v["axis_values"] as string[])],
+    }));
+  });
+};
+
 /** The catalog statements; `undefined` when the text is not one of them. */
 export const handleCatalog = (
   text: string,
@@ -608,6 +671,7 @@ export const handleCatalog = (
     throw dbError("permission denied for a catalog table", "42501");
   }
   return (
+    handleMatchIndex(text, params, state) ??
     handleCustomers(text, params, state) ??
     handleNotes(text, params, state) ??
     handleSuppliers(text, params, state) ??

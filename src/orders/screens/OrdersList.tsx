@@ -52,11 +52,16 @@ export interface OrdersListFilter {
   readonly to: string | null;
 }
 
-/** What one row shows; the API's OrderSummary and the domain Order both have it. */
+/**
+ * What one row shows; the API's OrderSummary and the domain Order both have it. U5 (BR3.1,
+ * AC4.1.1): a summary row also carries the customer's name and the item labels, which the
+ * row shows when present.
+ */
 export type OrderListRow = Pick<
   OrderSummary,
   "id" | "orderNo" | "status" | "source" | "totalPaise"
->;
+> &
+  Partial<Pick<OrderSummary, "customerName" | "itemLabels">>;
 
 export interface OrdersListProps {
   readonly orders: ReadonlyArray<OrderListRow>;
@@ -367,6 +372,7 @@ export const OrdersList = (props: OrdersListProps): React.ReactElement => {
             <thead>
               <tr>
                 <th>#</th>
+                <th>{tr("orders.customer_items", locale)}</th>
                 <th>{tr("orders.filter.status", locale)}</th>
                 <th>{tr("orders.source", locale)}</th>
                 <th>{tr("orders.total", locale)}</th>
@@ -383,6 +389,14 @@ export const OrdersList = (props: OrdersListProps): React.ReactElement => {
                   {...(o.id === flash ? { "data-new": "true", className: "row--new" } : {})}
                 >
                   <td>{o.orderNo}</td>
+                  <td data-testid="orders-row-who">
+                    {o.customerName ? (
+                      <span data-testid="orders-row-customer">{o.customerName}</span>
+                    ) : null}
+                    {o.itemLabels && o.itemLabels.length > 0 ? (
+                      <span data-testid="orders-row-items">{o.itemLabels.join(", ")}</span>
+                    ) : null}
+                  </td>
                   <td>
                     <Pill kind={statusTone(o.status)} label={statusText(o.status, locale)} />
                   </td>

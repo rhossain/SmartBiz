@@ -20,6 +20,7 @@ import type { ApiFailure, ApiResult } from "../../client/http.js";
 import type { Locale } from "../../data/enums.js";
 import { toAsciiDigits } from "../../i18n/bnDigits.js";
 import { errorMessage, fieldMessage } from "../../i18n/error-copy.js";
+import { lookup } from "../../i18n/L.js";
 import { ApiState, type RequestPhase } from "../../pres/ApiState.js";
 import { tr } from "../copy.js";
 
@@ -130,11 +131,31 @@ export const FormFailure = ({
     </p>
   );
 
-/** Typed taka → whole paise; null when it is not a non-negative amount with ≤ 2 decimals. */
-export const parseTaka = (text: string): number | null => {
+/** U5 (BR8.1): the most a money field takes, as the server's schemas do (1 000 000 000 paise). */
+export const MAX_FIELD_PAISE = 1_000_000_000;
+
+/** Typed taka as paise when its shape is right (≤ 2 decimals), whatever its size. */
+const takaShape = (text: string): number | null => {
   const t = toAsciiDigits(text.trim()).replace(/,/g, "");
   if (!/^\d{1,8}(\.\d{1,2})?$/.test(t)) return null;
   return Math.round(Number(t) * 100);
+};
+
+/**
+ * Typed taka → whole paise; null when it is not a non-negative amount with ≤ 2 decimals, or
+ * when it is above the cap (BR8.1: the browser refuses it instead of a generic 400).
+ */
+export const parseTaka = (text: string): number | null => {
+  const paise = takaShape(text);
+  return paise !== null && paise <= MAX_FIELD_PAISE ? paise : null;
+};
+
+/** The message for a refused amount: the cap when it is too large, else "not valid". */
+export const takaProblem = (text: string, locale: Locale): string => {
+  const paise = takaShape(text);
+  return paise !== null && paise > MAX_FIELD_PAISE
+    ? tr("cat.money_cap", locale)
+    : lookup("common.error", locale);
 };
 
 /** Whole paise as the plain taka text an input starts with. */

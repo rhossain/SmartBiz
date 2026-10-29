@@ -13,7 +13,8 @@
  */
 import { useSyncExternalStore } from "react";
 import { createStateContainer, type StateContainer } from "../data/state-container.js";
-import { toOrderSummary } from "../orders/order-summary.js";
+// U5 (E5, BR3.1): a saved or moved order's row keeps the names the server answered with.
+import { toNamedSummary } from "../orders/order-summary.js";
 import type { OrderSummary, OrdersPageResponse } from "../orders/schemas.js";
 import type { Order } from "../orders/types.js";
 import type { ApiFailureKind, ApiResult } from "./http.js";
@@ -139,7 +140,7 @@ export const placeSaved = (store: OrdersStore, order: Order): void =>
   store.update((s) => ({
     ...s,
     status: s.status === "idle" ? "ready" : s.status,
-    rows: [toOrderSummary(order), ...s.rows.filter((r) => r.id !== order.id)],
+    rows: [toNamedSummary(order), ...s.rows.filter((r) => r.id !== order.id)],
     notice: "saved",
   }));
 
@@ -148,7 +149,7 @@ export const replaceOrder = (store: OrdersStore, order: ClientOrder): void =>
   store.update((s) => ({
     ...s,
     current: s.current?.id === order.id ? order : s.current,
-    rows: s.rows.map((r) => (r.id === order.id ? toOrderSummary(order) : r)),
+    rows: s.rows.map((r) => (r.id === order.id ? toNamedSummary(order) : r)),
   }));
 
 export const clearNotice = (store: OrdersStore): void =>

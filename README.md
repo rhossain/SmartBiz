@@ -95,8 +95,17 @@ The navigation has **ক্রেতা** (customers), **পণ্য** (product
   minimum; **কম মজুদ** lists them with the supplier's call link.
 - **Purchase cost** never reaches Sales Staff — the server leaves it out of every answer. A cost
   that was never recorded shows "দেওয়া হয়নি", never ৳০.
-- **Payments and dues** on a customer say "এখনো চালু হয়নি" until that work is built. A
-  customer's order history fills in once orders link to customers (the next unit, U5).
+- **Payments and dues** on a customer say "এখনো চালু হয়নি" until that work is built.
+- **Orders link to the catalog (U5).** On **নতুন অর্ডার**, "ক্রেতা বেছে নিন" picks a customer
+  and fills the name, phone and address (still editable; "সরান" unlinks), and each line's
+  "পণ্য বেছে নিন" picks a product and then its variant ("ধরন বেছে নিন"), filling the line's
+  description and selling price (still editable). A line may stay free text. **মেসেজ থেকে**
+  matches each item against your own products — by the product's whole name or its code —
+  and picks the variant from that item's own size and colour; words that match two products
+  stay unlinked for you to choose, and a pasted phone that belongs to one customer
+  pre-selects them ("এই নম্বরের ক্রেতা"). The order list and the order show the customer's and
+  the variant's current names, and a customer's page lists their orders. Taking an order does
+  not change stock yet.
 - Every catalog change is in the audit trail (**অডিট ট্রেইল**) without any name, phone, address
   or note text; nothing in the catalog is ever deleted.
 
@@ -171,6 +180,29 @@ docker compose --env-file .env.migrate exec -T smartbiz-db psql -U postgres -d s
 4. `bun run migrate` — applies 0011–0017 to the live database.
 5. `bun run start`, then `bun run smoke` (it now also checks the staff list).
 
+## Merging Bolt 2 (`catalog`: U4, U5)
+
+Migration 0023 is destructive on live data: it sets to empty every order's customer id and
+every order line's variant id that is not a real customer or variant of the business (B2 only
+ever stored free text there), and it changes both columns' type under an exclusive lock.
+
+1. Take and verify the `pg_dump` of the live database (Backup and restore, above).
+2. `bun run gate --large` — green, with `browser: ok` in the result line.
+3. Squash-merge `catalog` into `main`, with the gate's result line in the commit body.
+4. See what 0023 will empty — read-only, nothing changes (run it before step 6; on a database
+   already at 0023 it fails harmlessly, because the columns are no longer text):
+
+   ```bash
+   docker compose --env-file .env.migrate exec -T smartbiz-db psql -U postgres -d smartbiz -c \
+     "SELECT (SELECT count(*) FROM orders o WHERE o.customer_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM customers c WHERE c.business_id = o.business_id AND c.id::text = lower(o.customer_id))) AS order_customer_ids_emptied, (SELECT count(*) FROM order_items i WHERE i.variant_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM variants v WHERE v.business_id = i.business_id AND v.id::text = lower(i.variant_id))) AS line_variant_ids_emptied;"
+   ```
+
+5. **Stop the server** (Ctrl-C in its terminal): 0023 locks `orders` and `order_items`, and the
+   old code would write free text into what becomes a uuid column.
+6. `bun run migrate` — applies 0018–0023 to the live database.
+7. `bun run start`, then `bun run smoke`.
+8. Optionally `bun run seed:demo:catalog` for demo catalog rows.
+
 ## Rollback
 
 - **Code defect, schema fine:** `git revert <squash commit>` on `main`, push, `bun run start`
@@ -188,6 +220,12 @@ docker compose --env-file .env.migrate exec -T smartbiz-db psql -U postgres -d s
   pre-merge dump: stop the server, restore the dump, `git revert`, `bun run start`. Dropping
   the tables by hand is not part of a rollback (their ledger rows would have to go in the same
   admin session).
+- **Migration 0023 (Bolt 2, U5) is the exception to "a code revert alone is safe":** after it,
+  `orders.customer_id` and `order_items.variant_id` are uuid references, and older code writes
+  free text there, which the database refuses. So rolling back Bolt 2 is always the whole-Bolt
+  path: stop the server, restore the pre-merge dump, `git revert`, `bun run start`. **Restoring
+  the pre-merge dump also discards every order, customer and product written after the
+  merge** — note them down (or export them) before you restore.
 - **A leaked invitation or reset link:** invite the same email again (the old link stops
   working), or create a new reset link for the person (it closes the old one); otherwise a reset
   link dies after 30 minutes.

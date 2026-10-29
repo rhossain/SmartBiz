@@ -14,6 +14,7 @@ import {
   CustomerListResponseSchema,
   CustomerWriteResponseSchema,
   LowStockResponseSchema,
+  MatchIndexResponseSchema,
   NoteWriteResponseSchema,
   ProductListResponseSchema,
   ProductSchema,
@@ -28,6 +29,7 @@ import {
   type CustomerUpdate,
   type CustomerWriteResponse,
   type LowStockResponse,
+  type MatchIndexResponse,
   type NoteCreate,
   type NoteWriteResponse,
   type ProductCreate,
@@ -80,6 +82,8 @@ export interface CatalogApi {
     ) => Promise<ApiResult<SupplierWriteResponse>>;
   };
   readonly lowStock: () => Promise<ApiResult<LowStockResponse>>;
+  /** U5 (C7 E3, BR5.1): the paste screen's match index, loaded once per screen visit. */
+  readonly matchIndex: () => Promise<ApiResult<MatchIndexResponse>>;
 }
 
 const seg = (id: string): string => encodeURIComponent(id);
@@ -144,4 +148,6 @@ export const createCatalogApi = (http: HttpClient): CatalogApi => ({
       }),
   },
   lowStock: () => http.request("GET", "/api/low-stock", { schema: LowStockResponseSchema }),
+  matchIndex: () =>
+    http.request("GET", "/api/catalog/match-index", { schema: MatchIndexResponseSchema }),
 });

@@ -37,7 +37,10 @@
  * a customer with a Bangla-digit phone, stored as `01…`; Sales Staff's `POST /api/products`
  * and the Accountant's `POST /api/customers` answer 403; the catalog change-log rows hold no
  * customer name or phone. Step 7's catalog `:id` screens use this run's customer and product.
- * (AC5.2b.1's order for that customer and variant is U5's step.)
+ * U5 (BR7.1; AC5.2b.1, AC3.3.2; O13): then, as Sales Staff, an order for that customer and the
+ * low variant: the answer and the order list name the customer and the variant's label, both
+ * ids are stored, the customer's history (`?customerId=`) holds exactly that order, and an
+ * unknown customer id is 404 with nothing written.
  * The child server and the database are always removed. One result line; exit 1 on failure.
  */
 import postgres from "postgres";
@@ -449,6 +452,77 @@ const main = async (): Promise<void> => {
       "a catalog audit payload holds a customer's name or phone",
     );
     facts.push("catalog: supplier → product (2 axes) → low stock seen; customer 01…; 2 refusals");
+
+    // U5 (BR7.1; AC5.2b.1, AC3.3.2; O13): as Sales Staff, an order for the check's customer
+    // and its low variant; the list shows their names; the customer's history holds the order.
+    const salesCookie = tokens.sales_staff ?? "";
+    const linkedAt = await call("POST", "/api/orders", {
+      cookie: salesCookie,
+      body: {
+        ...ORDER,
+        customerId: customer.id,
+        contact: null,
+        items: [
+          {
+            variantId: lowVariant?.id ?? "",
+            description: "কুর্তি M লাল",
+            quantity: 1,
+            unitPricePaise: 120_000,
+            lineDiscountPaise: 0,
+          },
+        ],
+      },
+    });
+    check(linkedAt.status === 201, `the linked order answered ${linkedAt.status}`);
+    const linkedOrder = (await linkedAt.json()) as {
+      id: string;
+      customerName?: string | null;
+      items: Array<{ label?: string }>;
+    };
+    const lowLabel = "সুতির কুর্তি · M · লাল";
+    check(
+      linkedOrder.customerName === "রিনা আক্তার" && linkedOrder.items[0]?.label === lowLabel,
+      `the linked order answered ${linkedOrder.customerName ?? "no name"} / ${linkedOrder.items[0]?.label ?? "no label"}`,
+    );
+    const [stored] = await admin<{ customer_id: string; variant_id: string }[]>`
+      SELECT o.customer_id::text AS customer_id, i.variant_id::text AS variant_id
+      FROM orders o JOIN order_items i ON i.order_id = o.id AND i.revision = o.items_revision
+      WHERE o.id = ${linkedOrder.id}`;
+    check(
+      stored?.customer_id === customer.id && stored.variant_id === lowVariant?.id,
+      "the linked order's ids were not stored",
+    );
+    const namedList = (await (
+      await call("GET", "/api/orders", { cookie: salesCookie })
+    ).json()) as {
+      orders: Array<{ id: string; customerName: string | null; itemLabels: string[] }>;
+    };
+    const namedRow = namedList.orders.find((o) => o.id === linkedOrder.id);
+    check(
+      namedRow?.customerName === "রিনা আক্তার" && namedRow.itemLabels[0] === lowLabel,
+      "the order list does not show the customer's name and the variant's label",
+    );
+    const history = (await (
+      await call("GET", `/api/orders?customerId=${customer.id}`, { cookie: salesCookie })
+    ).json()) as { orders: Array<{ id: string }> };
+    check(
+      history.orders.map((o) => o.id).join(",") === linkedOrder.id,
+      "the customer's history does not hold exactly the linked order",
+    );
+    // A link the catalog does not hold is 404, and nothing is written.
+    const before = await admin<{ n: number }[]>`SELECT count(*)::int AS n FROM orders`;
+    const refusedLink = await call("POST", "/api/orders", {
+      cookie: salesCookie,
+      body: { ...ORDER, customerId: crypto.randomUUID() },
+    });
+    const after = await admin<{ n: number }[]>`SELECT count(*)::int AS n FROM orders`;
+    check(
+      refusedLink.status === 404 && before[0]?.n === after[0]?.n,
+      `an unknown customer answered ${refusedLink.status}`,
+    );
+    facts.push(
+      "orders × catalog: Sales Staff order for the customer and low variant; names; history",
+    );
 
     // 7. the real App in happy-dom against the real server, as the Owner.
     const rendered = await renderAllRoutes(base, order.id, order.orderNo, {

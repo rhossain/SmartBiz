@@ -189,6 +189,8 @@ export const API_ROWS: ReadonlyArray<ApiRow> = [
       ["PATCH", "/api/products/:id/cost", COST_WRITERS, "US3.7 purchase cost (AC3.7.1, AC3.7.3)"],
       ["PATCH", "/api/variants/:id/stock", CATALOG_MANAGERS, "US3.5 set stock (AC3.5.1)"],
       ["GET", "/api/low-stock", EVERY, "US3.5 low stock (AC3.5.3)"],
+      // U5 (C7 amendment E3; NFR1.17): the paste screen's match index is a catalog read.
+      ["GET", "/api/catalog/match-index", EVERY, "US4.2 paste matching (AC4.2.1)"],
       ["GET", "/api/suppliers", EVERY, "US3.6 suppliers"],
       ["POST", "/api/suppliers", CATALOG_MANAGERS, "US3.6 record a supplier (AC3.6.1)"],
       ["PATCH", "/api/suppliers/:id", CATALOG_MANAGERS, "US3.6 edit a supplier"],

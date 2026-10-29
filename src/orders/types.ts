@@ -77,6 +77,21 @@ export interface Order {
   readonly updatedAt: string;
 }
 
+/**
+ * U5 (contract C3 amendment E5; BR3.1): an order as the detail answers it — the linked
+ * customer's current name (else the contact's) and, per line, the linked variant's label
+ * (else the description). Both are read-time views from the catalog, never stored and never
+ * written to a change-log payload (S38); an `Order` is a `NamedOrder` without them.
+ */
+export interface LabelledOrderItem extends OrderItem {
+  readonly label?: string;
+}
+
+export interface NamedOrder extends Omit<Order, "items"> {
+  readonly customerName?: string | null;
+  readonly items: ReadonlyArray<LabelledOrderItem>;
+}
+
 export interface ConsignmentLink {
   readonly id: Uuid;
   readonly businessId: Uuid;
@@ -141,6 +156,8 @@ export interface ParsedItem {
   readonly lineNo: number;
   readonly text: string;
   readonly productId: string | null;
+  /** U5 (BR5.3): the linked product's variant, picked from the item's own size and colour. */
+  readonly variantId: string | null;
   readonly quantity: number;
   readonly size: string | null;
   readonly colour: string | null;
