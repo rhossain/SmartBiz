@@ -24924,3 +24924,5465 @@
 **Stage**: functional-design
 
 ---
+
+## Subagent Completed
+**Timestamp**: 2026-10-29T04:03:12Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: a17375d3b5a2181b4
+**Message**: We're adding customers and products to SmartBiz; the linked-orders part (U5) is written and saved but not yet verified. Next, start Docker and type `/aidlc --resume`, then I'll check, review and verif
+
+---
+
+## Session End
+**Timestamp**: 2026-10-29T05:07:59Z
+**Event**: SESSION_ENDED
+**Reason**: other
+
+---
+
+## Session Start
+**Timestamp**: 2026-10-29T07:49:13Z
+**Event**: SESSION_STARTED
+**Source**: startup
+**Session**: cbe79e86-2f8f-4b4f-a423-cdc4caea986d
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-29T07:49:47Z
+**Event**: HUMAN_TURN
+**Session**: cbe79e86-2f8f-4b4f-a423-cdc4caea986d
+
+---
+
+## Workflow Unparked
+**Timestamp**: 2026-10-29T07:50:06Z
+**Event**: WORKFLOW_UNPARKED
+
+---
+
+## Change Accepted
+**Timestamp**: 2026-10-29T07:51:51Z
+**Event**: CHANGE_ACCEPTED
+**Stage**: code-generation
+**Unit**: u4-catalog
+**Checkpoint**: review-receipt
+**Changed**: README.md, scripts/browser-check.ts, src/catalog/copy.ts, src/catalog/schemas.ts, src/catalog/screens/ProductDetail.tsx, src/catalog/screens/ProductForm.tsx, src/catalog/screens/parts.tsx, src/catalog/stock.ts, src/client/catalog-api.ts, src/orders/types.ts (and 14 more)
+**Recorded**: sha256:7cf4b2070ecf9391e5b09f9c13bbdac417edf5cbfbfe500414246255c89ee385
+**Current**: sha256:10b4df0fb32d5dd8c0d9c479ab504cb676dd2537bb8ce175277f746fca5e9a24
+**Details**: README.md, scripts/browser-check.ts, src/catalog/copy.ts, src/catalog/schemas.ts, src/catalog/screens/ProductDetail.tsx, src/catalog/screens/ProductForm.tsx, src/catalog/screens/parts.tsx, src/catalog/stock.ts, src/client/catalog-api.ts, src/orders/types.ts (and 14 more) changed after the catalog Unit was reviewed; carrying on.
+
+---
+
+## Change Accepted
+**Timestamp**: 2026-10-29T07:51:51Z
+**Event**: CHANGE_ACCEPTED
+**Stage**: code-generation
+**Unit**: u3-staff
+**Checkpoint**: review-receipt
+**Changed**: (paths unavailable)
+**Recorded**: sha256:8e0d6c0870e04384e484fc8907a3de84da99422b07bbd303128473b566032d2a
+**Current**: sha256:631a190a5aacb1ec42c5a0d20318c1bb8754c87a61835ab6cc1f7906aa112072
+**Details**: The staff Unit's list of files changed after it was reviewed; carrying on.
+
+---
+
+## Change Accepted
+**Timestamp**: 2026-10-29T07:51:51Z
+**Event**: CHANGE_ACCEPTED
+**Stage**: code-generation
+**Unit**: u2-app-shell
+**Checkpoint**: review-receipt
+**Changed**: (paths unavailable)
+**Recorded**: sha256:4bcd494865697abb83b0fc93dbd574d62b8118c8040cfffb3b3a0b3f5097ea4b
+**Current**: sha256:cc0c2897ba97ac8d84f77b838673db8618b49a5fcfe531e986a5fe35df6a35b0
+**Details**: The app shell Unit's list of files changed after it was reviewed; carrying on.
+
+---
+
+## Change Accepted
+**Timestamp**: 2026-10-29T07:51:51Z
+**Event**: CHANGE_ACCEPTED
+**Stage**: code-generation
+**Unit**: u1-skeleton
+**Checkpoint**: review-receipt
+**Changed**: (paths unavailable)
+**Recorded**: sha256:48c0af8670e9ba43b55b8708ab833e7549ffdef4115bab43e893d376a1e4bd1c
+**Current**: sha256:909bf13a2ba1f4badab0de4e67f8473304a2c324e83276a3c73e1b57df44a852
+**Details**: The skeleton Unit's list of files changed after it was reviewed; carrying on.
+
+---
+
+## Review Requested
+**Timestamp**: 2026-10-29T07:51:51Z
+**Event**: REVIEW_REQUESTED
+**Stage**: code-generation
+**Reviewer**: aidlc-architecture-reviewer-agent
+**Unit**: u5-orders-catalog
+**Iteration**: 1
+**Artifact Fingerprint**: sha256:6809e76192a784812d6a6ccc7d8b65d712cf09fe9609c89a4aac802d50564782
+**Request Id**: review:11eb04e65c6f450eefb276cc6ae4bbab
+**Source Fingerprint**: 5a32a887d5c4bd3ec4143874d33798feb946e3dddeb3896831eca45c8e5882e3
+**Unit Source Fingerprint**: sha256:506137498b5321c3765f99cfaa28aabcbee7c8e0f2def2f9f24f2e7964d8f21a
+**Review File**: .aidlc-engine/reviews/code-generation/units/u5-orders-catalog/2a103725fe9bdc2e/1.11eb04e65c6f450eefb276cc6ae4bbab.review.md
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-10-29T07:52:01Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/reviewer-dispatch.json
+**Context**: .aidlc-engine > reviewer-dispatch.json
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-29T07:54:02Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: aidlc-architecture-reviewer-agent
+**Agent ID**: ab4e28816c147aa22
+
+---
+
+## Review Completed
+**Timestamp**: 2026-10-29T07:54:05Z
+**Event**: REVIEW_COMPLETED
+**Stage**: code-generation
+**Reviewer**: aidlc-architecture-reviewer-agent
+**Unit**: u5-orders-catalog
+**Iteration**: 1
+**Verdict**: READY
+**Request Fingerprint**: sha256:6809e76192a784812d6a6ccc7d8b65d712cf09fe9609c89a4aac802d50564782
+**Artifact Fingerprint**: sha256:6809e76192a784812d6a6ccc7d8b65d712cf09fe9609c89a4aac802d50564782
+**Request Id**: review:11eb04e65c6f450eefb276cc6ae4bbab
+**Request Source Fingerprint**: 5a32a887d5c4bd3ec4143874d33798feb946e3dddeb3896831eca45c8e5882e3
+**Source Fingerprint**: 5a32a887d5c4bd3ec4143874d33798feb946e3dddeb3896831eca45c8e5882e3
+**Unit Source Fingerprint**: sha256:506137498b5321c3765f99cfaa28aabcbee7c8e0f2def2f9f24f2e7964d8f21a
+**Review Record**: .aidlc-engine/reviews/code-generation/units/u5-orders-catalog/2a103725fe9bdc2e/1.json
+**Review Record Digest**: sha256:505726719a34c3c4ff7a3bd9e989dbda918713874cf0b7b2b29bf4acd76dd4c5
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-29T07:54:05Z
+**Event**: HUMAN_TURN
+**Session**: cbe79e86-2f8f-4b4f-a423-cdc4caea986d
+
+---
+
+## Unit Started
+**Timestamp**: 2026-10-29T07:54:25Z
+**Event**: UNIT_STARTED
+**Stage**: code-generation
+**Unit**: u5-orders-catalog
+**Run floor**: WORKFLOW_STARTED:2026-10-27T06:05:58Z#1
+
+---
+
+## Unit Completed
+**Timestamp**: 2026-10-29T07:54:25Z
+**Event**: UNIT_COMPLETED
+**Stage**: code-generation
+**Unit**: u5-orders-catalog
+**Run floor**: WORKFLOW_STARTED:2026-10-27T06:05:58Z#1
+
+---
+
+## Checkpoint Verification Recorded
+**Timestamp**: 2026-10-29T08:02:13Z
+**Event**: CHECKPOINT_VERIFICATION_RECORDED
+**Unit**: u5-orders-catalog
+**Kind**: unit
+**Stage**: code-generation
+**Stages**: functional-design, nfr-requirements, nfr-design, infrastructure-design, code-generation
+**Verification Id**: 6ef95979-6fb0-4003-af60-ef129c324fc6
+**Fingerprint**: sha256:d1b1f919a066857a6e56eab6c0c32ee367e8a525e501d96ca5fdc81ded9e1818
+**Command SHA-256**: b6e2e214dd780220b0f72a9f2d906f0fad0d62e37afd018fae65289dd1f65122
+**Exit Code**: 0
+**Verified**: true
+**Run floor**: WORKFLOW_STARTED:2026-10-27T06:05:58Z#1
+
+---
+
+## Gate Approved
+**Timestamp**: 2026-10-29T08:02:25Z
+**Event**: GATE_APPROVED
+**Unit**: u5-orders-catalog
+**Stage**: code-generation
+**Stages**: functional-design, nfr-requirements, nfr-design, infrastructure-design, code-generation
+**Gate Stages**: functional-design, nfr-requirements, nfr-design, infrastructure-design, code-generation
+**Gate Scope**: unit-end
+**Checkpoint**: construction-unit
+**Fingerprint**: sha256:d1b1f919a066857a6e56eab6c0c32ee367e8a525e501d96ca5fdc81ded9e1818
+**Run floor**: WORKFLOW_STARTED:2026-10-27T06:05:58Z#1
+**Run floors**: {"functional-design":"WORKFLOW_STARTED:2026-10-27T06:05:58Z#1","nfr-requirements":"WORKFLOW_STARTED:2026-10-27T06:05:58Z#1","nfr-design":"WORKFLOW_STARTED:2026-10-27T06:05:58Z#1","infrastructure-design":"WORKFLOW_STARTED:2026-10-27T06:05:58Z#1","code-generation":"WORKFLOW_STARTED:2026-10-27T06:05:58Z#1"}
+**Verification Command SHA-256**: b6e2e214dd780220b0f72a9f2d906f0fad0d62e37afd018fae65289dd1f65122
+**Verification Id**: 6ef95979-6fb0-4003-af60-ef129c324fc6
+**Approved Evidence**: {"functional-design":["sha256:dfa52a32cef0b49b1cdad3b3199cd2356cd29edf4f880c15b23d45f9210efa00",null],"nfr-requirements":["sha256:2f5a3354caa25ac2c0f38a5cc6eeb232b4546f6ebdb1bcd20a4012d7cabc2636",null],"nfr-design":["sha256:2522c7b9610e130727b34c957af0c6965a32dfe96760ef87ff2bf9f6f327d634",null],"infrastructure-design":["sha256:db65dfd387cd0417b6e6dae5890206a69276902ac01d2b0aaccdb6fbcb03742b",null],"code-generation":["sha256:6809e76192a784812d6a6ccc7d8b65d712cf09fe9609c89a4aac802d50564782","sha256:506137498b5321c3765f99cfaa28aabcbee7c8e0f2def2f9f24f2e7964d8f21a"]}
+**Autonomous**: true
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:34Z
+**Event**: SENSOR_FIRED
+**Fire id**: 1d8a6029
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/functional-design/entities.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:03:34Z
+**Event**: SENSOR_FAILED
+**Fire id**: 1d8a6029
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/functional-design/entities.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/functional-design/required-sections-1d8a6029.md
+**Findings count**: 1
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:35Z
+**Event**: SENSOR_FIRED
+**Fire id**: ea7486fe
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/functional-design/rules.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:03:35Z
+**Event**: SENSOR_FAILED
+**Fire id**: ea7486fe
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/functional-design/rules.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/functional-design/required-sections-ea7486fe.md
+**Findings count**: 1
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:35Z
+**Event**: SENSOR_FIRED
+**Fire id**: 5339b1b9
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/functional-design/functional-spec.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:03:35Z
+**Event**: SENSOR_PASSED
+**Fire id**: 5339b1b9
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/functional-design/functional-spec.md
+**Duration ms**: 71
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:35Z
+**Event**: SENSOR_FIRED
+**Fire id**: 281a0451
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/functional-design/traceability.json
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:03:35Z
+**Event**: SENSOR_PASSED
+**Fire id**: 281a0451
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/functional-design/traceability.json
+**Duration ms**: 69
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:35Z
+**Event**: SENSOR_FIRED
+**Fire id**: 506dd083
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/functional-design/frontend-components.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:03:35Z
+**Event**: SENSOR_PASSED
+**Fire id**: 506dd083
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/functional-design/frontend-components.md
+**Duration ms**: 72
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:35Z
+**Event**: SENSOR_FIRED
+**Fire id**: c98c8b59
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/functional-design/entities.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:03:36Z
+**Event**: SENSOR_FAILED
+**Fire id**: c98c8b59
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/functional-design/entities.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/functional-design/required-sections-c98c8b59.md
+**Findings count**: 1
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:36Z
+**Event**: SENSOR_FIRED
+**Fire id**: e715be7d
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/functional-design/rules.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:03:36Z
+**Event**: SENSOR_FAILED
+**Fire id**: e715be7d
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/functional-design/rules.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/functional-design/required-sections-e715be7d.md
+**Findings count**: 1
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:36Z
+**Event**: SENSOR_FIRED
+**Fire id**: 7046a977
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/functional-design/functional-spec.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:03:36Z
+**Event**: SENSOR_PASSED
+**Fire id**: 7046a977
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/functional-design/functional-spec.md
+**Duration ms**: 71
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:36Z
+**Event**: SENSOR_FIRED
+**Fire id**: 29d5af6b
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/functional-design/traceability.json
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:03:36Z
+**Event**: SENSOR_PASSED
+**Fire id**: 29d5af6b
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/functional-design/traceability.json
+**Duration ms**: 71
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:36Z
+**Event**: SENSOR_FIRED
+**Fire id**: 8eb3e94d
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/functional-design/frontend-components.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:03:37Z
+**Event**: SENSOR_FAILED
+**Fire id**: 8eb3e94d
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/functional-design/frontend-components.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/functional-design/required-sections-8eb3e94d.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:37Z
+**Event**: SENSOR_FIRED
+**Fire id**: e657628d
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/functional-design/entities.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:03:37Z
+**Event**: SENSOR_FAILED
+**Fire id**: e657628d
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/functional-design/entities.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/functional-design/required-sections-e657628d.md
+**Findings count**: 1
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:37Z
+**Event**: SENSOR_FIRED
+**Fire id**: cdf5430b
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/functional-design/rules.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:03:37Z
+**Event**: SENSOR_FAILED
+**Fire id**: cdf5430b
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/functional-design/rules.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/functional-design/required-sections-cdf5430b.md
+**Findings count**: 1
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:37Z
+**Event**: SENSOR_FIRED
+**Fire id**: 290377ec
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/functional-design/functional-spec.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:03:37Z
+**Event**: SENSOR_PASSED
+**Fire id**: 290377ec
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/functional-design/functional-spec.md
+**Duration ms**: 71
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:37Z
+**Event**: SENSOR_FIRED
+**Fire id**: 4a832804
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/functional-design/traceability.json
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:03:37Z
+**Event**: SENSOR_PASSED
+**Fire id**: 4a832804
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/functional-design/traceability.json
+**Duration ms**: 72
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:38Z
+**Event**: SENSOR_FIRED
+**Fire id**: dd55c1a8
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/functional-design/entities.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:03:38Z
+**Event**: SENSOR_FAILED
+**Fire id**: dd55c1a8
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/functional-design/entities.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/functional-design/required-sections-dd55c1a8.md
+**Findings count**: 1
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:38Z
+**Event**: SENSOR_FIRED
+**Fire id**: 52f57dec
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/functional-design/rules.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:03:38Z
+**Event**: SENSOR_FAILED
+**Fire id**: 52f57dec
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/functional-design/rules.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/functional-design/required-sections-52f57dec.md
+**Findings count**: 1
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:38Z
+**Event**: SENSOR_FIRED
+**Fire id**: b4d87a45
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/functional-design/functional-spec.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:03:38Z
+**Event**: SENSOR_PASSED
+**Fire id**: b4d87a45
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/functional-design/functional-spec.md
+**Duration ms**: 66
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:38Z
+**Event**: SENSOR_FIRED
+**Fire id**: 32573b4a
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/functional-design/traceability.json
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:03:38Z
+**Event**: SENSOR_PASSED
+**Fire id**: 32573b4a
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/functional-design/traceability.json
+**Duration ms**: 72
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:38Z
+**Event**: SENSOR_FIRED
+**Fire id**: c901c144
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/functional-design/frontend-components.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:03:39Z
+**Event**: SENSOR_PASSED
+**Fire id**: c901c144
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/functional-design/frontend-components.md
+**Duration ms**: 66
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:39Z
+**Event**: SENSOR_FIRED
+**Fire id**: dec23cb8
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/functional-design/entities.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:03:39Z
+**Event**: SENSOR_FAILED
+**Fire id**: dec23cb8
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/functional-design/entities.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/functional-design/required-sections-dec23cb8.md
+**Findings count**: 1
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:39Z
+**Event**: SENSOR_FIRED
+**Fire id**: f62e0286
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/functional-design/rules.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:03:39Z
+**Event**: SENSOR_FAILED
+**Fire id**: f62e0286
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/functional-design/rules.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/functional-design/required-sections-f62e0286.md
+**Findings count**: 1
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:39Z
+**Event**: SENSOR_FIRED
+**Fire id**: 02d6e2ec
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/functional-design/functional-spec.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:03:39Z
+**Event**: SENSOR_PASSED
+**Fire id**: 02d6e2ec
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/functional-design/functional-spec.md
+**Duration ms**: 73
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:39Z
+**Event**: SENSOR_FIRED
+**Fire id**: b9e7194a
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/functional-design/traceability.json
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:03:39Z
+**Event**: SENSOR_PASSED
+**Fire id**: b9e7194a
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/functional-design/traceability.json
+**Duration ms**: 80
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:40Z
+**Event**: SENSOR_FIRED
+**Fire id**: 41b716ab
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/functional-design/frontend-components.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:03:40Z
+**Event**: SENSOR_PASSED
+**Fire id**: 41b716ab
+**Sensor ID**: required-sections
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/functional-design/frontend-components.md
+**Duration ms**: 66
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:40Z
+**Event**: SENSOR_FIRED
+**Fire id**: 6815306b
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/functional-design/entities.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:03:40Z
+**Event**: SENSOR_FAILED
+**Fire id**: 6815306b
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/functional-design/entities.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/functional-design/upstream-coverage-6815306b.md
+**Findings count**: 3
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:40Z
+**Event**: SENSOR_FIRED
+**Fire id**: 23747dec
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/functional-design/rules.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:03:40Z
+**Event**: SENSOR_FAILED
+**Fire id**: 23747dec
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/functional-design/rules.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/functional-design/upstream-coverage-23747dec.md
+**Findings count**: 3
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:40Z
+**Event**: SENSOR_FIRED
+**Fire id**: 3c013bdc
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/functional-design/functional-spec.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:03:41Z
+**Event**: SENSOR_FAILED
+**Fire id**: 3c013bdc
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/functional-design/functional-spec.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/functional-design/upstream-coverage-3c013bdc.md
+**Findings count**: 3
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:41Z
+**Event**: SENSOR_FIRED
+**Fire id**: c3e4d8cd
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/functional-design/traceability.json
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:03:41Z
+**Event**: SENSOR_FAILED
+**Fire id**: c3e4d8cd
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/functional-design/traceability.json
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/functional-design/upstream-coverage-c3e4d8cd.md
+**Findings count**: 3
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:41Z
+**Event**: SENSOR_FIRED
+**Fire id**: 5e758cd0
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/functional-design/frontend-components.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:03:41Z
+**Event**: SENSOR_FAILED
+**Fire id**: 5e758cd0
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/functional-design/frontend-components.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/functional-design/upstream-coverage-5e758cd0.md
+**Findings count**: 3
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:41Z
+**Event**: SENSOR_FIRED
+**Fire id**: 9708705a
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/functional-design/entities.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:03:41Z
+**Event**: SENSOR_FAILED
+**Fire id**: 9708705a
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/functional-design/entities.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/functional-design/upstream-coverage-9708705a.md
+**Findings count**: 4
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:42Z
+**Event**: SENSOR_FIRED
+**Fire id**: f7a8412f
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/functional-design/rules.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:03:42Z
+**Event**: SENSOR_FAILED
+**Fire id**: f7a8412f
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/functional-design/rules.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/functional-design/upstream-coverage-f7a8412f.md
+**Findings count**: 4
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:42Z
+**Event**: SENSOR_FIRED
+**Fire id**: af28b348
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/functional-design/functional-spec.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:03:42Z
+**Event**: SENSOR_FAILED
+**Fire id**: af28b348
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/functional-design/functional-spec.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/functional-design/upstream-coverage-af28b348.md
+**Findings count**: 4
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:42Z
+**Event**: SENSOR_FIRED
+**Fire id**: 46a1d8dd
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/functional-design/traceability.json
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:03:42Z
+**Event**: SENSOR_FAILED
+**Fire id**: 46a1d8dd
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/functional-design/traceability.json
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/functional-design/upstream-coverage-46a1d8dd.md
+**Findings count**: 4
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:43Z
+**Event**: SENSOR_FIRED
+**Fire id**: c2ff09b0
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/functional-design/frontend-components.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:03:43Z
+**Event**: SENSOR_FAILED
+**Fire id**: c2ff09b0
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/functional-design/frontend-components.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/functional-design/upstream-coverage-c2ff09b0.md
+**Findings count**: 4
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:43Z
+**Event**: SENSOR_FIRED
+**Fire id**: 62c42894
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/functional-design/entities.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:03:43Z
+**Event**: SENSOR_FAILED
+**Fire id**: 62c42894
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/functional-design/entities.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/functional-design/upstream-coverage-62c42894.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:43Z
+**Event**: SENSOR_FIRED
+**Fire id**: bfbf78e5
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/functional-design/rules.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:03:43Z
+**Event**: SENSOR_FAILED
+**Fire id**: bfbf78e5
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/functional-design/rules.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/functional-design/upstream-coverage-bfbf78e5.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:44Z
+**Event**: SENSOR_FIRED
+**Fire id**: b5455fef
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/functional-design/functional-spec.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:03:44Z
+**Event**: SENSOR_FAILED
+**Fire id**: b5455fef
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/functional-design/functional-spec.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/functional-design/upstream-coverage-b5455fef.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:44Z
+**Event**: SENSOR_FIRED
+**Fire id**: ac83713d
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/functional-design/traceability.json
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:03:44Z
+**Event**: SENSOR_FAILED
+**Fire id**: ac83713d
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/functional-design/traceability.json
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/functional-design/upstream-coverage-ac83713d.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:44Z
+**Event**: SENSOR_FIRED
+**Fire id**: dc2e9986
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/functional-design/entities.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:03:44Z
+**Event**: SENSOR_FAILED
+**Fire id**: dc2e9986
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/functional-design/entities.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/functional-design/upstream-coverage-dc2e9986.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:44Z
+**Event**: SENSOR_FIRED
+**Fire id**: 50adbac4
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/functional-design/rules.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:03:44Z
+**Event**: SENSOR_FAILED
+**Fire id**: 50adbac4
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/functional-design/rules.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/functional-design/upstream-coverage-50adbac4.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:45Z
+**Event**: SENSOR_FIRED
+**Fire id**: 04338bb2
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/functional-design/functional-spec.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:03:45Z
+**Event**: SENSOR_FAILED
+**Fire id**: 04338bb2
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/functional-design/functional-spec.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/functional-design/upstream-coverage-04338bb2.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:45Z
+**Event**: SENSOR_FIRED
+**Fire id**: 74f4d49e
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/functional-design/traceability.json
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:03:45Z
+**Event**: SENSOR_FAILED
+**Fire id**: 74f4d49e
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/functional-design/traceability.json
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/functional-design/upstream-coverage-74f4d49e.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:45Z
+**Event**: SENSOR_FIRED
+**Fire id**: d34591e8
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/functional-design/frontend-components.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:03:45Z
+**Event**: SENSOR_FAILED
+**Fire id**: d34591e8
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/functional-design/frontend-components.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/functional-design/upstream-coverage-d34591e8.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:45Z
+**Event**: SENSOR_FIRED
+**Fire id**: 8c12e593
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/functional-design/entities.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:03:46Z
+**Event**: SENSOR_FAILED
+**Fire id**: 8c12e593
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/functional-design/entities.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/functional-design/upstream-coverage-8c12e593.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:46Z
+**Event**: SENSOR_FIRED
+**Fire id**: 8ab3f490
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/functional-design/rules.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:03:46Z
+**Event**: SENSOR_FAILED
+**Fire id**: 8ab3f490
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/functional-design/rules.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/functional-design/upstream-coverage-8ab3f490.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:46Z
+**Event**: SENSOR_FIRED
+**Fire id**: 7927cd67
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/functional-design/functional-spec.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:03:46Z
+**Event**: SENSOR_FAILED
+**Fire id**: 7927cd67
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/functional-design/functional-spec.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/functional-design/upstream-coverage-7927cd67.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:46Z
+**Event**: SENSOR_FIRED
+**Fire id**: a8571761
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/functional-design/traceability.json
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:03:46Z
+**Event**: SENSOR_FAILED
+**Fire id**: a8571761
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/functional-design/traceability.json
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/functional-design/upstream-coverage-a8571761.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:03:47Z
+**Event**: SENSOR_FIRED
+**Fire id**: 5fd1b168
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/functional-design/frontend-components.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:03:47Z
+**Event**: SENSOR_FAILED
+**Fire id**: 5fd1b168
+**Sensor ID**: upstream-coverage
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/functional-design/frontend-components.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/functional-design/upstream-coverage-5fd1b168.md
+**Findings count**: 2
+
+---
+
+## Stage Awaiting Approval
+**Timestamp**: 2026-10-29T08:03:53Z
+**Event**: STAGE_AWAITING_APPROVAL
+**Stage**: functional-design
+
+---
+
+## Gate Approved
+**Timestamp**: 2026-10-29T08:04:36Z
+**Event**: GATE_APPROVED
+**Stage**: functional-design
+
+---
+
+## Stage Completion
+**Timestamp**: 2026-10-29T08:04:36Z
+**Event**: STAGE_COMPLETED
+**Stage**: functional-design
+**Validation Basis**: {"graphContract":"sha256:c0dd0abcf729725dd1610dbd62efc46a49c3d6e3d7efed0cf53a65f7d271fd9e","inputs":[{"artifact":"components","contentHash":"sha256:17eb700566bf1162b108f7531a4e94e6e8dc1e94d3672e6201cfeb2a388ee391","instanceCount":1,"presentCount":1,"producer":"domain-design","required":true,"structureHash":"sha256:308751fb5e4c589703740d45ba26da0a3023ad4e04f9038ddd6778706705cdf4"},{"artifact":"contract-summary","contentHash":"sha256:7f0335cbd08218adebc5ae89605ff31496e710324dd4ad62c5d0a9590d28289c","instanceCount":1,"presentCount":1,"producer":"contract-design","required":false,"structureHash":"sha256:30a652db9038a52def5123b74608b14c0f031a96e4f3759d2aa5b61ae779014b"},{"artifact":"requirements","contentHash":"sha256:91596afb4361696fc6dfebc1fb0aa510db6a3aaccc85c91e4e38d12a760e1716","instanceCount":1,"presentCount":1,"producer":"requirements-analysis","required":true,"structureHash":"sha256:4505671a40e951a46be027fcf40da539cee3d7d128be48e674cb3005a5fe48bc"},{"artifact":"unit-of-work-story-map","contentHash":"sha256:9639bc0ae1961d5d7288df60317c3df62d25749e58d1254b1e1e44a3ed6180f3","instanceCount":1,"presentCount":1,"producer":"units-generation","required":false,"structureHash":"sha256:d1e8c805bf498041d4355593f5fcf15d4a645a6e4b42620b2f360f1c62677606"},{"artifact":"unit-of-work","contentHash":"sha256:d5ded731a81d36ecf63836a0438042bd2d7ab2b845ed6b9c44773cc08dccca33","instanceCount":1,"presentCount":1,"producer":"units-generation","required":true,"structureHash":"sha256:dd659a79af2fd83ce30594ff06ba9bd61b1169d7c31235f630f0989d321ad919"}],"outputs":[{"artifact":"entities","contentHash":"sha256:f2e423a153d2c1bb83fd25e3360accf8f6ae833ff18526f616597e69f985d1db","instanceCount":5,"presentCount":5,"producer":"functional-design","required":true,"structureHash":"sha256:d7995208f4fde8bb572ae0c90ac44af91ef42acb6cd88edcfd6c1b0571c4e19c"},{"artifact":"frontend-components","contentHash":"sha256:ee7457cfa52ee60a588eead6b169c5081e5e6a438e1becca96c98f454ec08065","instanceCount":1,"presentCount":1,"producer":"functional-design","required":false,"structureHash":"sha256:14e95f425ba9e1b4626756e59eeae5b6879eb642d22f99bf49bc170816890dd5"},{"artifact":"functional-spec","contentHash":"sha256:a7264e570fd1e100208cea7d391b237e904994172d4adf1d5eac093aeed6515c","instanceCount":5,"presentCount":5,"producer":"functional-design","required":true,"structureHash":"sha256:75c2336ae0fbbc24a660dd416ee706f020380c8810d01c1f55b62927f3fd249a"},{"artifact":"rules","contentHash":"sha256:cc6f8574dc3b4fa5490efac7c657ca3d754c13493c42b99eb170214184e83d9d","instanceCount":5,"presentCount":5,"producer":"functional-design","required":true,"structureHash":"sha256:4fcbee0502e2cdc780c57766df3ed1fe9efeac22f91d44017fad79cfd09afcad"},{"artifact":"traceability","contentHash":"sha256:84fe4c88861889eaa6ac449771248e86ba15595275e604fcab9963f2ad9a9120","instanceCount":5,"presentCount":5,"producer":"functional-design","required":true,"structureHash":"sha256:e6bd82c0f2cba666c9635f9884f23009171c1720647ede114da292e16d161e5a"}],"projectType":"brownfield","schema":3}
+**Details**: Stage Functional Design approved by gate
+**Tokens In**: 5784
+**Tokens Out**: 3130048
+**Cache Read**: 1142407511
+**Cache Write**: 15400477
+**Cost USD**: 370.93
+**By Model**: opus-5-5=349.33; sonnet-5-5=21.61; <synthetic>=null
+**By Agent**: main=137.31; aidlc-architecture-reviewer-agent=21.61; aidlc-developer-agent=212.02
+**Tokens By Model**: opus-5-5=5k/2.8M/1095M/12M; sonnet-5-5=782/358.9k/47.4M/3.4M
+**Tokens By Agent**: main=2.1k/867.7k/400.3M/5M; aidlc-architecture-reviewer-agent=782/358.9k/47.4M/3.4M; aidlc-developer-agent=2.9k/1.9M/694.7M/7M
+
+---
+
+## Stage Start
+**Timestamp**: 2026-10-29T08:04:37Z
+**Event**: STAGE_STARTED
+**Stage**: nfr-requirements
+**Agent**: aidlc-architect-agent
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:39Z
+**Event**: SENSOR_FIRED
+**Fire id**: 82277295
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-requirements/performance-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:39Z
+**Event**: SENSOR_FAILED
+**Fire id**: 82277295
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-requirements/performance-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/required-sections-82277295.md
+**Findings count**: 1
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:39Z
+**Event**: SENSOR_FIRED
+**Fire id**: 09620386
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-requirements/security-requirements.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:05:39Z
+**Event**: SENSOR_PASSED
+**Fire id**: 09620386
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-requirements/security-requirements.md
+**Duration ms**: 71
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:40Z
+**Event**: SENSOR_FIRED
+**Fire id**: 56cc7150
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-requirements/scalability-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:40Z
+**Event**: SENSOR_FAILED
+**Fire id**: 56cc7150
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-requirements/scalability-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/required-sections-56cc7150.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:40Z
+**Event**: SENSOR_FIRED
+**Fire id**: 52bb7385
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-requirements/reliability-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:40Z
+**Event**: SENSOR_FAILED
+**Fire id**: 52bb7385
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-requirements/reliability-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/required-sections-52bb7385.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:40Z
+**Event**: SENSOR_FIRED
+**Fire id**: 446fb790
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-requirements/observability-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:40Z
+**Event**: SENSOR_FAILED
+**Fire id**: 446fb790
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-requirements/observability-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/required-sections-446fb790.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:40Z
+**Event**: SENSOR_FIRED
+**Fire id**: e143cd4d
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-requirements/tech-stack-decisions.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:40Z
+**Event**: SENSOR_FAILED
+**Fire id**: e143cd4d
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-requirements/tech-stack-decisions.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/required-sections-e143cd4d.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:40Z
+**Event**: SENSOR_FIRED
+**Fire id**: 6c1cf4b2
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-requirements/traceability.json
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:05:41Z
+**Event**: SENSOR_PASSED
+**Fire id**: 6c1cf4b2
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-requirements/traceability.json
+**Duration ms**: 71
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:41Z
+**Event**: SENSOR_FIRED
+**Fire id**: d0e8a86c
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-requirements/performance-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:41Z
+**Event**: SENSOR_FAILED
+**Fire id**: d0e8a86c
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-requirements/performance-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/required-sections-d0e8a86c.md
+**Findings count**: 1
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:41Z
+**Event**: SENSOR_FIRED
+**Fire id**: ea76df41
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-requirements/security-requirements.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:05:41Z
+**Event**: SENSOR_PASSED
+**Fire id**: ea76df41
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-requirements/security-requirements.md
+**Duration ms**: 69
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:41Z
+**Event**: SENSOR_FIRED
+**Fire id**: 06d9c48b
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-requirements/scalability-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:41Z
+**Event**: SENSOR_FAILED
+**Fire id**: 06d9c48b
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-requirements/scalability-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/required-sections-06d9c48b.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:41Z
+**Event**: SENSOR_FIRED
+**Fire id**: 1b87f010
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-requirements/reliability-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:42Z
+**Event**: SENSOR_FAILED
+**Fire id**: 1b87f010
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-requirements/reliability-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/required-sections-1b87f010.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:42Z
+**Event**: SENSOR_FIRED
+**Fire id**: c547e506
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-requirements/observability-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:42Z
+**Event**: SENSOR_FAILED
+**Fire id**: c547e506
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-requirements/observability-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/required-sections-c547e506.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:42Z
+**Event**: SENSOR_FIRED
+**Fire id**: 7f6b8cbc
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-requirements/tech-stack-decisions.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:42Z
+**Event**: SENSOR_FAILED
+**Fire id**: 7f6b8cbc
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-requirements/tech-stack-decisions.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/required-sections-7f6b8cbc.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:42Z
+**Event**: SENSOR_FIRED
+**Fire id**: 54a3a473
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-requirements/traceability.json
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:05:42Z
+**Event**: SENSOR_PASSED
+**Fire id**: 54a3a473
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-requirements/traceability.json
+**Duration ms**: 127
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:43Z
+**Event**: SENSOR_FIRED
+**Fire id**: f52e37a2
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-requirements/performance-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:43Z
+**Event**: SENSOR_FAILED
+**Fire id**: f52e37a2
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-requirements/performance-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/required-sections-f52e37a2.md
+**Findings count**: 1
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:43Z
+**Event**: SENSOR_FIRED
+**Fire id**: 948606ba
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-requirements/security-requirements.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:05:43Z
+**Event**: SENSOR_PASSED
+**Fire id**: 948606ba
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-requirements/security-requirements.md
+**Duration ms**: 168
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:44Z
+**Event**: SENSOR_FIRED
+**Fire id**: 8d0b8381
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-requirements/scalability-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:44Z
+**Event**: SENSOR_FAILED
+**Fire id**: 8d0b8381
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-requirements/scalability-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/required-sections-8d0b8381.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:44Z
+**Event**: SENSOR_FIRED
+**Fire id**: 2259ee77
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-requirements/reliability-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:44Z
+**Event**: SENSOR_FAILED
+**Fire id**: 2259ee77
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-requirements/reliability-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/required-sections-2259ee77.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:44Z
+**Event**: SENSOR_FIRED
+**Fire id**: 75865075
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-requirements/observability-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:45Z
+**Event**: SENSOR_FAILED
+**Fire id**: 75865075
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-requirements/observability-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/required-sections-75865075.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:45Z
+**Event**: SENSOR_FIRED
+**Fire id**: 0ef638dd
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-requirements/tech-stack-decisions.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:45Z
+**Event**: SENSOR_FAILED
+**Fire id**: 0ef638dd
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-requirements/tech-stack-decisions.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/required-sections-0ef638dd.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:45Z
+**Event**: SENSOR_FIRED
+**Fire id**: 013172ac
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-requirements/traceability.json
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:05:45Z
+**Event**: SENSOR_PASSED
+**Fire id**: 013172ac
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-requirements/traceability.json
+**Duration ms**: 109
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:45Z
+**Event**: SENSOR_FIRED
+**Fire id**: 32d0c429
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-requirements/performance-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:45Z
+**Event**: SENSOR_FAILED
+**Fire id**: 32d0c429
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-requirements/performance-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/required-sections-32d0c429.md
+**Findings count**: 1
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:45Z
+**Event**: SENSOR_FIRED
+**Fire id**: d95a6798
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-requirements/security-requirements.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:05:46Z
+**Event**: SENSOR_PASSED
+**Fire id**: d95a6798
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-requirements/security-requirements.md
+**Duration ms**: 69
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:46Z
+**Event**: SENSOR_FIRED
+**Fire id**: 99a8832e
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-requirements/scalability-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:46Z
+**Event**: SENSOR_FAILED
+**Fire id**: 99a8832e
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-requirements/scalability-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/required-sections-99a8832e.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:46Z
+**Event**: SENSOR_FIRED
+**Fire id**: 425b6b13
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-requirements/reliability-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:46Z
+**Event**: SENSOR_FAILED
+**Fire id**: 425b6b13
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-requirements/reliability-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/required-sections-425b6b13.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:46Z
+**Event**: SENSOR_FIRED
+**Fire id**: 82e7953d
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-requirements/observability-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:46Z
+**Event**: SENSOR_FAILED
+**Fire id**: 82e7953d
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-requirements/observability-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/required-sections-82e7953d.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:46Z
+**Event**: SENSOR_FIRED
+**Fire id**: addd68a8
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-requirements/tech-stack-decisions.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:46Z
+**Event**: SENSOR_FAILED
+**Fire id**: addd68a8
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-requirements/tech-stack-decisions.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/required-sections-addd68a8.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:47Z
+**Event**: SENSOR_FIRED
+**Fire id**: 30af1040
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-requirements/traceability.json
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:05:47Z
+**Event**: SENSOR_PASSED
+**Fire id**: 30af1040
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-requirements/traceability.json
+**Duration ms**: 69
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:47Z
+**Event**: SENSOR_FIRED
+**Fire id**: ef03c77b
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-requirements/performance-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:47Z
+**Event**: SENSOR_FAILED
+**Fire id**: ef03c77b
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-requirements/performance-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/required-sections-ef03c77b.md
+**Findings count**: 1
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:47Z
+**Event**: SENSOR_FIRED
+**Fire id**: 925ba6bd
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-requirements/security-requirements.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:05:47Z
+**Event**: SENSOR_PASSED
+**Fire id**: 925ba6bd
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-requirements/security-requirements.md
+**Duration ms**: 67
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:47Z
+**Event**: SENSOR_FIRED
+**Fire id**: 8a06dc14
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-requirements/scalability-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:47Z
+**Event**: SENSOR_FAILED
+**Fire id**: 8a06dc14
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-requirements/scalability-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/required-sections-8a06dc14.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:47Z
+**Event**: SENSOR_FIRED
+**Fire id**: e99872a9
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-requirements/reliability-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:48Z
+**Event**: SENSOR_FAILED
+**Fire id**: e99872a9
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-requirements/reliability-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/required-sections-e99872a9.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:48Z
+**Event**: SENSOR_FIRED
+**Fire id**: 42d3706c
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-requirements/observability-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:48Z
+**Event**: SENSOR_FAILED
+**Fire id**: 42d3706c
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-requirements/observability-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/required-sections-42d3706c.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:48Z
+**Event**: SENSOR_FIRED
+**Fire id**: 19404abe
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-requirements/tech-stack-decisions.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:48Z
+**Event**: SENSOR_FAILED
+**Fire id**: 19404abe
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-requirements/tech-stack-decisions.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/required-sections-19404abe.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:48Z
+**Event**: SENSOR_FIRED
+**Fire id**: 316f7293
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-requirements/traceability.json
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:05:48Z
+**Event**: SENSOR_PASSED
+**Fire id**: 316f7293
+**Sensor ID**: required-sections
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-requirements/traceability.json
+**Duration ms**: 82
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:48Z
+**Event**: SENSOR_FIRED
+**Fire id**: 909dca7f
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-requirements/performance-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:49Z
+**Event**: SENSOR_FAILED
+**Fire id**: 909dca7f
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-requirements/performance-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/upstream-coverage-909dca7f.md
+**Findings count**: 3
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:49Z
+**Event**: SENSOR_FIRED
+**Fire id**: b739e61c
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-requirements/security-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:49Z
+**Event**: SENSOR_FAILED
+**Fire id**: b739e61c
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-requirements/security-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/upstream-coverage-b739e61c.md
+**Findings count**: 3
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:49Z
+**Event**: SENSOR_FIRED
+**Fire id**: d40f56af
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-requirements/scalability-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:49Z
+**Event**: SENSOR_FAILED
+**Fire id**: d40f56af
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-requirements/scalability-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/upstream-coverage-d40f56af.md
+**Findings count**: 3
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:49Z
+**Event**: SENSOR_FIRED
+**Fire id**: 8d3fb57f
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-requirements/reliability-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:49Z
+**Event**: SENSOR_FAILED
+**Fire id**: 8d3fb57f
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-requirements/reliability-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/upstream-coverage-8d3fb57f.md
+**Findings count**: 3
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:50Z
+**Event**: SENSOR_FIRED
+**Fire id**: 89eb9977
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-requirements/observability-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:50Z
+**Event**: SENSOR_FAILED
+**Fire id**: 89eb9977
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-requirements/observability-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/upstream-coverage-89eb9977.md
+**Findings count**: 3
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:50Z
+**Event**: SENSOR_FIRED
+**Fire id**: a091f023
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-requirements/tech-stack-decisions.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:50Z
+**Event**: SENSOR_FAILED
+**Fire id**: a091f023
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-requirements/tech-stack-decisions.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/upstream-coverage-a091f023.md
+**Findings count**: 3
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:50Z
+**Event**: SENSOR_FIRED
+**Fire id**: 3581aed6
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-requirements/traceability.json
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:50Z
+**Event**: SENSOR_FAILED
+**Fire id**: 3581aed6
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-requirements/traceability.json
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/upstream-coverage-3581aed6.md
+**Findings count**: 3
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:51Z
+**Event**: SENSOR_FIRED
+**Fire id**: 9bd4f2b3
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-requirements/performance-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:51Z
+**Event**: SENSOR_FAILED
+**Fire id**: 9bd4f2b3
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-requirements/performance-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/upstream-coverage-9bd4f2b3.md
+**Findings count**: 3
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:51Z
+**Event**: SENSOR_FIRED
+**Fire id**: cb1f3eb7
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-requirements/security-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:51Z
+**Event**: SENSOR_FAILED
+**Fire id**: cb1f3eb7
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-requirements/security-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/upstream-coverage-cb1f3eb7.md
+**Findings count**: 3
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:51Z
+**Event**: SENSOR_FIRED
+**Fire id**: b5b1094a
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-requirements/scalability-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:51Z
+**Event**: SENSOR_FAILED
+**Fire id**: b5b1094a
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-requirements/scalability-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/upstream-coverage-b5b1094a.md
+**Findings count**: 3
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:51Z
+**Event**: SENSOR_FIRED
+**Fire id**: 4b041f35
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-requirements/reliability-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:52Z
+**Event**: SENSOR_FAILED
+**Fire id**: 4b041f35
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-requirements/reliability-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/upstream-coverage-4b041f35.md
+**Findings count**: 3
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:52Z
+**Event**: SENSOR_FIRED
+**Fire id**: 66e9c507
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-requirements/observability-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:52Z
+**Event**: SENSOR_FAILED
+**Fire id**: 66e9c507
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-requirements/observability-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/upstream-coverage-66e9c507.md
+**Findings count**: 3
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:52Z
+**Event**: SENSOR_FIRED
+**Fire id**: bf62a08c
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-requirements/tech-stack-decisions.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:52Z
+**Event**: SENSOR_FAILED
+**Fire id**: bf62a08c
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-requirements/tech-stack-decisions.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/upstream-coverage-bf62a08c.md
+**Findings count**: 3
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:52Z
+**Event**: SENSOR_FIRED
+**Fire id**: c2142b17
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-requirements/traceability.json
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:52Z
+**Event**: SENSOR_FAILED
+**Fire id**: c2142b17
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-requirements/traceability.json
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/upstream-coverage-c2142b17.md
+**Findings count**: 3
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:53Z
+**Event**: SENSOR_FIRED
+**Fire id**: 9409348f
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-requirements/performance-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:53Z
+**Event**: SENSOR_FAILED
+**Fire id**: 9409348f
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-requirements/performance-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/upstream-coverage-9409348f.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:53Z
+**Event**: SENSOR_FIRED
+**Fire id**: 0b9b3df2
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-requirements/security-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:53Z
+**Event**: SENSOR_FAILED
+**Fire id**: 0b9b3df2
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-requirements/security-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/upstream-coverage-0b9b3df2.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:53Z
+**Event**: SENSOR_FIRED
+**Fire id**: c2b90726
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-requirements/scalability-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:53Z
+**Event**: SENSOR_FAILED
+**Fire id**: c2b90726
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-requirements/scalability-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/upstream-coverage-c2b90726.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:53Z
+**Event**: SENSOR_FIRED
+**Fire id**: 25ab3094
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-requirements/reliability-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:54Z
+**Event**: SENSOR_FAILED
+**Fire id**: 25ab3094
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-requirements/reliability-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/upstream-coverage-25ab3094.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:54Z
+**Event**: SENSOR_FIRED
+**Fire id**: 0992197c
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-requirements/observability-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:54Z
+**Event**: SENSOR_FAILED
+**Fire id**: 0992197c
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-requirements/observability-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/upstream-coverage-0992197c.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:54Z
+**Event**: SENSOR_FIRED
+**Fire id**: 5ab7f3ec
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-requirements/tech-stack-decisions.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:54Z
+**Event**: SENSOR_FAILED
+**Fire id**: 5ab7f3ec
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-requirements/tech-stack-decisions.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/upstream-coverage-5ab7f3ec.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:54Z
+**Event**: SENSOR_FIRED
+**Fire id**: a4a49c66
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-requirements/traceability.json
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:54Z
+**Event**: SENSOR_FAILED
+**Fire id**: a4a49c66
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-requirements/traceability.json
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/upstream-coverage-a4a49c66.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:55Z
+**Event**: SENSOR_FIRED
+**Fire id**: f134b8dd
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-requirements/performance-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:55Z
+**Event**: SENSOR_FAILED
+**Fire id**: f134b8dd
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-requirements/performance-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/upstream-coverage-f134b8dd.md
+**Findings count**: 3
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:55Z
+**Event**: SENSOR_FIRED
+**Fire id**: 82d6b2d4
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-requirements/security-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:55Z
+**Event**: SENSOR_FAILED
+**Fire id**: 82d6b2d4
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-requirements/security-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/upstream-coverage-82d6b2d4.md
+**Findings count**: 3
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:55Z
+**Event**: SENSOR_FIRED
+**Fire id**: 6d4e8cea
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-requirements/scalability-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:55Z
+**Event**: SENSOR_FAILED
+**Fire id**: 6d4e8cea
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-requirements/scalability-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/upstream-coverage-6d4e8cea.md
+**Findings count**: 3
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:55Z
+**Event**: SENSOR_FIRED
+**Fire id**: cb5c2683
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-requirements/reliability-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:56Z
+**Event**: SENSOR_FAILED
+**Fire id**: cb5c2683
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-requirements/reliability-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/upstream-coverage-cb5c2683.md
+**Findings count**: 3
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:56Z
+**Event**: SENSOR_FIRED
+**Fire id**: e0d3073a
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-requirements/observability-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:56Z
+**Event**: SENSOR_FAILED
+**Fire id**: e0d3073a
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-requirements/observability-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/upstream-coverage-e0d3073a.md
+**Findings count**: 3
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:56Z
+**Event**: SENSOR_FIRED
+**Fire id**: bb98c973
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-requirements/tech-stack-decisions.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:56Z
+**Event**: SENSOR_FAILED
+**Fire id**: bb98c973
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-requirements/tech-stack-decisions.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/upstream-coverage-bb98c973.md
+**Findings count**: 3
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:56Z
+**Event**: SENSOR_FIRED
+**Fire id**: cec04c28
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-requirements/traceability.json
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:56Z
+**Event**: SENSOR_FAILED
+**Fire id**: cec04c28
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-requirements/traceability.json
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/upstream-coverage-cec04c28.md
+**Findings count**: 3
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:57Z
+**Event**: SENSOR_FIRED
+**Fire id**: b3765a80
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-requirements/performance-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:57Z
+**Event**: SENSOR_FAILED
+**Fire id**: b3765a80
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-requirements/performance-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/upstream-coverage-b3765a80.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:57Z
+**Event**: SENSOR_FIRED
+**Fire id**: 621ebfc0
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-requirements/security-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:57Z
+**Event**: SENSOR_FAILED
+**Fire id**: 621ebfc0
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-requirements/security-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/upstream-coverage-621ebfc0.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:57Z
+**Event**: SENSOR_FIRED
+**Fire id**: 24b99c76
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-requirements/scalability-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:57Z
+**Event**: SENSOR_FAILED
+**Fire id**: 24b99c76
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-requirements/scalability-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/upstream-coverage-24b99c76.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:58Z
+**Event**: SENSOR_FIRED
+**Fire id**: ee136abc
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-requirements/reliability-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:58Z
+**Event**: SENSOR_FAILED
+**Fire id**: ee136abc
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-requirements/reliability-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/upstream-coverage-ee136abc.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:58Z
+**Event**: SENSOR_FIRED
+**Fire id**: 266dec25
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-requirements/observability-requirements.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:58Z
+**Event**: SENSOR_FAILED
+**Fire id**: 266dec25
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-requirements/observability-requirements.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/upstream-coverage-266dec25.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:58Z
+**Event**: SENSOR_FIRED
+**Fire id**: 52af522e
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-requirements/tech-stack-decisions.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:58Z
+**Event**: SENSOR_FAILED
+**Fire id**: 52af522e
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-requirements/tech-stack-decisions.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/upstream-coverage-52af522e.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:05:59Z
+**Event**: SENSOR_FIRED
+**Fire id**: b390fa66
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-requirements/traceability.json
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:05:59Z
+**Event**: SENSOR_FAILED
+**Fire id**: b390fa66
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-requirements
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-requirements/traceability.json
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-requirements/upstream-coverage-b390fa66.md
+**Findings count**: 2
+
+---
+
+## Stage Awaiting Approval
+**Timestamp**: 2026-10-29T08:06:09Z
+**Event**: STAGE_AWAITING_APPROVAL
+**Stage**: nfr-requirements
+
+---
+
+## Gate Approved
+**Timestamp**: 2026-10-29T08:06:44Z
+**Event**: GATE_APPROVED
+**Stage**: nfr-requirements
+
+---
+
+## Stage Completion
+**Timestamp**: 2026-10-29T08:06:44Z
+**Event**: STAGE_COMPLETED
+**Stage**: nfr-requirements
+**Validation Basis**: {"graphContract":"sha256:42740ba129331fd7be59c025acef08cda33aa1e1b365637b9662dd2b529d969c","inputs":[{"artifact":"contract-summary","contentHash":"sha256:7f0335cbd08218adebc5ae89605ff31496e710324dd4ad62c5d0a9590d28289c","instanceCount":1,"presentCount":1,"producer":"contract-design","required":false,"structureHash":"sha256:30a652db9038a52def5123b74608b14c0f031a96e4f3759d2aa5b61ae779014b"},{"artifact":"functional-spec","contentHash":"sha256:a7264e570fd1e100208cea7d391b237e904994172d4adf1d5eac093aeed6515c","instanceCount":5,"presentCount":5,"producer":"functional-design","required":true,"structureHash":"sha256:75c2336ae0fbbc24a660dd416ee706f020380c8810d01c1f55b62927f3fd249a"},{"artifact":"requirements","contentHash":"sha256:91596afb4361696fc6dfebc1fb0aa510db6a3aaccc85c91e4e38d12a760e1716","instanceCount":1,"presentCount":1,"producer":"requirements-analysis","required":true,"structureHash":"sha256:4505671a40e951a46be027fcf40da539cee3d7d128be48e674cb3005a5fe48bc"},{"artifact":"rules","contentHash":"sha256:cc6f8574dc3b4fa5490efac7c657ca3d754c13493c42b99eb170214184e83d9d","instanceCount":5,"presentCount":5,"producer":"functional-design","required":true,"structureHash":"sha256:4fcbee0502e2cdc780c57766df3ed1fe9efeac22f91d44017fad79cfd09afcad"},{"artifact":"technology-stack","contentHash":"sha256:dec144971d9023d39bd1111d90a07fd3c6ceb40e964a90d9876424f7a894ad43","instanceCount":1,"presentCount":1,"producer":"reverse-engineering","required":false,"structureHash":"sha256:ba7e3a2f7ea275f1e0cc5d9e185ee1c31122bf21924508d9a11aa92150ad15bb"}],"outputs":[{"artifact":"observability-requirements","contentHash":"sha256:2bc3aef923aefe9369becc67d801560d59c20ef9481d8e04a9624d8ebf87da1b","instanceCount":5,"presentCount":5,"producer":"nfr-requirements","required":true,"structureHash":"sha256:44c652c61696ab97d871bc1cb4a56f20567e419a1c608e380f19e1d0cf3f60bd"},{"artifact":"performance-requirements","contentHash":"sha256:18795ab9cbf1c2f1bc70409924232f787c04b87342c475de185d925b4e631863","instanceCount":5,"presentCount":5,"producer":"nfr-requirements","required":true,"structureHash":"sha256:97b23f6b5dc72c1f1e90c97e3f92d151df395535a88fbec3b826a7efcb9c99e8"},{"artifact":"reliability-requirements","contentHash":"sha256:f653bc554f0ead2df6188301d221f06bd07b5fea152b4c73cb783b59275ae48f","instanceCount":5,"presentCount":5,"producer":"nfr-requirements","required":true,"structureHash":"sha256:4b244f7fd86fa9cdd9e430aa719750ba98ac949bbc50b0fe8b78a9f67badac4e"},{"artifact":"scalability-requirements","contentHash":"sha256:439377a3f1786552b08956dbf7e9ee3ec153b287916811615b3241f6e7cb7d95","instanceCount":5,"presentCount":5,"producer":"nfr-requirements","required":true,"structureHash":"sha256:60e2739296def79bc8de2c9cd91c4cbb980a3ec8f600bc60127e2c4a6e169ce8"},{"artifact":"security-requirements","contentHash":"sha256:14d0f5c3157fa61ef4a41a9c2540449d894fd9cdfdd4ebb27619ca1da30eba48","instanceCount":5,"presentCount":5,"producer":"nfr-requirements","required":true,"structureHash":"sha256:b2fe037528bce7a8f4b8edb91eca1252533d9a13e3d15848d0597c66035d233e"},{"artifact":"tech-stack-decisions","contentHash":"sha256:a115cb804ffe7160c1de949a60434e2ef50a451a437b898e748c82a710a8a296","instanceCount":5,"presentCount":5,"producer":"nfr-requirements","required":true,"structureHash":"sha256:6846f18e8213b0ad70b16158610ace101daad2c1b195215c98c17be88c9aeae7"},{"artifact":"traceability","contentHash":"sha256:bf93aa730a0b76ab619ea877db142c4bc62e788240a99bbeb6f9d0259d2378e9","instanceCount":5,"presentCount":5,"producer":"nfr-requirements","required":true,"structureHash":"sha256:6ec57b474605d883b856775935ba20185ef8854e5e6c7101a8ca9004f081b9fb"}],"projectType":"brownfield","schema":3}
+**Details**: Stage NFR Requirements approved by gate
+**Tokens In**: 4
+**Tokens Out**: 535
+**Cache Read**: 340690
+**Cache Write**: 2065
+**Cost USD**: 0.10
+**By Model**: opus-5-5=0.10
+**By Agent**: main=0.10
+**Tokens By Model**: opus-5-5=4/535/340.7k/2.1k
+**Tokens By Agent**: main=4/535/340.7k/2.1k
+
+---
+
+## Stage Start
+**Timestamp**: 2026-10-29T08:06:44Z
+**Event**: STAGE_STARTED
+**Stage**: nfr-design
+**Agent**: aidlc-architect-agent
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:30Z
+**Event**: SENSOR_FIRED
+**Fire id**: 4d41a42d
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-design/performance-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:31Z
+**Event**: SENSOR_FAILED
+**Fire id**: 4d41a42d
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-design/performance-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/required-sections-4d41a42d.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:31Z
+**Event**: SENSOR_FIRED
+**Fire id**: cbd72c69
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-design/security-design.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:07:31Z
+**Event**: SENSOR_PASSED
+**Fire id**: cbd72c69
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-design/security-design.md
+**Duration ms**: 81
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:31Z
+**Event**: SENSOR_FIRED
+**Fire id**: b1c15b18
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-design/scalability-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:31Z
+**Event**: SENSOR_FAILED
+**Fire id**: b1c15b18
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-design/scalability-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/required-sections-b1c15b18.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:31Z
+**Event**: SENSOR_FIRED
+**Fire id**: d6ddfaae
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-design/reliability-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:31Z
+**Event**: SENSOR_FAILED
+**Fire id**: d6ddfaae
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-design/reliability-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/required-sections-d6ddfaae.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:31Z
+**Event**: SENSOR_FIRED
+**Fire id**: a7eec37c
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-design/observability-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:32Z
+**Event**: SENSOR_FAILED
+**Fire id**: a7eec37c
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-design/observability-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/required-sections-a7eec37c.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:32Z
+**Event**: SENSOR_FIRED
+**Fire id**: c55ae0d9
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-design/logical-components.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:07:32Z
+**Event**: SENSOR_PASSED
+**Fire id**: c55ae0d9
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-design/logical-components.md
+**Duration ms**: 77
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:32Z
+**Event**: SENSOR_FIRED
+**Fire id**: 32fd5219
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-design/traceability.json
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:07:32Z
+**Event**: SENSOR_PASSED
+**Fire id**: 32fd5219
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-design/traceability.json
+**Duration ms**: 80
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:32Z
+**Event**: SENSOR_FIRED
+**Fire id**: 14ae70a1
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-design/performance-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:32Z
+**Event**: SENSOR_FAILED
+**Fire id**: 14ae70a1
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-design/performance-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/required-sections-14ae70a1.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:32Z
+**Event**: SENSOR_FIRED
+**Fire id**: 6e5332d7
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-design/security-design.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:07:33Z
+**Event**: SENSOR_PASSED
+**Fire id**: 6e5332d7
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-design/security-design.md
+**Duration ms**: 81
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:33Z
+**Event**: SENSOR_FIRED
+**Fire id**: cbc33987
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-design/scalability-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:33Z
+**Event**: SENSOR_FAILED
+**Fire id**: cbc33987
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-design/scalability-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/required-sections-cbc33987.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:33Z
+**Event**: SENSOR_FIRED
+**Fire id**: eee51f1b
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-design/reliability-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:33Z
+**Event**: SENSOR_FAILED
+**Fire id**: eee51f1b
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-design/reliability-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/required-sections-eee51f1b.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:33Z
+**Event**: SENSOR_FIRED
+**Fire id**: 1cfadb62
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-design/observability-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:33Z
+**Event**: SENSOR_FAILED
+**Fire id**: 1cfadb62
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-design/observability-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/required-sections-1cfadb62.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:33Z
+**Event**: SENSOR_FIRED
+**Fire id**: c7e02b64
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-design/logical-components.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:33Z
+**Event**: SENSOR_FAILED
+**Fire id**: c7e02b64
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-design/logical-components.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/required-sections-c7e02b64.md
+**Findings count**: 1
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:34Z
+**Event**: SENSOR_FIRED
+**Fire id**: 05aef76b
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-design/traceability.json
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:07:34Z
+**Event**: SENSOR_PASSED
+**Fire id**: 05aef76b
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-design/traceability.json
+**Duration ms**: 70
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:34Z
+**Event**: SENSOR_FIRED
+**Fire id**: bd646b30
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-design/performance-design.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:07:34Z
+**Event**: SENSOR_PASSED
+**Fire id**: bd646b30
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-design/performance-design.md
+**Duration ms**: 72
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:34Z
+**Event**: SENSOR_FIRED
+**Fire id**: 89740e4c
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-design/security-design.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:07:34Z
+**Event**: SENSOR_PASSED
+**Fire id**: 89740e4c
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-design/security-design.md
+**Duration ms**: 69
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:34Z
+**Event**: SENSOR_FIRED
+**Fire id**: f72d0d68
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-design/scalability-design.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:07:34Z
+**Event**: SENSOR_PASSED
+**Fire id**: f72d0d68
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-design/scalability-design.md
+**Duration ms**: 128
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:34Z
+**Event**: SENSOR_FIRED
+**Fire id**: 10cba10a
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-design/reliability-design.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:07:35Z
+**Event**: SENSOR_PASSED
+**Fire id**: 10cba10a
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-design/reliability-design.md
+**Duration ms**: 74
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:35Z
+**Event**: SENSOR_FIRED
+**Fire id**: ee95a4db
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-design/observability-design.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:07:35Z
+**Event**: SENSOR_PASSED
+**Fire id**: ee95a4db
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-design/observability-design.md
+**Duration ms**: 70
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:35Z
+**Event**: SENSOR_FIRED
+**Fire id**: 413e7286
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-design/logical-components.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:07:35Z
+**Event**: SENSOR_PASSED
+**Fire id**: 413e7286
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-design/logical-components.md
+**Duration ms**: 69
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:35Z
+**Event**: SENSOR_FIRED
+**Fire id**: 1d133269
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-design/traceability.json
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:07:35Z
+**Event**: SENSOR_PASSED
+**Fire id**: 1d133269
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-design/traceability.json
+**Duration ms**: 67
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:35Z
+**Event**: SENSOR_FIRED
+**Fire id**: e336b325
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-design/performance-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:35Z
+**Event**: SENSOR_FAILED
+**Fire id**: e336b325
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-design/performance-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/required-sections-e336b325.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:36Z
+**Event**: SENSOR_FIRED
+**Fire id**: 7d95140d
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-design/security-design.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:07:36Z
+**Event**: SENSOR_PASSED
+**Fire id**: 7d95140d
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-design/security-design.md
+**Duration ms**: 74
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:36Z
+**Event**: SENSOR_FIRED
+**Fire id**: 4b62a371
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-design/scalability-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:36Z
+**Event**: SENSOR_FAILED
+**Fire id**: 4b62a371
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-design/scalability-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/required-sections-4b62a371.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:36Z
+**Event**: SENSOR_FIRED
+**Fire id**: a8f48f36
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-design/reliability-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:36Z
+**Event**: SENSOR_FAILED
+**Fire id**: a8f48f36
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-design/reliability-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/required-sections-a8f48f36.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:36Z
+**Event**: SENSOR_FIRED
+**Fire id**: 968e9841
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-design/observability-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:36Z
+**Event**: SENSOR_FAILED
+**Fire id**: 968e9841
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-design/observability-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/required-sections-968e9841.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:36Z
+**Event**: SENSOR_FIRED
+**Fire id**: ab96a083
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-design/logical-components.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:07:37Z
+**Event**: SENSOR_PASSED
+**Fire id**: ab96a083
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-design/logical-components.md
+**Duration ms**: 104
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:37Z
+**Event**: SENSOR_FIRED
+**Fire id**: d847f666
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-design/traceability.json
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:07:37Z
+**Event**: SENSOR_PASSED
+**Fire id**: d847f666
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-design/traceability.json
+**Duration ms**: 84
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:37Z
+**Event**: SENSOR_FIRED
+**Fire id**: acb4c051
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-design/performance-design.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:07:37Z
+**Event**: SENSOR_PASSED
+**Fire id**: acb4c051
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-design/performance-design.md
+**Duration ms**: 92
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:38Z
+**Event**: SENSOR_FIRED
+**Fire id**: 7ded3486
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-design/security-design.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:07:38Z
+**Event**: SENSOR_PASSED
+**Fire id**: 7ded3486
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-design/security-design.md
+**Duration ms**: 77
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:38Z
+**Event**: SENSOR_FIRED
+**Fire id**: 3b06f996
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-design/scalability-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:38Z
+**Event**: SENSOR_FAILED
+**Fire id**: 3b06f996
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-design/scalability-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/required-sections-3b06f996.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:38Z
+**Event**: SENSOR_FIRED
+**Fire id**: b16b1776
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-design/reliability-design.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:07:38Z
+**Event**: SENSOR_PASSED
+**Fire id**: b16b1776
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-design/reliability-design.md
+**Duration ms**: 119
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:38Z
+**Event**: SENSOR_FIRED
+**Fire id**: f4de7dcb
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-design/observability-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:39Z
+**Event**: SENSOR_FAILED
+**Fire id**: f4de7dcb
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-design/observability-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/required-sections-f4de7dcb.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:39Z
+**Event**: SENSOR_FIRED
+**Fire id**: 5d61b574
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-design/logical-components.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:07:39Z
+**Event**: SENSOR_PASSED
+**Fire id**: 5d61b574
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-design/logical-components.md
+**Duration ms**: 203
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:39Z
+**Event**: SENSOR_FIRED
+**Fire id**: 23849985
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-design/traceability.json
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:07:40Z
+**Event**: SENSOR_PASSED
+**Fire id**: 23849985
+**Sensor ID**: required-sections
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-design/traceability.json
+**Duration ms**: 137
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:40Z
+**Event**: SENSOR_FIRED
+**Fire id**: d1c9b3aa
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-design/performance-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:40Z
+**Event**: SENSOR_FAILED
+**Fire id**: d1c9b3aa
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-design/performance-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/upstream-coverage-d1c9b3aa.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:41Z
+**Event**: SENSOR_FIRED
+**Fire id**: 7a09aec0
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-design/security-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:41Z
+**Event**: SENSOR_FAILED
+**Fire id**: 7a09aec0
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-design/security-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/upstream-coverage-7a09aec0.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:41Z
+**Event**: SENSOR_FIRED
+**Fire id**: d2bae7cc
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-design/scalability-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:41Z
+**Event**: SENSOR_FAILED
+**Fire id**: d2bae7cc
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-design/scalability-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/upstream-coverage-d2bae7cc.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:42Z
+**Event**: SENSOR_FIRED
+**Fire id**: 62f9600e
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-design/reliability-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:42Z
+**Event**: SENSOR_FAILED
+**Fire id**: 62f9600e
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-design/reliability-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/upstream-coverage-62f9600e.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:42Z
+**Event**: SENSOR_FIRED
+**Fire id**: 7106de50
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-design/observability-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:42Z
+**Event**: SENSOR_FAILED
+**Fire id**: 7106de50
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-design/observability-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/upstream-coverage-7106de50.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:43Z
+**Event**: SENSOR_FIRED
+**Fire id**: b1268b67
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-design/logical-components.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:43Z
+**Event**: SENSOR_FAILED
+**Fire id**: b1268b67
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-design/logical-components.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/upstream-coverage-b1268b67.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:43Z
+**Event**: SENSOR_FIRED
+**Fire id**: 44988d15
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-design/traceability.json
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:43Z
+**Event**: SENSOR_FAILED
+**Fire id**: 44988d15
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/nfr-design/traceability.json
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/upstream-coverage-44988d15.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:43Z
+**Event**: SENSOR_FIRED
+**Fire id**: ace560af
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-design/performance-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:43Z
+**Event**: SENSOR_FAILED
+**Fire id**: ace560af
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-design/performance-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/upstream-coverage-ace560af.md
+**Findings count**: 8
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:44Z
+**Event**: SENSOR_FIRED
+**Fire id**: dd699f96
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-design/security-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:44Z
+**Event**: SENSOR_FAILED
+**Fire id**: dd699f96
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-design/security-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/upstream-coverage-dd699f96.md
+**Findings count**: 8
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:44Z
+**Event**: SENSOR_FIRED
+**Fire id**: 4ca672c2
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-design/scalability-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:44Z
+**Event**: SENSOR_FAILED
+**Fire id**: 4ca672c2
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-design/scalability-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/upstream-coverage-4ca672c2.md
+**Findings count**: 8
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:44Z
+**Event**: SENSOR_FIRED
+**Fire id**: 304620a2
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-design/reliability-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:45Z
+**Event**: SENSOR_FAILED
+**Fire id**: 304620a2
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-design/reliability-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/upstream-coverage-304620a2.md
+**Findings count**: 8
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:45Z
+**Event**: SENSOR_FIRED
+**Fire id**: a347d39c
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-design/observability-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:45Z
+**Event**: SENSOR_FAILED
+**Fire id**: a347d39c
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-design/observability-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/upstream-coverage-a347d39c.md
+**Findings count**: 8
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:45Z
+**Event**: SENSOR_FIRED
+**Fire id**: 81f375f7
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-design/logical-components.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:45Z
+**Event**: SENSOR_FAILED
+**Fire id**: 81f375f7
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-design/logical-components.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/upstream-coverage-81f375f7.md
+**Findings count**: 8
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:46Z
+**Event**: SENSOR_FIRED
+**Fire id**: ededb6b5
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-design/traceability.json
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:46Z
+**Event**: SENSOR_FAILED
+**Fire id**: ededb6b5
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/nfr-design/traceability.json
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/upstream-coverage-ededb6b5.md
+**Findings count**: 8
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:46Z
+**Event**: SENSOR_FIRED
+**Fire id**: bf2a3efe
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-design/performance-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:46Z
+**Event**: SENSOR_FAILED
+**Fire id**: bf2a3efe
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-design/performance-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/upstream-coverage-bf2a3efe.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:46Z
+**Event**: SENSOR_FIRED
+**Fire id**: e6801813
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-design/security-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:47Z
+**Event**: SENSOR_FAILED
+**Fire id**: e6801813
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-design/security-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/upstream-coverage-e6801813.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:47Z
+**Event**: SENSOR_FIRED
+**Fire id**: 06fe38d6
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-design/scalability-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:47Z
+**Event**: SENSOR_FAILED
+**Fire id**: 06fe38d6
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-design/scalability-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/upstream-coverage-06fe38d6.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:47Z
+**Event**: SENSOR_FIRED
+**Fire id**: fc03d7f3
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-design/reliability-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:47Z
+**Event**: SENSOR_FAILED
+**Fire id**: fc03d7f3
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-design/reliability-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/upstream-coverage-fc03d7f3.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:48Z
+**Event**: SENSOR_FIRED
+**Fire id**: 11440016
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-design/observability-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:48Z
+**Event**: SENSOR_FAILED
+**Fire id**: 11440016
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-design/observability-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/upstream-coverage-11440016.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:48Z
+**Event**: SENSOR_FIRED
+**Fire id**: a548c4e3
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-design/logical-components.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:48Z
+**Event**: SENSOR_FAILED
+**Fire id**: a548c4e3
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-design/logical-components.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/upstream-coverage-a548c4e3.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:48Z
+**Event**: SENSOR_FIRED
+**Fire id**: bc242057
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-design/traceability.json
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:49Z
+**Event**: SENSOR_FAILED
+**Fire id**: bc242057
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/nfr-design/traceability.json
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/upstream-coverage-bc242057.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:49Z
+**Event**: SENSOR_FIRED
+**Fire id**: 07335615
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-design/performance-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:49Z
+**Event**: SENSOR_FAILED
+**Fire id**: 07335615
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-design/performance-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/upstream-coverage-07335615.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:49Z
+**Event**: SENSOR_FIRED
+**Fire id**: c27c9d12
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-design/security-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:49Z
+**Event**: SENSOR_FAILED
+**Fire id**: c27c9d12
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-design/security-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/upstream-coverage-c27c9d12.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:50Z
+**Event**: SENSOR_FIRED
+**Fire id**: 27c691c6
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-design/scalability-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:50Z
+**Event**: SENSOR_FAILED
+**Fire id**: 27c691c6
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-design/scalability-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/upstream-coverage-27c691c6.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:50Z
+**Event**: SENSOR_FIRED
+**Fire id**: 1936ad94
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-design/reliability-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:50Z
+**Event**: SENSOR_FAILED
+**Fire id**: 1936ad94
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-design/reliability-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/upstream-coverage-1936ad94.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:50Z
+**Event**: SENSOR_FIRED
+**Fire id**: 1320a84c
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-design/observability-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:50Z
+**Event**: SENSOR_FAILED
+**Fire id**: 1320a84c
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-design/observability-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/upstream-coverage-1320a84c.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:51Z
+**Event**: SENSOR_FIRED
+**Fire id**: 6cfc71b2
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-design/logical-components.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:51Z
+**Event**: SENSOR_FAILED
+**Fire id**: 6cfc71b2
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-design/logical-components.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/upstream-coverage-6cfc71b2.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:51Z
+**Event**: SENSOR_FIRED
+**Fire id**: 192f462b
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-design/traceability.json
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:51Z
+**Event**: SENSOR_FAILED
+**Fire id**: 192f462b
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/nfr-design/traceability.json
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/upstream-coverage-192f462b.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:51Z
+**Event**: SENSOR_FIRED
+**Fire id**: 16c673bb
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-design/performance-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:52Z
+**Event**: SENSOR_FAILED
+**Fire id**: 16c673bb
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-design/performance-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/upstream-coverage-16c673bb.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:52Z
+**Event**: SENSOR_FIRED
+**Fire id**: 98ac9a47
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-design/security-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:52Z
+**Event**: SENSOR_FAILED
+**Fire id**: 98ac9a47
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-design/security-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/upstream-coverage-98ac9a47.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:52Z
+**Event**: SENSOR_FIRED
+**Fire id**: 2fc597a0
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-design/scalability-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:52Z
+**Event**: SENSOR_FAILED
+**Fire id**: 2fc597a0
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-design/scalability-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/upstream-coverage-2fc597a0.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:53Z
+**Event**: SENSOR_FIRED
+**Fire id**: 6c2e8644
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-design/reliability-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:53Z
+**Event**: SENSOR_FAILED
+**Fire id**: 6c2e8644
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-design/reliability-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/upstream-coverage-6c2e8644.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:53Z
+**Event**: SENSOR_FIRED
+**Fire id**: f87aca80
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-design/observability-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:53Z
+**Event**: SENSOR_FAILED
+**Fire id**: f87aca80
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-design/observability-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/upstream-coverage-f87aca80.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:53Z
+**Event**: SENSOR_FIRED
+**Fire id**: 35e498f5
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-design/logical-components.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:53Z
+**Event**: SENSOR_FAILED
+**Fire id**: 35e498f5
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-design/logical-components.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/upstream-coverage-35e498f5.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:07:54Z
+**Event**: SENSOR_FIRED
+**Fire id**: 59dd24a1
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-design/traceability.json
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:07:54Z
+**Event**: SENSOR_FAILED
+**Fire id**: 59dd24a1
+**Sensor ID**: upstream-coverage
+**Stage slug**: nfr-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/nfr-design/traceability.json
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/nfr-design/upstream-coverage-59dd24a1.md
+**Findings count**: 2
+
+---
+
+## Stage Awaiting Approval
+**Timestamp**: 2026-10-29T08:08:08Z
+**Event**: STAGE_AWAITING_APPROVAL
+**Stage**: nfr-design
+
+---
+
+## Gate Approved
+**Timestamp**: 2026-10-29T08:08:47Z
+**Event**: GATE_APPROVED
+**Stage**: nfr-design
+
+---
+
+## Stage Completion
+**Timestamp**: 2026-10-29T08:08:47Z
+**Event**: STAGE_COMPLETED
+**Stage**: nfr-design
+**Validation Basis**: {"graphContract":"sha256:ef880741298a28ff1b153f7995686a9c571a06744a85ec1852b3998a0ee954fb","inputs":[{"artifact":"contract-summary","contentHash":"sha256:7f0335cbd08218adebc5ae89605ff31496e710324dd4ad62c5d0a9590d28289c","instanceCount":1,"presentCount":1,"producer":"contract-design","required":false,"structureHash":"sha256:30a652db9038a52def5123b74608b14c0f031a96e4f3759d2aa5b61ae779014b"},{"artifact":"functional-spec","contentHash":"sha256:a7264e570fd1e100208cea7d391b237e904994172d4adf1d5eac093aeed6515c","instanceCount":5,"presentCount":5,"producer":"functional-design","required":true,"structureHash":"sha256:75c2336ae0fbbc24a660dd416ee706f020380c8810d01c1f55b62927f3fd249a"},{"artifact":"observability-requirements","contentHash":"sha256:2bc3aef923aefe9369becc67d801560d59c20ef9481d8e04a9624d8ebf87da1b","instanceCount":5,"presentCount":5,"producer":"nfr-requirements","required":true,"structureHash":"sha256:44c652c61696ab97d871bc1cb4a56f20567e419a1c608e380f19e1d0cf3f60bd"},{"artifact":"performance-requirements","contentHash":"sha256:18795ab9cbf1c2f1bc70409924232f787c04b87342c475de185d925b4e631863","instanceCount":5,"presentCount":5,"producer":"nfr-requirements","required":true,"structureHash":"sha256:97b23f6b5dc72c1f1e90c97e3f92d151df395535a88fbec3b826a7efcb9c99e8"},{"artifact":"reliability-requirements","contentHash":"sha256:f653bc554f0ead2df6188301d221f06bd07b5fea152b4c73cb783b59275ae48f","instanceCount":5,"presentCount":5,"producer":"nfr-requirements","required":true,"structureHash":"sha256:4b244f7fd86fa9cdd9e430aa719750ba98ac949bbc50b0fe8b78a9f67badac4e"},{"artifact":"scalability-requirements","contentHash":"sha256:439377a3f1786552b08956dbf7e9ee3ec153b287916811615b3241f6e7cb7d95","instanceCount":5,"presentCount":5,"producer":"nfr-requirements","required":true,"structureHash":"sha256:60e2739296def79bc8de2c9cd91c4cbb980a3ec8f600bc60127e2c4a6e169ce8"},{"artifact":"security-requirements","contentHash":"sha256:14d0f5c3157fa61ef4a41a9c2540449d894fd9cdfdd4ebb27619ca1da30eba48","instanceCount":5,"presentCount":5,"producer":"nfr-requirements","required":true,"structureHash":"sha256:b2fe037528bce7a8f4b8edb91eca1252533d9a13e3d15848d0597c66035d233e"},{"artifact":"tech-stack-decisions","contentHash":"sha256:a115cb804ffe7160c1de949a60434e2ef50a451a437b898e748c82a710a8a296","instanceCount":5,"presentCount":5,"producer":"nfr-requirements","required":true,"structureHash":"sha256:6846f18e8213b0ad70b16158610ace101daad2c1b195215c98c17be88c9aeae7"}],"outputs":[{"artifact":"logical-components","contentHash":"sha256:f2cf6fdd6f938b761583971c07772fc4d2dd646bbd1f9e14d3b0c081bd748ec1","instanceCount":5,"presentCount":5,"producer":"nfr-design","required":true,"structureHash":"sha256:db8202c5e16f690cf901a1c493d326066f8f91f5fad0a520d95913e2d49cd33c"},{"artifact":"observability-design","contentHash":"sha256:7d80f68fa2c6400f362a9508f8d3df3ea8bef4598bdec17e95f567bcf9ba0220","instanceCount":5,"presentCount":5,"producer":"nfr-design","required":true,"structureHash":"sha256:04fe87a2e48c5701ffbaaee59c102451a4c126edd905aa8df362c46ca13fdabc"},{"artifact":"performance-design","contentHash":"sha256:af62740c80c6bf7fc3270a6e501935b62518f3156b17415d373ec59b573aa322","instanceCount":5,"presentCount":5,"producer":"nfr-design","required":true,"structureHash":"sha256:e97620dfd4e9d5737536cf0f1dda62b38f0b06c8323427ccabfb397b26d8ea31"},{"artifact":"reliability-design","contentHash":"sha256:cea722a783a616a4df9290859f98864278f38b4b4a916827116d02c814b012c3","instanceCount":5,"presentCount":5,"producer":"nfr-design","required":true,"structureHash":"sha256:34750d561642a68936841431bde55beba4861d984abfde1ca5a9ce8360922c7f"},{"artifact":"scalability-design","contentHash":"sha256:6bbbeb8fc74ab348bea8e7b001a8678aca7fbf132878d87d09c850bcb9dee8ef","instanceCount":5,"presentCount":5,"producer":"nfr-design","required":true,"structureHash":"sha256:9bb1769db20ac064fc84ddf2c8b3f6757839ad5b5a2e82cb18801cdf4a741f91"},{"artifact":"security-design","contentHash":"sha256:5011655b8ede82a280c8969c1d3afdb9a7578c8a227e4ac9aa0555dd76d3c39d","instanceCount":5,"presentCount":5,"producer":"nfr-design","required":true,"structureHash":"sha256:24a5ad38083db1b2f30f931a104d95935545f156deeeb234ca8ab3c6a4586b28"},{"artifact":"traceability","contentHash":"sha256:41643067b7917299d14891980f2c2396d53f16f305e38dc0598a41b4937e5948","instanceCount":5,"presentCount":5,"producer":"nfr-design","required":true,"structureHash":"sha256:50658df39a70e962922f286afb4d7a3af3c6816d63bbf553a0a5f1dbee687615"}],"projectType":"brownfield","schema":3}
+**Details**: Stage NFR Design approved by gate
+**Tokens In**: 20
+**Tokens Out**: 2026
+**Cache Read**: 1574998
+**Cache Write**: 7672
+**Cost USD**: 0.42
+**By Model**: opus-5-5=0.42
+**By Agent**: main=0.42
+**Tokens By Model**: opus-5-5=20/2k/1.6M/7.7k
+**Tokens By Agent**: main=20/2k/1.6M/7.7k
+
+---
+
+## Stage Start
+**Timestamp**: 2026-10-29T08:08:48Z
+**Event**: STAGE_STARTED
+**Stage**: infrastructure-design
+**Agent**: aidlc-aws-platform-agent
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:09:42Z
+**Event**: SENSOR_FIRED
+**Fire id**: 415aa0d0
+**Sensor ID**: required-sections
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/infrastructure-design/infrastructure-specification.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:09:42Z
+**Event**: SENSOR_PASSED
+**Fire id**: 415aa0d0
+**Sensor ID**: required-sections
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/infrastructure-design/infrastructure-specification.md
+**Duration ms**: 72
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:09:42Z
+**Event**: SENSOR_FIRED
+**Fire id**: 0c0b0e7e
+**Sensor ID**: required-sections
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/infrastructure-design/monitoring-design.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:09:42Z
+**Event**: SENSOR_PASSED
+**Fire id**: 0c0b0e7e
+**Sensor ID**: required-sections
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/infrastructure-design/monitoring-design.md
+**Duration ms**: 74
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:09:42Z
+**Event**: SENSOR_FIRED
+**Fire id**: a37d7162
+**Sensor ID**: required-sections
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/infrastructure-design/cicd-pipeline.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:09:43Z
+**Event**: SENSOR_PASSED
+**Fire id**: a37d7162
+**Sensor ID**: required-sections
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/infrastructure-design/cicd-pipeline.md
+**Duration ms**: 70
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:09:43Z
+**Event**: SENSOR_FIRED
+**Fire id**: 17abf98d
+**Sensor ID**: required-sections
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/infrastructure-design/traceability.json
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:09:43Z
+**Event**: SENSOR_PASSED
+**Fire id**: 17abf98d
+**Sensor ID**: required-sections
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/infrastructure-design/traceability.json
+**Duration ms**: 67
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:09:43Z
+**Event**: SENSOR_FIRED
+**Fire id**: 5ec0a6b0
+**Sensor ID**: required-sections
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/infrastructure-design/infrastructure-specification.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:09:43Z
+**Event**: SENSOR_PASSED
+**Fire id**: 5ec0a6b0
+**Sensor ID**: required-sections
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/infrastructure-design/infrastructure-specification.md
+**Duration ms**: 70
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:09:43Z
+**Event**: SENSOR_FIRED
+**Fire id**: 42a17e5e
+**Sensor ID**: required-sections
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/infrastructure-design/monitoring-design.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:09:43Z
+**Event**: SENSOR_PASSED
+**Fire id**: 42a17e5e
+**Sensor ID**: required-sections
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/infrastructure-design/monitoring-design.md
+**Duration ms**: 69
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:09:43Z
+**Event**: SENSOR_FIRED
+**Fire id**: 5c881356
+**Sensor ID**: required-sections
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/infrastructure-design/cicd-pipeline.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:09:43Z
+**Event**: SENSOR_PASSED
+**Fire id**: 5c881356
+**Sensor ID**: required-sections
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/infrastructure-design/cicd-pipeline.md
+**Duration ms**: 67
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:09:44Z
+**Event**: SENSOR_FIRED
+**Fire id**: 804a30e8
+**Sensor ID**: required-sections
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/infrastructure-design/traceability.json
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:09:44Z
+**Event**: SENSOR_PASSED
+**Fire id**: 804a30e8
+**Sensor ID**: required-sections
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/infrastructure-design/traceability.json
+**Duration ms**: 68
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:09:44Z
+**Event**: SENSOR_FIRED
+**Fire id**: b1071e5e
+**Sensor ID**: required-sections
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/infrastructure-design/infrastructure-specification.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:09:44Z
+**Event**: SENSOR_PASSED
+**Fire id**: b1071e5e
+**Sensor ID**: required-sections
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/infrastructure-design/infrastructure-specification.md
+**Duration ms**: 77
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:09:44Z
+**Event**: SENSOR_FIRED
+**Fire id**: 57abebc7
+**Sensor ID**: required-sections
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/infrastructure-design/monitoring-design.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:09:44Z
+**Event**: SENSOR_PASSED
+**Fire id**: 57abebc7
+**Sensor ID**: required-sections
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/infrastructure-design/monitoring-design.md
+**Duration ms**: 70
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:09:44Z
+**Event**: SENSOR_FIRED
+**Fire id**: f29dcbaa
+**Sensor ID**: required-sections
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/infrastructure-design/cicd-pipeline.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:09:44Z
+**Event**: SENSOR_PASSED
+**Fire id**: f29dcbaa
+**Sensor ID**: required-sections
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/infrastructure-design/cicd-pipeline.md
+**Duration ms**: 65
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:09:44Z
+**Event**: SENSOR_FIRED
+**Fire id**: 0e4d0d91
+**Sensor ID**: required-sections
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/infrastructure-design/traceability.json
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:09:44Z
+**Event**: SENSOR_PASSED
+**Fire id**: 0e4d0d91
+**Sensor ID**: required-sections
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/infrastructure-design/traceability.json
+**Duration ms**: 71
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:09:45Z
+**Event**: SENSOR_FIRED
+**Fire id**: ee9e62ae
+**Sensor ID**: required-sections
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/infrastructure-design/infrastructure-specification.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:09:45Z
+**Event**: SENSOR_PASSED
+**Fire id**: ee9e62ae
+**Sensor ID**: required-sections
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/infrastructure-design/infrastructure-specification.md
+**Duration ms**: 65
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:09:45Z
+**Event**: SENSOR_FIRED
+**Fire id**: 85bd16f5
+**Sensor ID**: required-sections
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/infrastructure-design/monitoring-design.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:09:45Z
+**Event**: SENSOR_PASSED
+**Fire id**: 85bd16f5
+**Sensor ID**: required-sections
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/infrastructure-design/monitoring-design.md
+**Duration ms**: 71
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:09:45Z
+**Event**: SENSOR_FIRED
+**Fire id**: 9200ccfb
+**Sensor ID**: required-sections
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/infrastructure-design/cicd-pipeline.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:09:45Z
+**Event**: SENSOR_PASSED
+**Fire id**: 9200ccfb
+**Sensor ID**: required-sections
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/infrastructure-design/cicd-pipeline.md
+**Duration ms**: 70
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:09:45Z
+**Event**: SENSOR_FIRED
+**Fire id**: ca4ded21
+**Sensor ID**: required-sections
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/infrastructure-design/traceability.json
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:09:45Z
+**Event**: SENSOR_PASSED
+**Fire id**: ca4ded21
+**Sensor ID**: required-sections
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/infrastructure-design/traceability.json
+**Duration ms**: 68
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:09:45Z
+**Event**: SENSOR_FIRED
+**Fire id**: ba01d5fd
+**Sensor ID**: required-sections
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/infrastructure-design/infrastructure-specification.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:09:46Z
+**Event**: SENSOR_PASSED
+**Fire id**: ba01d5fd
+**Sensor ID**: required-sections
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/infrastructure-design/infrastructure-specification.md
+**Duration ms**: 69
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:09:46Z
+**Event**: SENSOR_FIRED
+**Fire id**: afca6b31
+**Sensor ID**: required-sections
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/infrastructure-design/monitoring-design.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:09:46Z
+**Event**: SENSOR_PASSED
+**Fire id**: afca6b31
+**Sensor ID**: required-sections
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/infrastructure-design/monitoring-design.md
+**Duration ms**: 71
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:09:46Z
+**Event**: SENSOR_FIRED
+**Fire id**: 00315958
+**Sensor ID**: required-sections
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/infrastructure-design/cicd-pipeline.md
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:09:46Z
+**Event**: SENSOR_PASSED
+**Fire id**: 00315958
+**Sensor ID**: required-sections
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/infrastructure-design/cicd-pipeline.md
+**Duration ms**: 79
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:09:46Z
+**Event**: SENSOR_FIRED
+**Fire id**: f7f772fb
+**Sensor ID**: required-sections
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/infrastructure-design/traceability.json
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T08:09:46Z
+**Event**: SENSOR_PASSED
+**Fire id**: f7f772fb
+**Sensor ID**: required-sections
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/infrastructure-design/traceability.json
+**Duration ms**: 71
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:09:47Z
+**Event**: SENSOR_FIRED
+**Fire id**: 66095523
+**Sensor ID**: upstream-coverage
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/infrastructure-design/infrastructure-specification.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:09:47Z
+**Event**: SENSOR_FAILED
+**Fire id**: 66095523
+**Sensor ID**: upstream-coverage
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/infrastructure-design/infrastructure-specification.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/infrastructure-design/upstream-coverage-66095523.md
+**Findings count**: 9
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:09:47Z
+**Event**: SENSOR_FIRED
+**Fire id**: 059b41ae
+**Sensor ID**: upstream-coverage
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/infrastructure-design/monitoring-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:09:47Z
+**Event**: SENSOR_FAILED
+**Fire id**: 059b41ae
+**Sensor ID**: upstream-coverage
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/infrastructure-design/monitoring-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/infrastructure-design/upstream-coverage-059b41ae.md
+**Findings count**: 9
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:09:47Z
+**Event**: SENSOR_FIRED
+**Fire id**: e25d77a6
+**Sensor ID**: upstream-coverage
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/infrastructure-design/cicd-pipeline.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:09:47Z
+**Event**: SENSOR_FAILED
+**Fire id**: e25d77a6
+**Sensor ID**: upstream-coverage
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/infrastructure-design/cicd-pipeline.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/infrastructure-design/upstream-coverage-e25d77a6.md
+**Findings count**: 9
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:09:48Z
+**Event**: SENSOR_FIRED
+**Fire id**: 253df1e1
+**Sensor ID**: upstream-coverage
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/infrastructure-design/traceability.json
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:09:48Z
+**Event**: SENSOR_FAILED
+**Fire id**: 253df1e1
+**Sensor ID**: upstream-coverage
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u3-staff/infrastructure-design/traceability.json
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/infrastructure-design/upstream-coverage-253df1e1.md
+**Findings count**: 9
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:09:48Z
+**Event**: SENSOR_FIRED
+**Fire id**: cdb1626c
+**Sensor ID**: upstream-coverage
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/infrastructure-design/infrastructure-specification.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:09:48Z
+**Event**: SENSOR_FAILED
+**Fire id**: cdb1626c
+**Sensor ID**: upstream-coverage
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/infrastructure-design/infrastructure-specification.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/infrastructure-design/upstream-coverage-cdb1626c.md
+**Findings count**: 9
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:09:48Z
+**Event**: SENSOR_FIRED
+**Fire id**: ef5febfd
+**Sensor ID**: upstream-coverage
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/infrastructure-design/monitoring-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:09:48Z
+**Event**: SENSOR_FAILED
+**Fire id**: ef5febfd
+**Sensor ID**: upstream-coverage
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/infrastructure-design/monitoring-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/infrastructure-design/upstream-coverage-ef5febfd.md
+**Findings count**: 9
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:09:49Z
+**Event**: SENSOR_FIRED
+**Fire id**: 1043a0e3
+**Sensor ID**: upstream-coverage
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/infrastructure-design/cicd-pipeline.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:09:49Z
+**Event**: SENSOR_FAILED
+**Fire id**: 1043a0e3
+**Sensor ID**: upstream-coverage
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/infrastructure-design/cicd-pipeline.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/infrastructure-design/upstream-coverage-1043a0e3.md
+**Findings count**: 9
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:09:49Z
+**Event**: SENSOR_FIRED
+**Fire id**: 5d42c4a6
+**Sensor ID**: upstream-coverage
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/infrastructure-design/traceability.json
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:09:49Z
+**Event**: SENSOR_FAILED
+**Fire id**: 5d42c4a6
+**Sensor ID**: upstream-coverage
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/infrastructure-design/traceability.json
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/infrastructure-design/upstream-coverage-5d42c4a6.md
+**Findings count**: 9
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:09:49Z
+**Event**: SENSOR_FIRED
+**Fire id**: ef93c595
+**Sensor ID**: upstream-coverage
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/infrastructure-design/infrastructure-specification.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:09:49Z
+**Event**: SENSOR_FAILED
+**Fire id**: ef93c595
+**Sensor ID**: upstream-coverage
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/infrastructure-design/infrastructure-specification.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/infrastructure-design/upstream-coverage-ef93c595.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:09:50Z
+**Event**: SENSOR_FIRED
+**Fire id**: c0d001f9
+**Sensor ID**: upstream-coverage
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/infrastructure-design/monitoring-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:09:50Z
+**Event**: SENSOR_FAILED
+**Fire id**: c0d001f9
+**Sensor ID**: upstream-coverage
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/infrastructure-design/monitoring-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/infrastructure-design/upstream-coverage-c0d001f9.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:09:50Z
+**Event**: SENSOR_FIRED
+**Fire id**: 741596f9
+**Sensor ID**: upstream-coverage
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/infrastructure-design/cicd-pipeline.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:09:50Z
+**Event**: SENSOR_FAILED
+**Fire id**: 741596f9
+**Sensor ID**: upstream-coverage
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/infrastructure-design/cicd-pipeline.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/infrastructure-design/upstream-coverage-741596f9.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:09:50Z
+**Event**: SENSOR_FIRED
+**Fire id**: 23bd78a8
+**Sensor ID**: upstream-coverage
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/infrastructure-design/traceability.json
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:09:51Z
+**Event**: SENSOR_FAILED
+**Fire id**: 23bd78a8
+**Sensor ID**: upstream-coverage
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u1-skeleton/infrastructure-design/traceability.json
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/infrastructure-design/upstream-coverage-23bd78a8.md
+**Findings count**: 2
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:09:51Z
+**Event**: SENSOR_FIRED
+**Fire id**: 1e9d0658
+**Sensor ID**: upstream-coverage
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/infrastructure-design/infrastructure-specification.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:09:51Z
+**Event**: SENSOR_FAILED
+**Fire id**: 1e9d0658
+**Sensor ID**: upstream-coverage
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/infrastructure-design/infrastructure-specification.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/infrastructure-design/upstream-coverage-1e9d0658.md
+**Findings count**: 9
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:09:51Z
+**Event**: SENSOR_FIRED
+**Fire id**: f5c52a1b
+**Sensor ID**: upstream-coverage
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/infrastructure-design/monitoring-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:09:51Z
+**Event**: SENSOR_FAILED
+**Fire id**: f5c52a1b
+**Sensor ID**: upstream-coverage
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/infrastructure-design/monitoring-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/infrastructure-design/upstream-coverage-f5c52a1b.md
+**Findings count**: 9
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:09:52Z
+**Event**: SENSOR_FIRED
+**Fire id**: ea4ace18
+**Sensor ID**: upstream-coverage
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/infrastructure-design/cicd-pipeline.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:09:52Z
+**Event**: SENSOR_FAILED
+**Fire id**: ea4ace18
+**Sensor ID**: upstream-coverage
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/infrastructure-design/cicd-pipeline.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/infrastructure-design/upstream-coverage-ea4ace18.md
+**Findings count**: 9
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:09:52Z
+**Event**: SENSOR_FIRED
+**Fire id**: f42be084
+**Sensor ID**: upstream-coverage
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/infrastructure-design/traceability.json
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:09:52Z
+**Event**: SENSOR_FAILED
+**Fire id**: f42be084
+**Sensor ID**: upstream-coverage
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/infrastructure-design/traceability.json
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/infrastructure-design/upstream-coverage-f42be084.md
+**Findings count**: 9
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:09:52Z
+**Event**: SENSOR_FIRED
+**Fire id**: 4cd481bd
+**Sensor ID**: upstream-coverage
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/infrastructure-design/infrastructure-specification.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:09:52Z
+**Event**: SENSOR_FAILED
+**Fire id**: 4cd481bd
+**Sensor ID**: upstream-coverage
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/infrastructure-design/infrastructure-specification.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/infrastructure-design/upstream-coverage-4cd481bd.md
+**Findings count**: 3
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:09:53Z
+**Event**: SENSOR_FIRED
+**Fire id**: b71c1601
+**Sensor ID**: upstream-coverage
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/infrastructure-design/monitoring-design.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:09:53Z
+**Event**: SENSOR_FAILED
+**Fire id**: b71c1601
+**Sensor ID**: upstream-coverage
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/infrastructure-design/monitoring-design.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/infrastructure-design/upstream-coverage-b71c1601.md
+**Findings count**: 3
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:09:53Z
+**Event**: SENSOR_FIRED
+**Fire id**: 1a112c67
+**Sensor ID**: upstream-coverage
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/infrastructure-design/cicd-pipeline.md
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:09:53Z
+**Event**: SENSOR_FAILED
+**Fire id**: 1a112c67
+**Sensor ID**: upstream-coverage
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/infrastructure-design/cicd-pipeline.md
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/infrastructure-design/upstream-coverage-1a112c67.md
+**Findings count**: 3
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T08:09:53Z
+**Event**: SENSOR_FIRED
+**Fire id**: 6b896f7e
+**Sensor ID**: upstream-coverage
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/infrastructure-design/traceability.json
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T08:09:53Z
+**Event**: SENSOR_FAILED
+**Fire id**: 6b896f7e
+**Sensor ID**: upstream-coverage
+**Stage slug**: infrastructure-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u2-app-shell/infrastructure-design/traceability.json
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/infrastructure-design/upstream-coverage-6b896f7e.md
+**Findings count**: 3
+
+---
+
+## Stage Awaiting Approval
+**Timestamp**: 2026-10-29T08:10:07Z
+**Event**: STAGE_AWAITING_APPROVAL
+**Stage**: infrastructure-design
+
+---
+
+## Gate Approved
+**Timestamp**: 2026-10-29T08:10:51Z
+**Event**: GATE_APPROVED
+**Stage**: infrastructure-design
+
+---
+
+## Stage Completion
+**Timestamp**: 2026-10-29T08:10:51Z
+**Event**: STAGE_COMPLETED
+**Stage**: infrastructure-design
+**Validation Basis**: {"graphContract":"sha256:5b36300e4a848f35345dfd56bbf1a1355d108707996db2db5863ed6de1e50085","inputs":[{"artifact":"components","contentHash":"sha256:17eb700566bf1162b108f7531a4e94e6e8dc1e94d3672e6201cfeb2a388ee391","instanceCount":1,"presentCount":1,"producer":"domain-design","required":true,"structureHash":"sha256:308751fb5e4c589703740d45ba26da0a3023ad4e04f9038ddd6778706705cdf4"},{"artifact":"contract-summary","contentHash":"sha256:7f0335cbd08218adebc5ae89605ff31496e710324dd4ad62c5d0a9590d28289c","instanceCount":1,"presentCount":1,"producer":"contract-design","required":false,"structureHash":"sha256:30a652db9038a52def5123b74608b14c0f031a96e4f3759d2aa5b61ae779014b"},{"artifact":"functional-spec","contentHash":"sha256:a7264e570fd1e100208cea7d391b237e904994172d4adf1d5eac093aeed6515c","instanceCount":5,"presentCount":5,"producer":"functional-design","required":true,"structureHash":"sha256:75c2336ae0fbbc24a660dd416ee706f020380c8810d01c1f55b62927f3fd249a"},{"artifact":"logical-components","contentHash":"sha256:f2cf6fdd6f938b761583971c07772fc4d2dd646bbd1f9e14d3b0c081bd748ec1","instanceCount":5,"presentCount":5,"producer":"nfr-design","required":true,"structureHash":"sha256:db8202c5e16f690cf901a1c493d326066f8f91f5fad0a520d95913e2d49cd33c"},{"artifact":"observability-design","contentHash":"sha256:7d80f68fa2c6400f362a9508f8d3df3ea8bef4598bdec17e95f567bcf9ba0220","instanceCount":5,"presentCount":5,"producer":"nfr-design","required":true,"structureHash":"sha256:04fe87a2e48c5701ffbaaee59c102451a4c126edd905aa8df362c46ca13fdabc"},{"artifact":"performance-design","contentHash":"sha256:af62740c80c6bf7fc3270a6e501935b62518f3156b17415d373ec59b573aa322","instanceCount":5,"presentCount":5,"producer":"nfr-design","required":true,"structureHash":"sha256:e97620dfd4e9d5737536cf0f1dda62b38f0b06c8323427ccabfb397b26d8ea31"},{"artifact":"reliability-design","contentHash":"sha256:cea722a783a616a4df9290859f98864278f38b4b4a916827116d02c814b012c3","instanceCount":5,"presentCount":5,"producer":"nfr-design","required":true,"structureHash":"sha256:34750d561642a68936841431bde55beba4861d984abfde1ca5a9ce8360922c7f"},{"artifact":"scalability-design","contentHash":"sha256:6bbbeb8fc74ab348bea8e7b001a8678aca7fbf132878d87d09c850bcb9dee8ef","instanceCount":5,"presentCount":5,"producer":"nfr-design","required":true,"structureHash":"sha256:9bb1769db20ac064fc84ddf2c8b3f6757839ad5b5a2e82cb18801cdf4a741f91"},{"artifact":"security-design","contentHash":"sha256:5011655b8ede82a280c8969c1d3afdb9a7578c8a227e4ac9aa0555dd76d3c39d","instanceCount":5,"presentCount":5,"producer":"nfr-design","required":true,"structureHash":"sha256:24a5ad38083db1b2f30f931a104d95935545f156deeeb234ca8ab3c6a4586b28"}],"outputs":[{"artifact":"cicd-pipeline","contentHash":"sha256:b633c827d7fe7959357e7b8ca4b63fa393a93a124016bff7e11cb31d6d8c300e","instanceCount":5,"presentCount":5,"producer":"infrastructure-design","required":true,"structureHash":"sha256:646fb1319ad749fe581e36ef794dde843d9c5842cf2c5e55bcab3c7fcf1795d5"},{"artifact":"infrastructure-specification","contentHash":"sha256:cf065a5b8af6612a6c7d96f2b5b7a84d7a208a10f157e1a217ced85a40e2a2dc","instanceCount":5,"presentCount":5,"producer":"infrastructure-design","required":true,"structureHash":"sha256:365d7fdaf3dc0961751113a1545d8449872e9389ecf736ade2c05fe5fd32a8e0"},{"artifact":"monitoring-design","contentHash":"sha256:f522d7618e68aa1c145269ce5eed0f526f87105bca03d3d519c7cc95ef0311a8","instanceCount":5,"presentCount":5,"producer":"infrastructure-design","required":true,"structureHash":"sha256:6137e66422d3b846e9d18b7767c4bd071019b8ab8eb59a48817ecc5fb6e67385"},{"artifact":"traceability","contentHash":"sha256:cf83f045acc51154c12fba4322511e81fd58effdd35e7dc99fd7d0cfa53fbaa0","instanceCount":5,"presentCount":5,"producer":"infrastructure-design","required":true,"structureHash":"sha256:2ebfe2c75f0a65c9d081894c6f626ccd75ed4bfa64dba745879b91743f55c2b1"}],"projectType":"brownfield","schema":3}
+**Details**: Stage Infrastructure Design approved by gate
+
+---
+
+## Stage Start
+**Timestamp**: 2026-10-29T08:10:53Z
+**Event**: STAGE_STARTED
+**Stage**: code-generation
+**Agent**: aidlc-developer-agent
+**Source Baseline**: sha256:25fe2e226d8f15f3037fdfbc15b94279fb6a110f1680cd31ef3914fa28949f2e
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-29T08:11:07Z
+**Event**: HUMAN_TURN
+**Session**: cbe79e86-2f8f-4b4f-a423-cdc4caea986d
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-29T08:11:14Z
+**Event**: HUMAN_TURN
+**Session**: cbe79e86-2f8f-4b4f-a423-cdc4caea986d
+
+---
+
+## Guardrail Loaded
+**Timestamp**: 2026-10-29T08:11:50Z
+**Event**: GUARDRAIL_LOADED
+**Scope**: all
+**Path**: .claude/rules/
+**Rule count**: 7
+
+---
+
+## Health Check
+**Timestamp**: 2026-10-29T08:11:50Z
+**Event**: HEALTH_CHECKED
+**Request**: /aidlc --doctor
+**Details**: 68 passed, 0 failed
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-29T08:50:32Z
+**Event**: HUMAN_TURN
+**Session**: cbe79e86-2f8f-4b4f-a423-cdc4caea986d
+**Picked**: ["Decide for me"]
+
+---
+
+## Question Replied
+**Timestamp**: 2026-10-29T08:50:33Z
+**Event**: QUESTION_REPLIED
+**Session**: cbe79e86-2f8f-4b4f-a423-cdc4caea986d
+**Question**: U5 passed its review and the full check, but the workflow won't close Code Generation. It reports that work a piece needs is missing. My best guess is the starter piece (U1): its file list still names src/orders/customer.ts and src/orders/variant.ts, two placeholder files that U5 deleted on purpose. The workflow offers only one way forward, Request Changes, and that throws away the finished code step for all five pieces, so each would need its review and approval again. How would you like to go on?
+**Reply**: Decide for me
+
+---
+
+## Guardrail Loaded
+**Timestamp**: 2026-10-29T08:50:56Z
+**Event**: GUARDRAIL_LOADED
+**Scope**: all
+**Path**: .claude/rules/
+**Rule count**: 7
+
+---
+
+## Health Check
+**Timestamp**: 2026-10-29T08:50:56Z
+**Event**: HEALTH_CHECKED
+**Request**: /aidlc --doctor
+**Details**: 68 passed, 0 failed
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-29T08:54:44Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: ae50a2d0b1d9de4ba
+**Message**: We're finishing Bolt 2 (customers, products and linked orders), and U5 passed its review and full check, but the workflow won't close the code step. Next, delete lines 84 and 110 in U1's file list, th
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-29T09:29:38Z
+**Event**: HUMAN_TURN
+**Session**: cbe79e86-2f8f-4b4f-a423-cdc4caea986d
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-29T09:33:21Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: aff5ccbe51e5ed77a
+**Message**: We're finishing Bolt 2 (customers, products and linked orders): U5 passed its review and full check, but the workflow is blocked on closing Code Generation. Next, run the sed command above, then type 
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-29T09:40:05Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: aebb302bb7c078c41
+**Message**: decide for me
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-29T09:41:25Z
+**Event**: HUMAN_TURN
+**Session**: cbe79e86-2f8f-4b4f-a423-cdc4caea986d
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-29T09:41:51Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: a4817f45b8098e9b1
+**Message**: ! aidlc use 2.10.0
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-29T09:44:58Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: a15c181abfb538fc5
+**Message**: We're finishing Bolt 2 (customers, products and linked orders) so it can merge into main. U5 passed review and the full check, but the workflow won't close the code step. Next, run `! aidlc use 2.10.0
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-29T10:28:18Z
+**Event**: HUMAN_TURN
+**Session**: cbe79e86-2f8f-4b4f-a423-cdc4caea986d
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-29T10:32:38Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: a7e03c34da6683197
+**Message**: Goal: merge Bolt 2 into main. U5 passed review and the full check, but the workflow won't close the code step. Next: run `! aidlc use 2.10.0` and say continue, or reply with your reason for Request Ch
+
+---
+
+## Session Compacted
+**Timestamp**: 2026-10-29T11:23:24Z
+**Event**: SESSION_COMPACTED
+**Current Stage**: code-generation
+**State Validity**: valid
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-29T11:24:01Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: a4bb1991ec922cc8a
+**Message**: <summary>\n1. Primary Request and Intent:\n   - The user opened by pasting the previous session's shutdown summary. That summary said: U5 code committed (39cad98) on branch `catalog` but unverified; wor
+
+---
