@@ -1,0 +1,22 @@
+{
+  "stage": "infrastructure-design",
+  "unit": "u5-orders-catalog",
+  "upstream_ids": ["NFR1.16", "NFR1.17", "NFR2.7", "NFR5.11", "NFR6.34", "NFR6.35", "NFR6.36", "NFR6.39", "NFR7.28", "NFR7.29", "NFR7.30", "NFR8.25", "NFR8.27", "NFR9.14", "NFR10.5"],
+  "coverage": [
+    { "id": "NFR1.16", "status": "OK", "target": "cicd-pipeline realdb row (cross-business link 404)" },
+    { "id": "NFR1.17", "status": "OK", "target": "cicd-pipeline walks and realdb rows (match index)" },
+    { "id": "NFR2.7", "status": "OK", "target": "infrastructure-specification Storage row; realdb 23503" },
+    { "id": "NFR5.11", "status": "OK", "target": "cicd-pipeline unit row (parser) and mutants row" },
+    { "id": "NFR6.34", "status": "OK", "target": "monitoring-design metrics; benchmark row" },
+    { "id": "NFR6.35", "status": "OK", "target": "monitoring-design metrics; benchmark row" },
+    { "id": "NFR6.36", "status": "OK", "target": "monitoring-design parser metric" },
+    { "id": "NFR6.39", "status": "OK", "target": "cicd-pipeline realdb row (customer filter index)" },
+    { "id": "NFR7.28", "status": "OK", "target": "cicd-pipeline realdb row (0023 applied twice)" },
+    { "id": "NFR7.29", "status": "OK", "target": "cicd-pipeline realdb row (one bad variant)" },
+    { "id": "NFR7.30", "status": "OK", "target": "cicd-pipeline realdb row (outage)" },
+    { "id": "NFR8.25", "status": "OK", "target": "cicd-pipeline wiring check row" },
+    { "id": "NFR8.27", "status": "OK", "target": "cicd-pipeline mutants row" },
+    { "id": "NFR9.14", "status": "OK", "target": "cicd-pipeline browser row" },
+    { "id": "NFR10.5", "status": "OK", "target": "infrastructure-specification: no new service" }
+  ]
+}
