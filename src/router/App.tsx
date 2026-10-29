@@ -62,6 +62,7 @@ import type { SessionResponse } from "../auth/schemas.js";
 import type { AuditRouteState } from "../audit/screens/AuditTrail.js";
 import type { DailyRouteState } from "../daily-card/screens/DailyCard.js";
 import { createAuditApi, type AuditApi } from "../client/audit-api.js";
+import { createBusinessApi, type BusinessApi } from "../client/business-api.js";
 import { createStaffApi, type StaffApi } from "../client/staff-api.js";
 import { createCatalogApi, type CatalogApi } from "../client/catalog-api.js";
 import {
@@ -141,6 +142,10 @@ export interface AppDeps {
   readonly staff?: StaffApi;
   /** The catalog client (U4); built over `http` when not given. */
   readonly catalog?: CatalogApi;
+  /** The business client (printable invoice and slip); built over `http` when not given. */
+  readonly business?: BusinessApi;
+  /** Opens the browser's print dialog; injected so tests never call window.print. */
+  readonly print?: () => void;
 }
 
 const CATALOG_PREFIXES = ["/customers", "/products", "/low-stock", "/suppliers"] as const;
@@ -233,6 +238,12 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
   // BR4.1: the feature a redirect to /lock was about, so the lock screen can name it.
   const [lockFeature, setLockFeature] = React.useState<LKey | null>(null);
   const audit = React.useMemo(() => deps.audit ?? createAuditApi(http), [deps.audit, http]);
+  const business = React.useMemo(
+    () => deps.business ?? createBusinessApi(http),
+    [deps.business, http],
+  );
+  // The business name for the printed invoice and slip, read once per sign-in.
+  const [businessName, setBusinessName] = React.useState<string | null>(null);
   const staff = React.useMemo(() => deps.staff ?? createStaffApi(http), [deps.staff, http]);
   const catalog = React.useMemo(() => deps.catalog ?? createCatalogApi(http), [deps.catalog, http]);
   const [catalogNotice, setCatalogNotice] = React.useState<CatalogNotice | null>(null);
@@ -363,8 +374,15 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
         break;
       case "/orders/:id":
       case "/orders/:id/transition":
+      case "/orders/:id/print":
         if (routeId !== null && ordersStore.get().current?.id !== routeId) {
           void openOrder(ordersStore, orders, routeId);
+        }
+        if (routePath === "/orders/:id/print" && businessName === null) {
+          void (async () => {
+            const r = await business.get();
+            if (r.ok) setBusinessName(r.value.name);
+          })();
         }
         break;
       case "/orders/new/repeat":
@@ -373,7 +391,16 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
       default:
         break;
     }
-  }, [routePath, routeId, signedInSession, routeOpens, ordersStore, orders]);
+  }, [
+    routePath,
+    routeId,
+    signedInSession,
+    routeOpens,
+    ordersStore,
+    orders,
+    business,
+    businessName,
+  ]);
 
   /** A 403 from a write opens the lock screen naming the current route's feature (BR4.1). */
   const lockHere = (): void => {
@@ -490,6 +517,8 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
     onSave,
     onTransition,
     onRepeat,
+    businessName,
+    onPrint: deps.print ?? (() => window.print()),
     listLoading: list.status === "loading",
     listError: list.status === "error" ? list.error : null,
     onRetryList: () => void loadPage(ordersStore, orders),

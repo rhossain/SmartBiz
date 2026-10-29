@@ -1406,3 +1406,92 @@ button:disabled {
 .low-stock-mark {
   white-space: nowrap;
 }
+
+/* Printable invoice and delivery slip (src/orders/screens/PrintOrder.tsx). On screen the two
+ * documents sit on white sheets; in print only the documents remain: the app shell, the
+ * actions and anything marked `.print-hide` are hidden, and the slip starts a new page. */
+.print-order__actions {
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+  margin-bottom: var(--space-4);
+}
+
+.print-doc {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-line);
+  padding: var(--space-6);
+  margin-bottom: var(--space-6);
+  max-width: 800px;
+}
+
+.print-doc__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 2px solid var(--color-text);
+  margin-bottom: var(--space-4);
+}
+
+.print-doc__table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--space-4) 0;
+}
+
+.print-doc__table th,
+.print-doc__table td {
+  border-bottom: 1px solid var(--color-border);
+  padding: var(--space-2);
+  text-align: left;
+}
+
+.print-doc__sums {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--space-2) var(--space-6);
+  max-width: 360px;
+  margin-left: auto;
+}
+
+.print-doc__sums dd {
+  margin: 0;
+  text-align: right;
+}
+
+.print-slip__to strong {
+  display: block;
+  font-size: 1.6rem;
+}
+
+.print-slip__collect strong {
+  font-size: 1.4rem;
+}
+
+@media print {
+  .shell__header,
+  .shell__nav,
+  .shell__toast,
+  .print-hide,
+  [data-testid="error-banner"] {
+    display: none !important;
+  }
+
+  .shell,
+  .shell__main {
+    background: var(--color-bg);
+    padding: 0;
+    margin: 0;
+  }
+
+  .print-doc {
+    border: none;
+    max-width: none;
+    margin: 0;
+  }
+
+  .print-doc--slip {
+    break-before: page;
+  }
+}

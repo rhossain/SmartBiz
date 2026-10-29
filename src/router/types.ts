@@ -24,6 +24,7 @@ export type RoutePath =
   | "/orders/new/repeat"
   | "/orders/:id"
   | "/orders/:id/transition"
+  | "/orders/:id/print"
   // U4 (BR13.1; Q14): the ten catalog screens.
   | "/customers"
   | "/customers/new"

@@ -317,6 +317,11 @@ const handleStaff = (
     const [id] = params;
     return state.businesses.filter((b) => b["id"] === id).map((b) => ({ id: b["id"] }));
   }
+  // Printable invoice and slip: GET /api/business (src/auth/business-profile.ts).
+  if (/^\s*SELECT name FROM businesses WHERE id = \?\s*$/i.test(text)) {
+    const [id] = params;
+    return state.businesses.filter((b) => b["id"] === id).map((b) => ({ name: b["name"] }));
+  }
   if (/^\s*SELECT id FROM users WHERE lower\(email\) = \? LIMIT 1\s*$/i.test(text)) {
     const [email] = params;
     return state.users

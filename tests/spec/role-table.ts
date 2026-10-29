@@ -194,6 +194,8 @@ export const API_ROWS: ReadonlyArray<ApiRow> = [
       ["GET", "/api/suppliers", EVERY, "US3.6 suppliers"],
       ["POST", "/api/suppliers", CATALOG_MANAGERS, "US3.6 record a supplier (AC3.6.1)"],
       ["PATCH", "/api/suppliers/:id", CATALOG_MANAGERS, "US3.6 edit a supplier"],
+      // Printable invoice and delivery slip: the business name on every printed document.
+      ["GET", "/api/business", EVERY, "printable invoice and delivery slip"],
     ] as const
   ).map(([method, path, allowed, source]): ApiRow => ({
     surface: "api",
@@ -250,6 +252,10 @@ export const SCREEN_ROWS: ReadonlyArray<ScreenRow> = [
   screen("/orders/new", ORDER_WRITERS, "নতুন অর্ডার", "US5.1 create"),
   screen("/orders/new/paste-parse", ORDER_WRITERS, "মেসেজ থেকে অর্ডার", "US5.1 create"),
   screen("/orders/new/repeat", ORDER_WRITERS, "আগের অর্ডার আবার", "US5.1 create"),
+  // The printable invoice and delivery slip: whoever reads the order prints it.
+  screen("/orders/:id/print", EVERY, "অর্ডার", "printable invoice and slip", {
+    heading: FIXTURE_ORDER_NO,
+  }),
   screen("/orders/:id/transition", ORDER_WRITERS, "অর্ডারের অবস্থা বদল", "US5.1 move", {
     heading: FIXTURE_ORDER_NO,
   }),
