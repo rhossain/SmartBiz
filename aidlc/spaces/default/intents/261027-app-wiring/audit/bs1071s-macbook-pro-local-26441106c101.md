@@ -453,3 +453,109 @@
 **Review Record Digest**: sha256:e09f8db64ad3be100e335229e434d06f9c45802dbb36d15db863733999f24414
 
 ---
+
+## Unit Started
+**Timestamp**: 2026-10-29T12:52:32Z
+**Event**: UNIT_STARTED
+**Stage**: code-generation
+**Unit**: u1-skeleton
+**Run floor**: STAGE_JUMPED:2026-10-29T12:24:15Z#1
+
+---
+
+## Error Logged
+**Timestamp**: 2026-10-29T12:52:33Z
+**Event**: ERROR_LOGGED
+**Tool**: aidlc-state
+**Command**: aidlc-state engine state unit complete --stage code-generation --unit u1-skeleton
+**Error**: Refusing to complete unit "u1-skeleton" for "code-generation": it is not the active unit (no unit is active — start it first).
+
+---
+
+## Error Logged
+**Timestamp**: 2026-10-29T12:52:45Z
+**Event**: ERROR_LOGGED
+**Tool**: aidlc-state
+**Command**: aidlc-state engine state unit complete --stage code-generation --unit u1-skeleton
+**Error**: Refusing to complete unit "u1-skeleton" for "code-generation": it is not the active unit (no unit is active — start it first).
+
+---
+
+## Unit Started
+**Timestamp**: 2026-10-29T12:53:25Z
+**Event**: UNIT_STARTED
+**Stage**: code-generation
+**Unit**: u1-skeleton
+**Run floor**: STAGE_JUMPED:2026-10-29T12:24:15Z#1
+
+---
+
+## Error Logged
+**Timestamp**: 2026-10-29T12:53:26Z
+**Event**: ERROR_LOGGED
+**Tool**: aidlc-state
+**Command**: aidlc-state engine state unit complete --stage code-generation --unit u1-skeleton
+**Error**: Refusing to complete unit "u1-skeleton" for "code-generation": it is not the active unit (no unit is active — start it first).
+
+---
+
+## Guardrail Loaded
+**Timestamp**: 2026-10-29T12:53:56Z
+**Event**: GUARDRAIL_LOADED
+**Scope**: all
+**Path**: .claude/rules/
+**Rule count**: 7
+
+---
+
+## Health Check
+**Timestamp**: 2026-10-29T12:53:56Z
+**Event**: HEALTH_CHECKED
+**Request**: /aidlc --doctor
+**Details**: 67 passed, 0 failed
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-29T13:17:16Z
+**Event**: HUMAN_TURN
+**Session**: cbe79e86-2f8f-4b4f-a423-cdc4caea986d
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-29T13:24:05Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: 
+**Agent ID**: a222bd080115ed2bc
+**Message**: I'm merging Bolt 2 (customers, products, linked orders) into main by hand. The database is backed up, and the update won't clear any data. The final full check starts once your other project's test ru
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-29T13:38:11Z
+**Event**: HUMAN_TURN
+**Session**: cbe79e86-2f8f-4b4f-a423-cdc4caea986d
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-29T13:40:16Z
+**Event**: HUMAN_TURN
+**Session**: cbe79e86-2f8f-4b4f-a423-cdc4caea986d
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-29T13:40:24Z
+**Event**: HUMAN_TURN
+**Session**: cbe79e86-2f8f-4b4f-a423-cdc4caea986d
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-29T13:47:46Z
+**Event**: HUMAN_TURN
+**Session**: cbe79e86-2f8f-4b4f-a423-cdc4caea986d
+
+---
