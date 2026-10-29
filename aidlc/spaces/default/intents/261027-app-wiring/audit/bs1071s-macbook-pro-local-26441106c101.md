@@ -582,3 +582,1337 @@
 **Session**: cbe79e86-2f8f-4b4f-a423-cdc4caea986d
 
 ---
+
+## Subagent Completed
+**Timestamp**: 2026-10-29T16:34:09Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: 
+**Agent ID**: a05f35ca276d80c0d
+**Message**: Bolt 2 (customers, products and orders linked to them) is merged into main and running at 127.0.0.1:3000, with all checks and the smoke test passing. Next, tell me whether to push main to GitHub and w
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-29T16:43:11Z
+**Event**: HUMAN_TURN
+**Session**: cbe79e86-2f8f-4b4f-a423-cdc4caea986d
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-29T16:47:16Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: 
+**Agent ID**: abcf864cbcb307d7a
+**Message**: You wanted Bolt 2 (customers, products and orders linked to them) running, and it is now merged into main, live at 127.0.0.1:3000, and filled with sample products and customers. Next, decide whether t
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-29T16:56:41Z
+**Event**: HUMAN_TURN
+**Session**: cbe79e86-2f8f-4b4f-a423-cdc4caea986d
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-29T17:16:35Z
+**Event**: HUMAN_TURN
+**Session**: cbe79e86-2f8f-4b4f-a423-cdc4caea986d
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-29T17:16:58Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: 
+**Agent ID**: a5c3e3067ac579b02
+**Message**: push main, then start stock deduction
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-29T17:21:14Z
+**Event**: HUMAN_TURN
+**Session**: cbe79e86-2f8f-4b4f-a423-cdc4caea986d
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:25:55Z
+**Event**: SENSOR_FIRED
+**Fire id**: bc4d9410
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: src/catalog/order-stock.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:26:06Z
+**Event**: SENSOR_PASSED
+**Fire id**: bc4d9410
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: src/catalog/order-stock.ts
+**Duration ms**: 10760
+**Note**: tool-unavailable
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:26:07Z
+**Event**: SENSOR_FIRED
+**Fire id**: 9cf7db27
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/catalog/order-stock.ts
+
+---
+
+## Sensor Budget Override
+**Timestamp**: 2026-10-29T17:27:07Z
+**Event**: SENSOR_BUDGET_OVERRIDE
+**Fire id**: 9cf7db27
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/catalog/order-stock.ts
+**Cap layer**: registry
+**Cap value**: 60
+**Observed value**: 61
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:27:22Z
+**Event**: SENSOR_FIRED
+**Fire id**: 168c4afb
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: src/catalog/index.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:27:28Z
+**Event**: SENSOR_PASSED
+**Fire id**: 168c4afb
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: src/catalog/index.ts
+**Duration ms**: 5658
+**Note**: tool-unavailable
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:27:28Z
+**Event**: SENSOR_FIRED
+**Fire id**: a7564003
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/catalog/index.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:27:40Z
+**Event**: SENSOR_PASSED
+**Fire id**: a7564003
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/catalog/index.ts
+**Duration ms**: 12092
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:28:18Z
+**Event**: SENSOR_FIRED
+**Fire id**: ec32cc1e
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: src/orders/stock-rules.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:28:21Z
+**Event**: SENSOR_PASSED
+**Fire id**: ec32cc1e
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: src/orders/stock-rules.ts
+**Duration ms**: 2967
+**Note**: tool-unavailable
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:28:21Z
+**Event**: SENSOR_FIRED
+**Fire id**: b9d6b3dc
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/orders/stock-rules.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:28:31Z
+**Event**: SENSOR_PASSED
+**Fire id**: b9d6b3dc
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/orders/stock-rules.ts
+**Duration ms**: 10263
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:28:37Z
+**Event**: SENSOR_FIRED
+**Fire id**: 2e9c81e4
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: src/orders/types.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:28:40Z
+**Event**: SENSOR_PASSED
+**Fire id**: 2e9c81e4
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: src/orders/types.ts
+**Duration ms**: 2616
+**Note**: tool-unavailable
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:28:40Z
+**Event**: SENSOR_FIRED
+**Fire id**: ae8c389e
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/orders/types.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:28:58Z
+**Event**: SENSOR_PASSED
+**Fire id**: ae8c389e
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/orders/types.ts
+**Duration ms**: 17968
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:29:02Z
+**Event**: SENSOR_FIRED
+**Fire id**: 5220980d
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: src/orders/types.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:29:05Z
+**Event**: SENSOR_PASSED
+**Fire id**: 5220980d
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: src/orders/types.ts
+**Duration ms**: 2263
+**Note**: tool-unavailable
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:29:05Z
+**Event**: SENSOR_FIRED
+**Fire id**: 0e4eb2a8
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/orders/types.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:29:29Z
+**Event**: SENSOR_PASSED
+**Fire id**: 0e4eb2a8
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/orders/types.ts
+**Duration ms**: 23557
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:29:49Z
+**Event**: SENSOR_FIRED
+**Fire id**: ea5b1bfd
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: src/orders/transition-status.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:29:53Z
+**Event**: SENSOR_PASSED
+**Fire id**: ea5b1bfd
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: src/orders/transition-status.ts
+**Duration ms**: 3136
+**Note**: tool-unavailable
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:29:53Z
+**Event**: SENSOR_FIRED
+**Fire id**: 2651efe7
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/orders/transition-status.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:30:06Z
+**Event**: SENSOR_PASSED
+**Fire id**: 2651efe7
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/orders/transition-status.ts
+**Duration ms**: 13193
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:30:49Z
+**Event**: SENSOR_FIRED
+**Fire id**: c6db11c3
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: src/orders/transition-status.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:30:52Z
+**Event**: SENSOR_PASSED
+**Fire id**: c6db11c3
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: src/orders/transition-status.ts
+**Duration ms**: 2619
+**Note**: tool-unavailable
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:30:52Z
+**Event**: SENSOR_FIRED
+**Fire id**: 1253f631
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/orders/transition-status.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:31:00Z
+**Event**: SENSOR_PASSED
+**Fire id**: 1253f631
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/orders/transition-status.ts
+**Duration ms**: 8397
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:31:05Z
+**Event**: SENSOR_FIRED
+**Fire id**: 214d71d7
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: src/server/handlers/orders.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:31:08Z
+**Event**: SENSOR_PASSED
+**Fire id**: 214d71d7
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: src/server/handlers/orders.ts
+**Duration ms**: 2580
+**Note**: tool-unavailable
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:31:08Z
+**Event**: SENSOR_FIRED
+**Fire id**: cd834152
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/server/handlers/orders.ts
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T17:31:22Z
+**Event**: SENSOR_FAILED
+**Fire id**: cd834152
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/server/handlers/orders.ts
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/code-generation/type-check-cd834152.md
+**Findings count**: 1
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:31:25Z
+**Event**: SENSOR_FIRED
+**Fire id**: b7c13093
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: src/data/error-kinds.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:31:27Z
+**Event**: SENSOR_PASSED
+**Fire id**: b7c13093
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: src/data/error-kinds.ts
+**Duration ms**: 1663
+**Note**: tool-unavailable
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:31:27Z
+**Event**: SENSOR_FIRED
+**Fire id**: 39acfea8
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/data/error-kinds.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:31:50Z
+**Event**: SENSOR_PASSED
+**Fire id**: 39acfea8
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/data/error-kinds.ts
+**Duration ms**: 22648
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:31:54Z
+**Event**: SENSOR_FIRED
+**Fire id**: 9ecd1b35
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: src/server/status-map.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:31:56Z
+**Event**: SENSOR_PASSED
+**Fire id**: 9ecd1b35
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: src/server/status-map.ts
+**Duration ms**: 1976
+**Note**: tool-unavailable
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:31:56Z
+**Event**: SENSOR_FIRED
+**Fire id**: f1c9059b
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/server/status-map.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:32:10Z
+**Event**: SENSOR_PASSED
+**Fire id**: f1c9059b
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/server/status-map.ts
+**Duration ms**: 14000
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:32:54Z
+**Event**: SENSOR_FIRED
+**Fire id**: 168c70fe
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: src/pres/view-for-kind.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:32:57Z
+**Event**: SENSOR_PASSED
+**Fire id**: 168c70fe
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: src/pres/view-for-kind.ts
+**Duration ms**: 2939
+**Note**: tool-unavailable
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:32:58Z
+**Event**: SENSOR_FIRED
+**Fire id**: 97dc8b00
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/pres/view-for-kind.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:33:17Z
+**Event**: SENSOR_PASSED
+**Fire id**: 97dc8b00
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/pres/view-for-kind.ts
+**Duration ms**: 19012
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:33:24Z
+**Event**: SENSOR_FIRED
+**Fire id**: 319dc9c9
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: tests/integration/server-pipeline.test.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:33:26Z
+**Event**: SENSOR_PASSED
+**Fire id**: 319dc9c9
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: tests/integration/server-pipeline.test.ts
+**Duration ms**: 2276
+**Note**: tool-unavailable
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:33:26Z
+**Event**: SENSOR_FIRED
+**Fire id**: 481190d3
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: tests/integration/server-pipeline.test.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:33:33Z
+**Event**: SENSOR_PASSED
+**Fire id**: 481190d3
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: tests/integration/server-pipeline.test.ts
+**Duration ms**: 6300
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:33:37Z
+**Event**: SENSOR_FIRED
+**Fire id**: 3f96b60b
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: tests/unit/view-for-kind.test.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:33:40Z
+**Event**: SENSOR_PASSED
+**Fire id**: 3f96b60b
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: tests/unit/view-for-kind.test.ts
+**Duration ms**: 2300
+**Note**: tool-unavailable
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:33:40Z
+**Event**: SENSOR_FIRED
+**Fire id**: db630e6b
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: tests/unit/view-for-kind.test.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:33:46Z
+**Event**: SENSOR_PASSED
+**Fire id**: db630e6b
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: tests/unit/view-for-kind.test.ts
+**Duration ms**: 6200
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:33:50Z
+**Event**: SENSOR_FIRED
+**Fire id**: 6b25fb1e
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: src/i18n/error-copy.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:33:52Z
+**Event**: SENSOR_PASSED
+**Fire id**: 6b25fb1e
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: src/i18n/error-copy.ts
+**Duration ms**: 1958
+**Note**: tool-unavailable
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:33:52Z
+**Event**: SENSOR_FIRED
+**Fire id**: dc516417
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/i18n/error-copy.ts
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T17:34:04Z
+**Event**: SENSOR_FAILED
+**Fire id**: dc516417
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/i18n/error-copy.ts
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/code-generation/type-check-dc516417.md
+**Findings count**: 1
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:34:07Z
+**Event**: SENSOR_FIRED
+**Fire id**: f2274468
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: src/i18n/error-copy.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:34:09Z
+**Event**: SENSOR_PASSED
+**Fire id**: f2274468
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: src/i18n/error-copy.ts
+**Duration ms**: 1897
+**Note**: tool-unavailable
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:34:09Z
+**Event**: SENSOR_FIRED
+**Fire id**: 727b1cef
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/i18n/error-copy.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:34:17Z
+**Event**: SENSOR_PASSED
+**Fire id**: 727b1cef
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/i18n/error-copy.ts
+**Duration ms**: 7264
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:34:28Z
+**Event**: SENSOR_FIRED
+**Fire id**: 3f6de5cf
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/router/App.tsx
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:34:37Z
+**Event**: SENSOR_PASSED
+**Fire id**: 3f6de5cf
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/router/App.tsx
+**Duration ms**: 9336
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:34:42Z
+**Event**: SENSOR_FIRED
+**Fire id**: ad8203eb
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/router/App.tsx
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T17:34:51Z
+**Event**: SENSOR_FAILED
+**Fire id**: ad8203eb
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/router/App.tsx
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/code-generation/type-check-ad8203eb.md
+**Findings count**: 1
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:35:54Z
+**Event**: SENSOR_FIRED
+**Fire id**: e83a70fc
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/pres/ApiState.tsx
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:36:14Z
+**Event**: SENSOR_PASSED
+**Fire id**: e83a70fc
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/pres/ApiState.tsx
+**Duration ms**: 19523
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:36:19Z
+**Event**: SENSOR_FIRED
+**Fire id**: 4b0b557f
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/pres/ApiState.tsx
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:36:29Z
+**Event**: SENSOR_PASSED
+**Fire id**: 4b0b557f
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/pres/ApiState.tsx
+**Duration ms**: 10287
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:39:46Z
+**Event**: SENSOR_FIRED
+**Fire id**: f763cfc6
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: src/catalog/order-stock.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:39:49Z
+**Event**: SENSOR_PASSED
+**Fire id**: f763cfc6
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: src/catalog/order-stock.ts
+**Duration ms**: 2793
+**Note**: tool-unavailable
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:39:49Z
+**Event**: SENSOR_FIRED
+**Fire id**: a36d1fcd
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/catalog/order-stock.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:40:08Z
+**Event**: SENSOR_PASSED
+**Fire id**: a36d1fcd
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/catalog/order-stock.ts
+**Duration ms**: 19213
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:40:13Z
+**Event**: SENSOR_FIRED
+**Fire id**: e3590915
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: tests/helpers/catalog-stub.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:40:14Z
+**Event**: SENSOR_PASSED
+**Fire id**: e3590915
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: tests/helpers/catalog-stub.ts
+**Duration ms**: 1651
+**Note**: tool-unavailable
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:40:15Z
+**Event**: SENSOR_FIRED
+**Fire id**: 0416d885
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: tests/helpers/catalog-stub.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:40:25Z
+**Event**: SENSOR_PASSED
+**Fire id**: 0416d885
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: tests/helpers/catalog-stub.ts
+**Duration ms**: 10721
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:40:29Z
+**Event**: SENSOR_FIRED
+**Fire id**: 913bcdd4
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: tests/helpers/sql-stub.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:40:30Z
+**Event**: SENSOR_PASSED
+**Fire id**: 913bcdd4
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: tests/helpers/sql-stub.ts
+**Duration ms**: 1559
+**Note**: tool-unavailable
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:40:31Z
+**Event**: SENSOR_FIRED
+**Fire id**: ae04ca11
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: tests/helpers/sql-stub.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:40:37Z
+**Event**: SENSOR_PASSED
+**Fire id**: ae04ca11
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: tests/helpers/sql-stub.ts
+**Duration ms**: 6424
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:43:18Z
+**Event**: SENSOR_FIRED
+**Fire id**: 69bdaa35
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: tests/unit/status-map.test.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:43:20Z
+**Event**: SENSOR_PASSED
+**Fire id**: 69bdaa35
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: tests/unit/status-map.test.ts
+**Duration ms**: 2072
+**Note**: tool-unavailable
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:43:20Z
+**Event**: SENSOR_FIRED
+**Fire id**: e20a6d1d
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: tests/unit/status-map.test.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:43:27Z
+**Event**: SENSOR_PASSED
+**Fire id**: e20a6d1d
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: tests/unit/status-map.test.ts
+**Duration ms**: 6235
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:43:30Z
+**Event**: SENSOR_FIRED
+**Fire id**: c5da0f81
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: tests/unit/migrations-u1.test.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:43:32Z
+**Event**: SENSOR_PASSED
+**Fire id**: c5da0f81
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: tests/unit/migrations-u1.test.ts
+**Duration ms**: 1755
+**Note**: tool-unavailable
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:43:32Z
+**Event**: SENSOR_FIRED
+**Fire id**: dceed2cb
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: tests/unit/migrations-u1.test.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:43:41Z
+**Event**: SENSOR_PASSED
+**Fire id**: dceed2cb
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: tests/unit/migrations-u1.test.ts
+**Duration ms**: 8921
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:45:05Z
+**Event**: SENSOR_FIRED
+**Fire id**: 2df767a7
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: tests/unit/order-stock.test.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:45:08Z
+**Event**: SENSOR_PASSED
+**Fire id**: 2df767a7
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: tests/unit/order-stock.test.ts
+**Duration ms**: 3614
+**Note**: tool-unavailable
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:45:09Z
+**Event**: SENSOR_FIRED
+**Fire id**: 4d1c5cf1
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: tests/unit/order-stock.test.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:45:16Z
+**Event**: SENSOR_PASSED
+**Fire id**: 4d1c5cf1
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: tests/unit/order-stock.test.ts
+**Duration ms**: 7160
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:45:41Z
+**Event**: SENSOR_FIRED
+**Fire id**: cf523809
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: tests/unit/order-stock.test.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:45:43Z
+**Event**: SENSOR_PASSED
+**Fire id**: cf523809
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: tests/unit/order-stock.test.ts
+**Duration ms**: 2047
+**Note**: tool-unavailable
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:45:43Z
+**Event**: SENSOR_FIRED
+**Fire id**: e6b87a3b
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: tests/unit/order-stock.test.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:45:51Z
+**Event**: SENSOR_PASSED
+**Fire id**: e6b87a3b
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: tests/unit/order-stock.test.ts
+**Duration ms**: 8095
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:45:55Z
+**Event**: SENSOR_FIRED
+**Fire id**: 09e138d5
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: tests/unit/order-stock.test.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:45:57Z
+**Event**: SENSOR_PASSED
+**Fire id**: 09e138d5
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: tests/unit/order-stock.test.ts
+**Duration ms**: 1824
+**Note**: tool-unavailable
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:45:57Z
+**Event**: SENSOR_FIRED
+**Fire id**: 530f414a
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: tests/unit/order-stock.test.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:46:05Z
+**Event**: SENSOR_PASSED
+**Fire id**: 530f414a
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: tests/unit/order-stock.test.ts
+**Duration ms**: 7838
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:46:24Z
+**Event**: SENSOR_FIRED
+**Fire id**: 496a9ba0
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: tests/unit/insufficient-stock-copy.test.tsx
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:46:33Z
+**Event**: SENSOR_PASSED
+**Fire id**: 496a9ba0
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: tests/unit/insufficient-stock-copy.test.tsx
+**Duration ms**: 8657
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:47:07Z
+**Event**: SENSOR_FIRED
+**Fire id**: 90d65b7b
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: tests/integration/order-stock-routes.test.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:47:10Z
+**Event**: SENSOR_PASSED
+**Fire id**: 90d65b7b
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: tests/integration/order-stock-routes.test.ts
+**Duration ms**: 2934
+**Note**: tool-unavailable
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:47:10Z
+**Event**: SENSOR_FIRED
+**Fire id**: f1dde743
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: tests/integration/order-stock-routes.test.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:47:17Z
+**Event**: SENSOR_PASSED
+**Fire id**: f1dde743
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: tests/integration/order-stock-routes.test.ts
+**Duration ms**: 7183
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:48:12Z
+**Event**: SENSOR_FIRED
+**Fire id**: fab613b2
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: tests/realdb/order-stock.realdb.test.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:48:15Z
+**Event**: SENSOR_PASSED
+**Fire id**: fab613b2
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: tests/realdb/order-stock.realdb.test.ts
+**Duration ms**: 2643
+**Note**: tool-unavailable
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:48:15Z
+**Event**: SENSOR_FIRED
+**Fire id**: e7e894ca
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: tests/realdb/order-stock.realdb.test.ts
+
+---
+
+## Sensor Failed
+**Timestamp**: 2026-10-29T17:48:24Z
+**Event**: SENSOR_FAILED
+**Fire id**: e7e894ca
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: tests/realdb/order-stock.realdb.test.ts
+**Detail path**: aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/sensors/code-generation/type-check-e7e894ca.md
+**Findings count**: 1
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:50:10Z
+**Event**: SENSOR_FIRED
+**Fire id**: 9ec0eb84
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: tests/realdb/order-stock.realdb.test.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:50:13Z
+**Event**: SENSOR_PASSED
+**Fire id**: 9ec0eb84
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: tests/realdb/order-stock.realdb.test.ts
+**Duration ms**: 2148
+**Note**: tool-unavailable
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:50:13Z
+**Event**: SENSOR_FIRED
+**Fire id**: 8f825cdd
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: tests/realdb/order-stock.realdb.test.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:50:21Z
+**Event**: SENSOR_PASSED
+**Fire id**: 8f825cdd
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: tests/realdb/order-stock.realdb.test.ts
+**Duration ms**: 7979
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:53:57Z
+**Event**: SENSOR_FIRED
+**Fire id**: c8673599
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: src/catalog/index.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:53:59Z
+**Event**: SENSOR_PASSED
+**Fire id**: c8673599
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: src/catalog/index.ts
+**Duration ms**: 2013
+**Note**: tool-unavailable
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T17:53:59Z
+**Event**: SENSOR_FIRED
+**Fire id**: 8f640c50
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/catalog/index.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T17:54:16Z
+**Event**: SENSOR_PASSED
+**Fire id**: 8f640c50
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/catalog/index.ts
+**Duration ms**: 16733
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-29T18:20:48Z
+**Event**: HUMAN_TURN
+**Session**: cbe79e86-2f8f-4b4f-a423-cdc4caea986d
+
+---
