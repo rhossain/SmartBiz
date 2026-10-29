@@ -105,6 +105,10 @@ export const OrderDetail = ({
         <span>{tr("orders.total", locale)}</span>
         <MoneyCell figure={basis} locale={locale} testId="order-detail-total" />
       </div>
+      {/* Every role that reads the order may print its invoice and delivery slip. */}
+      <a href={`#/orders/${order.id}/print`} data-testid="order-detail-print">
+        {tr("detail.print", locale)}
+      </a>
       {canMutate ? (
         <div data-testid="order-detail-actions">
           <span>{tr("detail.move_to", locale)}</span>

@@ -55,6 +55,7 @@ const manualOrder = (state: unknown): unknown => renderOrdersScreen("manual", st
 const pasteParse = (state: unknown): unknown => renderOrdersScreen("paste-parse", state);
 const repeatFromPast = (state: unknown): unknown => renderOrdersScreen("repeat", state);
 const orderDetail = (state: unknown): unknown => renderOrdersScreen("detail", state);
+const orderPrint = (state: unknown): unknown => renderOrdersScreen("print", state);
 
 const route = (r: Route): readonly [RoutePath, Route] => [r.path, r];
 
@@ -124,6 +125,13 @@ export const routes: ReadonlyMap<RoutePath, Route> = new Map<RoutePath, Route>([
     requiredCapability: ORDER_READ_CAPABILITY,
     feature: "feature.orders",
     render: orderDetail,
+  }),
+  // The printable invoice and delivery slip: whoever reads the order may print it.
+  route({
+    path: "/orders/:id/print",
+    requiredCapability: ORDER_READ_CAPABILITY,
+    feature: "feature.orders",
+    render: orderPrint,
   }),
   route({
     path: "/orders/:id/transition",

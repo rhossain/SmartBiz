@@ -65,6 +65,10 @@ export type HealthResponse = z.infer<typeof HealthResponseSchema>;
 export const SetupResponseSchema = z.object({ businessExists: z.boolean() });
 export type SetupResponse = z.infer<typeof SetupResponseSchema>;
 
+/** `GET /api/business`: the name printed on invoices and delivery slips. */
+export const BusinessResponseSchema = z.object({ name: z.string().min(1) });
+export type BusinessResponse = z.infer<typeof BusinessResponseSchema>;
+
 export const SessionResponseSchema = SessionViewSchema;
 export type SessionResponse = z.infer<typeof SessionResponseSchema>;
 

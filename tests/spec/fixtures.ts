@@ -20,6 +20,7 @@ import type { ZodType } from "zod";
 import { AuditPageResponseSchema } from "../../src/audit/schemas.js";
 import {
   AcceptInviteResponseSchema,
+  BusinessResponseSchema,
   HealthResponseSchema,
   InviteResponseSchema,
   ResetLinkResponseSchema,
@@ -306,6 +307,11 @@ export const API_FIXTURES: Readonly<Record<string, ApiFixture>> = {
   },
   "POST /api/auth/sign-out": { status: 204, body: null, schema: null, request: {} },
   "GET /api/session": { status: 200, body: sessionBody("owner"), schema: SessionResponseSchema },
+  "GET /api/business": {
+    status: 200,
+    body: { name: "রহিম ফ্যাশন হাউস" },
+    schema: BusinessResponseSchema,
+  },
   "GET /api/orders": {
     status: 200,
     body: {

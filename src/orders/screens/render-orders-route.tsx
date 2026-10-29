@@ -35,6 +35,7 @@ import type { OrderDraftStore, SaveOrder } from "../order-draft.js";
 import type { Order } from "../types.js";
 import { ManualOrder } from "./ManualOrder.js";
 import { OrderDetail } from "./OrderDetail.js";
+import { PrintOrder } from "./PrintOrder.js";
 import type { OrdersCatalog } from "./OrderLinks.js";
 import { OrdersList, type OrderListRow, type OrdersListFilter } from "./OrdersList.js";
 import { PasteParse } from "./PasteParse.js";
@@ -66,6 +67,9 @@ export interface OrdersRouteState {
   readonly recent?: ReadonlyArray<Order>;
   /** U5 (BR4.1, BR4.2, BR5.1, BR6.1): the catalog loaders the router builds (props only). */
   readonly catalog?: OrdersCatalog;
+  /** Printable invoice and slip: the business name (GET /api/business) and the print call. */
+  readonly businessName?: string | null;
+  readonly onPrint?: () => void;
 }
 
 const isFullOrder = (o: OrderListRow | Order): o is Order => "items" in o;
@@ -76,7 +80,7 @@ const pastOrders = (state: OrdersRouteState): ReadonlyArray<Order> =>
 export const isOrdersRouteState = (state: unknown): state is OrdersRouteState =>
   typeof state === "object" && state !== null && (state as { kind?: unknown }).kind === "orders";
 
-export type OrdersScreen = "list" | "manual" | "paste-parse" | "repeat" | "detail";
+export type OrdersScreen = "list" | "manual" | "paste-parse" | "repeat" | "detail" | "print";
 
 /**
  * Screens whose whole purpose is creating an order. They self-gate
@@ -93,6 +97,7 @@ export const isMutatingScreen = (screen: OrdersScreen): boolean => {
       return true;
     case "list":
     case "detail":
+    case "print":
       return false;
     default:
       return assertNever(screen, "orders screen");
@@ -153,8 +158,16 @@ export const renderOrdersScreen = (
         />
       );
     case "detail":
+    case "print":
       if (state.current) {
-        return (
+        return screen === "print" ? (
+          <PrintOrder
+            order={state.current}
+            businessName={state.businessName ?? null}
+            locale={locale}
+            onPrint={state.onPrint ?? (() => undefined)}
+          />
+        ) : (
           <OrderDetail
             order={state.current}
             locale={locale}
