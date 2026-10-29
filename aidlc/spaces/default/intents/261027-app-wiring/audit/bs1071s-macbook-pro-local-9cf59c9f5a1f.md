@@ -23820,3 +23820,224 @@
 **Autonomous**: true
 
 ---
+
+## Unit Started
+**Timestamp**: 2026-10-29T00:02:07Z
+**Event**: UNIT_STARTED
+**Stage**: functional-design
+**Unit**: u5-orders-catalog
+**Run floor**: WORKFLOW_STARTED:2026-10-27T06:05:58Z#1
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-10-29T00:03:08Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/functional-design/functional-design-questions.md
+**Context**: construction > u5-orders-catalog > functional-design > functional-design-questions.md
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-10-29T00:03:20Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/functional-design/entities.md
+**Context**: construction > u5-orders-catalog > functional-design > entities.md
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-10-29T00:03:47Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/functional-design/rules.md
+**Context**: construction > u5-orders-catalog > functional-design > rules.md
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-10-29T00:04:04Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/functional-design/functional-spec.md
+**Context**: construction > u5-orders-catalog > functional-design > functional-spec.md
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-10-29T00:04:11Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/functional-design/frontend-components.md
+**Context**: construction > u5-orders-catalog > functional-design > frontend-components.md
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-10-29T00:04:15Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/functional-design/traceability.json
+**Context**: construction > u5-orders-catalog > functional-design > traceability.json
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-29T00:04:15Z
+**Event**: SENSOR_FIRED
+**Fire id**: a09bc1b4
+**Sensor ID**: traceability
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/functional-design/traceability.json
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-29T00:04:15Z
+**Event**: SENSOR_PASSED
+**Fire id**: a09bc1b4
+**Sensor ID**: traceability
+**Stage slug**: functional-design
+**Output path**: aidlc/spaces/default/intents/261027-app-wiring/construction/u5-orders-catalog/functional-design/traceability.json
+**Duration ms**: 129
+
+---
+
+## Review Requested
+**Timestamp**: 2026-10-29T00:04:27Z
+**Event**: REVIEW_REQUESTED
+**Stage**: functional-design
+**Reviewer**: aidlc-architecture-reviewer-agent
+**Unit**: u5-orders-catalog
+**Iteration**: 1
+**Artifact Fingerprint**: sha256:d02e426a9f56daa0b293b508a6a09cab0ed9d617469ec0f8c76d0dd7c89eb64d
+**Request Id**: review:4e9e90545d8031ca3f3565cb6024e289
+**Review File**: .aidlc-engine/reviews/functional-design/units/u5-orders-catalog/2a103725fe9bdc2e/1.4e9e90545d8031ca3f3565cb6024e289.review.md
+
+---
+
+## Reviewer Scope Blocked
+**Timestamp**: 2026-10-29T00:05:29Z
+**Event**: REVIEWER_SCOPE_BLOCKED
+**Tool**: Bash
+**Target**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring
+**Stage**: functional-design
+**Unit**: u5-orders-catalog
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-10-29T00:06:14Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/reviews/functional-design/units/u5-orders-catalog/2a103725fe9bdc2e/1.4e9e90545d8031ca3f3565cb6024e289.review.md
+**Context**: .aidlc-engine > reviews > functional-design > units > u5-orders-catalog > 2a103725fe9bdc2e > 1.4e9e90545d8031ca3f3565cb6024e289.review.md
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-29T00:06:23Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: aidlc-architecture-reviewer-agent
+**Agent ID**: abce328cf9385868e
+
+---
+
+## Review Completed
+**Timestamp**: 2026-10-29T00:06:29Z
+**Event**: REVIEW_COMPLETED
+**Stage**: functional-design
+**Reviewer**: aidlc-architecture-reviewer-agent
+**Unit**: u5-orders-catalog
+**Iteration**: 1
+**Verdict**: READY
+**Request Fingerprint**: sha256:d02e426a9f56daa0b293b508a6a09cab0ed9d617469ec0f8c76d0dd7c89eb64d
+**Artifact Fingerprint**: sha256:d02e426a9f56daa0b293b508a6a09cab0ed9d617469ec0f8c76d0dd7c89eb64d
+**Request Id**: review:4e9e90545d8031ca3f3565cb6024e289
+**Review Record**: .aidlc-engine/reviews/functional-design/units/u5-orders-catalog/2a103725fe9bdc2e/1.json
+**Review Record Digest**: sha256:7afeefadf08023b84869ad0ea6b8c81eb95e9c91a934ca1705952d1d13566ad3
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-29T00:06:29Z
+**Event**: HUMAN_TURN
+**Session**: ad68d581-f655-4d07-81f3-9771a7c9410f
+
+---
+
+## Review Requested
+**Timestamp**: 2026-10-29T00:07:11Z
+**Event**: REVIEW_REQUESTED
+**Stage**: functional-design
+**Reviewer**: aidlc-architecture-reviewer-agent
+**Unit**: u5-orders-catalog
+**Iteration**: 2
+**Recovery**: stale-receipt
+**Recovery Cause**: artifact
+**Artifact Fingerprint**: sha256:dfa52a32cef0b49b1cdad3b3199cd2356cd29edf4f880c15b23d45f9210efa00
+**Request Id**: review:cd145c87308f30eab5d490d01a066322
+**Review File**: .aidlc-engine/reviews/functional-design/units/u5-orders-catalog/2a103725fe9bdc2e/2.cd145c87308f30eab5d490d01a066322.review.md
+
+---
+
+## Reviewer Scope Blocked
+**Timestamp**: 2026-10-29T00:07:47Z
+**Event**: REVIEWER_SCOPE_BLOCKED
+**Tool**: Bash
+**Target**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring
+**Stage**: functional-design
+**Unit**: u5-orders-catalog
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-10-29T00:07:53Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261027-app-wiring/.aidlc-engine/reviews/functional-design/units/u5-orders-catalog/2a103725fe9bdc2e/2.cd145c87308f30eab5d490d01a066322.review.md
+**Context**: .aidlc-engine > reviews > functional-design > units > u5-orders-catalog > 2a103725fe9bdc2e > 2.cd145c87308f30eab5d490d01a066322.review.md
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-10-29T00:07:56Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: aidlc-architecture-reviewer-agent
+**Agent ID**: ad3be486cfc61769a
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-29T00:07:58Z
+**Event**: HUMAN_TURN
+**Session**: ad68d581-f655-4d07-81f3-9771a7c9410f
+
+---
+
+## Review Completed
+**Timestamp**: 2026-10-29T00:08:05Z
+**Event**: REVIEW_COMPLETED
+**Stage**: functional-design
+**Reviewer**: aidlc-architecture-reviewer-agent
+**Unit**: u5-orders-catalog
+**Iteration**: 2
+**Verdict**: READY
+**Request Fingerprint**: sha256:dfa52a32cef0b49b1cdad3b3199cd2356cd29edf4f880c15b23d45f9210efa00
+**Artifact Fingerprint**: sha256:dfa52a32cef0b49b1cdad3b3199cd2356cd29edf4f880c15b23d45f9210efa00
+**Request Id**: review:cd145c87308f30eab5d490d01a066322
+**Review Record**: .aidlc-engine/reviews/functional-design/units/u5-orders-catalog/2a103725fe9bdc2e/2.json
+**Review Record Digest**: sha256:ecf0c08286637f19cdd31a288b83dd6ae72fcf04379913413f4232852a93df5a
+
+---
+
+## Unit Completed
+**Timestamp**: 2026-10-29T00:08:05Z
+**Event**: UNIT_COMPLETED
+**Stage**: functional-design
+**Unit**: u5-orders-catalog
+**Run floor**: WORKFLOW_STARTED:2026-10-27T06:05:58Z#1
+
+---

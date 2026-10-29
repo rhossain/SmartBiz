@@ -500,3 +500,17 @@ Recorded on the Owner's standing instruction; source `construction/u4-catalog/fu
 | D12 | C7 product create | ≤ 12 values per axis, no `-` in a value, ≤ 144 variants |
 | D13 | C7 ids | a non-UUID path or body id answers 404 |
 | — | C8 | signatures unchanged; `NotFound` moves to `src/data/not-found.ts`; callers dedupe and chunk ids by 50 (U5) |
+
+## Amendments from U5 Functional Design (2026-10-29)
+
+Recorded on the Owner's standing instruction; source `construction/u5-orders-catalog/functional-design/functional-spec.md` § 5.
+
+| # | Contract | Change |
+|---|----------|--------|
+| E1 | C3 create/edit | `customerId` and `variantId` are UUIDs of the session's business; otherwise 404 `not_found` |
+| E2 | C3 `OrderSummary` | `customerName` from the catalog when linked, else the contact name; `itemLabels` from the variant label when linked, else the description |
+| E3 | C7 | new read `GET /api/catalog/match-index` (`business.view`) → `{ products: [{productId, name, sku, axisNames, variants: [{variantId, axisValues}]}], truncated }`, at most 2 000 variants, whole products, ordered by name then id |
+| E5 | C3 order detail | `GET /api/orders/:id` adds `customerName` and per-item `label` (additive) |
+| E4 | C9 | migration `0023_link_orders_to_catalog.sql`: `UNIQUE (business_id, id)` on variants; `orders.customer_id` and `order_items.variant_id` become uuid with composite foreign keys; grants unchanged |
+| — | C8 | unchanged; orders call it and chunk ids by 50 |
+
