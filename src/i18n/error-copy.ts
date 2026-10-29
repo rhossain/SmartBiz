@@ -22,7 +22,23 @@ export type ShownErrorKind = ErrorKind | "unreachable";
 export interface ErrorCopyDetail {
   readonly retryAfterMinutes?: number | null;
   readonly correlationId?: string | null;
+  /** insufficient_stock: the answer's fields (`stock.<sku>` / `required N, available M`). */
+  readonly fields?: ReadonlyArray<{ readonly path: string; readonly message: string }> | null;
 }
+
+/** One short variant read back from an insufficient_stock field; null when malformed. */
+export const parseShortage = (field: {
+  readonly path: string;
+  readonly message: string;
+}): { readonly sku: string; readonly required: number; readonly available: number } | null => {
+  const m = /^required (\d+), available (\d+)$/.exec(field.message);
+  if (!field.path.startsWith("stock.") || m === null) return null;
+  return {
+    sku: field.path.slice("stock.".length),
+    required: Number(m[1]),
+    available: Number(m[2]),
+  };
+};
 
 const digits = (n: number, locale: Locale): string =>
   locale === "bn" ? bnDigits(String(n)) : String(n);
@@ -77,6 +93,18 @@ export const errorMessage = (
         L("এই অবস্থা থেকে ওই অবস্থায় যাওয়া যায় না", "The order cannot move to that status"),
         locale,
       );
+    case "insufficient_stock": {
+      const base = pick(L("স্টকে যথেষ্ট মাল নেই", "Not enough stock"), locale);
+      const items = (detail.fields ?? [])
+        .map(parseShortage)
+        .filter((s): s is NonNullable<typeof s> => s !== null)
+        .map((s) =>
+          locale === "bn"
+            ? `${s.sku} — দরকার ${digits(s.required, locale)}, আছে ${digits(s.available, locale)}`
+            : `${s.sku} — need ${s.required}, have ${s.available}`,
+        );
+      return items.length > 0 ? `${base}: ${items.join("; ")}` : base;
+    }
     case "already_linked":
       return pick(
         L("এই অর্ডারে আগেই কনসাইনমেন্ট যুক্ত আছে", "A consignment is already linked"),

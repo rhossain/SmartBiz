@@ -30,6 +30,7 @@ const EXPECTED: Readonly<Record<ShownErrorKind, KindView>> = {
   already_linked: "conflict",
   not_editable: "conflict",
   invalid_transition: "conflict",
+  insufficient_stock: "banner",
   business_exists: "banner",
   email_taken: "banner",
   gone: "banner",
@@ -47,9 +48,9 @@ describe("viewForKind", () => {
     }
   });
 
-  test("the kind list is the 18 C1 kinds plus unreachable, each once", () => {
-    expect(SHOWN_ERROR_KINDS).toHaveLength(19);
-    expect(new Set(SHOWN_ERROR_KINDS).size).toBe(19);
+  test("the kind list is the 19 wire kinds (C1 + insufficient_stock) plus unreachable, each once", () => {
+    expect(SHOWN_ERROR_KINDS).toHaveLength(20);
+    expect(new Set(SHOWN_ERROR_KINDS).size).toBe(20);
     const expected: string[] = [...ERROR_KINDS, "unreachable"];
     expect([...SHOWN_ERROR_KINDS].sort()).toEqual(expected.sort() as ShownErrorKind[]);
     expect(Object.keys(EXPECTED).sort()).toEqual([...SHOWN_ERROR_KINDS].sort());

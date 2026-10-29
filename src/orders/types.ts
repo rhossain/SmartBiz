@@ -28,6 +28,8 @@ export const ORDER_AUDIT_ACTIONS = [
   "order.update",
   "order.status.transition",
   "order.consignment.link",
+  "order.stock.deduct",
+  "order.stock.restore",
 ] as const;
 
 export type OrderAuditAction = (typeof ORDER_AUDIT_ACTIONS)[number];
@@ -198,5 +200,17 @@ export type InvalidInput = { readonly kind: "invalid_input"; readonly message: s
 export type NotEditable = { readonly kind: "not_editable"; readonly status: OrderStatus };
 export type AlreadyLinked = { readonly kind: "already_linked"; readonly orderId: string };
 
-export type OrderError = NotFound | Forbidden | InvalidTransition | InvalidInput | NotEditable;
+/** Stock deduction: the move would take more than the shelf holds (every short variant). */
+export type InsufficientStock = {
+  readonly kind: "insufficient_stock";
+  readonly items: ReadonlyArray<{
+    readonly variantId: string;
+    readonly sku: string;
+    readonly required: number;
+    readonly available: number;
+  }>;
+};
+
+export type OrderError =
+  NotFound | Forbidden | InvalidTransition | InvalidInput | NotEditable | InsufficientStock;
 export type LinkError = NotFound | InvalidInput | AlreadyLinked | Forbidden;

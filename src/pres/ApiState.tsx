@@ -84,6 +84,8 @@ export interface ErrorBannerProps {
   readonly locale: Locale;
   readonly correlationId?: string | null;
   readonly retryAfterMinutes?: number | null;
+  /** The answer's field issues; insufficient_stock names its short items from them. */
+  readonly fields?: ReadonlyArray<{ readonly path: string; readonly message: string }> | null;
   readonly onRetry?: () => void;
   readonly onReload?: () => void;
 }
@@ -103,6 +105,7 @@ export const ErrorBanner = (props: ErrorBannerProps): React.ReactElement => (
       {errorMessage(props.kind, props.locale, {
         correlationId: props.correlationId ?? null,
         retryAfterMinutes: props.retryAfterMinutes ?? null,
+        fields: props.fields ?? null,
       })}
     </span>
     {props.onReload ? (

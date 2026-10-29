@@ -25,6 +25,7 @@ export const statusFor = (kind: ErrorKind): number => {
     case "already_linked":
     case "not_editable":
     case "invalid_transition":
+    case "insufficient_stock":
     case "business_exists":
     case "email_taken":
       return 409;

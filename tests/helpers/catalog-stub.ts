@@ -524,6 +524,20 @@ const handleVariants = (text: string, params: ReadonlyArray<unknown>, state: Cat
       .filter((v) => v["business_id"] === businessId && ids.includes(String(v["id"])))
       .map((v) => variantWithProduct(state, v));
   }
+  // Stock deduction on orders (src/catalog/order-stock.ts writeStock): the stock alone.
+  if (
+    /UPDATE variants SET stock = \?, updated_at = \?\s+WHERE id = \? AND business_id = \?/i.test(
+      text,
+    )
+  ) {
+    const [stock, updatedAt, id, businessId] = params;
+    for (const v of state.variants) {
+      if (v["id"] === id && v["business_id"] === businessId) {
+        Object.assign(v, { stock: Number(stock), updated_at: new Date(String(updatedAt)) });
+      }
+    }
+    return [];
+  }
   if (/UPDATE variants SET stock = \?, minimum_stock = \?, updated_at = \?/i.test(text)) {
     const [stock, minimum, updatedAt, id, businessId] = params;
     for (const v of state.variants) {

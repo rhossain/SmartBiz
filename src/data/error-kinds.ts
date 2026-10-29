@@ -20,6 +20,7 @@ export const ERROR_KINDS = [
   "already_linked",
   "not_editable",
   "invalid_transition",
+  "insufficient_stock",
   "business_exists",
   "email_taken",
   "gone",
