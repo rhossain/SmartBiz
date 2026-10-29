@@ -23665,3 +23665,158 @@
 **Details**: git add aidlc/spaces/default/intents/261027-app-wiring && git commit -q -m "u4-catalog: code review READY (0 Critical, 0 Major, 3 Minor carried to U5)\n\nCo-Autho
 
 ---
+
+## Guard Stood Aside
+**Timestamp**: 2026-10-28T23:53:31Z
+**Event**: GUARD_STOOD_ASIDE
+**Guard**: plan-approval
+**Authority**: instruction
+**Grant**: none
+**Actor**: main
+**Stage**: code-generation
+**Tool**: Bash
+**Details**: sysctl -n vm.loadavg; cd <project-dir> && aidlc engine bolt checkpoint --action verify --unit u4-catalog --kind unit 2>&1 | python3 
+
+---
+
+## Change Accepted
+**Timestamp**: 2026-10-28T23:53:38Z
+**Event**: CHANGE_ACCEPTED
+**Stage**: functional-design
+**Unit**: u4-catalog
+**Checkpoint**: review-receipt
+**Changed**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/functional-design/rules.md
+**Recorded**: sha256:d302e1643e6ccdab7ef1614888cc980dd423eb99486a03628d32b2cd89073f92
+**Current**: sha256:99c287980bbc0146c15b1b27915a07f7b1775057205533193bbdb4a6ab9c9056
+**Details**: aidlc/spaces/default/intents/261027-app-wiring/construction/u4-catalog/functional-design/rules.md changed after the catalog Unit was reviewed; carrying on.
+
+---
+
+## Checkpoint Verification Recorded
+**Timestamp**: 2026-10-28T23:54:19Z
+**Event**: CHECKPOINT_VERIFICATION_RECORDED
+**Unit**: u4-catalog
+**Kind**: unit
+**Stage**: code-generation
+**Stages**: functional-design, nfr-requirements, nfr-design, infrastructure-design, code-generation
+**Verification Id**: 6bb5d2c3-b972-4324-ac96-05eff412d246
+**Fingerprint**: sha256:247871d0e6fac9222986e14468d22c5039c5a3f7cfc6dc19c012b88bad74a2c1
+**Command SHA-256**: b6e2e214dd780220b0f72a9f2d906f0fad0d62e37afd018fae65289dd1f65122
+**Exit Code**: 1
+**Verified**: false
+**Run floor**: WORKFLOW_STARTED:2026-10-27T06:05:58Z#1
+
+---
+
+## Guard Stood Aside
+**Timestamp**: 2026-10-28T23:54:31Z
+**Event**: GUARD_STOOD_ASIDE
+**Guard**: plan-approval
+**Authority**: instruction
+**Grant**: none
+**Actor**: main
+**Stage**: code-generation
+**Tool**: Edit
+**Details**: <project-dir>/tests/integration/audit-route.test.ts
+
+---
+
+## Guard Stood Aside
+**Timestamp**: 2026-10-28T23:54:33Z
+**Event**: GUARD_STOOD_ASIDE
+**Guard**: plan-approval
+**Authority**: instruction
+**Grant**: none
+**Actor**: main
+**Stage**: code-generation
+**Tool**: Bash
+**Details**: for i in 1 2 3 4 5; do bun test tests/integration/audit-route.test.ts 2>&1 | grep -E "^ *[0-9]+ (pass|fail)" | tr '\n' ' '; echo; done; bunx prettier --check te
+
+---
+
+## Guard Stood Aside
+**Timestamp**: 2026-10-28T23:54:41Z
+**Event**: GUARD_STOOD_ASIDE
+**Guard**: plan-approval
+**Authority**: instruction
+**Grant**: none
+**Actor**: main
+**Stage**: code-generation
+**Tool**: Bash
+**Details**: git add tests/integration/audit-route.test.ts && git commit -q -m "u4-catalog: audit-route test compares the two same-instant actions as a set\n\nBoth rows carry 
+
+---
+
+## Change Accepted
+**Timestamp**: 2026-10-28T23:54:49Z
+**Event**: CHANGE_ACCEPTED
+**Stage**: code-generation
+**Unit**: u2-app-shell
+**Checkpoint**: review-receipt
+**Changed**: (paths unavailable)
+**Recorded**: sha256:4bcd494865697abb83b0fc93dbd574d62b8118c8040cfffb3b3a0b3f5097ea4b
+**Current**: sha256:dfd751e91b6d46616ea155ad305432871baa42a8a3bea3bd7564cfc8ba33e8cd
+**Details**: The app shell Unit's list of files changed after it was reviewed; carrying on.
+
+---
+
+## Change Accepted
+**Timestamp**: 2026-10-28T23:54:49Z
+**Event**: CHANGE_ACCEPTED
+**Stage**: code-generation
+**Unit**: u4-catalog
+**Checkpoint**: review-receipt
+**Changed**: tests/integration/audit-route.test.ts
+**Recorded**: sha256:7cf4b2070ecf9391e5b09f9c13bbdac417edf5cbfbfe500414246255c89ee385
+**Current**: sha256:f65bb108515a4600e40e7b6d90ddcd204086e720dee605e847f38ef6ba99b702
+**Details**: tests/integration/audit-route.test.ts changed after the catalog Unit was reviewed; carrying on.
+
+---
+
+## Checkpoint Verification Recorded
+**Timestamp**: 2026-10-29T00:01:15Z
+**Event**: CHECKPOINT_VERIFICATION_RECORDED
+**Unit**: u4-catalog
+**Kind**: unit
+**Stage**: code-generation
+**Stages**: functional-design, nfr-requirements, nfr-design, infrastructure-design, code-generation
+**Verification Id**: c9c4aabd-47b0-41d0-8dd6-15787673cde7
+**Fingerprint**: sha256:247871d0e6fac9222986e14468d22c5039c5a3f7cfc6dc19c012b88bad74a2c1
+**Command SHA-256**: b6e2e214dd780220b0f72a9f2d906f0fad0d62e37afd018fae65289dd1f65122
+**Exit Code**: 0
+**Verified**: true
+**Run floor**: WORKFLOW_STARTED:2026-10-27T06:05:58Z#1
+
+---
+
+## Guard Stood Aside
+**Timestamp**: 2026-10-29T00:01:27Z
+**Event**: GUARD_STOOD_ASIDE
+**Guard**: plan-approval
+**Authority**: instruction
+**Grant**: none
+**Actor**: main
+**Stage**: code-generation
+**Tool**: Bash
+**Details**: aidlc engine bolt checkpoint --action approve --unit u4-catalog --kind unit | python3 -c "import json,sys;d=json.load(sys.stdin);print('approved:',d.get('approv
+
+---
+
+## Gate Approved
+**Timestamp**: 2026-10-29T00:01:35Z
+**Event**: GATE_APPROVED
+**Unit**: u4-catalog
+**Stage**: code-generation
+**Stages**: functional-design, nfr-requirements, nfr-design, infrastructure-design, code-generation
+**Gate Stages**: functional-design, nfr-requirements, nfr-design, infrastructure-design, code-generation
+**Gate Scope**: unit-end
+**Checkpoint**: construction-unit
+**Fingerprint**: sha256:247871d0e6fac9222986e14468d22c5039c5a3f7cfc6dc19c012b88bad74a2c1
+**Run floor**: WORKFLOW_STARTED:2026-10-27T06:05:58Z#1
+**Run floors**: {"functional-design":"WORKFLOW_STARTED:2026-10-27T06:05:58Z#1","nfr-requirements":"WORKFLOW_STARTED:2026-10-27T06:05:58Z#1","nfr-design":"WORKFLOW_STARTED:2026-10-27T06:05:58Z#1","infrastructure-design":"WORKFLOW_STARTED:2026-10-27T06:05:58Z#1","code-generation":"WORKFLOW_STARTED:2026-10-27T06:05:58Z#1"}
+**Verification Command SHA-256**: b6e2e214dd780220b0f72a9f2d906f0fad0d62e37afd018fae65289dd1f65122
+**Verification Id**: c9c4aabd-47b0-41d0-8dd6-15787673cde7
+**Approved Evidence**: {"functional-design":["sha256:d302e1643e6ccdab7ef1614888cc980dd423eb99486a03628d32b2cd89073f92",null],"nfr-requirements":["sha256:953b0d662312703042fde5ed4e0a0fe2716cf6019a7924ac6a746b1f34549810",null],"nfr-design":["sha256:a3cc61f247ce2a75f42c2081087b4a1694b980baa18984dda5762b4d180aa6f9",null],"infrastructure-design":["sha256:49b9e6bd2e49a33302e26d247b3425f4b3a7bdbbf2f33d453d95bd831dbe1d1a",null],"code-generation":["sha256:2119958306458340cbfbcf65bffed62f1dfd285f04d77095e0eae21a0da243a8","sha256:7cf4b2070ecf9391e5b09f9c13bbdac417edf5cbfbfe500414246255c89ee385"]}
+**Autonomous**: true
+
+---
