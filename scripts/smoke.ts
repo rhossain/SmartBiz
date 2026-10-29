@@ -10,6 +10,7 @@
  *      at the prompt — never taken from an argument, never written anywhere;
  *   4. `GET /api/orders` answers 200;
  *   4b. U3 (I-04): `GET /api/staff` answers 200 for the Owner;
+ *   4c. U4: `GET /api/products` and `GET /api/low-stock` answer 200 for the Owner;
  *   5. sign out (204), and the old cookie then answers 401.
  * It prints one line and exits 0 only when every step passed. The steps are `runSmoke`, so
  * tests/unit/smoke.test.ts can run them against the in-process pipeline.
@@ -100,6 +101,12 @@ export const runSmoke = async (input: SmokeInput): Promise<SmokeResult> => {
     const staff = await input.fetch(`${base}/api/staff`, { headers: { Cookie: cookie } });
     step(staff.status === 200, `GET /api/staff answered ${staff.status}`);
 
+    // U4 (cicd-pipeline.md "Deployment strategy"): the catalog's data is served.
+    for (const path of ["/api/products", "/api/low-stock"]) {
+      const r = await input.fetch(`${base}${path}`, { headers: { Cookie: cookie } });
+      step(r.status === 200, `GET ${path} answered ${r.status}`);
+    }
+
     const out = await input.fetch(`${base}/api/auth/sign-out`, {
       method: "POST",
       headers: { ...write, Cookie: cookie },
@@ -114,7 +121,7 @@ export const runSmoke = async (input: SmokeInput): Promise<SmokeResult> => {
   }
   return {
     ok: true,
-    line: `smoke ok: ${head.slice(0, 12)} on ${base} (build-sha, health, sign-in, orders, staff, sign-out)`,
+    line: `smoke ok: ${head.slice(0, 12)} on ${base} (build-sha, health, sign-in, orders, staff, products, low stock, sign-out)`,
   };
 };
 

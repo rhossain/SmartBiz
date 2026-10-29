@@ -22,6 +22,7 @@ import { UpdateOrderInputSchema } from "../data/zod-schemas.js";
 import { now } from "../data/clock.js";
 import { err, ok, type Result } from "../data/result.js";
 import { isUuid } from "../data/uuid.js";
+import { checkLinks, linksToCheck, nothingToCheck } from "./check-links.js";
 import { materialiseItems } from "./create-order.js";
 import { appendOrderAudit } from "./order-audit.js";
 import { canMutateOrders } from "./order-capability.js";
@@ -54,6 +55,14 @@ export const updateOrder = async (
     const before = await selectOrder(tx, ctx.businessId, orderId, "lock");
     if (!before) return err({ kind: "not_found", entity: "Order", id: orderId });
     if (!isEditable(before.status)) return err({ kind: "not_editable", status: before.status });
+    // U5 (BR1.1, BR4.3, S34): a changed customer and supplied lines are rechecked against the
+    // catalog after the lock and the editable check (order not found, not editable, then link
+    // not found); an edit of neither runs no link query.
+    const links = linksToCheck(before.customerId, patch);
+    if (!nothingToCheck(links)) {
+      const checked = await checkLinks(tx, ctx, links.customerId, links.variantIds);
+      if (!checked.ok) return checked;
+    }
 
     const itemsRevision = patch.items ? before.itemsRevision + 1 : before.itemsRevision;
     const items = patch.items

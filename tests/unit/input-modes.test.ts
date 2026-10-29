@@ -17,6 +17,7 @@ import {
 } from "../../src/orders/input-modes.js";
 import { createOrder } from "../../src/orders/create-order.js";
 import { parseMessage } from "../../src/orders/parse-message.js";
+import { prepareCatalog } from "../../src/orders/parse-message-segments.js";
 import { makeSqlStub } from "../helpers/sql-stub.js";
 import { BUSINESS_A, OWNER_A, createInput, ctxFor, itemInput } from "../helpers/order-fixtures.js";
 
@@ -44,7 +45,11 @@ describe("input-mode builders", () => {
       orderDiscountPaise: 2_000,
     });
     expect(input.items).toEqual(draft.items);
-    const saved = await createOrder(makeSqlStub().sql, ctx, input);
+    expect(input.customerId).toBe("C-07");
+    // U5 (BR1.1): a customer id must name a customer of the business; free text is not_found.
+    const refused = await createOrder(makeSqlStub().sql, ctx, input);
+    expect(refused.ok ? "ok" : refused.error.kind).toBe("not_found");
+    const saved = await createOrder(makeSqlStub().sql, ctx, { ...input, customerId: null });
     // (2 × 1 250.00 − 50.00) + 1 × 1 250.00 − 20.00 + 120.00, in paise.
     expect(saved.ok && saved.value.totalPaise).toBe(2 * 125_000 - 5_000 + 125_000 - 2_000 + 12_000);
   });
@@ -109,6 +114,33 @@ describe("input-mode builders", () => {
       [1, 125_000],
       [2, 60_000],
     ]);
+  });
+
+  test("U5: paste-parse carries each line's picked variant and the suggested customer (W3 step 4)", () => {
+    const catalog = prepareCatalog({
+      products: [
+        {
+          productId: "P1",
+          name: "কুর্তি",
+          sku: "KRT",
+          axisNames: ["সাইজ"],
+          variants: [
+            { variantId: "V-M", axisValues: ["M"] },
+            { variantId: "V-L", axisValues: ["L"] },
+          ],
+        },
+      ],
+    });
+    const parsed = parseMessage("কুর্তি M ১টা আর জুতা ১টা", catalog);
+    if (!parsed.ok) throw new Error("parse failed");
+    const r = buildPasteParseOrder(parsed, [100, 200], 0, "C-1");
+    expect(r.ok && r.value.customerId).toBe("C-1");
+    // The description stays the person's own words (BR1.3); only the id links.
+    expect(r.ok && r.value.items.map((i) => [i.variantId, i.description])).toEqual([
+      ["V-M", "কুর্তি M ১টা"],
+      [null, "জুতা ১টা"],
+    ]);
+    expect(buildPasteParseOrder(parsed, [100, 200], 0).ok && "default").toBe("default");
   });
 
   test("paste-parse: an incomplete item must be fixed before save", () => {

@@ -6,6 +6,11 @@
  * `source: 'repeat'` linked to the original. The preview total is
  * computed with the same `computeOrderTotal` the repository uses, and is
  * shown as a pipeline, partial figure: the new order is not earned yet.
+ *
+ * U5 (BR4.3): the repeat keeps the past order's customer and variant ids (buildRepeatOrder);
+ * the server checks them again, so a link to something no longer in the catalog is a 404 that
+ * the save message shows ("পাওয়া যায়নি") with the draft kept. Each preview line shows its
+ * variant's label when the past order carried one.
  */
 import * as React from "react";
 import type { Locale } from "../../data/enums.js";
@@ -21,7 +26,7 @@ import {
 } from "../order-draft.js";
 import { computeOrderTotal } from "../order-total.js";
 import { orderMoneyFigure } from "../status-bucket.js";
-import type { Order } from "../types.js";
+import type { NamedOrder, Order } from "../types.js";
 import { tr } from "./copy.js";
 import { DraftStatus } from "./DraftStatus.js";
 import { MoneyCell } from "../../pres/MoneyCell.js";
@@ -47,6 +52,16 @@ export const RepeatFromPast = ({
   const preview = pending
     ? computeOrderTotal(pending.items, pending.orderDiscountPaise, pending.deliveryChargePaise)
     : null;
+  // The past orders' line labels (E5), by variant id, for the preview.
+  const labels = new Map(
+    pastOrders.flatMap((o: NamedOrder) =>
+      o.items.flatMap((i) =>
+        i.variantId !== null && i.label !== undefined ? [[i.variantId, i.label] as const] : [],
+      ),
+    ),
+  );
+  const labelOf = (variantId: string | null): string | undefined =>
+    variantId === null ? undefined : labels.get(variantId);
   return (
     <Screen
       title={tr("repeat.title", locale)}
@@ -78,7 +93,7 @@ export const RepeatFromPast = ({
           <ol>
             {pending.items.map((item, i) => (
               <li key={i} data-testid="repeat-preview-item">
-                {item.description} × {item.quantity}
+                {labelOf(item.variantId) ?? item.description} × {item.quantity}
               </li>
             ))}
           </ol>

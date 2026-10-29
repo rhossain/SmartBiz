@@ -21,8 +21,9 @@
  */
 import type { Queryable } from "../db/client.js";
 import { ListOrdersFilterSchema } from "../data/zod-schemas.js";
+import { decodeCursor, encodeCursor } from "../data/keyset-cursor.js";
 import { err, ok, type Result } from "../data/result.js";
-import { isUuid, type Uuid } from "../data/uuid.js";
+import { isUuid } from "../data/uuid.js";
 import { canReadOrders } from "./order-capability.js";
 import { selectItemsFor, toOrder, type OrderRow } from "./order-rows.js";
 import type {
@@ -36,36 +37,9 @@ import type {
 export const DEFAULT_PAGE_SIZE = 50;
 export const MAX_PAGE_SIZE = 50;
 
-interface Cursor {
-  readonly createdAt: string;
-  readonly id: Uuid;
-}
-
-const toBase64Url = (text: string): string =>
-  btoa(text).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-
-const fromBase64Url = (raw: string): string | null => {
-  if (!/^[A-Za-z0-9_-]+$/.test(raw)) return null;
-  const b64 = raw.replace(/-/g, "+").replace(/_/g, "/");
-  try {
-    return atob(b64 + "=".repeat((4 - (b64.length % 4)) % 4));
-  } catch {
-    return null;
-  }
-};
-
-export const encodeCursor = (createdAt: string, id: string): string =>
-  toBase64Url(`${createdAt}|${id}`);
-
-export const decodeCursor = (raw: string): Cursor | null => {
-  const text = fromBase64Url(raw);
-  if (text === null) return null;
-  const [createdAt, id, extra] = text.split("|");
-  if (extra !== undefined || createdAt === undefined || id === undefined) return null;
-  if (!isUuid(id) || !/^\d{4}-\d{2}-\d{2}T/.test(createdAt) || Number.isNaN(Date.parse(createdAt)))
-    return null;
-  return { createdAt: new Date(createdAt).toISOString(), id };
-};
+// U4 (W11): the cursor lives in the shared kernel so the catalog lists page the same way
+// without importing this unit; re-exported here so existing callers keep their import.
+export { decodeCursor, encodeCursor };
 
 export const listOrders = async (
   sql: Queryable,

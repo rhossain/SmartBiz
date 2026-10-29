@@ -34,6 +34,10 @@ export const ROUTE_PARAMS: Readonly<
 > = {
   "/orders/:id": { id: uuidParam },
   "/orders/:id/transition": { id: uuidParam },
+  "/customers/:id": { id: uuidParam },
+  "/customers/:id/edit": { id: uuidParam },
+  "/products/:id": { id: uuidParam },
+  "/products/:id/edit": { id: uuidParam },
 };
 
 /** Throws naming the first `:name` segment of a registered route with no parser. */

@@ -33,7 +33,8 @@ import {
   type ApiRow,
   type Role,
 } from "../spec/role-table.js";
-import { API_FIXTURES, ORDER_REQUEST, STAFF_TARGET_ID } from "../spec/fixtures.js";
+import { API_FIXTURES, ORDER_REQUEST, PRODUCT_REQUEST, STAFF_TARGET_ID } from "../spec/fixtures.js";
+import { catalogPath, seedCatalog } from "../helpers/catalog-fixtures.js";
 import { makeSqlStub } from "../helpers/sql-stub.js";
 import {
   harness,
@@ -63,7 +64,8 @@ const writeRows = API_ROWS.filter((r) => WRITES.has(r.method));
  * answers its recorded success and never a delegation refusal (F-07).
  */
 const concrete = (row: ApiRow, id: string): string =>
-  row.path.replace(":id", id).replace(":userId", STAFF_TARGET_ID);
+  // U4: a catalog `:id` is filled with the seeded catalog row it names (seedCatalog).
+  catalogPath(row.path) ?? row.path.replace(":id", id).replace(":userId", STAFF_TARGET_ID);
 const bodyFor = (row: ApiRow): unknown => API_FIXTURES[apiKey(row)]?.request ?? {};
 
 /** True when any key anywhere in the body names money (`…Paise`). */
@@ -81,6 +83,7 @@ const world = async (): Promise<{
 }> => {
   const stub = makeSqlStub();
   const tokens = await seedBusiness(stub);
+  seedCatalog(stub);
   const h = harness(stub);
   const created = await h.send(
     request("POST", "/api/orders", { token: tokens.owner, body: ORDER_REQUEST }),
@@ -186,10 +189,16 @@ describe("server role walk over the registered route table (role table, C5)", ()
         for (const role of ROLES) {
           const inside = isAllowed(row.allowed, role);
           const linking = apiKey(row) === "POST /api/orders/:id/consignment";
-          const id = inside && row.path.includes(":id") ? await freshOrder(linking) : orderId;
-          // A consignment reference is unique per business: each link gets its own.
+          const orderRow = row.path.includes(":id") && catalogPath(row.path) === null;
+          const id = inside && orderRow ? await freshOrder(linking) : orderId;
+          // A consignment reference is unique per business: each link gets its own; so is a
+          // product SKU (U4 BR6.2), so each product create gets its own too.
           ref += 1;
-          const sent = linking ? { consignmentRef: `PT-${ref}` } : bodyFor(row);
+          const sent = linking
+            ? { consignmentRef: `PT-${ref}` }
+            : apiKey(row) === "POST /api/products"
+              ? { ...PRODUCT_REQUEST, sku: `WALK-${ref}` }
+              : bodyFor(row);
           const r = await h.send(
             request(row.method, concrete(row, id), { token: tokens[role], body: sent }),
           );

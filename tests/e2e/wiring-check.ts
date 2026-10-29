@@ -31,6 +31,16 @@
  * they reset their password (204), and their old cookie then answers 401; the four audit rows
  * exist and none of their payloads holds an `@`. Step 7 renders `/staff` and the token
  * screens through the role table's screen rows.
+ * U4 (BR15.1; AC5.2b.1, AC5.2b.2; O11): step 5 walks the catalog routes too; then, over HTTP,
+ * the Manager records a supplier, a product with two axes and that supplier as its default,
+ * sets one variant below its minimum and finds it on `GET /api/low-stock`; Sales Staff records
+ * a customer with a Bangla-digit phone, stored as `01…`; Sales Staff's `POST /api/products`
+ * and the Accountant's `POST /api/customers` answer 403; the catalog change-log rows hold no
+ * customer name or phone. Step 7's catalog `:id` screens use this run's customer and product.
+ * U5 (BR7.1; AC5.2b.1, AC3.3.2; O13): then, as Sales Staff, an order for that customer and the
+ * low variant: the answer and the order list name the customer and the variant's label, both
+ * ids are stored, the customer's history (`?customerId=`) holds exactly that order, and an
+ * unknown customer id is 404 with nothing written.
  * The child server and the database are always removed. One result line; exit 1 on failure.
  */
 import postgres from "postgres";
@@ -349,8 +359,176 @@ const main = async (): Promise<void> => {
     );
     facts.push("invite → accept → reset link → reset → old cookie 401; audit without email");
 
+    // U4 (BR15.1; AC5.2b.1, AC5.2b.2; O11): the catalog end to end, as the screens use it.
+    // As the Manager: a supplier, a product with two axes and that supplier as its default,
+    // one variant set below its minimum and then seen on the low-stock list.
+    const supplierAt = await call("POST", "/api/suppliers", {
+      cookie: tokens.manager ?? "",
+      body: { name: "রহিম ট্রেডার্স", phone: "০১৭১১-০০০০০০" },
+    });
+    check(supplierAt.status === 201, `supplier create answered ${supplierAt.status}`);
+    const supplier = ((await supplierAt.json()) as { supplier: { id: string; phone: string } })
+      .supplier;
+    check(supplier.phone === "01711000000", `the supplier phone was stored as ${supplier.phone}`);
+    const productAt = await call("POST", "/api/products", {
+      cookie: tokens.manager ?? "",
+      body: {
+        name: "সুতির কুর্তি",
+        sku: "WIRING-KURTI",
+        sellingPricePaise: 120_000,
+        purchaseCostPaise: 80_000,
+        defaultSupplierId: supplier.id,
+        axes: [
+          { name: "সাইজ", values: ["M", "L"] },
+          { name: "রং", values: ["লাল", "নীল"] },
+        ],
+        variants: ["M", "L"].flatMap((size) =>
+          ["লাল", "নীল"].map((colour) => ({
+            axisValues: [size, colour],
+            stock: 5,
+            minimumStock: 2,
+          })),
+        ),
+      },
+    });
+    check(productAt.status === 201, `product create answered ${productAt.status}`);
+    const product = (
+      (await productAt.json()) as {
+        product: { id: string; name: string; variants: Array<{ id: string; fullSku: string }> };
+      }
+    ).product;
+    check(product.variants.length === 4, `the product has ${product.variants.length} variants`);
+    const lowVariant = product.variants[0];
+    check(lowVariant?.fullSku === "WIRING-KURTI-M-লাল", "the first variant's full SKU is wrong");
+    const stockAt = await call("PATCH", `/api/variants/${lowVariant?.id ?? ""}/stock`, {
+      cookie: tokens.manager ?? "",
+      body: { stock: 1 },
+    });
+    check(stockAt.status === 200, `stock set answered ${stockAt.status}`);
+    const low = (await (
+      await call("GET", "/api/low-stock", { cookie: tokens.manager ?? "" })
+    ).json()) as {
+      variants: Array<{ variantId: string; supplier: { id: string } | null }>;
+    };
+    check(
+      low.variants.some((v) => v.variantId === lowVariant?.id && v.supplier?.id === supplier.id),
+      "the low variant is not on GET /api/low-stock with its supplier",
+    );
+    // As Sales Staff: a customer with a Bangla-digit phone, stored as 01….
+    const customerAt = await call("POST", "/api/customers", {
+      cookie: tokens.sales_staff ?? "",
+      body: { name: "রিনা আক্তার", phone: "০১৮১২-৩৪৫৬৭৮", riskLevel: 1 },
+    });
+    check(customerAt.status === 201, `customer create answered ${customerAt.status}`);
+    const customer = ((await customerAt.json()) as { customer: { id: string; phone: string } })
+      .customer;
+    check(customer.phone === "01812345678", `the customer phone was stored as ${customer.phone}`);
+    // The two refusals: Sales Staff may not record products, the Accountant not customers.
+    check(
+      (
+        await call("POST", "/api/products", {
+          cookie: tokens.sales_staff ?? "",
+          body: { name: "x", sku: "X", sellingPricePaise: 1, axes: [], variants: [] },
+        })
+      ).status === 403,
+      "Sales Staff POST /api/products was not refused with 403",
+    );
+    check(
+      (
+        await call("POST", "/api/customers", {
+          cookie: tokens.accountant ?? "",
+          body: { name: "x", phone: "01812345678" },
+        })
+      ).status === 403,
+      "Accountant POST /api/customers was not refused with 403",
+    );
+    const catalogAudit = await admin<{ payload: string }[]>`
+      SELECT payload::text AS payload FROM audit_log
+      WHERE action IN ('customer.create', 'supplier.create', 'product.create', 'variant.stock.set')
+    `;
+    check(catalogAudit.length === 4, `catalog audit rows: ${catalogAudit.length}`);
+    check(
+      catalogAudit.every((a) => !a.payload.includes("রিনা") && !a.payload.includes("01812345678")),
+      "a catalog audit payload holds a customer's name or phone",
+    );
+    facts.push("catalog: supplier → product (2 axes) → low stock seen; customer 01…; 2 refusals");
+
+    // U5 (BR7.1; AC5.2b.1, AC3.3.2; O13): as Sales Staff, an order for the check's customer
+    // and its low variant; the list shows their names; the customer's history holds the order.
+    const salesCookie = tokens.sales_staff ?? "";
+    const linkedAt = await call("POST", "/api/orders", {
+      cookie: salesCookie,
+      body: {
+        ...ORDER,
+        customerId: customer.id,
+        contact: null,
+        items: [
+          {
+            variantId: lowVariant?.id ?? "",
+            description: "কুর্তি M লাল",
+            quantity: 1,
+            unitPricePaise: 120_000,
+            lineDiscountPaise: 0,
+          },
+        ],
+      },
+    });
+    check(linkedAt.status === 201, `the linked order answered ${linkedAt.status}`);
+    const linkedOrder = (await linkedAt.json()) as {
+      id: string;
+      customerName?: string | null;
+      items: Array<{ label?: string }>;
+    };
+    const lowLabel = "সুতির কুর্তি · M · লাল";
+    check(
+      linkedOrder.customerName === "রিনা আক্তার" && linkedOrder.items[0]?.label === lowLabel,
+      `the linked order answered ${linkedOrder.customerName ?? "no name"} / ${linkedOrder.items[0]?.label ?? "no label"}`,
+    );
+    const [stored] = await admin<{ customer_id: string; variant_id: string }[]>`
+      SELECT o.customer_id::text AS customer_id, i.variant_id::text AS variant_id
+      FROM orders o JOIN order_items i ON i.order_id = o.id AND i.revision = o.items_revision
+      WHERE o.id = ${linkedOrder.id}`;
+    check(
+      stored?.customer_id === customer.id && stored.variant_id === lowVariant?.id,
+      "the linked order's ids were not stored",
+    );
+    const namedList = (await (
+      await call("GET", "/api/orders", { cookie: salesCookie })
+    ).json()) as {
+      orders: Array<{ id: string; customerName: string | null; itemLabels: string[] }>;
+    };
+    const namedRow = namedList.orders.find((o) => o.id === linkedOrder.id);
+    check(
+      namedRow?.customerName === "রিনা আক্তার" && namedRow.itemLabels[0] === lowLabel,
+      "the order list does not show the customer's name and the variant's label",
+    );
+    const history = (await (
+      await call("GET", `/api/orders?customerId=${customer.id}`, { cookie: salesCookie })
+    ).json()) as { orders: Array<{ id: string }> };
+    check(
+      history.orders.map((o) => o.id).join(",") === linkedOrder.id,
+      "the customer's history does not hold exactly the linked order",
+    );
+    // A link the catalog does not hold is 404, and nothing is written.
+    const before = await admin<{ n: number }[]>`SELECT count(*)::int AS n FROM orders`;
+    const refusedLink = await call("POST", "/api/orders", {
+      cookie: salesCookie,
+      body: { ...ORDER, customerId: crypto.randomUUID() },
+    });
+    const after = await admin<{ n: number }[]>`SELECT count(*)::int AS n FROM orders`;
+    check(
+      refusedLink.status === 404 && before[0]?.n === after[0]?.n,
+      `an unknown customer answered ${refusedLink.status}`,
+    );
+    facts.push(
+      "orders × catalog: Sales Staff order for the customer and low variant; names; history",
+    );
+
     // 7. the real App in happy-dom against the real server, as the Owner.
-    const rendered = await renderAllRoutes(base, order.id, order.orderNo);
+    const rendered = await renderAllRoutes(base, order.id, order.orderNo, {
+      customer: { id: customer.id, name: "রিনা আক্তার" },
+      product: { id: product.id, name: product.name },
+    });
     facts.push(`${rendered} screens rendered`);
 
     // 4 (end). sign out; the old cookie is dead.
@@ -372,7 +550,17 @@ const main = async (): Promise<void> => {
 };
 
 /** Mount the App in happy-dom with a fetch that behaves like the browser on `base`. */
-const renderAllRoutes = async (base: string, orderId: string, orderNo: string): Promise<number> => {
+interface Named {
+  readonly id: string;
+  readonly name: string;
+}
+
+const renderAllRoutes = async (
+  base: string,
+  orderId: string,
+  orderNo: string,
+  catalog: { readonly customer: Named; readonly product: Named },
+): Promise<number> => {
   const { Window } = await import("happy-dom");
   const window = new Window({ url: `${base}/` });
   for (const [key, value] of [
@@ -463,7 +651,13 @@ const renderAllRoutes = async (base: string, orderId: string, orderNo: string): 
   let screens = 0;
   for (const row of SCREEN_ROWS) {
     if (row.allowed !== "public" && !isAllowed(row.allowed, "owner")) continue;
-    const path = row.path.replace(":id", orderId);
+    // U4: a catalog `:id` is this run's customer or product; its detail's heading is its name.
+    const record = row.path.startsWith("/customers/:id")
+      ? catalog.customer
+      : row.path.startsWith("/products/:id")
+        ? catalog.product
+        : null;
+    const path = row.path.replace(":id", record?.id ?? orderId);
     await go(path);
     if (ENTRY.has(row.path)) {
       await until(
@@ -471,7 +665,14 @@ const renderAllRoutes = async (base: string, orderId: string, orderNo: string): 
         () => window.location.hash === "#/orders",
       );
     } else {
-      const heading = row.path.includes(":id") ? orderNo : row.heading;
+      const heading =
+        record !== null
+          ? row.path.endsWith("/edit")
+            ? row.heading
+            : record.name
+          : row.path.includes(":id")
+            ? orderNo
+            : row.heading;
       await until(
         `#${path}: ${row.headingTestId} is not "${heading}"`,
         () => view.queryByTestId(row.headingTestId)?.textContent === heading,

@@ -232,7 +232,11 @@ describe.skipIf(!realdbEnabled)("migrations on real Postgres", () => {
       WHERE id = (SELECT id FROM password_resets WHERE token_hash = 'same-reset-hash' LIMIT 1)
     `;
     const report = await runMigrations(db.adminUrl);
-    expect(report.applied).toEqual(["0017_unique_token_hashes.sql"]);
+    // 0017 applies, and then every later file (U4's 0018–0022), in order.
+    expect(report.applied).toEqual(
+      listMigrations().filter((f) => f >= "0017_unique_token_hashes.sql"),
+    );
+    expect(report.applied[0]).toBe("0017_unique_token_hashes.sql");
     expect(await state()).toEqual({ ledger: 1, indexes: 2 });
   });
 

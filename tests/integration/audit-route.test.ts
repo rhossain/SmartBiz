@@ -77,6 +77,46 @@ describe("GET /api/audit", () => {
     expect(text).not.toContain("01711111111");
   });
 
+  // U4 (NFR-design review R-05; S27): catalog change-log rows carry cost in their payloads
+  // (product.create, product.cost.set); the page read selects no payload, so no audit reader
+  // ever receives one through this route.
+  test("after catalog writes, no audit body has a payload key or a cost figure (R-05)", async () => {
+    const { h, tokens } = await world(0);
+    const created = await h.send(
+      request("POST", "/api/products", {
+        token: tokens.owner,
+        body: {
+          name: "কুর্তি",
+          sku: "AUDIT-COST",
+          sellingPricePaise: 120_000,
+          purchaseCostPaise: 87_654,
+          axes: [],
+          variants: [{ axisValues: [], stock: 1, minimumStock: 0 }],
+        },
+      }),
+    );
+    expect(created.status).toBe(201);
+    const { product } = (await created.json()) as { product: { id: string } };
+    await h.send(
+      request("PATCH", `/api/products/${product.id}/cost`, {
+        token: tokens.owner,
+        body: { purchaseCostPaise: 76_543 },
+      }),
+    );
+    for (const role of ["owner", "manager", "accountant"] as const) {
+      const r = await h.send(request("GET", "/api/audit", { token: tokens[role] }));
+      const body = (await r.json()) as { entries: Array<Record<string, unknown>> };
+      // Both rows carry the frozen clock's instant, so their page order is a tie: compare as a set.
+      expect(body.entries.map((e) => e["action"]).sort()).toEqual([
+        "product.cost.set",
+        "product.create",
+      ]);
+      for (const e of body.entries) expect(Object.hasOwn(e, "payload")).toBe(false);
+      const text = JSON.stringify(body);
+      expect([text.includes("87654"), text.includes("76543")]).toEqual([false, false]);
+    }
+  });
+
   test("a bad limit, an unknown key or a bad cursor is 400 invalid_input, never echoed (NFR3.15)", async () => {
     const { h, tokens } = await world();
     const good = encodeAuditCursor(new Date(NOW.getTime() - 60_000).toISOString(), "x");

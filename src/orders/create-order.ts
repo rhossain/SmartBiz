@@ -4,6 +4,10 @@
  * Order of work, all inside one transaction:
  *   1. the role check and the zod validation run before any SQL;
  *   2. a repeat source order must exist in the caller's business;
+ *   2b. U5 (BR1.1, S34): the customer and every line's variant must exist in the caller's
+ *      business (checkLinks, through C8); otherwise `not_found` and nothing is written —
+ *      before step 3, so a refused order never burns an order number. The contact, the
+ *      descriptions and the prices are stored as sent: ids only link (BR1.3);
  *   3. the next `ORD-####` number is drawn from the sequence, so the
  *      audit row can carry the complete order;
  *   4. the audit row is appended (NFR5.7), then the order and its lines,
@@ -17,6 +21,7 @@ import { CreateOrderInputSchema } from "../data/zod-schemas.js";
 import { now } from "../data/clock.js";
 import { err, ok, type Result } from "../data/result.js";
 import { uuid, type Uuid } from "../data/uuid.js";
+import { checkLinks } from "./check-links.js";
 import { appendOrderAudit } from "./order-audit.js";
 import { canMutateOrders } from "./order-capability.js";
 import { contactJson, insertItems } from "./order-rows.js";
@@ -101,6 +106,15 @@ export const createOrder = async (
     ) {
       return err({ kind: "not_found", entity: "Order", id: input.repeatOfOrderId });
     }
+    // U5 (BR1.1, S34): the customer and every variant must be the session's business's,
+    // checked before the order number is drawn, so a refused order never burns an ORD-####.
+    const links = await checkLinks(
+      tx,
+      ctx,
+      input.customerId,
+      input.items.map((i) => i.variantId),
+    );
+    if (!links.ok) return links;
     const orderNo = formatOrderNo(await nextOrderNumber(tx));
     const id = uuid();
     const at = now().toISOString();

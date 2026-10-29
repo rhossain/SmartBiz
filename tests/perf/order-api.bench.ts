@@ -28,6 +28,13 @@
  * accepts answer 410 with p95 ≤ 50 ms, and the same 10 through the domain function make zero
  * hash-gate calls (a spy); recover's median for a known and an unknown email over 50 calls
  * each is printed, report-only (NFR6.21 revised: the structural test is the gate).
+ * U4 (P23; NFR6.25–NFR6.28): the catalog profile (see `seedCatalogProfile`) joins the timed
+ * routes — every catalog read and write, the customer list's name and 4-digit searches, the
+ * product search, and a customer's order history — at p95 ≤ 300 ms (≤ 600 ms for lists and
+ * searches on `large`), plus the 144-variant product create at p95 of 20 after 5 ≤ 500 ms.
+ * U5 (P25; NFR6.34, NFR6.35): with the newest orders linked to customers and variants, the
+ * match index, a linked create (customer + 5 linked lines) and a linked detail join the timed
+ * routes at p95 ≤ 300 ms; the order list and detail now read their names through C8.
  * Prints p50/p95/max per route and one result line; exits 1 when any target is missed.
  */
 import postgres from "postgres";
@@ -98,6 +105,187 @@ const seedAudit = async (
       FROM generate_series(1, ${opts.count}) AS g
     `;
   });
+};
+
+/*
+ * U4 (P23; NFR6.25–NFR6.28): the catalog profile. `base`: 30 suppliers, 500 products × 12
+ * variants (60 low), 2 000 customers × 3 notes, and 200 of the orders given one customer's id
+ * directly in SQL (only to time the detail's history call; U5 makes the link real). `large`
+ * multiplies the catalog rows by 10. Targets: every catalog route p95 ≤ 300 ms; on `large`,
+ * lists and searches p95 ≤ 600 ms; a 144-variant create p95 of 20 after 5 warm-up ≤ 500 ms.
+ */
+export const CATALOG_LARGE_LIST_P95_MS = 600;
+export const CATALOG_CAP_P95_MS = 500;
+const CATALOG_CAP_WARMUP = 5;
+const CATALOG_CAP_SAMPLES = 20;
+const CATALOG_SUPPLIERS = 30;
+const CATALOG_HISTORY_ORDERS = 200;
+const CATALOG_SCALE = large ? 10 : 1;
+
+/** A product request with `variants` variants (1 axis of ≤ 12, or 2 axes of 12 for 144). */
+const benchProduct = (sku: string, variants: 12 | 144) => {
+  const values = (prefix: string): string[] =>
+    Array.from({ length: 12 }, (_, i) => `${prefix}${i + 1}`);
+  const axes =
+    variants === 12
+      ? [{ name: "সাইজ", values: values("S") }]
+      : [
+          { name: "সাইজ", values: values("S") },
+          { name: "রং", values: values("C") },
+        ];
+  const combos =
+    variants === 12
+      ? values("S").map((v) => [v])
+      : values("S").flatMap((a) => values("C").map((b) => [a, b]));
+  return {
+    name: `বেঞ্চ পণ্য ${sku}`,
+    sku,
+    sellingPricePaise: 90_000,
+    purchaseCostPaise: 60_000,
+    axes,
+    variants: combos.map((axisValues) => ({ axisValues, stock: 10, minimumStock: 2 })),
+  };
+};
+
+/*
+ * U5 (P25, NFR6.34, NFR6.35): linked orders. Besides U4's 200 history orders on one customer,
+ * the 200 NEWEST orders are linked to 200 different customers and every line of the 500
+ * newest orders to a variant (spread over the catalog), so the list's first page and the
+ * detail read real names; then `GET /api/catalog/match-index` (500 products × 12 variants on
+ * `base`), `POST /api/orders` with a linked customer and 5 linked lines, and the detail of a
+ * linked order are timed at p95 ≤ 300 ms.
+ */
+const LINKED_CUSTOMER_ORDERS = 200;
+const LINKED_LINE_ORDERS = 500;
+
+interface CatalogProfile {
+  readonly customers: number;
+  readonly products: number;
+  readonly low: number;
+  readonly customerId: string;
+  readonly productId: string;
+  readonly variantId: string;
+  readonly supplierId: string;
+  /** U5: five variants of one product, for the linked create. */
+  readonly variantIds: ReadonlyArray<string>;
+}
+
+/** P23: the catalog rows in a few set-based statements (admin login), then ANALYZE. */
+const seedCatalogProfile = async (
+  adminUrl: string,
+  businessId: string,
+  ownerId: string,
+): Promise<CatalogProfile> => {
+  const customers = 2_000 * CATALOG_SCALE;
+  const products = 500 * CATALOG_SCALE;
+  const low = 60 * CATALOG_SCALE;
+  const admin = postgres(adminUrl, { max: 1, onnotice: () => undefined });
+  try {
+    const axes = JSON.stringify([
+      { name: "সাইজ", values: Array.from({ length: 12 }, (_, i) => String(i + 1)) },
+    ]);
+    await admin.begin(async (tx) => {
+      await tx`
+        INSERT INTO suppliers (id, business_id, name, phone, created_by, created_at, updated_at)
+        SELECT gen_random_uuid(), ${businessId}, 'সরবরাহকারী ' || g, '018' || lpad(g::text, 8, '0'),
+               ${ownerId}, now(), now()
+        FROM generate_series(1, ${CATALOG_SUPPLIERS}) AS g
+      `;
+      await tx`
+        INSERT INTO customers (id, business_id, name, phone, risk_level, created_by, created_at, updated_at)
+        SELECT gen_random_uuid(), ${businessId}, 'ক্রেতা ' || g, '017' || lpad(g::text, 8, '0'),
+               g % 4, ${ownerId},
+               timestamptz '2025-01-01T00:00:00Z' + g * interval '1 millisecond',
+               timestamptz '2025-01-01T00:00:00Z' + g * interval '1 millisecond'
+        FROM generate_series(1, ${customers}) AS g
+      `;
+      await tx`
+        INSERT INTO customer_notes (id, business_id, customer_id, text, created_by, created_at)
+        SELECT gen_random_uuid(), c.business_id, c.id, 'নোট ' || n, ${ownerId},
+               c.created_at + n * interval '1 second'
+        FROM customers c CROSS JOIN generate_series(1, 3) AS n
+        WHERE c.business_id = ${businessId}
+      `;
+      await tx`
+        INSERT INTO products (id, business_id, name, sku, category, selling_price_paise,
+                              purchase_cost_paise, default_supplier_id, axes, created_by,
+                              created_at, updated_at)
+        SELECT gen_random_uuid(), ${businessId}, 'পণ্য ' || g, 'BP-' || g, 'বিভাগ', 50000 + g,
+               30000 + g, s.id, ${axes}::text::jsonb, ${ownerId},
+               timestamptz '2025-01-01T00:00:00Z' + g * interval '1 millisecond',
+               timestamptz '2025-01-01T00:00:00Z' + g * interval '1 millisecond'
+        FROM generate_series(1, ${products}) AS g
+        JOIN (SELECT id, row_number() OVER (ORDER BY id) - 1 AS n FROM suppliers
+              WHERE business_id = ${businessId}) AS s ON s.n = g % ${CATALOG_SUPPLIERS}
+      `;
+      await tx`
+        INSERT INTO variants (id, business_id, product_id, axis_values, sku_suffix, stock,
+                              minimum_stock, created_at, updated_at)
+        SELECT gen_random_uuid(), p.business_id, p.id, ARRAY[v::text], v::text,
+               CASE WHEN v = 1 AND substring(p.sku FROM 4)::int <= ${low} THEN 0 ELSE 10 END,
+               CASE WHEN v = 1 AND substring(p.sku FROM 4)::int <= ${low} THEN 5 ELSE 2 END,
+               p.created_at, p.created_at
+        FROM products p CROSS JOIN generate_series(1, 12) AS v
+        WHERE p.business_id = ${businessId}
+      `;
+    });
+    const [picked] = await admin<
+      { customer: string; product: string; variant: string; supplier: string; five: string[] }[]
+    >`
+      SELECT (SELECT id FROM customers WHERE business_id = ${businessId} ORDER BY created_at DESC LIMIT 1) AS customer,
+             (SELECT id FROM products WHERE business_id = ${businessId} AND sku = 'BP-100') AS product,
+             (SELECT v.id FROM variants v JOIN products p ON p.id = v.product_id
+              WHERE p.sku = 'BP-100' AND v.sku_suffix = '2') AS variant,
+             (SELECT id FROM suppliers WHERE business_id = ${businessId} ORDER BY name LIMIT 1) AS supplier,
+             (SELECT array_agg(v.id::text ORDER BY v.sku_suffix) FROM variants v
+              JOIN products p ON p.id = v.product_id
+              WHERE p.sku = 'BP-200' AND v.sku_suffix IN ('3', '4', '5', '6', '7')) AS five
+    `;
+    if (picked === undefined) throw new Error("the catalog profile seeded nothing");
+    await admin`
+      UPDATE orders SET customer_id = ${picked.customer}
+      WHERE id IN (SELECT id FROM orders WHERE business_id = ${businessId}
+                   ORDER BY created_at LIMIT ${CATALOG_HISTORY_ORDERS})
+    `;
+    // U5 (NFR6.34): the newest orders on distinct customers, and their lines on variants.
+    await admin`
+      UPDATE orders o SET customer_id = c.id
+      FROM (SELECT id, row_number() OVER (ORDER BY created_at, id) AS n FROM customers
+            WHERE business_id = ${businessId}) c,
+           (SELECT id, row_number() OVER (ORDER BY created_at DESC, id DESC) AS n FROM orders
+            WHERE business_id = ${businessId} ORDER BY created_at DESC, id DESC
+            LIMIT ${LINKED_CUSTOMER_ORDERS}) r
+      WHERE o.id = r.id AND c.n = r.n
+    `;
+    await admin`
+      UPDATE order_items i SET variant_id = v.id
+      FROM (SELECT id, row_number() OVER (ORDER BY created_at DESC, id DESC) AS m FROM orders
+            WHERE business_id = ${businessId} ORDER BY created_at DESC, id DESC
+            LIMIT ${LINKED_LINE_ORDERS}) o,
+           (SELECT id, row_number() OVER (ORDER BY id) - 1 AS n FROM variants
+            WHERE business_id = ${businessId}) v
+      WHERE i.order_id = o.id AND v.n = (o.m * 5 + i.line_no) % ${products * 12}
+    `;
+    await admin`ANALYZE orders`;
+    await admin`ANALYZE order_items`;
+    await admin`ANALYZE customers`;
+    await admin`ANALYZE customer_notes`;
+    await admin`ANALYZE products`;
+    await admin`ANALYZE variants`;
+    await admin`ANALYZE suppliers`;
+    return {
+      customers,
+      products,
+      low,
+      customerId: picked.customer,
+      productId: picked.product,
+      variantId: picked.variant,
+      supplierId: picked.supplier,
+      variantIds: picked.five,
+    };
+  } finally {
+    await admin.end({ timeout: 5 });
+  }
 };
 
 const say = (line: string): void => {
@@ -291,8 +479,145 @@ const main = async (): Promise<void> => {
     }
     const resetTarget = members[0] ?? "";
 
+    // U4 (P23; NFR6.25–NFR6.28): the catalog profile, seeded in bulk with the admin login.
+    const cat = await seedCatalogProfile(
+      withDb(ADMIN, dbName),
+      session.businessId,
+      session.user.id,
+    );
+    const catWrite = (method: "POST" | "PATCH", path: string, body: unknown) =>
+      fetch(`${base}${path}`, {
+        method,
+        headers: { ...write, Cookie: cookie },
+        body: JSON.stringify(body),
+      });
+    const catRead = (path: string) => fetch(`${base}${path}`, { headers: { Cookie: cookie } });
+    // U5 (NFR6.34): one order linked to a customer and 5 variants, for the linked detail.
+    if (cat.variantIds.length !== 5) throw new Error("the catalog profile has no 5 variants");
+    const linkedLines = cat.variantIds.map((variantId, n) => ({
+      variantId,
+      description: `লাইন ${n + 1}`,
+      quantity: 1,
+      unitPricePaise: 50_000,
+      lineDiscountPaise: 0,
+    }));
+    const linked = await createOrder(seedSql, ctx, {
+      ...orderInput(0),
+      customerId: cat.customerId,
+      items: linkedLines,
+    });
+    if (!linked.ok) throw new Error(`linked order: ${JSON.stringify(linked.error)}`);
+    const linkedOrderId = linked.value.id;
+    // NFR6.27: on the large profile, lists and searches may take up to 600 ms (p95).
+    const listLimit = large ? CATALOG_LARGE_LIST_P95_MS : ROUTE_P95_MS;
+    const catalogTimed: Array<{
+      route: string;
+      make: (i: number) => Promise<Response>;
+      limit?: number;
+    }> = [
+      { route: "GET /api/customers", make: () => catRead("/api/customers"), limit: listLimit },
+      {
+        route: "GET /api/customers?q=name",
+        make: () => catRead(`/api/customers?q=${encodeURIComponent("ক্রেতা 1")}`),
+        limit: listLimit,
+      },
+      {
+        route: "GET /api/customers?q=4+digits",
+        make: () => catRead("/api/customers?q=1234"),
+        limit: listLimit,
+      },
+      { route: "GET /api/customers/:id", make: () => catRead(`/api/customers/${cat.customerId}`) },
+      {
+        route: "GET /api/orders?customerId (history)",
+        make: () => catRead(`/api/orders?customerId=${cat.customerId}`),
+      },
+      { route: "GET /api/products", make: () => catRead("/api/products"), limit: listLimit },
+      {
+        route: "GET /api/products?q=sku",
+        make: () => catRead("/api/products?q=BP-1"),
+        limit: listLimit,
+      },
+      { route: "GET /api/products/:id", make: () => catRead(`/api/products/${cat.productId}`) },
+      { route: "GET /api/suppliers", make: () => catRead("/api/suppliers"), limit: listLimit },
+      { route: "GET /api/low-stock", make: () => catRead("/api/low-stock"), limit: listLimit },
+      {
+        route: "POST /api/customers",
+        make: (i) =>
+          catWrite("POST", "/api/customers", {
+            name: `বেঞ্চ ${i}`,
+            phone: `019${String(i).padStart(8, "0")}`,
+            note: "প্রথম নোট",
+          }),
+      },
+      {
+        route: "PATCH /api/customers/:id",
+        make: (i) => catWrite("PATCH", `/api/customers/${cat.customerId}`, { riskLevel: i % 4 }),
+      },
+      {
+        route: "POST /api/customers/:id/notes",
+        make: (i) =>
+          catWrite("POST", `/api/customers/${cat.customerId}/notes`, { text: `নোট ${i}` }),
+      },
+      {
+        route: "POST /api/products (12 variants)",
+        make: (i) => catWrite("POST", "/api/products", benchProduct(`BENCH-${i}`, 12)),
+      },
+      {
+        route: "PATCH /api/products/:id",
+        make: (i) =>
+          catWrite("PATCH", `/api/products/${cat.productId}`, { sellingPricePaise: 60_000 + i }),
+      },
+      {
+        route: "PATCH /api/products/:id/cost",
+        make: (i) =>
+          catWrite("PATCH", `/api/products/${cat.productId}/cost`, {
+            purchaseCostPaise: 40_000 + i,
+          }),
+      },
+      {
+        route: "PATCH /api/variants/:id/stock",
+        make: (i) => catWrite("PATCH", `/api/variants/${cat.variantId}/stock`, { stock: i % 50 }),
+      },
+      {
+        route: "POST /api/suppliers",
+        make: (i) =>
+          catWrite("POST", "/api/suppliers", {
+            name: `বেঞ্চ সরবরাহকারী ${i}`,
+            phone: `015${String(i).padStart(8, "0")}`,
+          }),
+      },
+      {
+        route: "PATCH /api/suppliers/:id",
+        make: (i) => catWrite("PATCH", `/api/suppliers/${cat.supplierId}`, { name: `S ${i}` }),
+      },
+      // U5 (NFR6.35): the paste screen's match index over the whole catalog profile.
+      {
+        route: "GET /api/catalog/match-index",
+        make: () => catRead("/api/catalog/match-index"),
+        limit: listLimit,
+      },
+      // U5 (NFR6.34): a create linked to a customer with 5 linked lines, and a linked detail.
+      {
+        route: "POST /api/orders (linked customer, 5 linked lines)",
+        make: (i) =>
+          catWrite("POST", "/api/orders", {
+            ...orderInput(i),
+            customerId: cat.customerId,
+            items: linkedLines,
+          }),
+      },
+      {
+        route: "GET /api/orders/:id (linked)",
+        make: () => catRead(`/api/orders/${linkedOrderId}`),
+      },
+    ];
+
     let k = 0;
-    const timed: Array<{ route: string; make: (i: number) => Promise<Response> }> = [
+    const timed: Array<{
+      route: string;
+      make: (i: number) => Promise<Response>;
+      limit?: number;
+    }> = [
       { route: "GET /api/health", make: () => fetch(`${base}/api/health`) },
       { route: "GET /api/setup", make: () => fetch(`${base}/api/setup`) },
       {
@@ -411,7 +736,11 @@ const main = async (): Promise<void> => {
           });
         },
       },
+      ...catalogTimed,
     ];
+    say(
+      `catalog (P23): ${cat.customers} customers × 3 notes, ${cat.products} products × 12 variants (${cat.low} low), ${CATALOG_SUPPLIERS} suppliers, ${CATALOG_HISTORY_ORDERS} orders on one customer`,
+    );
     say(
       `profile ${large ? "large" : "base"}: ${ORDERS} orders; audit +${AUDIT_ROWS} rows (+${AUDIT_FOREIGN} foreign, +${AUDIT_EXPIRED} expired); ${SAMPLES} timed calls per route after ${WARMUP} warm-up`,
     );
@@ -431,8 +760,25 @@ const main = async (): Promise<void> => {
       say(
         `${t.route} | ${percentile(ms, 50).toFixed(1)} | ${p95.toFixed(1)} | ${Math.max(...ms).toFixed(1)}`,
       );
-      const limit = t.route === "GET /api/session" ? SESSION_P95_MS : ROUTE_P95_MS;
+      const limit = t.limit ?? (t.route === "GET /api/session" ? SESSION_P95_MS : ROUTE_P95_MS);
       if (p95 > limit) misses.push(`${t.route} p95 ${p95.toFixed(1)} ms > ${limit} ms`);
+    }
+
+    // U4 (NFR6.28, P21): a product at the variant cap — 144 variants — p95 of 20 after 5.
+    const capMs: number[] = [];
+    for (let i = 0; i < CATALOG_CAP_WARMUP + CATALOG_CAP_SAMPLES; i++) {
+      const started = performance.now();
+      const r = await catWrite("POST", "/api/products", benchProduct(`CAP-${i}`, 144));
+      await r.arrayBuffer();
+      if (r.status !== 201) throw new Error(`144-variant create answered ${r.status}`);
+      if (i >= CATALOG_CAP_WARMUP) capMs.push(performance.now() - started);
+    }
+    const capP95 = percentile(capMs, 95);
+    say(
+      `POST /api/products (144 variants) | p95 of ${CATALOG_CAP_SAMPLES}: ${capP95.toFixed(1)} ms | max ${Math.max(...capMs).toFixed(1)} ms`,
+    );
+    if (capP95 > CATALOG_CAP_P95_MS) {
+      misses.push(`144-variant create p95 ${capP95.toFixed(1)} ms > ${CATALOG_CAP_P95_MS} ms`);
     }
 
     // NFR6.8: 5 signed-in clients at once, 50 calls each (list and detail), on the pool of 5;

@@ -20,6 +20,10 @@
  * loading or error kind; a missing order shows "পাওয়া যায়নি". The list
  * page holds summary rows; "repeat" needs full orders, so it uses
  * `recent` (loaded by the app), or the page's rows when they are full.
+ *
+ * U5 (BR4.1, BR4.2, BR5.1, BR6.1): the state may carry `catalog`, the loaders the router
+ * builds over the catalog client; the manual and paste screens get them as a prop and never
+ * import the client themselves (BR7.4).
  */
 import * as React from "react";
 import { assertNever } from "../../data/assert-never.js";
@@ -31,6 +35,7 @@ import type { OrderDraftStore, SaveOrder } from "../order-draft.js";
 import type { Order } from "../types.js";
 import { ManualOrder } from "./ManualOrder.js";
 import { OrderDetail } from "./OrderDetail.js";
+import type { OrdersCatalog } from "./OrderLinks.js";
 import { OrdersList, type OrderListRow, type OrdersListFilter } from "./OrdersList.js";
 import { PasteParse } from "./PasteParse.js";
 import { RepeatFromPast } from "./RepeatFromPast.js";
@@ -59,6 +64,8 @@ export interface OrdersRouteState {
   readonly currentError?: ShownErrorKind | null;
   readonly onRetryCurrent?: () => void;
   readonly recent?: ReadonlyArray<Order>;
+  /** U5 (BR4.1, BR4.2, BR5.1, BR6.1): the catalog loaders the router builds (props only). */
+  readonly catalog?: OrdersCatalog;
 }
 
 const isFullOrder = (o: OrderListRow | Order): o is Order => "items" in o;
@@ -119,9 +126,23 @@ export const renderOrdersScreen = (
         />
       );
     case "manual":
-      return <ManualOrder locale={locale} draft={draft} onSave={onSave} />;
+      return (
+        <ManualOrder
+          locale={locale}
+          draft={draft}
+          onSave={onSave}
+          {...(state.catalog ? { catalog: state.catalog } : {})}
+        />
+      );
     case "paste-parse":
-      return <PasteParse locale={locale} draft={draft} onSave={onSave} />;
+      return (
+        <PasteParse
+          locale={locale}
+          draft={draft}
+          onSave={onSave}
+          {...(state.catalog ? { catalog: state.catalog } : {})}
+        />
+      );
     case "repeat":
       return (
         <RepeatFromPast

@@ -272,6 +272,70 @@
       "find": "        await tx`UPDATE invitations SET used_at = ${at}::timestamptz WHERE id = ${inv.id}`;\n",
       "replace": "",
       "test": "tests/unit/accept-invite.test.ts"
+    },
+    {
+      "id": "catalog-manage-by-sales-staff",
+      "why": "Products, stock and suppliers are Owner and Manager only (U4 BR1.3, S26, NFR1.13); adding money.mutate.price lets Sales Staff write them.",
+      "file": "src/catalog/catalog-capability.ts",
+      "find": "export const CATALOG_MANAGE: ReadonlyArray<Capability> = [\"money.mutate.full\"];",
+      "replace": "export const CATALOG_MANAGE: ReadonlyArray<Capability> = [\"money.mutate.full\", \"money.mutate.price\"];",
+      "test": "tests/unit/catalog-capability.test.ts"
+    },
+    {
+      "id": "product-view-always-cost",
+      "why": "Purchase cost is returned only to cost readers; for Sales Staff the key is absent (U4 BR9.2, S27, NFR1.14).",
+      "file": "src/catalog/products.ts",
+      "find": "...(canReadCost(role) ? { purchaseCostPaise } : {})",
+      "replace": "...{ purchaseCostPaise }",
+      "test": "tests/unit/catalog-products.test.ts"
+    },
+    {
+      "id": "product-read-drops-business-filter",
+      "why": "Every catalog read is scoped to the session's business; another business's product is not found (U4 BR11.1, BR11.2, S28, NFR1.15).",
+      "file": "src/catalog/products.ts",
+      "find": "WHERE p.id = ${id} AND p.business_id = ${ctx.businessId}",
+      "replace": "WHERE p.id = ${id}",
+      "test": "tests/realdb/catalog-paths.realdb.test.ts"
+    },
+    {
+      "id": "customer-create-payload-name",
+      "why": "Catalog change-log payloads hold no name, phone, address or note text: the insert-only log could never erase them (U4 BR10.2, S30, NFR3.26).",
+      "file": "src/catalog/catalog-audit.ts",
+      "find": "payload: { riskLevel: customer.riskLevel, hasAddress: customer.address !== null },",
+      "replace": "payload: { riskLevel: customer.riskLevel, hasAddress: customer.address !== null, name: customer.name },",
+      "test": "tests/unit/catalog-audit-payloads.test.ts"
+    },
+    {
+      "id": "note-revision-as-update",
+      "why": "A note revision is a new row; the earlier note never changes and app_role holds no UPDATE on customer_notes (U4 BR4.2, BR12.2, AC3.2.1).",
+      "file": "src/catalog/notes.ts",
+      "find": "      await insertNote(tx, ctx, customerId, note, text, at);",
+      "replace": "      await tx`UPDATE customer_notes SET text = ${text} WHERE id = ${note.revisesNoteId ?? note.id}`;",
+      "test": "tests/unit/catalog-notes.test.ts"
+    },
+    {
+      "id": "low-stock-at-minimum",
+      "why": "A variant is low when its stock is BELOW its minimum; at the minimum it is not low (U4 BR7.2, AC3.5.2).",
+      "file": "src/catalog/rules/product-shape.ts",
+      "find": "export const isLow = (stock: number, minimumStock: number): boolean => stock < minimumStock;",
+      "replace": "export const isLow = (stock: number, minimumStock: number): boolean => stock <= minimumStock;",
+      "test": "tests/unit/catalog-product-shape.test.ts"
+    },
+    {
+      "id": "variant-labels-drops-business-filter",
+      "why": "An order links only to the session's business's variants: checkLinks asks C8's variantLabels, which must filter by business (U5 BR1.1, S34, NFR1.16, O15). Without the filter another business's variant passes the check and the composite key throws 23503 instead of the expected 404.",
+      "file": "src/catalog/index.ts",
+      "find": "WHERE v.business_id = ${ctx.businessId} AND v.id = ANY(${sql.array(wanted)}::uuid[])",
+      "replace": "WHERE v.id = ANY(${sql.array(wanted)}::uuid[])",
+      "test": "tests/realdb/orders-catalog.realdb.test.ts"
+    },
+    {
+      "id": "paste-links-first-of-several",
+      "why": "Words matching several products leave the item unlinked and incomplete for the person to pick (U5 BR5.2, AC4.2.3, NFR5.11, review R-01); linking the first match guesses.",
+      "file": "src/orders/parse-message-segments.ts",
+      "find": "  const product = single(matchProducts(segment, ascii, catalog));",
+      "replace": "  const product = { value: matchProducts(segment, ascii, catalog)[0] ?? null, ambiguous: false };",
+      "test": "tests/unit/parseMessage-catalog.test.ts"
     }
   ]
 }

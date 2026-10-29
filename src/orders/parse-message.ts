@@ -24,7 +24,13 @@
  * segmentation, so an address can never become an item.
  */
 import { toAsciiDigits } from "../i18n/bnDigits.js";
-import { readSegment, splitSegments, type CatalogEntry } from "./parse-message-segments.js";
+import {
+  catalogEntry,
+  pickVariant,
+  readSegment,
+  splitSegments,
+  type CatalogEntry,
+} from "./parse-message-segments.js";
 import type { OrderContact, ParsedItem, ParseResult } from "./types.js";
 
 export const MAX_PARSE_ITEMS = 200;
@@ -111,20 +117,41 @@ const scanContact = (lines: ReadonlyArray<string>): ContactScan => {
   return { contact: { name, phone, address }, usedLines: used };
 };
 
+/**
+ * U5 (BR5.3): a linked item's variant, from the item's own size and colour only. Run again
+ * whenever a detail fragment fills the item's size or colour, so the pick always reflects
+ * every word the item owns and nothing else.
+ */
+const withVariant = (item: ParsedItem, catalog: ReadonlyArray<CatalogEntry>): ParsedItem => {
+  const entry = item.productId === null ? undefined : catalogEntry(catalog, item.productId);
+  return { ...item, variantId: entry === undefined ? null : pickVariant(entry, item) };
+};
+
+/*
+ * U5 (BR5.2): an item is incomplete when one of its own details is ambiguous — two sizes,
+ * two colours, two counts or SEVERAL matching products — or its count is unusable. An item
+ * that matches no product is simply unlinked, and a linked item whose variant is not picked
+ * asks the person to choose; neither blocks the order, because a line may stay free text
+ * (Q4: a sale of something not yet in the catalog must not be blocked).
+ */
 const toParsedItem = (
   lineNo: number,
   details: ReturnType<typeof readSegment>,
   catalog: ReadonlyArray<CatalogEntry>,
-): ParsedItem => ({
-  lineNo,
-  text: details.text,
-  productId: details.productId,
-  quantity: details.quantity,
-  size: details.size,
-  colour: details.colour,
-  incomplete:
-    details.ambiguous || details.quantity < 1 || (catalog.length > 0 && details.productId === null),
-});
+): ParsedItem =>
+  withVariant(
+    {
+      lineNo,
+      text: details.text,
+      productId: details.productId,
+      variantId: null,
+      quantity: details.quantity,
+      size: details.size,
+      colour: details.colour,
+      incomplete: details.ambiguous || details.quantity < 1,
+    },
+    catalog,
+  );
 
 /**
  * Re-read one item after the person edits its words on the paste screen
@@ -136,6 +163,21 @@ export const reparseItem = (
   text: string,
   catalog: ReadonlyArray<CatalogEntry> = [],
 ): ParsedItem => toParsedItem(lineNo, readSegment(text.trim(), catalog), catalog);
+
+/**
+ * U5 (BR4.2, BR5.2): the person picked (or cleared) the item's product and variant on the
+ * paste screen. The pick replaces only the link; the item stays incomplete only for an
+ * ambiguity in its own size, colour or count, re-read from its own words.
+ */
+export const linkItem = (
+  item: ParsedItem,
+  link: { readonly productId: string; readonly variantId: string | null } | null,
+): ParsedItem => ({
+  ...item,
+  productId: link?.productId ?? null,
+  variantId: link?.variantId ?? null,
+  incomplete: readSegment(item.text, []).ambiguous || item.quantity < 1,
+});
 
 /**
  * A detail-only fragment ("কুর্তা ২টা, লাল, M": the "লাল" and the "M")
@@ -202,7 +244,7 @@ export const parseMessage = (
       if (!hasDetail(details)) continue; // filler such as "দিয়েন" or a price note
       const previous = items[items.length - 1];
       if (previous && details.detailOnly)
-        items[items.length - 1] = attachFragment(previous, details);
+        items[items.length - 1] = withVariant(attachFragment(previous, details), catalog);
       else unattached.push(details.text);
       continue;
     }

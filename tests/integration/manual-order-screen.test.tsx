@@ -29,7 +29,8 @@ const saveButton = (get: Get): HTMLButtonElement => get("manual-save") as HTMLBu
 
 const fillTwoLines = (get: Get): void => {
   type(get, "manual-line-description-1", "কালো কুর্তি");
-  type(get, "manual-line-variantId-1", "V-12");
+  // U5 (BR4.2): a line links to a variant only through the picker
+  // (tests/integration/orders-catalog-screens.test.tsx); typed lines are free text.
   type(get, "manual-line-quantity-1", "2");
   type(get, "manual-line-price-1", "1250");
   type(get, "manual-line-discount-1", "50");
@@ -77,7 +78,7 @@ describe("US1.11 — ManualOrder screen", () => {
         i["line_discount_paise"],
       ]),
     ).toEqual([
-      [1, "V-12", 2, "5000"],
+      [1, null, 2, "5000"],
       [2, null, 1, "0"],
     ]);
   });

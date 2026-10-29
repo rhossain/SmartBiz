@@ -12,6 +12,10 @@
  * same process serves it again afterwards.
  * U3 (R15, NFR7.19): `POST /api/invitations/accept` answers the same 503 during the outage and
  * leaves the token unused: the same link signs the invitee in once Postgres is back.
+ * U4 (R19, NFR7.26): `GET /api/products` and `POST /api/customers` answer the same 503; no
+ * customer was half-written, and the catalog serves again afterwards.
+ * U5 (R23, NFR7.30): a create linked to a customer and a variant answers the same 503, leaves
+ * no order behind, and succeeds once Postgres is back.
  *
  * It needs REALDB_CONTAINER (scripts/gate.ts sets it to the container it started); without
  * it, or without the realdb URLs, the file is skipped. It never touches any other container.
@@ -109,6 +113,46 @@ describe.skipIf(!enabled)("database outage and recovery", () => {
       ((await invited.json()) as { link: string }).link,
     )?.[1];
     const acceptBody = { token, password: "correct-horse-9" };
+    // U5 (R23, NFR7.30): a customer and a one-variant product to link an order to.
+    const linkedCustomer = await postJson(
+      "/api/customers",
+      { name: "Linked", phone: "01812345678" },
+      true,
+    );
+    expect(linkedCustomer.status).toBe(201);
+    const customerId = ((await linkedCustomer.json()) as { customer: { id: string } }).customer.id;
+    const linkedProduct = await postJson(
+      "/api/products",
+      {
+        name: "Outage Kurti",
+        sku: "OUTAGE-1",
+        sellingPricePaise: 1_000,
+        axes: [],
+        variants: [{ axisValues: [], stock: 1, minimumStock: 0 }],
+      },
+      true,
+    );
+    expect(linkedProduct.status).toBe(201);
+    const variantId = (
+      (await linkedProduct.json()) as { product: { variants: Array<{ id: string }> } }
+    ).product.variants[0]?.id;
+    const linkedOrder = {
+      source: "manual",
+      customerId,
+      contact: null,
+      repeatOfOrderId: null,
+      items: [
+        {
+          variantId,
+          description: "কুর্তি",
+          quantity: 1,
+          unitPricePaise: 1_000,
+          lineDiscountPaise: 0,
+        },
+      ],
+      orderDiscountPaise: 0,
+      deliveryChargePaise: 0,
+    };
 
     expect(await docker("stop", "-t", "5", CONTAINER ?? "")).toBe(0);
     const during = await listOrders();
@@ -125,6 +169,27 @@ describe.skipIf(!enabled)("database outage and recovery", () => {
     // U3 (R15, NFR7.19): accept answers the same coded 503; nothing commits.
     const acceptDuring = await postJson("/api/invitations/accept", acceptBody);
     expect({ status: acceptDuring.status, body: await acceptDuring.json() }).toEqual({
+      status: 503,
+      body: { error: "db_unavailable" },
+    });
+    // U4 (R19, NFR7.26): a catalog read and a catalog write answer the same coded 503.
+    const productsDuring = await fetch(`${base}/api/products`, { headers: { Cookie: cookie } });
+    expect({ status: productsDuring.status, body: await productsDuring.json() }).toEqual({
+      status: 503,
+      body: { error: "db_unavailable" },
+    });
+    const customerDuring = await postJson(
+      "/api/customers",
+      { name: "Outage", phone: "01712345678" },
+      true,
+    );
+    expect({ status: customerDuring.status, body: await customerDuring.json() }).toEqual({
+      status: 503,
+      body: { error: "db_unavailable" },
+    });
+    // U5 (R23, NFR7.30): a linked order create answers the same coded 503.
+    const orderDuring = await postJson("/api/orders", linkedOrder, true);
+    expect({ status: orderDuring.status, body: await orderDuring.json() }).toEqual({
       status: 503,
       body: { error: "db_unavailable" },
     });
@@ -154,6 +219,17 @@ describe.skipIf(!enabled)("database outage and recovery", () => {
     expect(await after.json()).toEqual({ status: "up", db: "up" });
     // The same process (never restarted) serves the audit trail again.
     expect((await listAudit()).status).toBe(200);
+    // U4: nothing half-written by the refused write (only U5's pre-outage customer exists);
+    // the catalog serves again.
+    const customers = await fetch(`${base}/api/customers`, { headers: { Cookie: cookie } });
+    expect(((await customers.json()) as { total: number }).total).toBe(1);
+    // U5 (NFR7.30): no order was half-written; the same linked create now succeeds.
+    const ordersAfter = await listOrders();
+    expect(((await ordersAfter.json()) as { orders: unknown[] }).orders).toHaveLength(0);
+    expect((await postJson("/api/orders", linkedOrder, true)).status).toBe(201);
+    expect(
+      (await postJson("/api/customers", { name: "After", phone: "01712345678" }, true)).status,
+    ).toBe(201);
     // U3: the token was left unused by the outage — the same link now signs the invitee in.
     const acceptAfter = await postJson("/api/invitations/accept", acceptBody);
     expect(acceptAfter.status).toBe(201);

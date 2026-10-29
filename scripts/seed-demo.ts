@@ -7,6 +7,9 @@
  * accept their invitations, one invitation left pending, and 16 orders from several sources
  * moved through every order status (new, confirmed, packed, shipped, delivered, settled,
  * partial, cancelled, returned), with courier consignment references on the shipped ones.
+ * U4 (Q16): and the demo catalog (`seedDemoCatalog` below): 4 suppliers, 6 products with sizes
+ * and colours (some variants below their minimum, one product without a supplier, one cost
+ * unrecorded) and 6 customers with risk levels and notes (one revised, two sharing a phone).
  *
  * Credentials: demo-only, generated on first run into `.env.demo` (gitignored by `.env.*`,
  * mode 600) and reused afterwards; they are never printed. Run it against an empty database
@@ -19,11 +22,11 @@ import { join } from "node:path";
 
 const ROOT = join(import.meta.dir, "..");
 const PORT = Number(process.env["PORT"] ?? "3000");
-const BASE = `http://127.0.0.1:${PORT}`;
+export const BASE = `http://127.0.0.1:${PORT}`;
 const CRED_FILE = join(ROOT, ".env.demo");
 
-type Role = "owner" | "manager" | "sales_staff" | "accountant";
-interface Account {
+export type Role = "owner" | "manager" | "sales_staff" | "accountant";
+export interface Account {
   readonly role: Role;
   readonly email: string;
   readonly password: string;
@@ -31,10 +34,14 @@ interface Account {
 
 const randomPassword = (): string => `Demo-${crypto.randomUUID().replace(/-/g, "").slice(0, 16)}`;
 
-/** Load the demo accounts from `.env.demo`, creating the file on the first run. */
-const loadAccounts = (): Account[] => {
+/**
+ * Load the demo accounts from `.env.demo`, creating the file on the first run — unless
+ * `create` is false (seed:demo:catalog), which needs the accounts that already exist.
+ */
+export const loadAccounts = (create = true): Account[] => {
   const roles: Role[] = ["owner", "manager", "sales_staff", "accountant"];
   if (!existsSync(CRED_FILE)) {
+    if (!create) throw new Error(".env.demo is missing; run `bun run seed:demo` first");
     const lines = [
       "# Demo sign-in accounts written by scripts/seed-demo.ts. Local demo data only.",
       ...roles.flatMap((r) => [
@@ -59,10 +66,10 @@ const loadAccounts = (): Account[] => {
 };
 
 /** A parsed JSON response body; fields are narrowed where they are read. */
-type JsonObject = { readonly [key: string]: unknown };
+export type JsonObject = { readonly [key: string]: unknown };
 
 /** One signed-in client: keeps its own session cookie. */
-class Client {
+export class Client {
   private cookie = "";
 
   async call(
@@ -305,6 +312,263 @@ const ORDERS: readonly DemoOrder[] = [
   },
 ];
 
+/*
+ * U4 (functional-design Q16; infrastructure-design Q4, R-05): the demo catalog — suppliers,
+ * products with sizes and colours (some below their minimum, one without a supplier), and
+ * customers with notes and risk levels (one note revised, two customers sharing a phone) — so
+ * every catalog screen has something to show. Written through the API as the role that
+ * would do it: the Manager records suppliers, products and stock; Sales Staff the customers;
+ * the Accountant a purchase cost. Shared with `bun run seed:demo:catalog`
+ * (scripts/seed-demo-catalog.ts), which adds the catalog to an EXISTING demo business: a
+ * product whose SKU is already taken (409) is skipped, and so is a supplier or customer that
+ * is already there, so a second run adds nothing twice.
+ */
+interface DemoProduct {
+  readonly name: string;
+  readonly sku: string;
+  readonly category: string | null;
+  readonly price: number; // taka
+  readonly cost: number | null; // taka
+  readonly supplier: number | null; // index into DEMO_SUPPLIERS
+  readonly axes: ReadonlyArray<{ readonly name: string; readonly values: readonly string[] }>;
+  /** Stock and minimum per variant, in cross-product order (the same number for all if one). */
+  readonly stock: readonly number[];
+  readonly minimum: number;
+}
+
+export const DEMO_SUPPLIERS = [
+  { name: "রহিম ট্রেডার্স", phone: "01711000111" },
+  { name: "Dhaka Textile House", phone: "01812000222" },
+  { name: "নিউমার্কেট হোলসেল", phone: "01913000333" },
+  { name: "Chattogram Leather Co.", phone: "01614000444" },
+] as const;
+
+export const DEMO_PRODUCTS: readonly DemoProduct[] = [
+  {
+    name: "সুতি কুর্তি",
+    sku: "KURTI-COT",
+    category: "পোশাক",
+    price: 850,
+    cost: 520,
+    supplier: 0,
+    axes: [
+      { name: "সাইজ", values: ["S", "M", "L"] },
+      { name: "রং", values: ["নীল", "সবুজ"] },
+    ],
+    stock: [6, 1, 9, 4, 0, 7],
+    minimum: 3,
+  },
+  {
+    name: "Jamdani saree",
+    sku: "SAREE-JAM",
+    category: "Saree",
+    price: 4800,
+    cost: 3400,
+    supplier: 1,
+    axes: [{ name: "Colour", values: ["Red", "Teal", "Ivory"] }],
+    stock: [2, 5, 1],
+    minimum: 2,
+  },
+  {
+    name: "থ্রি-পিস",
+    sku: "3PC-LAWN",
+    category: "পোশাক",
+    price: 1850,
+    cost: null,
+    supplier: 2,
+    axes: [{ name: "সাইজ", values: ["M", "L", "XL"] }],
+    stock: [8, 8, 8],
+    minimum: 2,
+  },
+  {
+    name: "Leather sandal",
+    sku: "SANDAL-LTH",
+    category: "Footwear",
+    price: 1650,
+    cost: 1100,
+    supplier: 3,
+    axes: [{ name: "Size", values: ["39", "40", "41", "42"] }],
+    stock: [3, 0, 2, 5],
+    minimum: 2,
+  },
+  {
+    name: "হিজাব",
+    sku: "HIJAB-GEO",
+    category: "আনুষঙ্গিক",
+    price: 280,
+    cost: 150,
+    supplier: null,
+    axes: [],
+    stock: [1],
+    minimum: 10,
+  },
+  {
+    name: "Cotton panjabi",
+    sku: "PANJABI-COT",
+    category: "Clothing",
+    price: 1450,
+    cost: 900,
+    supplier: 0,
+    axes: [
+      { name: "Size", values: ["M", "L", "XL"] },
+      { name: "Colour", values: ["White", "Blue"] },
+    ],
+    stock: [10, 6, 12, 2, 5, 7],
+    minimum: 3,
+  },
+];
+
+export const DEMO_CUSTOMERS = [
+  {
+    name: "রিনা আক্তার",
+    phone: "01711234567",
+    address: "মিরপুর ১০, ঢাকা",
+    riskLevel: 0,
+    note: "নিয়মিত ক্রেতা; বিকেলে ফোন করবেন",
+  },
+  {
+    name: "Karim Hossain",
+    phone: "01819876543",
+    address: "Agrabad, Chattogram",
+    riskLevel: 1,
+    note: "Prefers cash on delivery",
+  },
+  {
+    name: "সাবরিনা ইসলাম",
+    phone: "01922334455",
+    address: "ধানমন্ডি ২৭, ঢাকা",
+    riskLevel: 2,
+    note: "দুবার পার্সেল ফেরত দিয়েছেন",
+  },
+  {
+    name: "Nusrat Jahan",
+    phone: "01633445566",
+    address: "Zindabazar, Sylhet",
+    riskLevel: 0,
+    note: null,
+  },
+  {
+    name: "মো. হাসান",
+    phone: "01744556677",
+    address: null,
+    riskLevel: 3,
+    note: "আগের বাকি এখনো দেননি",
+  },
+  // Shares Rina's phone (a family number): saved, with the duplicate-phone warning (BR3.3).
+  {
+    name: "রুমা আক্তার",
+    phone: "01711234567",
+    address: "মিরপুর ১০, ঢাকা",
+    riskLevel: 0,
+    note: null,
+  },
+] as const;
+
+/** The variants of a demo product: the cross product of its axes, with its stock numbers. */
+const demoVariants = (p: DemoProduct) => {
+  const combos = p.axes.reduce<string[][]>(
+    (acc, axis) => acc.flatMap((c) => axis.values.map((v) => [...c, v])),
+    [[]],
+  );
+  return combos.map((axisValues, i) => ({
+    axisValues,
+    stock: p.stock[i] ?? p.stock[0] ?? 0,
+    minimumStock: p.minimum,
+  }));
+};
+
+export interface CatalogSeedClients {
+  readonly manager: Client;
+  readonly sales: Client;
+  readonly accountant: Client;
+}
+
+export interface CatalogSeedResult {
+  readonly suppliers: number;
+  readonly products: number;
+  readonly skippedProducts: number;
+  readonly customers: number;
+}
+
+/** Add the demo catalog through the API; what is already there is left alone (R-05). */
+export const seedDemoCatalog = async (c: CatalogSeedClients): Promise<CatalogSeedResult> => {
+  const listed = await c.manager.must("GET", "/api/suppliers");
+  const existing = new Map(
+    ((listed["suppliers"] as Array<{ id: string; name: string }> | undefined) ?? []).map((s) => [
+      s.name,
+      s.id,
+    ]),
+  );
+  const supplierIds: string[] = [];
+  let suppliers = 0;
+  for (const s of DEMO_SUPPLIERS) {
+    const known = existing.get(s.name);
+    if (known !== undefined) {
+      supplierIds.push(known);
+      continue;
+    }
+    const made = await c.manager.must("POST", "/api/suppliers", s);
+    supplierIds.push(String((made["supplier"] as JsonObject)["id"]));
+    suppliers += 1;
+  }
+
+  let products = 0;
+  let skippedProducts = 0;
+  for (const p of DEMO_PRODUCTS) {
+    const supplierId = p.supplier === null ? null : (supplierIds[p.supplier] ?? null);
+    const r = await c.manager.call("POST", "/api/products", {
+      name: p.name,
+      sku: p.sku,
+      ...(p.category !== null ? { category: p.category } : {}),
+      sellingPricePaise: paise(p.price),
+      defaultSupplierId: supplierId,
+      axes: p.axes,
+      variants: demoVariants(p),
+    });
+    if (r.status === 409) {
+      skippedProducts += 1; // R-05: the SKU is already there; a rerun adds nothing twice.
+      continue;
+    }
+    if (r.status !== 201) throw new Error(`create product ${p.sku} → ${r.status}`);
+    const productId = String((r.json["product"] as JsonObject)["id"]);
+    // The Accountant records the purchase cost (BR1.4); one product keeps it unrecorded.
+    if (p.cost !== null) {
+      await c.accountant.must("PATCH", `/api/products/${productId}/cost`, {
+        purchaseCostPaise: paise(p.cost),
+      });
+    }
+    products += 1;
+  }
+
+  let customers = 0;
+  for (const d of DEMO_CUSTOMERS) {
+    const found = await c.sales.must("GET", `/api/customers?q=${encodeURIComponent(d.phone)}`);
+    const rows = (found["customers"] as Array<{ name: string }> | undefined) ?? [];
+    if (rows.some((row) => row.name === d.name)) continue;
+    const made = await c.sales.must("POST", "/api/customers", {
+      name: d.name,
+      phone: d.phone,
+      ...(d.address !== null ? { address: d.address } : {}),
+      riskLevel: d.riskLevel,
+      ...(d.note !== null ? { note: d.note } : {}),
+    });
+    customers += 1;
+    // One note revised, so the "আগের নোট" history has something to show (BR4.4).
+    if (d.riskLevel === 2) {
+      const id = String((made["customer"] as JsonObject)["id"]);
+      const detail = await c.sales.must("GET", `/api/customers/${id}`);
+      const first = ((detail["notes"] as Array<{ id: string }> | undefined) ?? [])[0];
+      if (first !== undefined) {
+        await c.sales.must("POST", `/api/customers/${id}/notes`, {
+          text: "দুবার পার্সেল ফেরত দিয়েছেন; এখন অগ্রিম নিয়ে পাঠাবেন",
+          revisesNoteId: first.id,
+        });
+      }
+    }
+  }
+  return { suppliers, products, skippedProducts, customers };
+};
+
 const tokenOf = (link: string): string => {
   const m = /[?&]t=([^&]+)/.exec(link);
   if (!m?.[1]) throw new Error("invitation link without a token");
@@ -392,9 +656,17 @@ const main = async (): Promise<void> => {
     }
   }
 
+  // 4. U4 (Q16): the demo catalog.
+  const catalog = await seedDemoCatalog({
+    manager: clients.get("manager")!,
+    sales: clients.get("sales_staff")!,
+    accountant: clients.get("accountant")!,
+  });
+
   // eslint-disable-next-line no-console -- CLI script: the one-line result is its output.
   console.log(
-    `seed:demo ok — business, 3 staff + 1 pending invitation, ${created} orders. ` +
+    `seed:demo ok — business, 3 staff + 1 pending invitation, ${created} orders, ` +
+      `${catalog.suppliers} suppliers, ${catalog.products} products, ${catalog.customers} customers. ` +
       `Sign-in accounts are in .env.demo.`,
   );
 };

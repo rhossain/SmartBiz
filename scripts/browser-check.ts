@@ -12,6 +12,9 @@
  *      `bun run start` and never reads `.env`;
  *   2. signs up the Owner `owner@browser.test` / `browser-pass-1` (throwaway credentials in a
  *      throwaway database, on the secret-scan allow-list) and creates one order over the API;
+ *      U4: also one customer and one product with two axes (one variant low), so the catalog
+ *      rows — `/customers`, `/products/:id` with its variant table, `/low-stock` among them —
+ *      are walked at 360 px with real data;
  *   3. launches Chrome with `--headless=new --remote-debugging-port=0 --user-data-dir=<temp
  *      smartbiz-browser-*> --no-first-run --no-default-browser-check` and reads the
  *      `DevTools listening on ws://…` line (15 s);
@@ -22,7 +25,9 @@
  *      and `/accept-invite`, `/reset`, `/recover`), then
  *      sign-in through the real form (`Input.insertText`, Enter), then every screen row of
  *      tests/spec/role-table.ts the Owner may open; on each it waits up to 5 s for the row's
- *      heading and asserts `scrollWidth <= clientWidth`.
+ *      heading and asserts `scrollWidth <= clientWidth`. U5 (NFR9.14): then `/orders/new` again,
+ *      with the customer picker's list open and a line's variant choices shown (the run's own
+ *      customer and product), asserting the same.
  * Exit codes (I-01): 0 pass; 2 ONLY when no file exists at `CHROME_PATH` ("not run", never a
  * pass); 1 for anything else — a launch failure, a timeout, a protocol error, an assertion.
  * Clean-up (I-02) runs in `finally` and on SIGINT/SIGTERM: Chrome is sent SIGTERM, then
@@ -285,10 +290,16 @@ const signInThroughForm = async (cdp: Cdp, page: Page): Promise<void> => {
   await waitUntil(cdp, page, `location.hash === "#/orders"`, HEADING_TIMEOUT_MS, "signed in");
 };
 
+interface NamedRecord {
+  readonly id: string;
+  readonly name: string;
+}
+
 const screenWalk = async (
   cdp: Cdp,
   base: string,
   order: { readonly id: string; readonly orderNo: string },
+  catalog: { readonly customer: NamedRecord; readonly product: NamedRecord },
 ): Promise<number> => {
   const page = await openPage(cdp);
   try {
@@ -327,13 +338,77 @@ const screenWalk = async (
     );
     await signInThroughForm(cdp, page);
     // Every screen row the Owner may open (P11).
+    // U4: `/customers`, `/products/:id` (its variant table in `.scroll-x`) and `/low-stock`
+    // join the walk with the other catalog rows; a catalog `:id` is this run's customer or
+    // product, whose detail heading is its name.
     for (const row of SCREEN_ROWS) {
       if (row.allowed === "public" || !isAllowed(row.allowed, "owner")) continue;
-      const hash = row.path.replace(":id", order.id);
-      const heading = row.path.includes(":id") ? order.orderNo : row.heading;
+      const record = row.path.startsWith("/customers/:id")
+        ? catalog.customer
+        : row.path.startsWith("/products/:id")
+          ? catalog.product
+          : null;
+      const hash = row.path.replace(":id", record?.id ?? order.id);
+      const heading =
+        record !== null
+          ? row.path.endsWith("/edit")
+            ? row.heading
+            : record.name
+          : row.path.includes(":id")
+            ? order.orderNo
+            : row.heading;
       await visit(cdp, page, hash, row, heading);
       screens += 1;
     }
+    // U5 (NFR9.14): `/orders/new` with the customer picker's list open, then a line's product
+    // picked and its variant choices shown — at 360 px nothing scrolls sideways.
+    const manual = byPath("/orders/new");
+    await visit(cdp, page, "/orders/new", manual, manual.heading);
+    const typeInto = async (testId: string, text: string): Promise<void> => {
+      await evaluate(
+        cdp,
+        page,
+        `document.querySelector('[data-testid="${testId}"]').focus(); true`,
+      );
+      await cdp.send("Input.insertText", { text }, page.sessionId);
+    };
+    const shown = (testId: string): string =>
+      `document.querySelectorAll('[data-testid="${testId}"]').length > 0`;
+    const fits = async (what: string): Promise<void> => {
+      const fit = await evaluate(cdp, page, NO_SIDEWAYS);
+      if (fit !== "ok") throw new CheckFailed(`#/orders/new ${what} at 360 px: ${String(fit)}`);
+    };
+    await typeInto("manual-customer-picker-input", "রিনা");
+    await waitUntil(
+      cdp,
+      page,
+      shown("manual-customer-picker-option"),
+      HEADING_TIMEOUT_MS,
+      "customer options",
+    );
+    await fits("with the customer list open");
+    await typeInto("manual-line-variant-1-picker-input", "কুর্তি");
+    await waitUntil(
+      cdp,
+      page,
+      shown("manual-line-variant-1-picker-option"),
+      HEADING_TIMEOUT_MS,
+      "product options",
+    );
+    await evaluate(
+      cdp,
+      page,
+      `document.querySelector('[data-testid="manual-line-variant-1-picker-option"]').click(); true`,
+    );
+    await waitUntil(
+      cdp,
+      page,
+      shown("manual-line-variant-1-variant"),
+      HEADING_TIMEOUT_MS,
+      "variant choices",
+    );
+    await fits("with the variant choices shown");
+    screens += 1;
     return screens;
   } finally {
     await closePage(cdp, page);
@@ -472,6 +547,37 @@ const main = async (): Promise<string> => {
   );
   if (created.status !== 201) throw new CheckFailed(`create order answered ${created.status}`);
   const order = (await created.json()) as { id: string; orderNo: string };
+  // U4: a customer and a product with two axes (one variant low), for the catalog screens.
+  const customerAt = await post(
+    "/api/customers",
+    { name: "রিনা আক্তার", phone: "01712345678", address: "মিরপুর ১০, ঢাকা", riskLevel: 2 },
+    cookie,
+  );
+  if (customerAt.status !== 201)
+    throw new CheckFailed(`create customer answered ${customerAt.status}`);
+  const customer = ((await customerAt.json()) as { customer: NamedRecord }).customer;
+  const sizes = ["S", "M", "L", "XL"];
+  const colours = ["লাল", "নীল", "সবুজ"];
+  const productAt = await post(
+    "/api/products",
+    {
+      name: "সুতির থ্রি-পিস কুর্তি",
+      sku: "BROWSER-KURTI",
+      sellingPricePaise: 145_000,
+      purchaseCostPaise: 98_000,
+      axes: [
+        { name: "সাইজ", values: sizes },
+        { name: "রং", values: colours },
+      ],
+      variants: sizes.flatMap((s, i) =>
+        colours.map((c) => ({ axisValues: [s, c], stock: i === 0 ? 1 : 12, minimumStock: 3 })),
+      ),
+    },
+    cookie,
+  );
+  if (productAt.status !== 201)
+    throw new CheckFailed(`create product answered ${productAt.status}`);
+  const product = ((await productAt.json()) as { product: NamedRecord }).product;
 
   // 3. Chrome.
   resources.profile = mkdtempSync(join(tmpdir(), "smartbiz-browser-"));
@@ -489,7 +595,7 @@ const main = async (): Promise<string> => {
   }
 
   // 5. the 360 px walk.
-  const screens = await screenWalk(resources.cdp, base, order);
+  const screens = await screenWalk(resources.cdp, base, order, { customer, product });
   return `browser ok: median ${mid} ms over ${COLD_LOADS} loads, ${screens} screens at 360 px`;
 };
 

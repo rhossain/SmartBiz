@@ -11,6 +11,8 @@
 import { afterEach, beforeEach, describe, expect, spyOn, test } from "bun:test";
 import { resetTestClock, setTestClock } from "../../src/data/clock.js";
 import { log, REDACTED, redact } from "../../src/observability/log.js";
+import { makeSqlStub } from "../helpers/sql-stub.js";
+import { harness, request, seedBusiness } from "../helpers/server-harness.js";
 
 const DENY = [
   "password",
@@ -47,6 +49,42 @@ describe("log redaction", () => {
       s: "ok",
       n: null,
     });
+  });
+
+  // U4 (S31; NFR3.28): a catalog request with personal data in its body, its query and its
+  // path logs the route PATTERN, status, timing, correlation id and role — none of the data.
+  test("catalog requests log no body, query or path value (S31, NFR3.28)", async () => {
+    const stub = makeSqlStub();
+    const tokens = await seedBusiness(stub);
+    const h = harness(stub);
+    const created = await h.send(
+      request("POST", "/api/customers", {
+        token: tokens.owner,
+        body: { name: "ZZNAME Logged", phone: "01999999999", address: "ZZADDR", note: "ZZNOTE" },
+      }),
+    );
+    const { customer } = (await created.json()) as { customer: { id: string } };
+    await h.send(request("GET", "/api/customers?q=ZZNAME", { token: tokens.owner }));
+    await h.send(request("GET", "/api/customers?q=01999999999", { token: tokens.owner }));
+    await h.send(request("GET", `/api/customers/${customer.id}`, { token: tokens.owner }));
+    await h.send(
+      request("POST", "/api/customers", {
+        token: tokens.owner,
+        body: { name: "ZZNAME", phone: "1" },
+      }),
+    );
+    const requestLines = h.logs.filter((l) => l.message === "request");
+    expect(requestLines.map((l) => l["route"])).toEqual([
+      "/api/customers",
+      "/api/customers",
+      "/api/customers",
+      "/api/customers/:id",
+      "/api/customers",
+    ]);
+    const text = JSON.stringify(h.logs);
+    for (const value of ["ZZNAME", "ZZADDR", "ZZNOTE", "01999999999", customer.id, "?q"]) {
+      expect({ value, logged: text.includes(value) }).toEqual({ value, logged: false });
+    }
   });
 
   test("anything deeper than eight levels is redacted whole", () => {

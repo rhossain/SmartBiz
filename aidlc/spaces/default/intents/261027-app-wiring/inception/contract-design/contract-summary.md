@@ -464,7 +464,7 @@ Recorded on the Owner's standing instruction; source `construction/u1-skeleton/f
 |----------|----------|--------|
 | C9 | Does `order_items` keep DELETE (B2 migration 0009), or does an order edit replace items another way? (domain-design R-06, requirements R-01) | U1 |
 | C6 | Delegation matrix: may a Manager invite or reset another Manager? (user-stories R-05) | U3 |
-| C7 | Do Sales Staff see purchase cost on product reads? (refined-mockups R-04) | U4 |
+| C7 | ~~Do Sales Staff see purchase cost on product reads?~~ Closed by U4 Functional Design (D4): no; the key is absent for them | — |
 | C4 | ~~Does the Manager keep `audit.view`?~~ Closed: `capability.ts` grants it and the approved role table (US5.1) keeps it | — |
 | C1 | Body size limit of 64 KiB: enough for the largest paste-parse order? Confirmed in NFR Requirements | U1 |
 
@@ -479,3 +479,38 @@ Recorded on the Owner's standing instruction; source `construction/u3-staff/func
 | B3 | C6 reset-links | 409 `conflict` for an inactive target |
 | B4 | C6 accept | 201 body is the public user `{id, email, role, locale}` with `Set-Cookie` |
 | B5 | C6 accept, reset, invitations | a short password is 400 `password_too_short`; a bad invite email is 400 `invalid_email` (auth kinds pass through, as A2) |
+
+## Amendments from U4 Functional Design (2026-10-29)
+
+Recorded on the Owner's standing instruction; source `construction/u4-catalog/functional-design/functional-spec.md` § 5 (with § 3a for the response bodies).
+
+| # | Contract | Change |
+|---|----------|--------|
+| D1 | C7 capabilities | reads `business.view`; customers and notes any of `money.mutate.price`, `money.mutate.full`; products, stock, suppliers `money.mutate.full`; cost any of `money.mutate.cost`, `money.mutate.full` |
+| D2 | C7 `CustomerWrite` | create gains optional `note`; `address` ≤ 300; `riskLevel` default 0 on create only |
+| D3 | C7 create/edit customer | `duplicatePhoneOf` is `{id, name} \| null` |
+| D4 | C7 product reads | `purchaseCostPaise` (integer or null) only for cost readers; absent for Sales Staff |
+| D5 | C7 product create/edit | optional `category` (≤ 60); edit takes `name`, `category`, `sellingPricePaise`, `defaultSupplierId`, at least one |
+| D6 | C7 `ProductSummary` | `{id, name, sku, category, sellingPricePaise, purchaseCostPaise?, variantCount, totalStock, lowCount, defaultSupplier: {id, name} \| null}`; `q` matches name or SKU |
+| D7 | C7 suppliers, low stock | both add `truncated`; suppliers carry `productCount` |
+| D8 | C7 notes | `revisesNoteId` already revised → 409 `conflict` |
+| D9 | C9 | migrations 0018 suppliers, 0019 customers, 0020 customer_notes, 0021 products, 0022 variants |
+| D10 | C7 edit customer | partial: omitted fields unchanged, `address: null` clears; a no-op edit is 200 with no audit row |
+| D11 | C7 lists | customers and products lists add `total`; customer detail adds `notesTruncated` (newest 200 notes) |
+| D12 | C7 product create | ≤ 12 values per axis, no `-` in a value, ≤ 144 variants |
+| D13 | C7 ids | a non-UUID path or body id answers 404 |
+| — | C8 | signatures unchanged; `NotFound` moves to `src/data/not-found.ts`; callers dedupe and chunk ids by 50 (U5) |
+
+## Amendments from U5 Functional Design (2026-10-29)
+
+Recorded on the Owner's standing instruction; source `construction/u5-orders-catalog/functional-design/functional-spec.md` § 5.
+
+| # | Contract | Change |
+|---|----------|--------|
+| E1 | C3 create/edit | `customerId` and `variantId` are UUIDs of the session's business; otherwise 404 `not_found` |
+| E2 | C3 `OrderSummary` | `customerName` from the catalog when linked, else the contact name; `itemLabels` from the variant label when linked, else the description |
+| E3 | C7 | new read `GET /api/catalog/match-index` (`business.view`) → `{ products: [{productId, name, sku, axisNames, variants: [{variantId, axisValues}]}], truncated }`, at most 2 000 variants, whole products, ordered by name then id |
+| E5 | C3 order detail | `GET /api/orders/:id` adds `customerName` and per-item `label` (additive) |
+| E4 | C9 | migration `0023_link_orders_to_catalog.sql`: `UNIQUE (business_id, id)` on variants; `orders.customer_id` and `order_items.variant_id` become uuid with composite foreign keys; grants unchanged |
+| — | C8 | unchanged; orders call it and chunk ids by 50 |
+

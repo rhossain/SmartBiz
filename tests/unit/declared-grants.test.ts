@@ -25,6 +25,12 @@ const C9: Readonly<Record<string, ReadonlyArray<string>>> = {
   order_items: ["SELECT", "INSERT"],
   consignment_link: ["SELECT", "INSERT"],
   orders_order_no_seq: ["USAGE", "SELECT"],
+  // U4 (C9 amendment D9; BR12.2): the catalog, no DELETE anywhere; notes are insert-only.
+  customers: ["SELECT", "INSERT", "UPDATE"],
+  customer_notes: ["SELECT", "INSERT"],
+  products: ["SELECT", "INSERT", "UPDATE"],
+  variants: ["SELECT", "INSERT", "UPDATE"],
+  suppliers: ["SELECT", "INSERT", "UPDATE"],
 };
 
 describe("declared grants (C9)", () => {
@@ -51,6 +57,17 @@ describe("declared grants (C9)", () => {
     expect(m.get("audit_log")).toEqual(["INSERT", "SELECT"]);
     expect(m.get("order_items")).toEqual(["INSERT", "SELECT"]);
     expect(m.get("consignment_link")).toEqual(["INSERT", "SELECT"]);
+  });
+
+  test("U4: customer_notes is SELECT and INSERT only; no catalog table has DELETE (BR12.2)", () => {
+    const m = declaredGrantMap();
+    expect(m.get("customer_notes")).toEqual(["INSERT", "SELECT"]);
+    for (const t of ["customers", "products", "variants", "suppliers"]) {
+      expect({ t, privileges: m.get(t) }).toEqual({
+        t,
+        privileges: ["INSERT", "SELECT", "UPDATE"],
+      });
+    }
   });
 
   test("each relation is declared once", () => {

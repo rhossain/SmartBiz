@@ -102,7 +102,8 @@ describe("listOrders paging and filters", () => {
   });
 
   test("a UUID customerId is matched exactly", async () => {
-    const stub = makeSqlStub();
+    // U5 (BR1.1): the customer must exist in the business before an order can link to it.
+    const stub = makeSqlStub({ customers: [{ id: ID, business_id: BUSINESS_A, name: "রিনা" }] });
     await createOrder(stub.sql, ctx, createInput({ customerId: ID }));
     await createOrder(stub.sql, ctx, createInput({ customerId: null }));
     const r = await listOrders(stub.sql, ctx, { customerId: ID });

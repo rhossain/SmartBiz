@@ -1,0 +1,27 @@
+{
+  "stage": "infrastructure-design",
+  "unit": "u4-catalog",
+  "upstream_ids": ["NFR1.13", "NFR1.15", "NFR2.6", "NFR3.27", "NFR6.25", "NFR6.26", "NFR6.27", "NFR6.28", "NFR6.29", "NFR6.31", "NFR7.22", "NFR7.23", "NFR7.24", "NFR7.25", "NFR7.26", "NFR8.22", "NFR8.23", "NFR8.24", "NFR9.12", "NFR10.4"],
+  "coverage": [
+    { "id": "NFR1.13", "status": "OK", "target": "cicd-pipeline gate 5b (role table rows, route-table walk)" },
+    { "id": "NFR1.15", "status": "OK", "target": "infrastructure-specification composite FKs; cicd-pipeline gate 13 byte-equal 404" },
+    { "id": "NFR2.6", "status": "OK", "target": "infrastructure-specification migration grants; cicd-pipeline gate 13 exact grants and 23503 tests" },
+    { "id": "NFR3.27", "status": "OK", "target": "cicd-pipeline gate 13 fault injection at TxHooks.afterProductInsert" },
+    { "id": "NFR6.25", "status": "OK", "target": "monitoring-design metrics; cicd-pipeline gate 15 base profile" },
+    { "id": "NFR6.26", "status": "OK", "target": "cicd-pipeline gate 15 base profile" },
+    { "id": "NFR6.27", "status": "OK", "target": "cicd-pipeline gate 15 large profile" },
+    { "id": "NFR6.28", "status": "OK", "target": "monitoring-design 144-variant metric; gate 15" },
+    { "id": "NFR6.29", "status": "OK", "target": "existing bundle gate (no new library)" },
+    { "id": "NFR6.31", "status": "OK", "target": "infrastructure-specification indexes per migration; gate 13 EXPLAIN with enable_seqscan off" },
+    { "id": "NFR7.22", "status": "OK", "target": "cicd-pipeline gate 13 fault injection" },
+    { "id": "NFR7.23", "status": "OK", "target": "products_business_sku_lower_key; gate 13 race test" },
+    { "id": "NFR7.24", "status": "OK", "target": "customer_notes revises_note_id unique; gate 13 race test" },
+    { "id": "NFR7.25", "status": "OK", "target": "gate 13 concurrent edit tests" },
+    { "id": "NFR7.26", "status": "OK", "target": "gate 13 outage test" },
+    { "id": "NFR8.22", "status": "OK", "target": "cicd-pipeline gate 7 coverage" },
+    { "id": "NFR8.23", "status": "OK", "target": "cicd-pipeline gate 14 wiring check" },
+    { "id": "NFR8.24", "status": "OK", "target": "cicd-pipeline gate 10 tests/mutants.json" },
+    { "id": "NFR9.12", "status": "OK", "target": "cicd-pipeline gate 14b browser walk at 360 px" },
+    { "id": "NFR10.4", "status": "OK", "target": "infrastructure-specification: no extension, process or service" }
+  ]
+}

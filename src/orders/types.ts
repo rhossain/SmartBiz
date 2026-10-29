@@ -17,6 +17,7 @@
  *   never deletes the old ones (BR6.8).
  */
 import type { Courier, OrderSource, OrderStatus, Role } from "../data/enums.js";
+import type { NotFound } from "../data/not-found.js";
 import type { Uuid } from "../data/uuid.js";
 
 /** The three input modes whose bodies are deferred to a vendor decision. */
@@ -74,6 +75,21 @@ export interface Order {
   readonly createdBy: Uuid | null;
   readonly createdAt: string;
   readonly updatedAt: string;
+}
+
+/**
+ * U5 (contract C3 amendment E5; BR3.1): an order as the detail answers it — the linked
+ * customer's current name (else the contact's) and, per line, the linked variant's label
+ * (else the description). Both are read-time views from the catalog, never stored and never
+ * written to a change-log payload (S38); an `Order` is a `NamedOrder` without them.
+ */
+export interface LabelledOrderItem extends OrderItem {
+  readonly label?: string;
+}
+
+export interface NamedOrder extends Omit<Order, "items"> {
+  readonly customerName?: string | null;
+  readonly items: ReadonlyArray<LabelledOrderItem>;
 }
 
 export interface ConsignmentLink {
@@ -140,6 +156,8 @@ export interface ParsedItem {
   readonly lineNo: number;
   readonly text: string;
   readonly productId: string | null;
+  /** U5 (BR5.3): the linked product's variant, picked from the item's own size and colour. */
+  readonly variantId: string | null;
   readonly quantity: number;
   readonly size: string | null;
   readonly colour: string | null;
@@ -164,8 +182,12 @@ export type ParseResult =
   | ({ readonly ok: true } & ParsedMessage)
   | { readonly ok: false; readonly reason: ParseFailureReason };
 
-/* Typed failures returned (never thrown) by the order operations. */
-export type NotFound = { readonly kind: "not_found"; readonly entity: string; readonly id: string };
+/*
+ * Typed failures returned (never thrown) by the order operations. U4 (C8, F-10): `NotFound`
+ * lives in the shared kernel (src/data/not-found.ts) so the catalog can return it without
+ * importing this unit; it is re-exported here unchanged.
+ */
+export type { NotFound };
 export type Forbidden = { readonly kind: "forbidden"; readonly reason: string };
 export type InvalidTransition = {
   readonly kind: "invalid_transition";
