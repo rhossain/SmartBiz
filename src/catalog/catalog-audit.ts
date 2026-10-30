@@ -38,6 +38,7 @@ export const CATALOG_AUDIT_ACTIONS = [
   "product.create",
   "product.update",
   "product.cost.set",
+  "product.photo.set",
   "variant.stock.set",
 ] as const;
 export type CatalogAuditAction = (typeof CATALOG_AUDIT_ACTIONS)[number];
@@ -53,6 +54,7 @@ export const CATALOG_ACTION_LABELS: Readonly<Record<CatalogAuditAction, LKey>> =
   "product.create": "audit.action.product.create",
   "product.update": "audit.action.product.update",
   "product.cost.set": "audit.action.product.cost.set",
+  "product.photo.set": "audit.action.product.photo.set",
   "variant.stock.set": "audit.action.variant.stock.set",
 };
 
@@ -173,6 +175,17 @@ export const productCostSet = (
   change: Change<number | null>,
 ): CatalogAuditEntry => ({
   action: "product.cost.set",
+  subjectKind: "product",
+  subjectId: productId,
+  payload: { before: change.before, after: change.after },
+});
+
+/** Product photos: which type the photo had and has now (null = none); never the bytes. */
+export const productPhotoSet = (
+  productId: Uuid,
+  change: Change<string | null>,
+): CatalogAuditEntry => ({
+  action: "product.photo.set",
   subjectKind: "product",
   subjectId: productId,
   payload: { before: change.before, after: change.after },

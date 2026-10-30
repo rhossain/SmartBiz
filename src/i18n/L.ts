@@ -173,6 +173,7 @@ export const L_TABLE: Translations = Object.freeze({
   "audit.action.supplier.update": L("সরবরাহকারী সম্পাদনা", "Supplier edited"),
   "audit.action.product.create": L("পণ্য যোগ", "Product added"),
   "audit.action.product.update": L("পণ্য সম্পাদনা", "Product edited"),
+  "audit.action.product.photo.set": L("পণ্যের ছবি বদল", "Product photo changed"),
   "audit.action.product.cost.set": L("ক্রয়মূল্য বদল", "Purchase cost changed"),
   "audit.action.variant.stock.set": L("মজুদ বদল", "Stock changed"),
   "audit.subject.customer": L("ক্রেতা", "Customer"),

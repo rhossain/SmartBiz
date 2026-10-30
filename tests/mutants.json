@@ -376,6 +376,14 @@
       "find": "    WHERE o.business_id = ${biz} AND o.status NOT IN ('cancelled', 'returned') AND o.created_at >= ${since}",
       "replace": "    WHERE o.business_id = ${biz} AND o.created_at >= ${since}",
       "test": "tests/realdb/insights.realdb.test.ts"
+    },
+    {
+      "id": "photo-bytes-unchecked",
+      "why": "A product photo's bytes must be the declared image type (JPEG, PNG or WebP by their first bytes); without the check any file could be stored and served under an image type.",
+      "file": "src/catalog/product-photo.ts",
+      "find": "    if (!bytesMatch(photo.contentType, bytes))",
+      "replace": "    if (false)",
+      "test": "tests/unit/product-photo.test.ts"
     }
   ]
 }

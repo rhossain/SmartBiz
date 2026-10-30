@@ -21,6 +21,7 @@
  * save. A screen keyed by the id remounts when the id changes, so it never shows one
  * record's data under another's address.
  */
+import type { ShrunkImage } from "../../pres/shrink-image.js";
 import * as React from "react";
 import type { CatalogApi } from "../../client/catalog-api.js";
 import type { ApiResult } from "../../client/http.js";
@@ -65,6 +66,8 @@ export interface CatalogRouteState {
   readonly onSaved: (to: string, message: string, duplicateOf?: DuplicateShown | null) => void;
   /** BR3.3: the duplicate-phone warning for the customer just saved, on its detail. */
   readonly duplicateOf: DuplicateShown | null;
+  /** Product photos: shrinks a picked image before upload; the browser's canvas by default. */
+  readonly shrinkPhoto?: (file: File) => Promise<ShrunkImage | null>;
 }
 
 export type CatalogScreen =

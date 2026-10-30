@@ -23,7 +23,8 @@ import { now } from "../data/clock.js";
 import { checkRole, createPool, type Sql } from "../db/client.js";
 import { log } from "../observability/log.js";
 import { BIND_HOST, readConfig, type ServerConfig } from "./config.js";
-import { handle, MAX_BODY_BYTES } from "./pipeline.js";
+import { handle, MAX_UPLOAD_BYTES } from "./pipeline.js";
+import { diskPhotoStore, photoDir } from "./photo-store.js";
 import { assertRouteTable, routes } from "./routes.js";
 import type { ServerDeps } from "./types.js";
 
@@ -48,6 +49,8 @@ export const serverDeps = (config: ServerConfig, sql: Sql, distDir: string | nul
   distDir,
   clock: now,
   log,
+  // Product photos live on this machine, outside the database (src/server/photo-store.ts).
+  photos: diskPhotoStore(photoDir()),
 });
 
 /** Steps 2–4 of start-up, for a configuration that has already been read. */
@@ -72,7 +75,7 @@ export const startServer = async (
   const server = Bun.serve({
     hostname: BIND_HOST,
     port: config.port,
-    maxRequestBodySize: MAX_BODY_BYTES,
+    maxRequestBodySize: MAX_UPLOAD_BYTES,
     fetch: (request) => handle(request, deps),
   });
   const stop = async (): Promise<void> => {

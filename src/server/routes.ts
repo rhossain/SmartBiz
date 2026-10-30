@@ -22,6 +22,7 @@ import {
 import { catalogRoutes } from "./handlers/catalog.js";
 import { healthRoute } from "./handlers/health.js";
 import { insightsRoute } from "./handlers/insights.js";
+import { productPhotoRoute, productPhotoSetRoute } from "./handlers/product-photo.js";
 import { orderRoutes } from "./handlers/orders.js";
 import { sessionRoute } from "./handlers/session.js";
 import { setupRoute } from "./handlers/setup.js";
@@ -52,6 +53,9 @@ export const routes: ReadonlyArray<RouteDef> = [
   myLocaleRoute,
   // Customer and product insights (Owner only).
   insightsRoute,
+  // Product photos: Owner and Manager set or remove them; every role sees them.
+  productPhotoSetRoute,
+  productPhotoRoute,
 ];
 
 /**

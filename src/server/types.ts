@@ -8,6 +8,7 @@
  * the body, query or headers (BR3.8). It returns a value, never a Response: the pipeline
  * owns status codes, headers and the error envelope.
  */
+import type { PhotoStore } from "../catalog/product-photo.js";
 import type { AttemptLimiter } from "../auth/attempt-limiter.js";
 import type { HashGate } from "../auth/hash-gate.js";
 import type { ResolvedSession } from "../auth/session.js";
@@ -52,6 +53,13 @@ export type HandlerResult =
       readonly fields?: ReadonlyArray<FieldIssue>;
       readonly retryAfterMs?: number;
       readonly setCookie?: string;
+    }
+  | {
+      /** Product photos: an image answered as bytes, never JSON (one content type each). */
+      readonly kind: "bytes";
+      readonly status: 200;
+      readonly body: Uint8Array<ArrayBuffer>;
+      readonly contentType: "image/jpeg" | "image/png" | "image/webp";
     };
 
 export interface ServerDeps {
@@ -69,6 +77,8 @@ export interface ServerDeps {
    * the deps without it, and tests/unit/server-deps.test.ts asserts that.
    */
   readonly hooks?: TxHooks;
+  /** Product photos: where image files live; an in-memory store when not given (tests). */
+  readonly photos?: PhotoStore;
 }
 
 export interface RouteSchemas<P, Q, B> {
@@ -86,6 +96,11 @@ export interface TypedRoute<P, Q, B> {
   readonly handler: (ctx: HandlerContext<P, Q, B>, deps: ServerDeps) => Promise<HandlerResult>;
   /** Clear the session cookie even when the handler throws (sign-out on a DB outage, S3). */
   readonly clearCookieOnError?: boolean;
+  /**
+   * Product photos: this route's body limit when it is larger than the 64 KiB every other
+   * route keeps (never above MAX_UPLOAD_BYTES in src/server/pipeline.ts).
+   */
+  readonly maxBodyBytes?: number;
 }
 
 /** A route with its generics erased, as the table holds it. */

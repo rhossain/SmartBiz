@@ -12,6 +12,7 @@
 import { describe, expect, test } from "bun:test";
 import { CATALOG_ACTION_LABELS, CATALOG_AUDIT_ACTIONS } from "../../src/catalog/catalog-audit.js";
 import { createCustomer, updateCustomer } from "../../src/catalog/customers.js";
+import { memoryPhotoStore, setProductPhoto } from "../../src/catalog/product-photo.js";
 import { addNote } from "../../src/catalog/notes.js";
 import { createProduct, updateProduct } from "../../src/catalog/products.js";
 import { setCost, setStock } from "../../src/catalog/stock.js";
@@ -33,7 +34,7 @@ const must = <T>(r: { ok: true; value: T } | { ok: false; error: unknown }): T =
 };
 
 describe("catalog change-log payloads hold no personal data (BR10.2, S30)", () => {
-  test("all nine actions, written with distinctive values, keep none of them", async () => {
+  test("all ten actions, written with distinctive values, keep none of them", async () => {
     const stub = await catalogWorld();
     const c = must(
       await createCustomer(stub.sql, owner, {
@@ -77,6 +78,16 @@ describe("catalog change-log payloads hold no personal data (BR10.2, S30)", () =
     );
     must(await setCost(stub.sql, owner, p.id, { purchaseCostPaise: 2 }));
     must(await setStock(stub.sql, owner, p.variants[0]!.id, { stock: 9 }));
+    // Product photos: the change-log row names the type only, never the bytes.
+    must(
+      await setProductPhoto(
+        stub.sql,
+        owner,
+        p.id,
+        { photo: { contentType: "image/png", data: "iVBORw0KGgoAAAAA" } },
+        memoryPhotoStore(),
+      ),
+    );
 
     const rows = auditRows(stub);
     expect([...new Set(rows.map((r) => r.action))].sort()).toEqual(

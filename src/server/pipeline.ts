@@ -3,7 +3,9 @@
  * BR1.5, BR1.7–BR1.11, BR3.6, BR3.8).
  *
  *   correlation id → Host is exactly 127.0.0.1:PORT (403; DNS-rebinding defence, NFR5.5)
- *   → declared Content-Length ≤ 64 KiB (413) → `/build-sha` | static file | API:
+ *   → declared Content-Length ≤ 64 KiB (413; 1 MiB on the API, where the matched route's
+ *     own limit then applies: 64 KiB unless it declares `maxBodyBytes`, as the product
+ *     photo upload does) → `/build-sha` | static file | API:
  *   API writes need the exact Origin and a JSON content type (403; CSRF, NFR5.1)
  *   → route match (404) → body read, ≤ 64 KiB (413) and JSON (400)
  *   → session resolved on the server for non-public routes (401)
@@ -35,7 +37,9 @@ import { createStaticHandler, type StaticHandler } from "./static.js";
 import { statusFor } from "./status-map.js";
 import type { HandlerResult, RouteDef, ServerDeps } from "./types.js";
 
-export const MAX_BODY_BYTES = 65_536;
+import { MAX_BODY_BYTES, MAX_UPLOAD_BYTES } from "./limits.js";
+
+export { MAX_BODY_BYTES, MAX_UPLOAD_BYTES } from "./limits.js";
 
 const WRITE_METHODS: ReadonlySet<string> = new Set(["POST", "PATCH", "PUT", "DELETE"]);
 
@@ -100,9 +104,9 @@ const parseWith = <T>(schema: ZodType<T> | undefined, value: unknown): T => {
   return r.data;
 };
 
-const readBody = async (request: Request): Promise<unknown> => {
+const readBody = async (request: Request, limit: number): Promise<unknown> => {
   const text = await request.text();
-  if (new TextEncoder().encode(text).byteLength > MAX_BODY_BYTES) {
+  if (new TextEncoder().encode(text).byteLength > limit) {
     throw new Refusal("payload_too_large");
   }
   if (text === "") return undefined;
@@ -121,6 +125,12 @@ const allowed = (route: RouteDef, session: ResolvedSession): boolean => {
 };
 
 const fromResult = (result: HandlerResult, correlationId: string): Response => {
+  if (result.kind === "bytes") {
+    return new Response(result.body, {
+      status: result.status,
+      headers: { "Content-Type": result.contentType },
+    });
+  }
   if (result.kind === "error") {
     return errorResponse(result.error, correlationId, {
       fields: result.fields,
@@ -188,9 +198,12 @@ const runApi = async (
   const match = matchRoute(table, request.method, url.pathname);
   if (match === null) return refuse("not_found");
   const { route } = match;
+  const limit = Math.min(route.maxBodyBytes ?? MAX_BODY_BYTES, MAX_UPLOAD_BYTES);
+  const declared = Number(request.headers.get("content-length") ?? "0");
+  if (Number.isFinite(declared) && declared > limit) return refuse("payload_too_large", route.path);
   let session: ResolvedSession | null = null;
   try {
-    const rawBody = isWrite ? await readBody(request) : undefined;
+    const rawBody = isWrite ? await readBody(request, limit) : undefined;
     const presentedToken = readSessionCookie(request.headers.get("cookie"));
     const now = deps.clock();
     if (route.access !== "public") {
@@ -272,7 +285,7 @@ export const handle = async (
       route: "unmatched",
       role: null,
     };
-  } else if (Number.isFinite(declared) && declared > MAX_BODY_BYTES) {
+  } else if (Number.isFinite(declared) && declared > (isApi ? MAX_UPLOAD_BYTES : MAX_BODY_BYTES)) {
     outcome = {
       response: errorResponse("payload_too_large", correlationId),
       route: "unmatched",

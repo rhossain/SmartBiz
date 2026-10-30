@@ -97,6 +97,15 @@ const COPY = {
   "product.field.cost": L("ক্রয়মূল্য (৳, ঐচ্ছিক)", "Purchase cost (৳, optional)"),
   "product.field.supplier": L("সরবরাহকারী", "Supplier"),
   "product.price": L("বিক্রয়মূল্য", "Selling price"),
+  // Product photos.
+  "product.photo.add": L("ছবি যোগ করুন", "Add a photo"),
+  "product.photo.change": L("ছবি বদলান", "Change the photo"),
+  "product.photo.remove": L("ছবি সরান", "Remove the photo"),
+  "product.photo.saving": L("ছবি সংরক্ষণ হচ্ছে…", "Saving the photo…"),
+  "product.photo.bad_file": L(
+    "এই ফাইলটি ছবি হিসেবে ব্যবহার করা যায়নি",
+    "This file could not be used as a photo",
+  ),
   "product.cost": L("ক্রয়মূল্য", "Purchase cost"),
   "product.category": L("বিভাগ", "Category"),
   "product.no_supplier": L("কেউ না", "None"),
