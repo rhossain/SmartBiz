@@ -666,6 +666,9 @@ Classes these screens add (for the `classes` harness): `day-tile`, `day-tile__fi
 
 ## 18. Premium redesign — phone first (2026-10-30)
 
+> **Superseded on look by §19** (surfaces, palette, phone bars). Navigation, the tab bar, the
+> phone card lists and every decision D18-1…D18-5 still hold.
+
 > **Why:** the Owner asked for a full redesign, "more premium, elegant and modern, also mobile
 > friendly". On a phone the 2026-10-28 look wrapped the header's eleven links over three lines and
 > squeezed the orders table until order numbers broke one letter per line (old phone screenshot
@@ -865,3 +868,112 @@ width on a phone.
 - `tests/unit/shell.test.tsx`: the sidebar links are exactly the given list; the tab bar picks the
   first four by preference and marks "আরও" for other pages; the drawer opens from the menu and
   "আরও" and closes on Escape, the scrim, a link and a route change.
+
+## 19. Redesign v2 — open layout, one brand colour (2026-10-30)
+
+> **Why:** the Owner was "not satisfied fully" with §18 and asked for a more modern and premium
+> look. Reviewing the §18 screenshots found four concrete faults: (1) every desktop screen was one
+> big white card holding more bordered panels (box-in-box), which read heavy; (2) on a phone the
+> order number broke over two lines ("ORD-" / "1009") because a wide total cell widened the card's
+> second column; (3) the phone cards repeated a full-width bordered "খুলুন" button on every row;
+> (4) inline links were a stray blue, inputs had brown borders, and a disabled primary looked like
+> a washed-out green. Decisions below were taken on the Owner's standing instruction ("decide for
+> me").
+>
+> **Scope:** look only, plus two wrapper elements (the orders summary cards and the paste
+> message card). Copy, states, role gates, the recognition-basis pills and every behaviour in
+> §1–§18 are unchanged. Built on branch `redesign-2`; screenshots of every screen are in
+> [`screenshots/`](screenshots/README.md). Tokens are in `design-system-mapping.md`.
+
+Decisions (chosen on the Owner's standing instruction):
+- **D19-1** **Open layout.** The screen is no longer a card. It sits on a cool canvas
+  (`#f5f6f3`), centred in a 1180 px column; each section is its own white card. One level of
+  surface only: inside a card, groups are inset blocks or hairline-titled sections.
+- **D19-2** **One brand colour.** Links, primary buttons, the focus ring and success states all
+  use emerald `#0b6e52`; the blue link colour is retired. Primary buttons are a subtle
+  top-to-bottom emerald gradient with an inner highlight.
+- **D19-3** **Stat cards.** The orders summary is three cards, each with a small colour marker
+  before its label (gold earned, emerald realized, grey pipeline); the label text still carries the
+  meaning. On a phone they merge into one card with a row per bucket.
+- **D19-4** **Quiet row actions.** "খুলুন" in a list row is an emerald text button with an arrow;
+  on a phone it spans the card's foot under a hairline. The filter's "ছাঁকুন" is secondary, so
+  "+ নতুন অর্ডার" is the page's only filled button.
+- **D19-5** **Frosted phone bars.** Below 960 px the top bar and the tab bar are translucent white
+  with a backdrop blur; the drawer stays ink with rounded outer corners.
+- **D19-6** **Phone card grid.** Stacked rows use two equal columns, so the key on the top line
+  always has half the card and never breaks; an order number is also `nowrap`.
+
+### 19.1 Orders list (desktop)
+
+```
+অর্ডার                                                              30 px title
+[+ নতুন অর্ডার]  [মেসেজ থেকে]  [আগের অর্ডার থেকে]                       one filled
+┌ ■ আয় (অর্জিত) ───────┐ ┌ ■ হাতে এসেছে ────────┐ ┌ ■ চলমান ─────────────┐
+│ ৳৯৫০০.০০             │ │ ৳৭০৩০.০০             │ │ ৳৮৪৭০.০০             │
+│ (earned)(partial)    │ │ (realized)(partial)  │ │ (pipeline)(partial)  │
+└──────────────────────┘ └──────────────────────┘ └──────────────────────┘
+┌ filter card: অবস্থা | কাস্টমার আইডি | শুরু | শেষ | [ ছাঁকুন ] (outlined) ─────┐
+┌ table card ──────────────────────────────────────────────────────────────┐
+│ #         ক্রেতা ও পণ্য     অবস্থা    উৎস      মোট                         │
+│ ORD-1010  জুবায়ের আহমেদ     (নতুন)   quick…   ৳১৪১০.০০ (pills)    খুলুন → │
+└──────────────────────────────────────────────────────────────────────────┘
+┌ দ্রুত অর্ডার card ─────────────────────────────────────────────────────────┐
+```
+Elements: no outer screen card; every section is a white card (radius 18, hairline, soft shadow);
+the table head is a quiet `surface-2` band; row hover is `surface-2`; the row action is an
+emerald text button with an arrow; a disabled save is a grey control.
+
+### 19.2 Orders list (phone)
+
+```
+┌ frosted top bar: [৳] SmartBiz                         [≡] ┐
+অর্ডার
+[            + নতুন অর্ডার            ]
+[ মেসেজ থেকে ]  [ আগের অর্ডার থেকে ]
+┌ one card ──────────────────────────┐
+│ ■ আয় (অর্জিত)                       │
+│ ৳৯৫০০.০০                            │
+│ (earned)(partial)                  │
+├────────────────────────────────────┤
+│ ■ হাতে এসেছে  … same three lines      │
+├────────────────────────────────────┤
+│ ■ চলমান      … same three lines      │
+└────────────────────────────────────┘
+┌ ORD-1009                    (ফেরত) ┐   key never breaks (D19-6)
+│ ক্রেতা ও পণ্য                        │
+│ শারমিন সুলতানা · শাড়ি (কাতান)          │
+│ উৎস            মোট                  │
+│ manual         ৳৬৩২০.০০ (pills)     │
+│────────────────────────────────────│
+│ খুলুন                             → │   quiet full-width action
+└────────────────────────────────────┘
+└ frosted tab bar: দৈনিক কার্ড (অর্ডার) ক্রেতা পণ্য আরও ┘
+```
+
+### 19.3 Other screens
+
+- **Daily card:** the hero tile is a deep emerald gradient with a soft gold glow in its top
+  corner and no outline; the other tiles are white cards, radius 24; "সব অর্ডার দেখুন →" is an
+  emerald text button, not a blue link.
+- **Forms (new order, customer, product, staff, business, settings):** a screen-level form is one
+  white card (max 680 px). A `fieldset` is a titled section under a hairline (its legend sits
+  inside, 14 px / 700), not a boxed panel; manual order lines are inset `surface-2` blocks.
+- **Order from a message:** the message and "পড়ুন" share one card (`paste-input`); the result is
+  a second card below it; parsed items are inset blocks.
+- **Order detail:** contact, items, totals and the status actions are each a white card; the
+  total figure is 20 px.
+- **Product detail:** inputs inside the variant table are compact (36 px).
+- **Insights:** the period switch is a grey track with the chosen period raised in white.
+- **Sign-in and the other signed-out screens:** a light page with a soft emerald and gold glow,
+  the brand in ink at the top left, and a centred card (radius 24, floating shadow).
+
+### 19.4 Acceptance checks for this section
+
+- No sideways scroll on any of the 39 captures (`scrollWidth` = window width at 1440 px and
+  390 px); `scripts/browser-check.ts` keeps checking 360 px in the gate.
+- `tests/unit/stylesheet.test.ts`: no literal colour outside `tokens.css`; no fixed width above
+  360 px outside `.scroll-x`; one `:focus-visible` rule from the token.
+- `tests/unit/contrast.test.ts`: every colour token in at least one measured pair, all ≥ 4.5:1 for
+  text (≥ 3:1 for the control border and focus outline).
+- The orders summary still renders `orders-summary-earned`, `-realized` and `-pipeline`, each with
+  its basis and completeness pills (recognition-basis invariant).

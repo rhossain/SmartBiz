@@ -355,12 +355,19 @@ export const OrdersList = (props: OrdersListProps): React.ReactElement => {
       ) : null}
       {/* U2 (BR9.1): the three figures wrap at 360 px instead of pushing the page sideways. */}
       <div data-testid="orders-summary" className="summary">
-        <span>{tr("orders.earned", locale)}</span>
-        <MoneyCell figure={totals.earned} locale={locale} testId="orders-summary-earned" />
-        <span>{tr("orders.realized", locale)}</span>
-        <MoneyCell figure={totals.realized} locale={locale} testId="orders-summary-realized" />
-        <span>{tr("orders.pipeline", locale)}</span>
-        <MoneyCell figure={totals.pipeline} locale={locale} testId="orders-summary-pipeline" />
+        {/* One stat tile per bucket; the marker colour only echoes the label (NFR9.9). */}
+        <div className="stat stat--earned">
+          <span className="stat__label">{tr("orders.earned", locale)}</span>
+          <MoneyCell figure={totals.earned} locale={locale} testId="orders-summary-earned" />
+        </div>
+        <div className="stat stat--realized">
+          <span className="stat__label">{tr("orders.realized", locale)}</span>
+          <MoneyCell figure={totals.realized} locale={locale} testId="orders-summary-realized" />
+        </div>
+        <div className="stat stat--pipeline">
+          <span className="stat__label">{tr("orders.pipeline", locale)}</span>
+          <MoneyCell figure={totals.pipeline} locale={locale} testId="orders-summary-pipeline" />
+        </div>
       </div>
       <Filters locale={locale} onFilter={props.onFilter} />
       {phase === "empty" ? (

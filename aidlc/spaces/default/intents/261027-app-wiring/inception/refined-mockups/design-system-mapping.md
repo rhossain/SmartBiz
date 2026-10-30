@@ -6,56 +6,60 @@
 
 ## Tokens used
 
-> **Updated 2026-10-30 (premium redesign, `mockups.md` §18).** Token names are kept so the screens
-> did not change; values moved to a quieter ink-green and ivory palette, and a few tokens were
-> added (`--color-surface-2`, `--color-text-3`, `--color-accent`, `--color-accent-text`,
-> `--color-on-brand-muted`, `--scrim`, `--shadow-float`, layout sizes). Every colour token is in at
-> least one pair measured by `tests/unit/contrast.test.ts`. The 2026-10-28 values are in git
-> history.
+> **Updated 2026-10-30 (redesign v2, `mockups.md` §19).** Token names are kept so the screens did
+> not change; values moved to a cooler, cleaner palette with one brand colour. Added:
+> `--color-brand-deep`, `--radius-xl`, `--space-12`, `--shadow-xs`, `--shadow-hero`,
+> `--content-max` and translucent layers (`--glass`, `--glass-line`, `--glow-*`,
+> `--hairline-on-dark`), which are never used as text colours. Every colour token is in at least
+> one pair measured by `tests/unit/contrast.test.ts`. The §18 values are in git history.
 
 | Token | Value | Used for |
 |-------|-------|----------|
-| `--color-text` | `#15201b` (16.7:1 on white) | body text, figures |
-| `--color-text-2` | `#4b5752` (7.5:1 on white, 6.8:1 on canvas) | labels, secondary text |
-| `--color-text-3` | `#66716c` (5.1:1 on white, 4.6:1 on canvas) | captions, column heads, phone cell labels |
-| `--color-canvas` | `#f4f3ee` | page background (warm ivory) |
-| `--color-surface` / `--color-surface-2` | `#ffffff` / `#faf9f6` | cards, inputs, buttons / quiet panels inside a card |
-| `--color-line` | `#e6e3da` | hairline borders and rules (decorative) |
-| `--color-control-border` | `#8c8272` (3.8:1) | borders that bound an input (WCAG 1.4.11) |
-| `--color-header-bg` / `-text` / `-muted` / `-active` | `#0f1c17` / `#f1f4f2` (15.8:1) / `#a3b4ad` (8.1:1) / `#1d302a` | ink-green sidebar, top bar, drawer; lit nav row |
-| `--color-accent` / `--color-accent-text` | `#c8a35a` (ink on it 7.4:1) / `#85621f` (5.6:1 on white) | gold brand tile, avatar, current-page bar and icon / gold as text |
-| `--color-brand` / `--color-brand-dark` | `#0a5b44` (white on it 8.1:1) / `#06382a` | primary buttons, current tab, focused input; hover; hero gradient |
-| `--color-on-brand-muted` | `#c8e6d8` (6.1:1 on brand, 9.8:1 on brand-dark) | labels on the daily-card hero tile |
-| `--color-brand-tint` / `--color-bg-success` | `#eef6f2` / `#dcefe6` | row hover, link chips / success pill, current-tab pill |
-| `--color-warning` / `--color-bg-warning` | `#8f5c11` / `#f8ebd3` (4.8:1) | warning pill, incomplete item edge |
+| `--color-text` | `#111a16` (17.8:1 on white) | body text, figures |
+| `--color-text-2` | `#4a5550` (7.6:1 on white, 7.2:1 on canvas) | labels, secondary text |
+| `--color-text-3` | `#626d68` (5.4:1 on white, 5.0:1 on canvas) | captions, column heads, phone cell labels, placeholders |
+| `--color-canvas` | `#f5f6f3` | page background (cool neutral) |
+| `--color-surface` / `--color-surface-2` | `#ffffff` / `#f9faf8` | section cards, inputs, buttons / inset blocks inside a card, table heads |
+| `--color-line` | `#e5e8e4` | hairline borders and rules (decorative) |
+| `--color-control-border` | `#8a938f` (3.2:1) | borders that bound an input (WCAG 1.4.11) |
+| `--color-header-bg` / `-text` / `-muted` / `-active` | `#0c1613` / `#eaf0ed` (16.0:1) / `#9db0a8` (8.1:1) / `#16241f` | ink sidebar and drawer; lit nav row, account card |
+| `--color-accent` / `--color-accent-text` | `#d6b36a` (ink on it 9.2:1) / `#8a6420` (5.4:1 on white) | gold brand tile, avatar, current-page bar and icon, "earned" marker |
+| `--color-brand` / `-dark` / `-deep` | `#0b6e52` (white on it 6.2:1) / `#085a43` (8.2:1) / `#06382a` (12.0:1) | links, primary buttons (top-to-bottom gradient brand → dark), current tab, focus ring; hover; hero gradient start |
+| `--color-on-brand-muted` | `#cfe9dd` (4.9:1 on brand, 10.2:1 on deep) | labels on the daily-card hero tile |
+| `--color-brand-tint` / `--color-bg-success` | `#eff7f3` / `#e4f2eb` | row-action hover, link chips / success pill, current-tab pill |
+| `--color-warning` / `--color-bg-warning` | `#9a5f0c` / `#fbefd9` (4.6:1) | warning pill, incomplete item edge |
 | `--color-error` / `--color-bg-error` | `#a4252b` / `#fbeaea` (6.3:1) | danger pill, error banners |
-| `--color-bg-neutral` | `#efede7` (text-2 on it 6.4:1) | neutral pill, counts |
-| `--color-link` | `#1457b2` (6.9:1) | inline links; focus outline |
-| `--radius-xs/sm/md/lg/pill` | 6 / 10 / 14 / 20 / 999 px | options / controls / panels / screen cards and tiles / pills |
-| `--shadow-card`, `--shadow-raised`, `--shadow-float`, `--shadow-button`, `--ring-brand` | layered, low-contrast | screen cards, buttons and list cards, drawer and toast, primary buttons, focus halo |
-| `--sidebar-width`, `--topbar-height`, `--tabbar-height` | 264 / 56 / 64 px | shell layout (§18.1) |
-| `--space-1…10` | 4–40 px | spacing; 40 px desktop gutter, 16 px phone gutter |
+| `--color-bg-neutral` / `--color-bg-muted` | `#eef0ec` (text-2 on it 6.8:1) | neutral pill, counts, segmented control track, disabled buttons |
+| `--color-link` | `#0b6e52` (6.2:1) | inline links (no more stray blue); focus outline |
+| `--radius-xs/sm/md/lg/xl/pill` | 6 / 10 / 14 / 18 / 24 / 999 px | options / controls / inset blocks / section cards / hero tiles and sign-in card / pills |
+| `--shadow-xs`, `--shadow-raised`, `--shadow-card`, `--shadow-float`, `--shadow-button`, `--shadow-hero`, `--ring-brand` | layered, low-contrast | inputs, buttons, section cards, drawer and toast, primary buttons, daily hero, focus halo |
+| `--glass`, `--glass-line` | 86 % white, 8 % ink | frosted phone top bar and tab bar (with backdrop blur) |
+| `--sidebar-width`, `--topbar-height`, `--tabbar-height`, `--content-max` | 256 / 56 / 64 / 1180 px | shell layout (§18.1); content column centred beside the sidebar |
+| `--space-1…12` | 4–48 px | spacing; 48 px desktop gutter, 24 px tablet, 16 px phone |
 | `--font-ui` | Inter (if installed), system-ui, Hind Siliguri, Noto Sans Bengali, Kohinoor Bangla | no hosted font (CSP `default-src 'self'`) |
-| `--focus-ring-outline` | 2 px solid link colour + 4 px halo | every focusable element |
+| `--focus-ring-outline` | 2 px solid brand + 4 px halo | every focusable element |
 
 ### Visual language
 
-- **Type scale:** screen title 30 px / 700, −0.02 em (24 px on phones); section heading 17 px;
-  labels 13 px / 600 in `--color-text-2`; captions 12 px in `--color-text-3`; stat figures 26–32 px
-  / 700 with tabular numerals.
-- **Surfaces:** ivory canvas → white screen card (radius 20, `--shadow-card`) → `surface-2` panels
-  (filters, totals, contact, line cards) with a hairline border. On a phone the outer card is
-  dropped and each panel sits on the canvas.
-- **Chrome:** ink-green sidebar (desktop) or top bar + drawer + white bottom tab bar (phone); gold
-  is the only accent and marks the brand and the current page.
-- **Controls:** 46 px inputs and primary buttons, 42 px secondary buttons, 34 px row buttons,
-  44 px icon buttons. A focused input gets the brand border plus `--ring-brand`.
-- **Buttons:** one filled emerald button per area; the rest are white with a hairline border.
-- **Pills:** 12 px / 600 with a leading dot; the text always carries the meaning (NFR9.9). Basis
+- **Type scale:** screen title 30 px / 700, −0.025 em (26 px on phones); section heading 16 px /
+  650; labels 13 px / 600 in `--color-text-2`; captions 12 px in `--color-text-3`; stat figures
+  26–34 px / 700 with tabular numerals and tight tracking.
+- **Surfaces (v2):** the screen is open on the canvas, centred in a 1180 px column. Each section
+  (stat card, filter, table, form, panel, contact, totals, actions) is one white card with a
+  hairline and `--shadow-card`, radius 18. Inside a card, groups are inset `surface-2` blocks or
+  titled sections under a hairline; never a card inside a card.
+- **Chrome:** ink sidebar with a faint gold glow (desktop); frosted light top bar + drawer +
+  frosted bottom tab bar (phone). Gold marks only the brand and the current page.
+- **Controls:** 44 px inputs and primary buttons, 40 px secondary buttons, 34–36 px row buttons
+  and in-table inputs, 44 px icon buttons. Phone inputs are 16 px text so iOS never zooms.
+- **Buttons:** one emerald gradient button per area; the rest are white with a hairline. A row's
+  action is a quiet emerald text button with an arrow. Disabled is a grey control, not a faded
+  primary.
+- **Pills:** 11.5 px / 600 with a leading dot; the text always carries the meaning (NFR9.9). Basis
   and completeness pills appear on every money figure at every width (§18 D18-4).
 - **Icons:** twelve inline 24 px stroke SVGs in `Shell.tsx`, decorative (`aria-hidden`), never the
   only label.
-- **Motion:** 140–260 ms ease-out on hover, drawer and toast; all of it off under
+- **Motion:** 120–280 ms ease-out on hover, drawer and toast; all of it off under
   `prefers-reduced-motion`.
 
 ## Screen → components
@@ -85,6 +89,9 @@
 | `card flush` + `list-item` CSS | kept as BEM-ish classes in the production stylesheet; the `classes` harness gap (team.md) gets these as its first targets |
 
 ## Classes the new screens add
+
+Added by redesign v2 (§19): `stat`, `stat--earned`, `stat--realized`, `stat--pipeline`,
+`stat__label` (the orders summary cards) and `paste-input` (the message card on the paste screen).
 
 Added by the 2026-10-30 redesign (§18): `shell--app`, `shell--public`, `shell__topbar`,
 `shell__topbar-brand`, `shell__icon-button`, `shell__account`, `shell__locale`, `shell__user`,
