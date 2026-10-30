@@ -31,6 +31,7 @@ export const L_TABLE: Translations = Object.freeze({
   "nav.audit_trail": L("অডিট ট্রেইল", "Audit trail"),
   "nav.business": L("ব্যবসা", "Business"),
   "nav.settings": L("সেটিংস", "Settings"),
+  "nav.insights": L("বিশ্লেষণ", "Insights"),
   "nav.language": L("ভাষা", "Language"),
   "role.owner": L("মালিক", "Owner"),
   "role.manager": L("ম্যানেজার", "Manager"),
@@ -73,6 +74,7 @@ export const L_TABLE: Translations = Object.freeze({
   "feature.audit_trail": L("অডিট ট্রেইল", "Audit trail"),
   "feature.business": L("ব্যবসা", "Business"),
   "feature.settings": L("সেটিংস", "Settings"),
+  "feature.insights": L("বিশ্লেষণ", "Insights"),
   // U2 audit trail screen (W4; O10).
   "audit.empty": L("এখনো কোনো এন্ট্রি নেই", "No entries yet"),
   "audit.more": L("আরও দেখুন", "Show more"),

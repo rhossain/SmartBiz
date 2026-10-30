@@ -28,8 +28,9 @@ import { err, ok, type Result } from "../data/result.js";
 import type { Uuid } from "../data/uuid.js";
 import { hasCapability } from "../auth/capability.js";
 
-export const INSIGHT_PERIODS = [7, 30, 90, 0] as const;
-export type InsightPeriod = (typeof INSIGHT_PERIODS)[number];
+import type { InsightPeriod } from "./schemas.js";
+
+export type { InsightPeriod } from "./schemas.js";
 
 /** How many customers and products each list shows. */
 export const INSIGHT_LIMIT = 10;

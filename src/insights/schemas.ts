@@ -6,6 +6,10 @@
  */
 import { z } from "zod";
 
+/** The periods the page offers, in days; 0 is all time. */
+export const INSIGHT_PERIODS = [7, 30, 90, 0] as const;
+export type InsightPeriod = (typeof INSIGHT_PERIODS)[number];
+
 export const InsightsQuerySchema = z
   .object({ days: z.enum(["7", "30", "90", "0"]).optional() })
   .strict();

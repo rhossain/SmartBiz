@@ -198,6 +198,8 @@ export const API_ROWS: ReadonlyArray<ApiRow> = [
       ["GET", "/api/business", EVERY, "printable invoice and delivery slip"],
       ["PATCH", "/api/business", BUSINESS_EDITORS, "Business page (AC1.5.1, AC1.5.4)"],
       ["PATCH", "/api/me/locale", EVERY, "Settings: own language (AC1.5.2)"],
+      // Customer and product insights: money per customer, so the Owner only.
+      ["GET", "/api/insights", BUSINESS_EDITORS, "insights: top customers, best sellers"],
     ] as const
   ).map(([method, path, allowed, source]): ApiRow => ({
     surface: "api",
@@ -285,6 +287,7 @@ export const SCREEN_ROWS: ReadonlyArray<ScreenRow> = [
       nav: true,
     },
   ),
+  screen("/insights", BUSINESS_EDITORS, "বিশ্লেষণ", "insights: Owner only", { nav: true }),
   screen("/audit-trail", AUDIT_READERS, "অডিট ট্রেইল", "US5.1 audit trail", { nav: true }),
   screen("/staff", STAFF_MANAGERS, "কর্মী", "US1.5, US1.6 staff screen (AC1.5.6, Q12)", {
     nav: true,

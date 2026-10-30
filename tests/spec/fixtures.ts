@@ -18,6 +18,7 @@
  */
 import type { ZodType } from "zod";
 import { AuditPageResponseSchema } from "../../src/audit/schemas.js";
+import { InsightsResponseSchema } from "../../src/insights/schemas.js";
 import {
   AcceptInviteResponseSchema,
   BusinessResponseSchema,
@@ -327,6 +328,35 @@ export const API_FIXTURES: Readonly<Record<string, ApiFixture>> = {
     schema: BusinessResponseSchema,
     request: { phone: "01711000000" },
     badRequest: { phone: 7 },
+  },
+  "GET /api/insights": {
+    status: 200,
+    body: {
+      days: 30,
+      since: "2026-09-27T08:00:00.000Z",
+      topCustomers: [
+        {
+          customerId: "c2000000-0000-4000-8000-0000000000c2",
+          name: "রিনা আক্তার",
+          orders: 3,
+          earnedPaise: 296_000,
+          pipelinePaise: 120_000,
+        },
+      ],
+      bestSellers: [
+        {
+          productId: "c4000000-0000-4000-8000-0000000000c4",
+          name: "সুতির কুর্তি",
+          units: 7,
+          orders: 4,
+        },
+      ],
+      buyers: 2,
+      repeatBuyers: 1,
+      unlinkedOrders: 5,
+    },
+    schema: InsightsResponseSchema,
+    badQuery: "days=45",
   },
   "PATCH /api/me/locale": {
     status: 200,

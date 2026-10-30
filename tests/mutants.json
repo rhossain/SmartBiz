@@ -368,6 +368,14 @@
       "find": "      payload: { changed },",
       "replace": "      payload: { changed, after },",
       "test": "tests/integration/business-route.test.ts"
+    },
+    {
+      "id": "insights-counts-cancelled",
+      "why": "Cancelled and returned orders count nowhere in insights (bucket none); counting them inflates a customer's orders and value.",
+      "file": "src/insights/insights.ts",
+      "find": "    WHERE o.business_id = ${biz} AND o.status NOT IN ('cancelled', 'returned') AND o.created_at >= ${since}",
+      "replace": "    WHERE o.business_id = ${biz} AND o.created_at >= ${since}",
+      "test": "tests/realdb/insights.realdb.test.ts"
     }
   ]
 }
