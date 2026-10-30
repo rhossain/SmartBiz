@@ -196,6 +196,8 @@ export const API_ROWS: ReadonlyArray<ApiRow> = [
       ["PATCH", "/api/suppliers/:id", CATALOG_MANAGERS, "US3.6 edit a supplier"],
       // Printable invoice and delivery slip: the business name on every printed document.
       ["GET", "/api/business", EVERY, "printable invoice and delivery slip"],
+      ["PATCH", "/api/business", BUSINESS_EDITORS, "Business page (AC1.5.1, AC1.5.4)"],
+      ["PATCH", "/api/me/locale", EVERY, "Settings: own language (AC1.5.2)"],
     ] as const
   ).map(([method, path, allowed, source]): ApiRow => ({
     surface: "api",

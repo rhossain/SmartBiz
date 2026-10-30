@@ -15,8 +15,8 @@
  *   subtotal is the sum of the line totals (`lineTotalPaise`), so the printed figures add up
  *   to the stored total.
  * - The slip names the recipient in large type and the amount to collect on delivery (the
- *   order total), plus the sender: the business name from `GET /api/business`. The phone and
- *   address of the business join it when the Business page stores them.
+ *   order total), plus the sender: the business's name, phone and address from
+ *   `GET /api/business` (set on the Business page; a detail not yet set is simply left out).
  * - Numbers and the date are in Bangla digits for the Bangla locale; the date is the order's
  *   creation day in Asia/Dhaka.
  * - Everything interactive carries a `data-testid`; the print button and back link are hidden
@@ -32,7 +32,12 @@ import { tr } from "./copy.js";
 
 export interface PrintOrderProps {
   readonly order: NamedOrder;
-  readonly businessName: string | null;
+  /** The business's details (`GET /api/business`); null while loading or unavailable. */
+  readonly business: {
+    readonly name: string;
+    readonly phone: string | null;
+    readonly address: string | null;
+  } | null;
   readonly locale: Locale;
   /** Opens the browser's print dialog; injected so tests never call window.print. */
   readonly onPrint: () => void;
@@ -59,7 +64,7 @@ export const printDate = (iso: string, locale: Locale): string => {
 
 export const PrintOrder = ({
   order,
-  businessName,
+  business,
   locale,
   onPrint,
 }: PrintOrderProps): React.ReactElement => {
@@ -68,7 +73,9 @@ export const PrintOrder = ({
   const phone = order.contact?.phone ?? "";
   const address = order.contact?.address ?? "";
   const pieces = order.items.reduce((sum, item) => sum + item.quantity, 0);
-  const business = businessName ?? "";
+  const businessName = business?.name ?? "";
+  const businessPhone = business?.phone ?? null;
+  const businessAddress = business?.address ?? null;
 
   return (
     <div data-testid="print-order" className="print-order">
@@ -90,7 +97,13 @@ export const PrintOrder = ({
         aria-labelledby="print-invoice-title"
       >
         <header className="print-doc__head">
-          <h2 data-testid="print-business">{business}</h2>
+          <div>
+            <h2 data-testid="print-business">{businessName}</h2>
+            {businessPhone ? <div data-testid="print-business-phone">{businessPhone}</div> : null}
+            {businessAddress ? (
+              <div data-testid="print-business-address">{businessAddress}</div>
+            ) : null}
+          </div>
           <h3 id="print-invoice-title">{tr("print.invoice", locale)}</h3>
         </header>
         <p>
@@ -169,7 +182,8 @@ export const PrintOrder = ({
           <strong data-testid="slip-collect">{taka(order.totalPaise, locale)}</strong>
         </p>
         <p>
-          {tr("print.from", locale)}: <span data-testid="slip-from">{business}</span>
+          {tr("print.from", locale)}: <span data-testid="slip-from">{businessName}</span>
+          {businessPhone ? <span data-testid="slip-from-phone"> · {businessPhone}</span> : null}
         </p>
       </section>
     </div>

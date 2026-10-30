@@ -317,10 +317,55 @@ const handleStaff = (
     const [id] = params;
     return state.businesses.filter((b) => b["id"] === id).map((b) => ({ id: b["id"] }));
   }
-  // Printable invoice and slip: GET /api/business (src/auth/business-profile.ts).
-  if (/^\s*SELECT name FROM businesses WHERE id = \?\s*$/i.test(text)) {
+  // Business page and printed documents (src/auth/business-profile.ts).
+  if (
+    /^\s*SELECT name, phone, address, locale FROM businesses WHERE id = \?( FOR UPDATE)?\s*$/i.test(
+      text,
+    )
+  ) {
     const [id] = params;
-    return state.businesses.filter((b) => b["id"] === id).map((b) => ({ name: b["name"] }));
+    return state.businesses
+      .filter((b) => b["id"] === id)
+      .map((b) => ({
+        name: b["name"],
+        phone: b["phone"] ?? null,
+        address: b["address"] ?? null,
+        locale: b["locale"] ?? "bn",
+      }));
+  }
+  if (
+    /^\s*UPDATE businesses SET name = \?, phone = \?, address = \?,\s+locale = \?, updated_at = \?\s+WHERE id = \?\s*$/i.test(
+      text,
+    )
+  ) {
+    const [name, phone, address, locale, updatedAt, id] = params;
+    for (const b of state.businesses) {
+      if (b["id"] !== id) continue;
+      Object.assign(b, { name, phone, address, locale, updated_at: new Date(String(updatedAt)) });
+    }
+    return [];
+  }
+  // Settings: a person's own language (src/auth/user-locale.ts).
+  if (
+    /^\s*SELECT locale FROM users WHERE id = \? AND business_id = \? FOR UPDATE\s*$/i.test(text)
+  ) {
+    const [id, businessId] = params;
+    return state.users
+      .filter((u) => u["id"] === id && u["business_id"] === businessId)
+      .map((u) => ({ locale: u["locale"] ?? "bn" }));
+  }
+  if (
+    /^\s*UPDATE users SET locale = \?, updated_at = \?\s+WHERE id = \? AND business_id = \?\s*$/i.test(
+      text,
+    )
+  ) {
+    const [locale, updatedAt, id, businessId] = params;
+    for (const u of state.users) {
+      if (u["id"] === id && u["business_id"] === businessId) {
+        Object.assign(u, { locale, updated_at: new Date(String(updatedAt)) });
+      }
+    }
+    return [];
   }
   if (/^\s*SELECT id FROM users WHERE lower\(email\) = \? LIMIT 1\s*$/i.test(text)) {
     const [email] = params;

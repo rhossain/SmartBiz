@@ -67,8 +67,12 @@ export interface OrdersRouteState {
   readonly recent?: ReadonlyArray<Order>;
   /** U5 (BR4.1, BR4.2, BR5.1, BR6.1): the catalog loaders the router builds (props only). */
   readonly catalog?: OrdersCatalog;
-  /** Printable invoice and slip: the business name (GET /api/business) and the print call. */
-  readonly businessName?: string | null;
+  /** Printable invoice and slip: the business's details (GET /api/business) and the print call. */
+  readonly business?: {
+    readonly name: string;
+    readonly phone: string | null;
+    readonly address: string | null;
+  } | null;
   readonly onPrint?: () => void;
 }
 
@@ -163,7 +167,7 @@ export const renderOrdersScreen = (
         return screen === "print" ? (
           <PrintOrder
             order={state.current}
-            businessName={state.businessName ?? null}
+            business={state.business ?? null}
             locale={locale}
             onPrint={state.onPrint ?? (() => undefined)}
           />

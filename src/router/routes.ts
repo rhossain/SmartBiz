@@ -17,8 +17,8 @@
  *     sign-in or first-run sign-up (App);
  *   - `/sign-in`, `/sign-up`, `/lock`, `/not-found` and the order screens are U1's;
  *   - `/audit-trail` is the audit trail screen (W4);
- *   - `/daily-card`, `/business`, `/settings` (B5) render the not-available screen naming
- *     their feature.
+ *   - `/daily-card` is the Owner's daily card; `/business` and `/settings` are the Business
+ *     and Settings pages (mockups §17.2, §17.3), through src/router/render-business-route.tsx.
  * U3 (BR9.1–BR9.5, BR10.1; review D-02): `/accept-invite`, `/reset` and `/recover` leave the
  * not-available screen for their real screens, rendered through the token containers
  * (src/router/render-token-routes.tsx), and `/staff` is new, open to `staff.invite` (Owner,
@@ -35,13 +35,13 @@ import {
   type CatalogScreen,
 } from "../catalog/screens/render-catalog-route.js";
 import { renderDailyCard } from "../daily-card/screens/DailyCard.js";
+import { renderBusinessRoute, renderSettingsRoute } from "./render-business-route.js";
 import { ORDER_MUTATE_CAPABILITIES, ORDER_READ_CAPABILITY } from "../orders/order-capability.js";
 import { renderOrdersScreen } from "../orders/screens/render-orders-route.js";
 import { renderStaffRoute } from "./render-staff-route.js";
 import { renderAcceptInvite, renderRecover, renderReset } from "./render-token-routes.js";
 import {
   renderLock,
-  renderNotAvailable,
   renderNotFound,
   renderSignIn,
   renderSignUp,
@@ -226,13 +226,13 @@ export const routes: ReadonlyMap<RoutePath, Route> = new Map<RoutePath, Route>([
     path: "/business",
     requiredCapability: "business.edit",
     feature: "feature.business",
-    render: renderNotAvailable("feature.business"),
+    render: renderBusinessRoute,
   }),
   route({
     path: "/settings",
     requiredCapability: "settings.edit.own",
     feature: "feature.settings",
-    render: renderNotAvailable("feature.settings"),
+    render: renderSettingsRoute,
   }),
   route({ path: "/lock", requiredCapability: null, feature: "feature.lock", render: renderLock }),
   route({

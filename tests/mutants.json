@@ -360,6 +360,14 @@
       "find": "    if (!row || available < quantity) {",
       "replace": "    if (!row) {",
       "test": "tests/unit/order-stock.test.ts"
+    },
+    {
+      "id": "business-update-logs-values",
+      "why": "The business.profile.update change-log row names the changed fields only (AC1.5.4): the audit log is insert-only for 5 years, so a phone or address written there could never be erased.",
+      "file": "src/auth/business-profile.ts",
+      "find": "      payload: { changed },",
+      "replace": "      payload: { changed, after },",
+      "test": "tests/integration/business-route.test.ts"
     }
   ]
 }
