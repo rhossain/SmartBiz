@@ -3004,3 +3004,316 @@
 **Session**: cbe79e86-2f8f-4b4f-a423-cdc4caea986d
 
 ---
+
+## Human Turn
+**Timestamp**: 2026-10-30T05:45:11Z
+**Event**: HUMAN_TURN
+**Session**: cbe79e86-2f8f-4b4f-a423-cdc4caea986d
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-30T08:24:56Z
+**Event**: HUMAN_TURN
+**Session**: cbe79e86-2f8f-4b4f-a423-cdc4caea986d
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-30T08:26:36Z
+**Event**: HUMAN_TURN
+**Session**: cbe79e86-2f8f-4b4f-a423-cdc4caea986d
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-30T08:26:40Z
+**Event**: SENSOR_FIRED
+**Fire id**: 6363fd73
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: src/insights/insights.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-30T08:26:43Z
+**Event**: SENSOR_PASSED
+**Fire id**: 6363fd73
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: src/insights/insights.ts
+**Duration ms**: 2616
+**Note**: tool-unavailable
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-30T08:26:43Z
+**Event**: SENSOR_FIRED
+**Fire id**: 7a44bb39
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/insights/insights.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-30T08:26:50Z
+**Event**: SENSOR_PASSED
+**Fire id**: 7a44bb39
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/insights/insights.ts
+**Duration ms**: 6645
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-30T08:26:53Z
+**Event**: SENSOR_FIRED
+**Fire id**: d02f9884
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: src/insights/schemas.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-30T08:26:55Z
+**Event**: SENSOR_PASSED
+**Fire id**: d02f9884
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: src/insights/schemas.ts
+**Duration ms**: 1669
+**Note**: tool-unavailable
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-30T08:26:55Z
+**Event**: SENSOR_FIRED
+**Fire id**: 6bd8093f
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/insights/schemas.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-30T08:27:00Z
+**Event**: SENSOR_PASSED
+**Fire id**: 6bd8093f
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/insights/schemas.ts
+**Duration ms**: 4887
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-30T08:27:03Z
+**Event**: SENSOR_FIRED
+**Fire id**: 615335b4
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: src/server/handlers/insights.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-30T08:27:05Z
+**Event**: SENSOR_PASSED
+**Fire id**: 615335b4
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: src/server/handlers/insights.ts
+**Duration ms**: 1758
+**Note**: tool-unavailable
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-30T08:27:05Z
+**Event**: SENSOR_FIRED
+**Fire id**: 0cd3f93c
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/server/handlers/insights.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-30T08:27:10Z
+**Event**: SENSOR_PASSED
+**Fire id**: 0cd3f93c
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/server/handlers/insights.ts
+**Duration ms**: 4992
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-30T08:46:25Z
+**Event**: HUMAN_TURN
+**Session**: cbe79e86-2f8f-4b4f-a423-cdc4caea986d
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-30T08:47:38Z
+**Event**: SENSOR_FIRED
+**Fire id**: cc3f6cb5
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: tests/helpers/insights-stub.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-30T08:47:39Z
+**Event**: SENSOR_PASSED
+**Fire id**: cc3f6cb5
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: tests/helpers/insights-stub.ts
+**Duration ms**: 1597
+**Note**: tool-unavailable
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-30T08:47:39Z
+**Event**: SENSOR_FIRED
+**Fire id**: e8b460de
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: tests/helpers/insights-stub.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-30T08:47:42Z
+**Event**: SENSOR_PASSED
+**Fire id**: e8b460de
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: tests/helpers/insights-stub.ts
+**Duration ms**: 2899
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-30T08:49:26Z
+**Event**: SENSOR_FIRED
+**Fire id**: b8c6b976
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/insights/screens/Insights.tsx
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-30T08:49:31Z
+**Event**: SENSOR_PASSED
+**Fire id**: b8c6b976
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/insights/screens/Insights.tsx
+**Duration ms**: 4383
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-30T08:49:33Z
+**Event**: SENSOR_FIRED
+**Fire id**: f65f136f
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/router/render-insights-route.tsx
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-30T08:49:35Z
+**Event**: SENSOR_PASSED
+**Fire id**: f65f136f
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: src/router/render-insights-route.tsx
+**Duration ms**: 2291
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-30T08:51:45Z
+**Event**: SENSOR_FIRED
+**Fire id**: d45d6133
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: tests/realdb/insights.realdb.test.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-30T08:51:47Z
+**Event**: SENSOR_PASSED
+**Fire id**: d45d6133
+**Sensor ID**: linter
+**Stage slug**: code-generation
+**Output path**: tests/realdb/insights.realdb.test.ts
+**Duration ms**: 1399
+**Note**: tool-unavailable
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-30T08:51:47Z
+**Event**: SENSOR_FIRED
+**Fire id**: df9efe5c
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: tests/realdb/insights.realdb.test.ts
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-30T08:51:50Z
+**Event**: SENSOR_PASSED
+**Fire id**: df9efe5c
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: tests/realdb/insights.realdb.test.ts
+**Duration ms**: 3094
+
+---
+
+## Sensor Fired
+**Timestamp**: 2026-10-30T08:52:26Z
+**Event**: SENSOR_FIRED
+**Fire id**: edcff3ea
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: tests/unit/insights.test.tsx
+
+---
+
+## Sensor Passed
+**Timestamp**: 2026-10-30T08:52:29Z
+**Event**: SENSOR_PASSED
+**Fire id**: edcff3ea
+**Sensor ID**: type-check
+**Stage slug**: code-generation
+**Output path**: tests/unit/insights.test.tsx
+**Duration ms**: 2640
+
+---
+
+## Human Turn
+**Timestamp**: 2026-10-30T09:00:34Z
+**Event**: HUMAN_TURN
+**Session**: cbe79e86-2f8f-4b4f-a423-cdc4caea986d
+
+---

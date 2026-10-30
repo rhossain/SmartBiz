@@ -41,6 +41,7 @@ export type RoutePath =
   | "/staff"
   | "/business"
   | "/settings"
+  | "/insights"
   | "/lock"
   | "/not-found";
 

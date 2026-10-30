@@ -36,6 +36,7 @@ import {
 } from "../catalog/screens/render-catalog-route.js";
 import { renderDailyCard } from "../daily-card/screens/DailyCard.js";
 import { renderBusinessRoute, renderSettingsRoute } from "./render-business-route.js";
+import { renderInsightsRoute } from "./render-insights-route.js";
 import { ORDER_MUTATE_CAPABILITIES, ORDER_READ_CAPABILITY } from "../orders/order-capability.js";
 import { renderOrdersScreen } from "../orders/screens/render-orders-route.js";
 import { renderStaffRoute } from "./render-staff-route.js";
@@ -209,6 +210,13 @@ export const routes: ReadonlyMap<RoutePath, Route> = new Map<RoutePath, Route>([
     requiredCapability: "business.edit",
     feature: "feature.daily_card",
     render: renderDailyCard,
+  }),
+  // Customer and product insights: money per customer, so the Owner only (`business.edit`).
+  route({
+    path: "/insights",
+    requiredCapability: "business.edit",
+    feature: "feature.insights",
+    render: renderInsightsRoute,
   }),
   route({
     path: "/audit-trail",

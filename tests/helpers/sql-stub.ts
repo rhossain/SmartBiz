@@ -7,6 +7,7 @@
 import type { Sql } from "../../src/db/client.js";
 import type { Uuid } from "../../src/data/uuid.js";
 import { handleCatalog } from "./catalog-stub.js";
+import { handleInsights } from "./insights-stub.js";
 
 export interface RecordedCall {
   readonly text: string;
@@ -816,6 +817,9 @@ export const makeSqlStub = (
     if (/(UPDATE\s+audit_log|DELETE\s+FROM\s+audit_log|TRUNCATE\s+audit_log)/i.test(text)) {
       throw dbError("permission denied for table audit_log", "42501");
     }
+    // Insights (src/insights/insights.ts): matched before the order shapes.
+    const insightRows = handleInsights(text, params, state);
+    if (insightRows !== undefined) return insightRows;
     const b2 = handleOrders(text, params, state);
     if (b2 !== undefined) return b2;
     const sessionRows = handleSessions(text, params, state);

@@ -1533,3 +1533,16 @@ button:disabled {
   grid-template-columns: auto 1fr;
   gap: var(--space-2) var(--space-6);
 }
+
+/* Insights (src/insights/screens/Insights.tsx): the period switch. */
+.insights__periods {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.insights__periods button[aria-pressed="true"] {
+  font-weight: 700;
+  text-decoration: underline;
+}

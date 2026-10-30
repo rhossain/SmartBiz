@@ -101,6 +101,8 @@ describe("Shell", () => {
       "#/orders",
       ...catalog,
       "#/daily-card",
+      // Insights: money per customer, the Owner only.
+      "#/insights",
       "#/audit-trail",
       "#/staff",
       "#/business",
@@ -125,6 +127,7 @@ describe("Shell", () => {
       "কম মজুদ",
       "সরবরাহকারী",
       "দৈনিক কার্ড",
+      "বিশ্লেষণ",
       "অডিট ট্রেইল",
       "কর্মী",
       "ব্যবসা",

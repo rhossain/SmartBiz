@@ -63,6 +63,7 @@ import type { AuditRouteState } from "../audit/screens/AuditTrail.js";
 import type { DailyRouteState } from "../daily-card/screens/DailyCard.js";
 import { createAuditApi, type AuditApi } from "../client/audit-api.js";
 import { createBusinessApi, type BusinessApi } from "../client/business-api.js";
+import { createInsightsApi, type InsightsApi } from "../client/insights-api.js";
 import { createStaffApi, type StaffApi } from "../client/staff-api.js";
 import { createCatalogApi, type CatalogApi } from "../client/catalog-api.js";
 import {
@@ -124,6 +125,7 @@ import { Toast } from "../pres/Toast.js";
 import { dispatchPath } from "./dispatch.js";
 import { matchRoute, navigate } from "./hash-router.js";
 import type { BusinessRouteState, SettingsRouteState } from "./render-business-route.js";
+import type { InsightsRouteState } from "./render-insights-route.js";
 import type { StaffRouteState } from "./render-staff-route.js";
 import type { TokenRouteState } from "./render-token-routes.js";
 import { routes } from "./routes.js";
@@ -147,6 +149,8 @@ export interface AppDeps {
   readonly business?: BusinessApi;
   /** Opens the browser's print dialog; injected so tests never call window.print. */
   readonly print?: () => void;
+  /** The insights client; built over `http` when not given. */
+  readonly insights?: InsightsApi;
 }
 
 const CATALOG_PREFIXES = ["/customers", "/products", "/low-stock", "/suppliers"] as const;
@@ -170,6 +174,7 @@ export const NAV_ITEMS: ReadonlyArray<{ readonly to: RoutePath; readonly label: 
   { to: "/low-stock", label: "nav.low_stock" },
   { to: "/suppliers", label: "nav.suppliers" },
   { to: "/daily-card", label: "nav.daily_card" },
+  { to: "/insights", label: "nav.insights" },
   { to: "/audit-trail", label: "nav.audit_trail" },
   { to: "/staff", label: "nav.staff" },
   { to: "/business", label: "nav.business" },
@@ -242,6 +247,10 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
   const business = React.useMemo(
     () => deps.business ?? createBusinessApi(http),
     [deps.business, http],
+  );
+  const insights = React.useMemo(
+    () => deps.insights ?? createInsightsApi(http),
+    [deps.insights, http],
   );
   // The business's details for the printed invoice and slip, read when a print page opens.
   const [businessInfo, setBusinessInfo] = React.useState<BusinessResponse | null>(null);
@@ -487,6 +496,7 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
   // U3 (BR9.1): the staff container loads its own list through the staff client.
   const staffState: StaffRouteState = { kind: "staff", locale, staff, homeTo };
   const businessState: BusinessRouteState = { kind: "business", locale, business };
+  const insightsState: InsightsRouteState = { kind: "insights", locale, insights };
   const settingsState: SettingsRouteState | null = signedInSession
     ? {
         kind: "settings",
@@ -580,11 +590,13 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
             ? staffState
             : routePath === "/business"
               ? businessState
-              : routePath === "/settings" && settingsState
-                ? settingsState
-                : TOKEN_ROUTES.has(routePath ?? "")
-                  ? tokenState
-                  : authState;
+              : routePath === "/insights"
+                ? insightsState
+                : routePath === "/settings" && settingsState
+                  ? settingsState
+                  : TOKEN_ROUTES.has(routePath ?? "")
+                    ? tokenState
+                    : authState;
   const outcome =
     session.status === "unknown"
       ? null
