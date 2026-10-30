@@ -65,8 +65,16 @@ export type HealthResponse = z.infer<typeof HealthResponseSchema>;
 export const SetupResponseSchema = z.object({ businessExists: z.boolean() });
 export type SetupResponse = z.infer<typeof SetupResponseSchema>;
 
-/** `GET /api/business`: the name printed on invoices and delivery slips. */
-export const BusinessResponseSchema = z.object({ name: z.string().min(1) });
+/** `GET` / `PATCH /api/business`: the details printed on invoices and slips (Business page). */
+export const BusinessResponseSchema = z.object({
+  name: z.string().min(1),
+  phone: z.string().nullable(),
+  address: z.string().nullable(),
+  locale: z.enum(["bn", "en"]),
+});
+
+/** `PATCH /api/me/locale`. */
+export const MyLocaleResponseSchema = z.object({ locale: z.enum(["bn", "en"]) });
 export type BusinessResponse = z.infer<typeof BusinessResponseSchema>;
 
 export const SessionResponseSchema = SessionViewSchema;

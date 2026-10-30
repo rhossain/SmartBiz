@@ -10,7 +10,7 @@
  * U2–U5 append their routes here.
  */
 import { auditRoute } from "./handlers/audit.js";
-import { businessRoute } from "./handlers/business.js";
+import { businessRoute, businessUpdateRoute, myLocaleRoute } from "./handlers/business.js";
 import {
   acceptInviteRoute,
   recoverRoute,
@@ -44,8 +44,11 @@ export const routes: ReadonlyArray<RouteDef> = [
   resetRoute,
   // U4 (C7; S26): the catalog routes, none public; access from src/catalog/catalog-capability.ts.
   ...catalogRoutes,
-  // Printable invoice and delivery slip: the business name every printed document carries.
+  // The business's details (printed on invoices and slips; edited on the Business page) and a
+  // person's own language (Settings page).
   businessRoute,
+  businessUpdateRoute,
+  myLocaleRoute,
 ];
 
 /**

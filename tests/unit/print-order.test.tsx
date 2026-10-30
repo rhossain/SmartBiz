@@ -59,6 +59,8 @@ const ORDER: NamedOrder = {
 
 const text = (id: string): string => screen.getByTestId(id).textContent ?? "";
 
+const BIZ_INFO = { name: "রহিম ফ্যাশন হাউস", phone: "01711000000", address: "মিরপুর ১০, ঢাকা" };
+
 afterEach(() => cleanup());
 
 describe("printable invoice and slip", () => {
@@ -68,10 +70,12 @@ describe("printable invoice and slip", () => {
   });
 
   test("the invoice header, lines and sums add up to the stored total", () => {
-    render(
-      <PrintOrder order={ORDER} businessName="রহিম ফ্যাশন হাউস" locale="en" onPrint={() => {}} />,
-    );
+    render(<PrintOrder order={ORDER} business={BIZ_INFO} locale="en" onPrint={() => {}} />);
     expect(text("print-business")).toBe("রহিম ফ্যাশন হাউস");
+    expect([text("print-business-phone"), text("print-business-address")]).toEqual([
+      "01711000000",
+      "মিরপুর ১০, ঢাকা",
+    ]);
     expect(text("print-order-no")).toBe("ORD-1042");
     expect(text("print-date")).toBe("30/10/2026");
     expect(text("print-bill-to")).toContain("রিনা আক্তার");
@@ -89,18 +93,14 @@ describe("printable invoice and slip", () => {
   });
 
   test("Bangla: amounts and counts in Bangla digits", () => {
-    render(
-      <PrintOrder order={ORDER} businessName="রহিম ফ্যাশন হাউস" locale="bn" onPrint={() => {}} />,
-    );
+    render(<PrintOrder order={ORDER} business={BIZ_INFO} locale="bn" onPrint={() => {}} />);
     expect(text("print-total")).toBe("৳২,৯৬০");
     expect(text("slip-pieces")).toBe("৩");
     expect(text("print-date")).toBe("৩০/১০/২০২৬");
   });
 
   test("the slip names recipient, phone, address, amount to collect and sender", () => {
-    render(
-      <PrintOrder order={ORDER} businessName="রহিম ফ্যাশন হাউস" locale="en" onPrint={() => {}} />,
-    );
+    render(<PrintOrder order={ORDER} business={BIZ_INFO} locale="en" onPrint={() => {}} />);
     expect([
       text("slip-name"),
       text("slip-phone"),
@@ -122,7 +122,7 @@ describe("printable invoice and slip", () => {
     render(
       <PrintOrder
         order={{ ...ORDER, customerName: null }}
-        businessName={null}
+        business={null}
         locale="en"
         onPrint={() => {}}
       />,
@@ -134,7 +134,12 @@ describe("printable invoice and slip", () => {
   test("the print button calls print; the back link returns to the order", () => {
     let printed = 0;
     render(
-      <PrintOrder order={ORDER} businessName="X" locale="en" onPrint={() => (printed += 1)} />,
+      <PrintOrder
+        order={ORDER}
+        business={{ name: "X", phone: null, address: null }}
+        locale="en"
+        onPrint={() => (printed += 1)}
+      />,
     );
     fireEvent.click(screen.getByTestId("print-button"));
     expect(printed).toBe(1);

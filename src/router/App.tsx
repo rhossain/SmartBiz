@@ -58,7 +58,7 @@
 import * as React from "react";
 import { hasCapability } from "../auth/capability.js";
 import type { GateSession } from "../auth/three-layer-gate.js";
-import type { SessionResponse } from "../auth/schemas.js";
+import type { BusinessResponse, SessionResponse } from "../auth/schemas.js";
 import type { AuditRouteState } from "../audit/screens/AuditTrail.js";
 import type { DailyRouteState } from "../daily-card/screens/DailyCard.js";
 import { createAuditApi, type AuditApi } from "../client/audit-api.js";
@@ -123,6 +123,7 @@ import { Shell, type NavItem } from "../pres/Shell.js";
 import { Toast } from "../pres/Toast.js";
 import { dispatchPath } from "./dispatch.js";
 import { matchRoute, navigate } from "./hash-router.js";
+import type { BusinessRouteState, SettingsRouteState } from "./render-business-route.js";
 import type { StaffRouteState } from "./render-staff-route.js";
 import type { TokenRouteState } from "./render-token-routes.js";
 import { routes } from "./routes.js";
@@ -242,8 +243,8 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
     () => deps.business ?? createBusinessApi(http),
     [deps.business, http],
   );
-  // The business name for the printed invoice and slip, read once per sign-in.
-  const [businessName, setBusinessName] = React.useState<string | null>(null);
+  // The business's details for the printed invoice and slip, read when a print page opens.
+  const [businessInfo, setBusinessInfo] = React.useState<BusinessResponse | null>(null);
   const staff = React.useMemo(() => deps.staff ?? createStaffApi(http), [deps.staff, http]);
   const catalog = React.useMemo(() => deps.catalog ?? createCatalogApi(http), [deps.catalog, http]);
   const [catalogNotice, setCatalogNotice] = React.useState<CatalogNotice | null>(null);
@@ -350,6 +351,14 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
   const routeId = match?.params["id"] ?? null;
   const signedInSession = session.status === "signed_in" ? session.session : null;
 
+  // Settings (AC1.5.2): each person's saved language opens their screens, applied whenever a
+  // signed-in session arrives (sign-in, sign-up, session load).
+  const sessionUserId = signedInSession?.user.id ?? null;
+  const sessionLocale = signedInSession?.user.locale ?? null;
+  React.useEffect(() => {
+    if (sessionUserId !== null && sessionLocale !== null) setLocale(sessionLocale);
+  }, [sessionUserId, sessionLocale]);
+
   // Signed in on an entry route (load, sign-in, sign-up): go to the remembered route, else
   // the orders list (W9 step 2). This is the one place that navigates after signing in, so
   // the return route cannot be overtaken by a second navigation.
@@ -378,10 +387,10 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
         if (routeId !== null && ordersStore.get().current?.id !== routeId) {
           void openOrder(ordersStore, orders, routeId);
         }
-        if (routePath === "/orders/:id/print" && businessName === null) {
+        if (routePath === "/orders/:id/print") {
           void (async () => {
             const r = await business.get();
-            if (r.ok) setBusinessName(r.value.name);
+            if (r.ok) setBusinessInfo(r.value);
           })();
         }
         break;
@@ -391,16 +400,7 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
       default:
         break;
     }
-  }, [
-    routePath,
-    routeId,
-    signedInSession,
-    routeOpens,
-    ordersStore,
-    orders,
-    business,
-    businessName,
-  ]);
+  }, [routePath, routeId, signedInSession, routeOpens, ordersStore, orders, business]);
 
   /** A 403 from a write opens the lock screen naming the current route's feature (BR4.1). */
   const lockHere = (): void => {
@@ -486,6 +486,17 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
 
   // U3 (BR9.1): the staff container loads its own list through the staff client.
   const staffState: StaffRouteState = { kind: "staff", locale, staff, homeTo };
+  const businessState: BusinessRouteState = { kind: "business", locale, business };
+  const settingsState: SettingsRouteState | null = signedInSession
+    ? {
+        kind: "settings",
+        locale,
+        business,
+        email: signedInSession.user.email,
+        role: signedInSession.user.role,
+        applyLocale: setLocale,
+      }
+    : null;
 
   // U3 (BR9.5): what the token containers need from App after a success.
   const tokenState: TokenRouteState = {
@@ -517,7 +528,7 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
     onSave,
     onTransition,
     onRepeat,
-    businessName,
+    business: businessInfo,
     onPrint: deps.print ?? (() => window.print()),
     listLoading: list.status === "loading",
     listError: list.status === "error" ? list.error : null,
@@ -567,9 +578,13 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
           ? dailyState
           : routePath === "/staff"
             ? staffState
-            : TOKEN_ROUTES.has(routePath ?? "")
-              ? tokenState
-              : authState;
+            : routePath === "/business"
+              ? businessState
+              : routePath === "/settings" && settingsState
+                ? settingsState
+                : TOKEN_ROUTES.has(routePath ?? "")
+                  ? tokenState
+                  : authState;
   const outcome =
     session.status === "unknown"
       ? null
@@ -618,7 +633,11 @@ export const App = ({ deps }: { readonly deps: AppDeps }): React.ReactElement =>
   return (
     <Shell
       locale={locale}
-      onLocaleChange={(l: Locale) => setLocale(l)}
+      onLocaleChange={(l: Locale) => {
+        setLocale(l);
+        // Signed in, the header switch saves the choice too, so the next sign-in keeps it.
+        if (signedInSession) void business.setMyLocale(l);
+      }}
       user={
         signedInSession
           ? { email: signedInSession.user.email, role: signedInSession.user.role }

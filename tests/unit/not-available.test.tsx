@@ -40,24 +40,16 @@ describe("not-available screen", () => {
     );
   });
 
-  test("each not-yet-built route of the map renders it with its own name (BR1.1)", () => {
-    setLocale("bn");
-    const expected: Record<string, string> = {
-      // B5 built /daily-card (tests/unit/daily-card.test.tsx).
-      "/business": "ব্যবসা",
-      "/settings": "সেটিংস",
-      // U3 built /accept-invite, /reset and /recover; they are covered by
-      // tests/integration/token-screens.test.tsx.
-    };
-    for (const [path, name] of Object.entries(expected)) {
+  test("no route of the map still renders it: /business and /settings are built (BR1.1)", () => {
+    // B5 built /daily-card; U3 built /accept-invite, /reset and /recover; the Business and
+    // Settings pages (mockups §17.2, §17.3) are built too. Without their state the containers
+    // render nothing, never the not-available screen.
+    for (const path of ["/business", "/settings"]) {
       const route = routes.get(path as never);
-      const view = render(route?.render(undefined) as React.ReactElement);
-      expect({ path, title: view.getByTestId("screen-title").textContent }).toEqual({
+      expect({ path, rendered: route?.render(undefined) ?? null }).toEqual({
         path,
-        title: name,
+        rendered: null,
       });
-      expect(view.getByTestId("not-available-message")).toBeDefined();
-      cleanup();
     }
   });
 });

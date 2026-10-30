@@ -21,6 +21,7 @@ import { AuditPageResponseSchema } from "../../src/audit/schemas.js";
 import {
   AcceptInviteResponseSchema,
   BusinessResponseSchema,
+  MyLocaleResponseSchema,
   HealthResponseSchema,
   InviteResponseSchema,
   ResetLinkResponseSchema,
@@ -284,6 +285,14 @@ export const SIGN_UP_REQUEST = {
   password: "correct-horse-1",
 };
 
+/** The Business page's details as the server answers them. */
+const BUSINESS_BODY = {
+  name: "রহিম ফ্যাশন হাউস",
+  phone: "01711000000",
+  address: "বাড়ি ১২, রোড ৫, মিরপুর ১০, ঢাকা",
+  locale: "bn",
+};
+
 export const API_FIXTURES: Readonly<Record<string, ApiFixture>> = {
   "GET /api/health": {
     status: 200,
@@ -309,8 +318,22 @@ export const API_FIXTURES: Readonly<Record<string, ApiFixture>> = {
   "GET /api/session": { status: 200, body: sessionBody("owner"), schema: SessionResponseSchema },
   "GET /api/business": {
     status: 200,
-    body: { name: "রহিম ফ্যাশন হাউস" },
+    body: BUSINESS_BODY,
     schema: BusinessResponseSchema,
+  },
+  "PATCH /api/business": {
+    status: 200,
+    body: BUSINESS_BODY,
+    schema: BusinessResponseSchema,
+    request: { phone: "01711000000" },
+    badRequest: { phone: 7 },
+  },
+  "PATCH /api/me/locale": {
+    status: 200,
+    body: { locale: "bn" },
+    schema: MyLocaleResponseSchema,
+    request: { locale: "bn" },
+    badRequest: { locale: "fr" },
   },
   "GET /api/orders": {
     status: 200,
