@@ -89,12 +89,20 @@ export const actorLabel = (entry: AuditEntryResponse, locale: Locale): string =>
 const Row = ({ entry, locale }: { entry: AuditEntryResponse; locale: Locale }) => (
   <tr data-testid="audit-row" data-entry-id={entry.id}>
     <td data-testid="audit-action">{actionLabel(entry.action, locale)}</td>
-    <td data-testid="audit-time">{shownTime(entry.occurredAt, locale)}</td>
-    <td data-testid="audit-actor">{actorLabel(entry, locale)}</td>
-    <td data-testid="audit-subject">
+    <td data-testid="audit-time" data-cell="corner">
+      {shownTime(entry.occurredAt, locale)}
+    </td>
+    <td data-testid="audit-actor" data-label={lookup("audit.col.actor", locale)}>
+      {actorLabel(entry, locale)}
+    </td>
+    <td data-testid="audit-subject" data-label={lookup("audit.col.subject", locale)}>
       {subjectLabel(entry.subjectKind, locale)} {shortId(entry.subjectId)}
     </td>
-    <td data-testid="audit-correlation" className="mono">
+    <td
+      data-testid="audit-correlation"
+      className="mono"
+      data-label={lookup("audit.col.correlation", locale)}
+    >
       {entry.correlationId}
     </td>
   </tr>
@@ -162,7 +170,7 @@ export const AuditTrail = ({
         empty={<p data-testid="audit-empty">{lookup("audit.empty", locale)}</p>}
       >
         <div className="scroll-x">
-          <table data-testid="audit-trail" className="table">
+          <table data-testid="audit-trail" className="table table--stack">
             <thead>
               <tr>
                 <th scope="col">{lookup("audit.col.action", locale)}</th>

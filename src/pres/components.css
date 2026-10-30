@@ -1,5 +1,5 @@
 /* src/pres/components.css — layout and component rules for the app shell and its screens
- * (U2: BR9.1, BR9.3, NFR9.6, NFR9.9; P14).
+ * (U2: BR9.1, BR9.3, NFR9.6, NFR9.9; P14; redesign: mockups §18).
  *
  * Rules, checked by tests/unit/stylesheet.test.ts:
  *   - every colour comes from a token in tokens.css (var(--…)); no literal colour here;
@@ -10,7 +10,12 @@
  * The screens are mostly class-free semantic HTML (form, label, input, button, table, h2), so
  * the design is applied to elements inside the shell, plus a few `data-testid` hooks where a
  * screen has a distinct layout (the orders summary, filter and quick-add rows, order detail,
- * the paste result, manual order lines). Colours follow the prototype's ledger palette.
+ * the paste result, manual order lines).
+ *
+ * Layout (§18.1): from 960 px the header is a fixed ink sidebar beside the content. Below
+ * 960 px a slim top bar opens the same header as a drawer, and a bottom tab bar holds the
+ * role's first four places plus "আরও". Below 720 px list tables marked `.table--stack` turn
+ * into one card per row, each cell labelled from its `data-label`, so nothing is squeezed.
  */
 
 *,
@@ -19,197 +24,342 @@
   box-sizing: border-box;
 }
 
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-padding-top: calc(var(--topbar-height) + var(--space-4));
+}
+
 body {
   background: var(--color-canvas);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  font-feature-settings: "cv11", "ss01";
 }
 
 a {
   color: var(--color-link);
   text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
 }
+
+/* `hidden` always wins over a component's own display rule (e.g. a photo not loaded yet). */
+[hidden] {
+  display: none !important;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.icon {
+  flex: none;
+  width: 20px;
+  height: 20px;
+}
+
+/* ===== Shell ============================================================================== */
 
 .shell {
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+  min-height: 100dvh;
 }
 
-/* ===== Header ========================================================================== */
-
-.shell__header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-2) var(--space-6);
-  min-height: 64px;
-  padding: var(--space-2) var(--space-8);
-  color: var(--color-header-text);
-  background: var(--color-header-bg);
-  box-shadow: var(--shadow-card);
-}
-
+/* The brand: a gold tile with the taka sign, then the name. */
 .shell__header h1 {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: var(--space-3);
   margin: 0;
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 700;
   letter-spacing: -0.01em;
   color: var(--color-header-text);
   white-space: nowrap;
 }
 
-/* The brand mark: a money-green tile with the taka sign. */
-.shell__header h1::before {
+.shell__header h1::before,
+.shell__topbar-brand::before {
   content: "৳";
   display: inline-grid;
+  flex: none;
   place-items: center;
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border-radius: var(--radius-sm);
-  font-size: 18px;
-  color: var(--color-on-primary);
-  background: var(--color-brand);
-  box-shadow: var(--shadow-button);
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--color-header-bg);
+  background: var(--color-accent);
+  box-shadow: inset 0 -2px 0 var(--color-accent-text);
 }
 
+/* Navigation: icon + label rows; the current page has a lit row and a gold marker. */
 .shell__nav {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1);
-  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .shell__nav a {
-  padding: 6px var(--space-3);
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 42px;
+  padding: 9px var(--space-3);
   border-radius: var(--radius-sm);
-  font-size: var(--font-size-sm);
+  font-size: 15px;
   font-weight: 500;
   text-decoration: none;
   color: var(--color-header-muted);
   transition:
-    background 120ms ease,
-    color 120ms ease;
+    background 140ms var(--ease-out),
+    color 140ms var(--ease-out);
 }
 
-.shell__nav a:hover,
-.shell__nav a[aria-current="page"] {
+.shell__nav a:hover {
   color: var(--color-header-text);
   background: var(--color-header-active);
 }
 
 .shell__nav a[aria-current="page"] {
   font-weight: 600;
+  color: var(--color-header-text);
+  background: var(--color-header-active);
 }
 
-/* The language switch: its label and select sit together with a gap. */
-.shell__header > div:has(> select) {
-  display: inline-flex;
+.shell__nav a[aria-current="page"]::before {
+  content: "";
+  position: absolute;
+  inset-block: 10px;
+  inset-inline-start: -12px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--color-accent);
+}
+
+.shell__nav a[aria-current="page"] .icon {
+  color: var(--color-accent);
+}
+
+/* Account block: language, then the person and sign-out. */
+.shell__account {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.shell__locale {
+  display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: var(--space-2);
+  padding-inline: var(--space-3) 0;
 }
 
 .shell__header label {
-  font-size: var(--font-size-sm);
+  font-size: 13px;
   color: var(--color-header-muted);
 }
 
 .shell__header select {
-  padding: 6px var(--space-6) 6px var(--space-3);
+  min-height: 34px;
+  padding: 4px var(--space-3);
   border: 1px solid var(--color-header-active);
   border-radius: var(--radius-sm);
-  font-size: var(--font-size-sm);
+  font-size: 13px;
   color: var(--color-header-text);
   background: var(--color-header-active);
 }
 
-.shell__header [data-testid="user-info"] {
-  display: inline-flex;
-  flex-wrap: wrap;
+.shell__user {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
-  gap: var(--space-2) var(--space-3);
-  margin-inline-start: auto;
-  font-size: var(--font-size-sm);
-  color: var(--color-header-muted);
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--color-header-active);
+  border-radius: var(--radius-md);
+}
+
+.shell__avatar {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-header-bg);
+  background: var(--color-accent);
+}
+
+.shell__who {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.35;
+}
+
+.shell__header [data-testid="user-email"] {
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-header-text);
 }
 
 .shell__header [data-testid="user-role"] {
-  padding: 2px 10px;
-  border-radius: var(--radius-pill);
   font-size: 12px;
-  font-weight: 600;
-  color: var(--color-brand);
-  background: var(--color-bg-success);
+  color: var(--color-header-muted);
 }
 
-.shell__header button {
-  padding: 6px var(--space-3);
+.shell__header [data-testid="sign-out"] {
+  grid-column: 1 / -1;
+  width: 100%;
+  min-height: 36px;
   border: 1px solid var(--color-header-active);
-  border-radius: var(--radius-sm);
-  font-size: var(--font-size-sm);
-  font-weight: 600;
+  font-size: 13px;
   color: var(--color-header-text);
   background: transparent;
   box-shadow: none;
 }
 
-.shell__header button:hover:not(:disabled) {
+.shell__header [data-testid="sign-out"]:hover:not(:disabled) {
+  border-color: var(--color-header-active);
   background: var(--color-header-active);
+}
+
+/* Signed out: a slim ink bar with the brand and the language switch. */
+.shell--public .shell__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: 64px;
+  padding: var(--space-3) var(--space-6);
+  background: var(--color-header-bg);
+}
+
+.shell--public .shell__locale {
+  justify-content: flex-end;
+}
+
+/* Signed in, wide windows: a fixed sidebar, content to its right. */
+.shell--app .shell__header {
+  position: fixed;
+  inset-block: 0;
+  inset-inline-start: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  width: var(--sidebar-width);
+  padding: var(--space-6) var(--space-3) var(--space-4);
+  overflow-y: auto;
+  background: var(--color-header-bg);
+}
+
+.shell--app .shell__header h1 {
+  padding: 0 var(--space-3);
+}
+
+.shell--app .shell__nav {
+  flex: 1 1 auto;
+}
+
+.shell--app .shell__main {
+  margin-inline-start: var(--sidebar-width);
+}
+
+.shell__topbar,
+.shell__tabbar,
+.shell__scrim {
+  display: none;
 }
 
 /* ===== Main column ======================================================================== */
 
 .shell__main {
-  flex: 1 1 auto;
-  width: 100%;
-  max-width: 1180px;
-  margin: 0 auto;
-  padding: var(--space-8);
+  max-width: 1240px;
+  padding: var(--space-10) var(--space-10) 64px;
   /* BR9.1: a long unbroken string (an email, an id) breaks instead of widening the page. */
   overflow-wrap: anywhere;
 }
 
+.shell--public .shell__main {
+  max-width: none;
+  padding: var(--space-6) var(--space-4) 64px;
+}
+
+/* The save toast floats above the content, top right, and never moves the page. */
 .shell__toast {
-  padding: var(--space-3) var(--space-8);
+  position: fixed;
+  inset-block-start: var(--space-6);
+  inset-inline-end: var(--space-6);
+  z-index: 40;
+  max-width: calc(100vw - 2 * var(--space-4));
+  padding: var(--space-3) var(--space-5);
+  border: 1px solid var(--color-bg-success);
+  border-radius: var(--radius-md);
   font-weight: 600;
   color: var(--color-brand);
-  background: var(--color-bg-success);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-float);
+  animation: toast-in 260ms var(--ease-out) 1;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /* A screen is a white card on the canvas. */
 .shell__main [data-testid="screen"] {
-  padding: var(--space-8);
+  padding: var(--space-8) var(--space-10) var(--space-10);
   border: 1px solid var(--color-line);
   border-radius: var(--radius-lg);
   background: var(--color-surface);
   box-shadow: var(--shadow-card);
 }
 
-/* Signed out (no primary nav), the screen is a form: a narrow centred card. */
-.shell:not(:has(.shell__nav)) .shell__main [data-testid="screen"] {
-  max-width: 480px;
-  margin: 48px auto 0;
+/* Signed out, the screen is a form: a narrow centred card under a short brand line. */
+.shell--public .shell__main [data-testid="screen"] {
+  max-width: 440px;
+  margin: 7vh auto 0;
+  padding: var(--space-8);
 }
 
 .shell__main h2 {
   margin: 0 0 var(--space-6);
-  font-size: 28px;
+  font-size: var(--font-size-display);
   font-weight: 700;
   line-height: 1.2;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
 }
 
 .shell__main h3 {
   margin: var(--space-8) 0 var(--space-3);
   font-size: 17px;
-  font-weight: 700;
+  font-weight: 650;
   letter-spacing: -0.005em;
 }
 
@@ -234,7 +384,7 @@ a {
   align-items: center;
   gap: var(--space-1);
   margin-bottom: var(--space-4);
-  padding: 6px var(--space-3) 6px 10px;
+  padding: 5px var(--space-3) 5px 10px;
   border: 1px solid var(--color-line);
   border-radius: var(--radius-pill);
   font-size: 13px;
@@ -242,12 +392,21 @@ a {
   text-decoration: none;
   color: var(--color-text-2);
   background: var(--color-surface);
-  transition: background 120ms ease;
+  transition:
+    background 140ms var(--ease-out),
+    border-color 140ms var(--ease-out);
 }
 
 .screen__back:hover {
+  border-color: var(--color-control-border);
   color: var(--color-text);
   background: var(--color-canvas);
+}
+
+.screen__intro {
+  max-width: 64ch;
+  margin: calc(-1 * var(--space-3)) 0 var(--space-6);
+  color: var(--color-text-2);
 }
 
 /* ===== Forms ============================================================================= */
@@ -279,6 +438,15 @@ a {
   gap: 6px;
 }
 
+/* A label that wraps a checkbox or radio sits on one line with it. */
+.shell__main label:has(> input[type="checkbox"], > input[type="radio"]) {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: 500;
+  color: var(--color-text);
+}
+
 input,
 select,
 textarea,
@@ -287,12 +455,19 @@ button {
   font: inherit;
 }
 
-.shell__main input:not([type="checkbox"]):not([type="radio"]),
+input[type="checkbox"],
+input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-brand);
+}
+
+.shell__main input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
 .shell__main select,
 .shell__main textarea {
   width: 100%;
-  min-height: 44px;
-  padding: 10px var(--space-3);
+  min-height: 46px;
+  padding: 11px 14px;
   border: 1px solid var(--color-control-border);
   border-radius: var(--radius-sm);
   font-size: 15px;
@@ -300,8 +475,8 @@ button {
   color: var(--color-text);
   background: var(--color-surface);
   transition:
-    border-color 120ms ease,
-    box-shadow 120ms ease;
+    border-color 140ms var(--ease-out),
+    box-shadow 140ms var(--ease-out);
 }
 
 .shell__main input:not([type="checkbox"]):not([type="radio"]):hover,
@@ -314,7 +489,15 @@ button {
 .shell__main select:focus,
 .shell__main textarea:focus {
   border-color: var(--color-brand);
+  outline: none;
   box-shadow: var(--ring-brand);
+}
+
+.shell__main input:focus-visible,
+.shell__main select:focus-visible,
+.shell__main textarea:focus-visible {
+  outline: var(--focus-ring-outline);
+  outline-offset: 1px;
 }
 
 .shell__main textarea {
@@ -327,9 +510,48 @@ button {
   border-color: var(--color-error);
 }
 
+/* A group of fields (the buyer, a language choice): a quiet rounded panel with its legend. */
+.shell__main fieldset {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+  margin: 0;
+  padding: var(--space-4) var(--space-5) var(--space-5);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-2);
+}
+
+.shell__main legend {
+  padding: 0 var(--space-2);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+/* Radio choices sit side by side when there is room. */
+.shell__main fieldset:has(> label > input[type="radio"]) {
+  flex-flow: row wrap;
+  align-items: center;
+  column-gap: var(--space-6);
+}
+
+.shell__main fieldset > p {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 13px;
+}
+
 .field__error {
   font-size: 13px;
   color: var(--color-error);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
 }
 
 /* ===== Buttons ============================================================================ */
@@ -340,28 +562,31 @@ button {
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
-  min-height: 40px;
-  padding: 8px var(--space-4);
-  border: 1px solid var(--color-control-border);
+  min-height: 42px;
+  padding: 9px 18px;
+  border: 1px solid var(--color-line);
   border-radius: var(--radius-sm);
   font-size: 14px;
   font-weight: 600;
+  line-height: 1.3;
   color: var(--color-text);
   background: var(--color-surface);
   box-shadow: var(--shadow-raised);
   transition:
-    background 120ms ease,
-    border-color 120ms ease,
-    transform 60ms ease;
+    background 140ms var(--ease-out),
+    border-color 140ms var(--ease-out),
+    box-shadow 140ms var(--ease-out),
+    transform 80ms var(--ease-out);
 }
 
 button:hover:not(:disabled) {
-  border-color: var(--color-text-2);
-  background: var(--color-canvas);
+  border-color: var(--color-control-border);
+  background: var(--color-surface-2);
 }
 
 button:active:not(:disabled) {
   transform: translateY(1px);
+  box-shadow: none;
 }
 
 /* Buttons in a stacked form keep their own width rather than stretching across it. */
@@ -374,7 +599,7 @@ button:active:not(:disabled) {
 .shell__main form > button:last-child,
 [data-testid="paste-parse"],
 [data-testid="paste-save"] {
-  min-height: 44px;
+  min-height: 46px;
   padding-inline: var(--space-6);
   border-color: var(--color-brand);
   color: var(--color-on-primary);
@@ -390,9 +615,14 @@ button:active:not(:disabled) {
   background: var(--color-brand-dark);
 }
 
+/* Signed out, the form's one action spans the card. */
+.shell--public .shell__main form button[type="submit"] {
+  align-self: stretch;
+}
+
 button:disabled {
   cursor: not-allowed;
-  opacity: 0.55;
+  opacity: 0.5;
   box-shadow: none;
 }
 
@@ -402,11 +632,11 @@ button:disabled {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 3px 10px;
+  padding: 2px 10px;
   border-radius: var(--radius-pill);
   font-size: 12px;
   font-weight: 600;
-  line-height: 1.5;
+  line-height: 1.6;
   white-space: nowrap;
   color: var(--color-text-2);
   background: var(--color-bg-neutral);
@@ -463,9 +693,9 @@ button:disabled {
 .shell__main nav[data-testid="orders-new-links"] a {
   display: inline-flex;
   align-items: center;
-  min-height: 40px;
-  padding: 8px var(--space-4);
-  border: 1px solid var(--color-control-border);
+  min-height: 42px;
+  padding: 9px 18px;
+  border: 1px solid var(--color-line);
   border-radius: var(--radius-sm);
   font-size: 14px;
   font-weight: 600;
@@ -473,6 +703,9 @@ button:disabled {
   color: var(--color-text);
   background: var(--color-surface);
   box-shadow: var(--shadow-raised);
+  transition:
+    background 140ms var(--ease-out),
+    border-color 140ms var(--ease-out);
 }
 
 .shell__main nav[data-testid="orders-new-links"] a:first-child {
@@ -482,11 +715,20 @@ button:disabled {
   box-shadow: var(--shadow-button);
 }
 
+.shell__main nav[data-testid="orders-new-links"] a:first-child::before {
+  content: "+";
+  margin-inline-end: var(--space-2);
+  font-size: 18px;
+  line-height: 1;
+}
+
 .shell__main nav[data-testid="orders-new-links"] a:hover {
-  background: var(--color-canvas);
+  border-color: var(--color-control-border);
+  background: var(--color-surface-2);
 }
 
 .shell__main nav[data-testid="orders-new-links"] a:first-child:hover {
+  border-color: var(--color-brand-dark);
   background: var(--color-brand-dark);
 }
 
@@ -499,10 +741,10 @@ button:disabled {
   column-gap: 0;
   row-gap: var(--space-2);
   margin-bottom: var(--space-6);
-  padding: var(--space-4) 0;
+  padding: var(--space-5) 0;
   border: 1px solid var(--color-line);
   border-radius: var(--radius-md);
-  background: var(--color-surface);
+  background: var(--color-surface-2);
 }
 
 .summary > span:not(.money-cell) {
@@ -524,6 +766,7 @@ button:disabled {
   flex-basis: 100%;
   font-size: 26px;
   line-height: 1.2;
+  letter-spacing: -0.02em;
 }
 
 /* Filter and quick-add: labels on one row, their controls under them, side by side.
@@ -538,10 +781,10 @@ button:disabled {
   gap: 6px var(--space-3);
   max-width: none;
   margin-bottom: var(--space-6);
-  padding: var(--space-4) var(--space-6) var(--space-6);
+  padding: var(--space-4) var(--space-5) var(--space-5);
   border: 1px solid var(--color-line);
   border-radius: var(--radius-md);
-  background: var(--color-canvas);
+  background: var(--color-surface-2);
 }
 
 .shell__main form[data-testid="orders-filter-form"] > :is(h2, h3, p),
@@ -562,6 +805,18 @@ button:disabled {
   align-self: stretch;
 }
 
+/* Quick add: the confirmation sits under the row it confirms, across the whole form. */
+.shell__main form[data-testid="orders-quick-add"] > p[data-testid="quick-add-saved"] {
+  grid-row: 4;
+  grid-column: 1 / span 5;
+  margin: var(--space-2) 0 0;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  color: var(--color-brand);
+  background: var(--color-bg-success);
+}
+
 /* ===== Tables ============================================================================== */
 
 /* BR9.1: the one place content may be wider than the window; it scrolls inside the box. */
@@ -574,7 +829,13 @@ button:disabled {
   background: var(--color-surface);
 }
 
+/* A table that scrolls (not a stacking list) keeps a readable width inside its box. */
+.scroll-x > .table:not(.table--stack) {
+  min-width: 600px;
+}
+
 .table,
+.settings-panel table,
 .shell__main table[data-testid="order-detail-items"] {
   width: 100%;
   border-collapse: collapse;
@@ -583,6 +844,8 @@ button:disabled {
 
 .table th,
 .table td,
+.settings-panel th,
+.settings-panel td,
 .shell__main table[data-testid="order-detail-items"] th,
 .shell__main table[data-testid="order-detail-items"] td {
   padding: 14px var(--space-4);
@@ -591,22 +854,24 @@ button:disabled {
   border-bottom: 1px solid var(--color-line);
 }
 
-.table th {
-  padding-block: 10px;
+.table th,
+.settings-panel th,
+.shell__main table[data-testid="order-detail-items"] th {
+  padding-block: 11px;
   font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--color-text-2);
-  background: var(--color-canvas);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--color-text-3);
+  background: var(--color-surface-2);
 }
 
-.table tbody tr:last-child td {
+.table tbody tr:last-child td,
+.settings-panel tbody tr:last-child td {
   border-bottom: 0;
 }
 
 .table tbody tr {
-  transition: background 100ms ease;
+  transition: background 120ms var(--ease-out);
 }
 
 .table tbody tr:hover td {
@@ -619,21 +884,62 @@ button:disabled {
   color: var(--color-text);
 }
 
+/* A record's name links to it; in a table it reads as the row's title, not as body link text. */
+.table td:first-child > a {
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--color-text);
+}
+
+.table td:first-child > a:hover {
+  color: var(--color-brand);
+  text-decoration: underline;
+}
+
 /* The row's action sits at the far end. */
 .table td:last-child:has(> button) {
   text-align: end;
 }
 
 .table td > button {
-  min-height: 32px;
-  padding: 4px var(--space-3);
+  min-height: 34px;
+  padding: 5px 14px;
   font-size: 13px;
 }
 
+/* The customer and the items in one cell: name over a quieter item line. */
+[data-testid="orders-row-who"] > span {
+  display: block;
+}
+
+[data-testid="orders-row-items"] {
+  font-size: 13px;
+  color: var(--color-text-3);
+}
+
 .mono {
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: var(--font-mono);
   font-size: 13px;
   color: var(--color-text-2);
+}
+
+/* A just-saved order: its row flashes green once, then settles (it also scrolls into view). */
+@keyframes row-new-flash {
+  0%,
+  35% {
+    background: var(--color-bg-success);
+  }
+  100% {
+    background: transparent;
+  }
+}
+
+.table tbody tr.row--new td {
+  animation: row-new-flash 2.6s ease-out 1;
+}
+
+.table tbody tr.row--new td:first-child {
+  box-shadow: inset 4px 0 0 var(--color-brand);
 }
 
 /* ===== Order detail ======================================================================= */
@@ -652,18 +958,19 @@ button:disabled {
   display: grid;
   gap: 2px;
   max-width: 480px;
-  padding: var(--space-4) var(--space-6);
+  margin-bottom: var(--space-6);
+  padding: var(--space-4) var(--space-5);
   border: 1px solid var(--color-line);
   border-radius: var(--radius-md);
-  background: var(--color-canvas);
+  background: var(--color-surface-2);
 }
 
 .shell__main [data-testid="order-detail-contact"] h3 {
   margin: 0 0 var(--space-2);
-  font-size: 13px;
+  font-size: 12px;
+  font-weight: 600;
   letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--color-text-2);
+  color: var(--color-text-3);
 }
 
 .shell__main [data-testid="order-detail-contact"] p {
@@ -693,12 +1000,13 @@ button:disabled {
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: center;
-  gap: var(--space-3) var(--space-6);
+  gap: var(--space-3) 0;
   max-width: 420px;
   margin: 0 0 var(--space-8) auto;
-  padding: var(--space-4) var(--space-6);
+  padding: var(--space-4) var(--space-5);
+  border: 1px solid var(--color-line);
   border-radius: var(--radius-md);
-  background: var(--color-canvas);
+  background: var(--color-surface-2);
 }
 
 .shell__main table[data-testid="order-detail-items"] + div > span:not(.money-cell) {
@@ -715,6 +1023,34 @@ button:disabled {
 
 .shell__main table[data-testid="order-detail-items"] + div > .money-cell {
   justify-content: flex-end;
+  padding-inline-start: var(--space-4);
+}
+
+.shell__main a[data-testid="order-detail-print"] {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
+  padding: 8px 16px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--color-text);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-raised);
+}
+
+.shell__main a[data-testid="order-detail-print"]::before {
+  content: "⎙";
+  font-size: 17px;
+  line-height: 1;
+}
+
+.shell__main a[data-testid="order-detail-print"]:hover {
+  border-color: var(--color-control-border);
+  background: var(--color-surface-2);
 }
 
 .shell__main [data-testid="order-detail-actions"] {
@@ -728,11 +1064,10 @@ button:disabled {
 
 .shell__main [data-testid="order-detail-actions"] > span {
   margin-inline-end: var(--space-2);
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 600;
   letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--color-text-2);
+  color: var(--color-text-3);
 }
 
 /* Repeat sits apart from the status moves, as the one primary action. */
@@ -765,19 +1100,18 @@ button:disabled {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-3) var(--space-4);
   margin: 0;
-  padding: var(--space-4) var(--space-6) var(--space-6);
+  padding: var(--space-4) var(--space-5) var(--space-5);
   border: 1px solid var(--color-line);
   border-radius: var(--radius-md);
-  background: var(--color-canvas);
+  background: var(--color-surface-2);
 }
 
 /* The "Line n" heading, the description and the line total span the full card. */
 .shell__main ol[data-testid="manual-lines"] > li > span:first-child {
   grid-column: 1 / -1;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.04em;
-  text-transform: uppercase;
   color: var(--color-brand);
 }
 
@@ -788,6 +1122,12 @@ button:disabled {
 
 .shell__main ol[data-testid="manual-lines"] > li > button {
   justify-self: start;
+}
+
+/* A line's "fill in item, quantity and price" note is a quiet hint until the line is valid. */
+.shell__main ol[data-testid="manual-lines"] > li > span[role="alert"] {
+  font-size: 13px;
+  color: var(--color-text-2);
 }
 
 /* ===== Order from a message =============================================================== */
@@ -830,7 +1170,7 @@ button:disabled {
   align-items: end;
   gap: var(--space-3) var(--space-4);
   margin: 0;
-  padding: var(--space-4) var(--space-6);
+  padding: var(--space-4) var(--space-5);
   border: 1px solid var(--color-line);
   border-radius: var(--radius-md);
   background: var(--color-surface);
@@ -839,6 +1179,7 @@ button:disabled {
 
 .shell__main ol[data-testid="paste-items"] > li[data-incomplete="true"] {
   border-color: var(--color-warning);
+  box-shadow: inset 3px 0 0 var(--color-warning);
 }
 
 /* The item's own words span the card. */
@@ -858,13 +1199,13 @@ button:disabled {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 10px;
+  padding: 3px 10px;
   border: 1px solid var(--color-line);
   border-radius: var(--radius-pill);
   font-size: 13px;
   font-weight: 700;
   color: var(--color-text);
-  background: var(--color-canvas);
+  background: var(--color-surface-2);
 }
 
 .fact__label {
@@ -904,6 +1245,7 @@ button:disabled {
   border: 1px solid var(--color-line);
   border-radius: var(--radius-md);
   overflow: hidden;
+  background: var(--color-surface);
 }
 
 .shell__main li:has(> button):last-child {
@@ -932,6 +1274,12 @@ button:disabled {
   background: var(--color-bg-error);
 }
 
+.banner--success {
+  border-color: var(--color-bg-success);
+  color: var(--color-text);
+  background: var(--color-bg-success);
+}
+
 .banner__label {
   font-weight: 700;
 }
@@ -951,6 +1299,12 @@ button:disabled {
   background: var(--color-bg-success);
 }
 
+.shell__toast .toast {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+}
+
 .toast--error {
   color: var(--color-error);
   background: var(--color-bg-error);
@@ -964,15 +1318,15 @@ button:disabled {
   padding: var(--space-8);
   border: 1px dashed var(--color-control-border);
   border-radius: var(--radius-md);
-  background: var(--color-canvas);
+  background: var(--color-surface-2);
   color: var(--color-text);
 }
 
 /* U3 (BR9.2): the link sheet; the link field never makes the page wider than the window. */
 .sheet {
   margin: var(--space-4) 0;
-  padding: var(--space-4) var(--space-6);
-  border: 1px solid var(--color-line);
+  padding: var(--space-4) var(--space-5);
+  border: 1px solid var(--color-bg-success);
   border-radius: var(--radius-md);
   background: var(--color-brand-tint);
   color: var(--color-text);
@@ -980,63 +1334,11 @@ button:disabled {
 
 .sheet__link {
   width: 100%;
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: var(--font-mono);
   font-size: 13px;
 }
 
-/* ===== Narrow windows (BR9.1, 360 px) ========================================================== */
-
-@media (max-width: 760px) {
-  .shell__header {
-    padding: var(--space-2) var(--space-4);
-  }
-
-  .shell__main {
-    padding: var(--space-4);
-  }
-
-  .shell__main [data-testid="screen"] {
-    padding: var(--space-6) var(--space-4);
-  }
-
-  .shell__main h2 {
-    font-size: 24px;
-  }
-
-  .shell__main form[data-testid="orders-filter-form"],
-  .shell__main form[data-testid="orders-quick-add"],
-  .summary {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .summary > :nth-child(n + 3) {
-    border-inline-start: 0;
-  }
-
-  .summary > .money-cell {
-    padding-bottom: var(--space-3);
-  }
-
-  .shell__main ol[data-testid="manual-lines"] > li,
-  .shell__main ol[data-testid="paste-items"] > li {
-    grid-template-columns: minmax(0, 1fr);
-    padding: var(--space-4);
-  }
-
-  .shell__main table[data-testid="order-detail-items"] + div {
-    margin-inline-start: 0;
-  }
-}
-
-/* A line's "fill in item, quantity and price" note is a quiet hint until the line is valid. */
-.shell__main ol[data-testid="manual-lines"] > li > span[role="alert"] {
-  font-size: 13px;
-  color: var(--color-text-2);
-}
-
-/* ===== Daily card (mockups §17.1) ============================================================ */
+/* ===== Daily card (mockups §17.1, §18.4) ===================================================== */
 
 .day-head {
   display: flex;
@@ -1064,12 +1366,29 @@ button:disabled {
   flex-direction: column;
   align-items: flex-start;
   gap: var(--space-2);
-  min-height: 150px;
+  min-height: 156px;
   padding: var(--space-6);
   border: 1px solid var(--color-line);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   background: var(--color-surface);
   box-shadow: var(--shadow-raised);
+}
+
+/* The first tile (today's orders) is the hero: deep emerald, white figure. */
+.day-tiles > .day-tile:first-child:not(.day-tile--skeleton) {
+  border-color: var(--color-brand-dark);
+  color: var(--color-on-primary);
+  background: linear-gradient(140deg, var(--color-brand-dark), var(--color-brand));
+  box-shadow: var(--shadow-card);
+}
+
+.shell__main .day-tiles > .day-tile:first-child .day-tile__label,
+.shell__main .day-tiles > .day-tile:first-child .day-tile__note {
+  color: var(--color-on-brand-muted);
+}
+
+.day-tiles > .day-tile:first-child .money-cell__amount {
+  color: var(--color-on-primary);
 }
 
 .shell__main .day-tile__label {
@@ -1084,15 +1403,16 @@ button:disabled {
 .day-tile__figure {
   flex-basis: 100%;
   margin: 0;
-  font-size: 30px;
+  font-size: 32px;
   font-weight: 700;
   line-height: 1.2;
+  letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
   color: var(--color-text);
 }
 
 .day-tile__figure--none {
-  color: var(--color-text-2);
+  color: var(--color-text-3);
 }
 
 .shell__main .day-tile__note {
@@ -1108,16 +1428,24 @@ button:disabled {
 }
 
 .day-tile--skeleton {
-  background: var(--color-canvas);
+  border-style: dashed;
+  background: var(--color-surface-2);
   box-shadow: none;
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes skeleton-pulse {
+  50% {
+    opacity: 0.55;
+  }
 }
 
 .status-strip {
   margin-bottom: var(--space-6);
-  padding: var(--space-4) var(--space-6);
+  padding: var(--space-4) var(--space-5);
   border: 1px solid var(--color-line);
   border-radius: var(--radius-md);
-  background: var(--color-canvas);
+  background: var(--color-surface-2);
 }
 
 .shell__main .status-strip h3 {
@@ -1144,60 +1472,14 @@ button:disabled {
   text-decoration: none;
 }
 
-@media (max-width: 760px) {
-  .day-tiles {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-/* Quick add: the confirmation sits under the row it confirms, across the whole form. */
-.shell__main form[data-testid="orders-quick-add"] > p[data-testid="quick-add-saved"] {
-  grid-row: 4;
-  grid-column: 1 / span 5;
-  margin: var(--space-2) 0 0;
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-sm);
-  font-weight: 600;
-  color: var(--color-brand);
-  background: var(--color-bg-success);
-}
-
-/* A just-saved order: its row flashes green once, then settles (it also scrolls into view). */
-@keyframes row-new-flash {
-  0%,
-  35% {
-    background: var(--color-bg-success);
-  }
-  100% {
-    background: transparent;
-  }
-}
-
-.table tbody tr.row--new td {
-  animation: row-new-flash 2.6s ease-out 1;
-}
-
-.table tbody tr.row--new td:first-child {
-  box-shadow: inset 4px 0 0 var(--color-brand);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .table tbody tr.row--new td {
-    animation: none;
-    background: var(--color-bg-success);
-  }
-}
-
-/* ===== Catalog (U4; mockups §6–§12 in the §16 language) ===================================
- * Customers, products, low stock and suppliers. Every state carries text (the risk chip's
- * label, the low-stock pill's words), and wide tables stay inside `.scroll-x` (NFR9.12). */
+/* ===== Catalog (U4; mockups §6–§12) ======================================================== */
 
 .risk-chip {
   display: inline-flex;
   align-items: center;
-  padding: 2px var(--space-2);
+  padding: 2px 10px;
   border-radius: var(--radius-pill);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   white-space: nowrap;
   color: var(--color-text-2);
@@ -1231,7 +1513,7 @@ button:disabled {
 .shell__main .search-box__hint {
   margin: var(--space-1) 0 0;
   font-size: 13px;
-  color: var(--color-text-2);
+  color: var(--color-text-3);
 }
 
 /* U5 (NFR9.14): CatalogPicker — a search input over a list of options; at 360 px the list
@@ -1250,11 +1532,12 @@ button:disabled {
 
 .picker__list {
   margin: 0;
-  padding: 0;
+  padding: var(--space-1);
   list-style: none;
-  border: 1px solid var(--color-control-border);
+  border: 1px solid var(--color-line);
   border-radius: var(--radius-md);
   background: var(--color-surface);
+  box-shadow: var(--shadow-float);
   overflow-wrap: anywhere;
 }
 
@@ -1264,18 +1547,19 @@ button:disabled {
 
 .picker__option {
   padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-xs);
   cursor: pointer;
 }
 
 .picker__option--active {
-  background: var(--color-bg-neutral);
+  background: var(--color-brand-tint);
   color: var(--color-text);
 }
 
 .shell__main .picker__note {
   margin: 0;
   font-size: 13px;
-  color: var(--color-text-2);
+  color: var(--color-text-3);
 }
 
 /* U5 (BR4.1, BR4.2, BR6.1): a linked customer or line, with its change and unlink actions. */
@@ -1286,8 +1570,9 @@ button:disabled {
   gap: var(--space-2);
   margin-bottom: var(--space-2);
   padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-bg-success);
   border-radius: var(--radius-md);
-  background: var(--color-bg-success);
+  background: var(--color-brand-tint);
   color: var(--color-text);
   overflow-wrap: anywhere;
 }
@@ -1305,22 +1590,71 @@ button:disabled {
   margin-bottom: var(--space-4);
 }
 
-.cat-count {
+/* The list's "+ নতুন" link is its primary action. */
+.cat-head > a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 8px 18px;
+  border-radius: var(--radius-sm);
   font-size: 14px;
   font-weight: 600;
-  color: var(--color-text-2);
+  text-decoration: none;
+  color: var(--color-on-primary);
+  background: var(--color-brand);
+  box-shadow: var(--shadow-button);
 }
 
-.cat-card {
-  margin-bottom: var(--space-4);
-  padding: var(--space-4);
+.cat-head > a:hover {
+  background: var(--color-brand-dark);
+}
+
+.cat-count {
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-2);
+  background: var(--color-bg-neutral);
+}
+
+.cat-card,
+.settings-panel {
+  margin-bottom: var(--space-5);
+  padding: var(--space-5) var(--space-6);
   border: 1px solid var(--color-line);
   border-radius: var(--radius-md);
   background: var(--color-surface);
+  box-shadow: var(--shadow-raised);
 }
 
-.shell__main .cat-card h3 {
+.settings-panel {
+  max-width: 760px;
+}
+
+.shell__main .cat-card h3,
+.shell__main .settings-panel h3 {
   margin-top: 0;
+}
+
+.settings-panel .scroll-x,
+.settings-panel > table {
+  margin-bottom: 0;
+}
+
+.settings-panel dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-2) var(--space-6);
+}
+
+.settings-panel dt {
+  color: var(--color-text-2);
+}
+
+.settings-panel dd {
+  margin: 0;
+  font-weight: 600;
 }
 
 .cat-facts {
@@ -1347,10 +1681,10 @@ button:disabled {
 
 .shell__main ul.note-list > li {
   margin-bottom: var(--space-3);
-  padding: var(--space-3);
+  padding: var(--space-3) var(--space-4);
   border: 1px solid var(--color-line);
   border-radius: var(--radius-sm);
-  background: var(--color-surface);
+  background: var(--color-surface-2);
 }
 
 .note-text {
@@ -1360,7 +1694,7 @@ button:disabled {
 
 .note-meta {
   font-size: 13px;
-  color: var(--color-text-2);
+  color: var(--color-text-3);
 }
 
 .note-earlier {
@@ -1387,16 +1721,17 @@ button:disabled {
   flex-wrap: wrap;
   gap: var(--space-2) var(--space-4);
   margin: 0 0 var(--space-4);
-  padding: var(--space-3);
+  padding: var(--space-3) var(--space-4);
   border: 1px solid var(--color-line);
   border-radius: var(--radius-sm);
 }
 
 .axis-editor {
   margin-bottom: var(--space-4);
-  padding: var(--space-3);
+  padding: var(--space-4);
   border: 1px solid var(--color-line);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-2);
 }
 
 .scroll-x .variant-input {
@@ -1407,44 +1742,141 @@ button:disabled {
   white-space: nowrap;
 }
 
-/* Printable invoice and delivery slip (src/orders/screens/PrintOrder.tsx). On screen the two
- * documents sit on white sheets; in print only the documents remain: the app shell, the
- * actions and anything marked `.print-hide` are hidden, and the slip starts a new page. */
+/* Product photos (src/catalog/screens/ProductDetail.tsx). */
+.product-photo {
+  display: block;
+  max-width: 100%;
+  max-height: 320px;
+  margin-bottom: var(--space-3);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  object-fit: cover;
+}
+
+.shell__main input[type="file"] {
+  max-width: 100%;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--color-text-2);
+}
+
+.shell__main input[type="file"]::file-selector-button {
+  margin-inline-end: var(--space-3);
+  padding: 8px 14px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-sm);
+  font: inherit;
+  font-weight: 600;
+  color: var(--color-text);
+  background: var(--color-surface-2);
+  cursor: pointer;
+}
+
+.product-photo__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+/* Insights (src/insights/screens/Insights.tsx): the period switch is a segmented control. */
+.insights__periods {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  margin-bottom: var(--space-5);
+  padding: 3px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-2);
+}
+
+.insights__periods button {
+  min-height: 36px;
+  padding: 6px 14px;
+  border-color: transparent;
+  font-weight: 500;
+  color: var(--color-text-2);
+  background: transparent;
+  box-shadow: none;
+}
+
+.insights__periods button[aria-pressed="true"] {
+  border-color: var(--color-line);
+  font-weight: 700;
+  color: var(--color-text);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-raised);
+}
+
+/* ===== Printable invoice and delivery slip (src/orders/screens/PrintOrder.tsx) ============
+ * On screen the two documents sit on white sheets; in print only the documents remain: the
+ * app shell, the actions and anything marked `.print-hide` are hidden, and the slip starts a
+ * new page. */
 .print-order__actions {
   display: flex;
-  gap: var(--space-4);
+  flex-wrap: wrap;
+  gap: var(--space-3);
   align-items: center;
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.print-order__actions > a {
+  padding: 6px 14px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--color-text-2);
+  background: var(--color-surface);
+}
+
+.print-order__actions > button {
+  border-color: var(--color-brand);
+  color: var(--color-on-primary);
+  background: var(--color-brand);
+  box-shadow: var(--shadow-button);
+}
+
+.print-order__actions > button:hover:not(:disabled) {
+  border-color: var(--color-brand-dark);
+  background: var(--color-brand-dark);
 }
 
 .print-doc {
-  background: var(--color-surface);
-  color: var(--color-text);
-  border: 1px solid var(--color-line);
-  padding: var(--space-6);
-  margin-bottom: var(--space-6);
   max-width: 800px;
+  margin-bottom: var(--space-6);
+  padding: var(--space-8);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-raised);
 }
 
 .print-doc__head {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: baseline;
-  border-bottom: 2px solid var(--color-text);
+  gap: var(--space-2) var(--space-4);
   margin-bottom: var(--space-4);
+  padding-bottom: var(--space-3);
+  border-bottom: 2px solid var(--color-text);
 }
 
 .print-doc__table {
   width: 100%;
-  border-collapse: collapse;
   margin: var(--space-4) 0;
+  border-collapse: collapse;
 }
 
 .print-doc__table th,
 .print-doc__table td {
-  border-bottom: 1px solid var(--color-border);
   padding: var(--space-2);
-  text-align: left;
+  border-bottom: 1px solid var(--color-line);
+  text-align: start;
 }
 
 .print-doc__sums {
@@ -1452,12 +1884,13 @@ button:disabled {
   grid-template-columns: 1fr auto;
   gap: var(--space-2) var(--space-6);
   max-width: 360px;
-  margin-left: auto;
+  margin-inline-start: auto;
 }
 
 .print-doc__sums dd {
   margin: 0;
-  text-align: right;
+  text-align: end;
+  font-variant-numeric: tabular-nums;
 }
 
 .print-slip__to strong {
@@ -1471,6 +1904,9 @@ button:disabled {
 
 @media print {
   .shell__header,
+  .shell__topbar,
+  .shell__tabbar,
+  .shell__scrim,
   .shell__nav,
   .shell__toast,
   .print-hide,
@@ -1479,16 +1915,24 @@ button:disabled {
   }
 
   .shell,
-  .shell__main {
-    background: var(--color-bg);
-    padding: 0;
+  .shell__main,
+  .shell--app .shell__main {
     margin: 0;
+    padding: 0;
+    background: var(--color-bg);
+  }
+
+  .shell__main [data-testid="screen"] {
+    padding: 0;
+    border: 0;
+    box-shadow: none;
   }
 
   .print-doc {
-    border: none;
     max-width: none;
     margin: 0;
+    border: none;
+    box-shadow: none;
   }
 
   .print-doc--slip {
@@ -1496,70 +1940,489 @@ button:disabled {
   }
 }
 
-/* Business and Settings pages (mockups §17.2, §17.3). */
-.screen__intro {
-  color: var(--color-text);
-  margin: 0 0 var(--space-4);
-}
+/* ===== Medium windows: the sidebar becomes a drawer and a tab bar appears ================== */
 
-.settings-panel {
-  background: var(--color-surface);
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius-sm);
-  padding: var(--space-6);
-  margin-bottom: var(--space-6);
-  max-width: 720px;
-}
+@media (max-width: 959px) {
+  .shell--app .shell__topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: var(--topbar-height);
+    padding: 0 var(--space-2) 0 var(--space-4);
+    color: var(--color-header-text);
+    background: var(--color-header-bg);
+  }
 
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-4);
-}
+  .shell__topbar-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
 
-@media (max-width: 600px) {
-  .form-row {
-    grid-template-columns: 1fr;
+  .shell__topbar-brand::before {
+    width: 30px;
+    height: 30px;
+    font-size: 17px;
+  }
+
+  .shell__icon-button {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0;
+    border: 0;
+    color: var(--color-header-text);
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .shell__icon-button:hover:not(:disabled) {
+    border: 0;
+    background: var(--color-header-active);
+  }
+
+  .shell__icon-button .icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  /* The drawer: the same header, off-canvas until the menu opens it. */
+  .shell--app .shell__header {
+    z-index: 50;
+    width: min(86vw, 320px);
+    padding-top: var(--space-5);
+    box-shadow: var(--shadow-float);
+    visibility: hidden;
+    transform: translateX(-100%);
+    transition:
+      transform 260ms var(--ease-out),
+      visibility 0s linear 260ms;
+  }
+
+  .shell--app[data-menu-open="true"] .shell__header {
+    visibility: visible;
+    transform: none;
+    transition: transform 260ms var(--ease-out);
+  }
+
+  .shell--app[data-menu-open="true"] .shell__scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 45;
+    display: block;
+    width: auto;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: var(--scrim);
+    box-shadow: none;
+    animation: scrim-in 200ms ease-out 1;
+  }
+
+  @keyframes scrim-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  .shell--app .shell__main {
+    margin-inline-start: 0;
+    padding: var(--space-6) var(--space-6)
+      calc(var(--tabbar-height) + var(--space-8) + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* The bottom tab bar: four places and "আরও", icon over label, thumb-sized. */
+  .shell--app .shell__tabbar {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 25;
+    display: grid;
+    grid-auto-columns: minmax(0, 1fr);
+    grid-auto-flow: column;
+    padding: 6px var(--space-2) calc(6px + env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid var(--color-line);
+    background: var(--color-surface);
+    box-shadow: 0 -8px 24px -16px var(--scrim);
+  }
+
+  .shell__tabbar a,
+  .shell__tabbar button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    min-width: 0;
+    min-height: 52px;
+    padding: 4px 2px;
+    border: 0;
+    border-radius: var(--radius-sm);
+    font-size: 11.5px;
+    font-weight: 500;
+    line-height: 1.2;
+    text-align: center;
+    text-decoration: none;
+    color: var(--color-text-3);
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .shell__tabbar :is(a, button) > span {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .shell__tabbar button:hover:not(:disabled) {
+    border: 0;
+    background: transparent;
+  }
+
+  .shell__tabbar .icon {
+    width: 22px;
+    height: 22px;
+  }
+
+  .shell__tabbar a[aria-current="page"],
+  .shell__tabbar button[data-current="true"] {
+    font-weight: 700;
+    color: var(--color-brand);
+  }
+
+  .shell__tabbar a[aria-current="page"] .icon,
+  .shell__tabbar button[data-current="true"] .icon {
+    padding: 2px 10px;
+    width: 44px;
+    border-radius: var(--radius-pill);
+    background: var(--color-bg-success);
+    box-sizing: content-box;
+  }
+
+  .shell__toast {
+    inset-block-start: calc(var(--topbar-height) + var(--space-3));
+    inset-inline: var(--space-4);
+  }
+
+  .shell__main [data-testid="screen"] {
+    padding: var(--space-6);
   }
 }
 
-.banner--success {
-  background: var(--color-bg-success);
-  color: var(--color-text);
+/* ===== Phones (BR9.1, 360 px) ================================================================ */
+
+@media (max-width: 719px) {
+  .shell--app .shell__main {
+    padding-inline: var(--space-4);
+    padding-top: var(--space-5);
+  }
+
+  /* On a phone the screen sits straight on the canvas; its parts carry their own surfaces. */
+  .shell--app .shell__main [data-testid="screen"] {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .shell--public .shell__header {
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .shell--public .shell__main [data-testid="screen"] {
+    margin-top: var(--space-6);
+    padding: var(--space-6) var(--space-5);
+  }
+
+  .shell__main h2 {
+    margin-bottom: var(--space-5);
+    font-size: var(--font-size-xl);
+  }
+
+  .shell__main nav[data-testid="orders-new-links"] {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .shell__main nav[data-testid="orders-new-links"] a {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .shell__main nav[data-testid="orders-new-links"] a:first-child {
+    grid-column: 1 / -1;
+  }
+
+  /* The three totals stack as rows; every figure keeps its basis and completeness pills. */
+  .summary {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: var(--space-2) var(--space-4) var(--space-4);
+    background: var(--color-surface);
+  }
+
+  .summary > span:not(.money-cell),
+  .summary > .money-cell {
+    padding: 0;
+  }
+
+  .summary > span:not(.money-cell) {
+    margin-top: var(--space-3);
+  }
+
+  .summary > :nth-child(n + 3) {
+    border-inline-start: 0;
+  }
+
+  .summary > span:not(.money-cell):nth-child(n + 3) {
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-line);
+  }
+
+  .summary .money-cell__amount {
+    font-size: 22px;
+  }
+
+  .shell__main form[data-testid="orders-quick-add"] {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: var(--space-4);
+    background: var(--color-surface);
+  }
+
+  /* The filter: a compact 2 × 2 grid (status and customer, then the two dates), the button
+   * across the foot. */
+  .shell__main form[data-testid="orders-filter-form"] {
+    grid-template-rows: repeat(4, auto);
+    gap: 4px var(--space-3);
+    padding: var(--space-4);
+    background: var(--color-surface);
+  }
+
+  .shell__main form[data-testid="orders-filter-form"] > label {
+    grid-row: auto;
+    margin-top: var(--space-1);
+  }
+
+  .shell__main form[data-testid="orders-filter-form"] > :is(input, select) {
+    grid-row: auto;
+    padding-inline: 10px;
+    font-size: 14px;
+  }
+
+  .shell__main form[data-testid="orders-filter-form"] > button {
+    grid-row: 5;
+    grid-column: 1 / span 2;
+    margin-top: var(--space-2);
+  }
+
+  .shell__main form,
+  .settings-panel,
+  .cat-card {
+    max-width: none;
+  }
+
+  .shell__main form button[type="submit"],
+  .shell__main form > button:last-child {
+    align-self: stretch;
+  }
+
+  .cat-card,
+  .settings-panel {
+    padding: var(--space-4);
+  }
+
+  .form-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .shell__main ol[data-testid="manual-lines"] > li,
+  .shell__main ol[data-testid="paste-items"] > li {
+    grid-template-columns: minmax(0, 1fr);
+    padding: var(--space-4);
+  }
+
+  .shell__main table[data-testid="order-detail-items"] tr {
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr) auto;
+    gap: var(--space-1) var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--color-line);
+  }
+
+  .shell__main table[data-testid="order-detail-items"] tr:last-child {
+    border-bottom: 0;
+  }
+
+  .shell__main table[data-testid="order-detail-items"] td {
+    padding: 0;
+    border: 0;
+  }
+
+  .shell__main table[data-testid="order-detail-items"] td:nth-child(1) {
+    color: var(--color-text-3);
+  }
+
+  .shell__main table[data-testid="order-detail-items"] td:nth-child(2) {
+    font-weight: 600;
+  }
+
+  .shell__main table[data-testid="order-detail-items"] td:nth-child(3)::before {
+    content: "× ";
+    color: var(--color-text-3);
+  }
+
+  .shell__main table[data-testid="order-detail-items"] td:nth-child(4) {
+    grid-column: 2 / -1;
+  }
+
+  .shell__main table[data-testid="order-detail-items"] + div {
+    max-width: none;
+    margin-inline-start: 0;
+  }
+
+  .shell__main [data-testid="order-detail-actions"] > button {
+    flex: 1 1 auto;
+  }
+
+  .shell__main [data-testid="order-detail-repeat"] {
+    flex-basis: 100%;
+    margin-inline-start: 0;
+  }
+
+  .day-tiles {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-3);
+  }
+
+  .day-tile {
+    min-height: 0;
+    padding: var(--space-5);
+  }
+
+  .print-doc {
+    padding: var(--space-5);
+  }
+
+  /* List tables become one card per row; each cell shows its column name (data-label). */
+  .scroll-x:has(> .table--stack) {
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+
+  .table--stack thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+
+  .table--stack,
+  .table--stack tbody {
+    display: block;
+  }
+
+  .table--stack tbody {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .table--stack tbody tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--space-2) var(--space-3);
+    padding: var(--space-4);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-raised);
+  }
+
+  .table--stack tbody tr:hover td {
+    background: transparent;
+  }
+
+  .table--stack td {
+    display: block;
+    grid-column: 1 / -1;
+    padding: 0;
+    border: 0;
+    font-size: 14px;
+  }
+
+  .table--stack td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    margin-bottom: 1px;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--color-text-3);
+  }
+
+  /* The key (first cell) and a status cell share the card's top line. */
+  .table--stack td:first-child {
+    grid-column: 1;
+    font-size: 15px;
+  }
+
+  .table--stack td[data-cell="corner"] {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+  }
+
+  .table--stack td[data-cell="corner"]::before,
+  .table--stack td:first-child::before {
+    display: none;
+  }
+
+  .table--stack td[data-cell="half"] {
+    grid-column: auto;
+  }
+
+  .table--stack td:last-child:has(> button) {
+    text-align: start;
+  }
+
+  .table--stack td > button {
+    width: 100%;
+    min-height: 40px;
+  }
+
+  .table--stack tbody tr.row--new {
+    border-color: var(--color-brand);
+  }
+
+  .table--stack tbody tr.row--new td:first-child {
+    box-shadow: none;
+  }
 }
 
-.settings-panel dl {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: var(--space-2) var(--space-6);
-}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    transition-duration: 1ms !important;
+  }
 
-/* Insights (src/insights/screens/Insights.tsx): the period switch. */
-.insights__periods {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  margin-bottom: var(--space-4);
-}
-
-.insights__periods button[aria-pressed="true"] {
-  font-weight: 700;
-  text-decoration: underline;
-}
-
-/* Product photos (src/catalog/screens/ProductDetail.tsx). */
-.product-photo {
-  display: block;
-  max-width: 100%;
-  max-height: 320px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--color-line);
-  margin-bottom: var(--space-3);
-}
-
-.product-photo__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-3);
-  align-items: center;
+  .table tbody tr.row--new td {
+    animation: none;
+    background: var(--color-bg-success);
+  }
 }

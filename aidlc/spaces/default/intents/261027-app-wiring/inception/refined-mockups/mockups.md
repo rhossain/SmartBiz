@@ -298,6 +298,9 @@ The same panel follows any email (AC1.6.1); no link ever appears here. The comma
 
 ## 15. Shell navigation by role (AC5.1.5, AC1.7.3)
 
+> **Updated 2026-10-30** to the shipped list (`navFor` in `src/router/App.tsx`, asserted in
+> `tests/unit/shell.test.tsx`). The order below is the sidebar and drawer order.
+
 | Nav item | Owner | Manager | Sales Staff | Accountant |
 |----------|:-----:|:-------:|:-----------:|:----------:|
 | অর্ডার (Orders) | ✓ | ✓ | ✓ | ✓ |
@@ -305,13 +308,20 @@ The same panel follows any email (AC1.6.1); no link ever appears here. The comma
 | পণ্য (Products) | ✓ | ✓ | ✓ | ✓ |
 | কম মজুদ (Low stock) | ✓ | ✓ | ✓ | ✓ |
 | সরবরাহকারী (Suppliers) | ✓ | ✓ | ✓ | ✓ |
-| সদস্য (Staff) | ✓ | ✓ | — | — |
-| হিসাবের খাতা (Audit trail) | ✓ | ✓ | — | ✓ |
-| সেটিংস (Settings) | ✓ | — | — | — |
+| দৈনিক কার্ড (Daily card) | ✓ | — | — | — |
+| বিশ্লেষণ (Insights) | ✓ | — | — | — |
+| অডিট ট্রেইল (Audit trail) | ✓ | ✓ | — | ✓ |
+| কর্মী (Staff) | ✓ | ✓ | — | — |
+| ব্যবসা (Business) | ✓ | — | — | — |
+| সেটিংস (Settings) | ✓ | ✓ | ✓ | ✓ |
 
-The header shows the signed-in email and role name, and a "সাইন আউট" button (US1.4).
+The account block shows the signed-in email, the role name and a "সাইন আউট" button (US1.4).
+Where it sits on each screen size is in §18.1.
 
 ## 16. Visual refresh, as built (2026-10-28)
+
+> **Superseded on look by §18 (2026-10-30).** The layouts below still hold for structure, copy and
+> states; colours, the header and the phone layout follow §18.
 
 > Added after the pre-demo review found the screens plain and, in places, run together ("2Mনীল",
 > "লাইন 1পণ্য"). These mockups record the shipped look at desktop width (≥ 760 px); below 760 px every
@@ -320,8 +330,8 @@ The header shows the signed-in email and role name, and a "সাইন আউ�
 > section and §1–§15 differ on *look*, this section wins; behaviour, copy and states in §1–§15 are
 > unchanged.
 >
-> **Screenshots of every built screen** (desktop and phone, Bangla and English) are in
-> [`screenshots/`](screenshots/README.md), indexed by route and by the mockup section they show.
+> **Screenshots:** [`screenshots/`](screenshots/README.md) now holds the §18 redesign (2026-10-30);
+> the 2026-10-28 captures of this section are in git history.
 
 ### 16.1 Shell header (every signed-in screen)
 
@@ -477,7 +487,9 @@ and tints brand on hover. Staff and audit tables use the §16.2 table style.
 
 ## 17. Daily card, Business and Settings — redrawn for B5 (2026-10-28)
 
-> **Status:** design ready, not built. Today these three routes render the "not available yet"
+> **Status (updated 2026-10-30):** built — daily card, Business and Settings ship on `main`; the AI
+> and debug switches were left out (no such features). Their look now follows §18.
+> **Original status:** design ready, not built. Today these three routes render the "not available yet"
 > screen (U2 functional-spec, B5). This section redraws the MVP mockups S12 (Daily card), S2
 > (Business setup) and S14 (Settings) from
 > `../../../261004-mvp/inception/refined-mockups/mockups.md` in the §16 visual language, and
@@ -651,3 +663,205 @@ endpoint with 403 (absence-asserted like §15).
 
 Classes these screens add (for the `classes` harness): `day-tile`, `day-tile__figure`,
 `day-tile__note`, `status-strip`, `switch`, `switch__track`, `switch__state`, `settings-panel`.
+
+## 18. Premium redesign — phone first (2026-10-30)
+
+> **Why:** the Owner asked for a full redesign, "more premium, elegant and modern, also mobile
+> friendly". On a phone the 2026-10-28 look wrapped the header's eleven links over three lines and
+> squeezed the orders table until order numbers broke one letter per line (old phone screenshot
+> 01). Decisions below were taken on the Owner's standing instruction ("decide for me").
+>
+> **Scope:** look and layout only. Copy, states, role gates, the recognition-basis pills and every
+> behaviour in §1–§17 are unchanged. Where §16/§17 and this section differ on look, this section
+> wins. Built on branch `redesign`; screenshots of every screen are in
+> [`screenshots/`](screenshots/README.md). Tokens are in `design-system-mapping.md` §Tokens used.
+> Text fallback: each drawing is followed by its element list.
+
+Decisions (chosen on the Owner's standing instruction):
+- **D18-1** Navigation moves from a top bar to a **left sidebar** on wide windows (≥ 960 px), and to
+  a **bottom tab bar + drawer** on phones and tablets. A top bar cannot hold eleven Bangla labels.
+- **D18-2** The tab bar shows at most **four** places plus "আরও" (more). They are picked from the
+  links the role was given, in this order of preference: দৈনিক কার্ড, অর্ডার, ক্রেতা, পণ্য, কম মজুদ.
+  The bar never adds a link a role was not given (BR2.1 stays with App's `navFor`).
+- **D18-3** Below 720 px, list tables become **one card per row** with each value labelled from
+  its column name. Tables whose cells are inputs (product variants) keep a horizontal scroll
+  inside their own box (BR9.1), with a 600 px minimum so columns stay readable.
+- **D18-4** Every money figure keeps its basis and completeness pills at every width (team.md:
+  recognition-basis invariant). Nothing is hidden on a phone to save space.
+- **D18-5** No hosted font, no icon font, no new dependency: icons are twelve inline 24 px stroke
+  SVGs drawn for this app; Inter is used only if it is installed, then the offline Bangla chain.
+
+### 18.1 Shell — sidebar, top bar, drawer, tab bar
+
+Desktop (≥ 960 px):
+
+```
+┌────────────────────┬──────────────────────────────────────────────────────────────┐
+│ [৳] SmartBiz BD    │                                                              │
+│                    │   ┌ screen card (white, radius 20, soft shadow) ───────────┐ │
+│ ▌▣ অর্ডার    (lit) │   │ অর্ডার                                          30 px  │ │
+│  ☺ ক্রেতা          │   │ …                                                      │ │
+│  ◇ পণ্য            │   └────────────────────────────────────────────────────────┘ │
+│  △ কম মজুদ         │                                                              │
+│  ⛟ সরবরাহকারী      │                                                              │
+│  ▦ দৈনিক কার্ড      │                                                              │
+│  ▮ বিশ্লেষণ         │                                                              │
+│  ⛉ অডিট ট্রেইল      │                                                              │
+│  ☺+ কর্মী          │                                                              │
+│  ⌂ ব্যবসা          │                                                              │
+│  ≡ সেটিংস          │                                                              │
+│                    │                                                              │
+│ ভাষা     [বাংলা ▾] │                                                              │
+│ ┌────────────────┐ │                                                              │
+│ │(O) owner@…     │ │                                                              │
+│ │    মালিক       │ │                                                              │
+│ │ [ সাইন আউট ]   │ │                                                              │
+│ └────────────────┘ │                                                              │
+└────────────────────┴──────────────────────────────────────────────────────────────┘
+  264 px ink-green sidebar, fixed     content max 1240 px, 40 px padding
+```
+Elements: gold brand tile (`৳`) and name; one row per nav link, icon then label; the current page
+has a lit row, a gold icon and a 3 px gold bar at the sidebar edge, and `aria-current="page"`
+(also on its sub-pages); at the foot the language select, then an account card with a gold
+initial, the email, the role and a full-width sign-out button.
+
+Phone and tablet (< 960 px):
+
+```
+┌──────────────────────────────┐      ┌──────────────────────┬───────┐
+│ [৳] SmartBiz            [≡]  │ 56px │ [৳] SmartBiz BD       │  [×]  │
+├──────────────────────────────┤      │ ▌▣ অর্ডার             │░░░░░░░│
+│                              │      │  ☺ ক্রেতা             │░scrim░│
+│  content on the canvas       │      │  … every link …       │░░░░░░░│
+│  (no outer card; each part   │      │ ভাষা       [বাংলা ▾]  │░░░░░░░│
+│   carries its own surface)   │      │ (O) owner@… মালিক     │░░░░░░░│
+│                              │      │ [ সাইন আউট ]          │░░░░░░░│
+├──────────────────────────────┤      └──────────────────────┴───────┘
+│  ▦     (▣)     ☺     ◇    ⋯  │ 64px   drawer: min(86vw, 320 px), slides from the start edge
+│ দৈনিক  অর্ডার  ক্রেতা  পণ্য  আরও │
+└──────────────────────────────┘
+```
+Elements: ink top bar with the brand and a 44 px menu button (`aria-expanded`, label "মেনু" /
+"মেনু বন্ধ করুন"); a white bottom tab bar, icon over label, the current tab in brand green with a
+pale pill behind its icon; "আরও" opens the drawer and is marked current when the page is not one of
+the four tabs. The drawer is the same header element as the desktop sidebar. Escape, a tap on the
+scrim, a tap on a link, or any route change closes it. The tab bar respects the phone's safe area.
+
+Tab bar by role (D18-2):
+
+| Role | Tab 1 | Tab 2 | Tab 3 | Tab 4 | Tab 5 |
+|------|-------|-------|-------|-------|-------|
+| Owner | দৈনিক কার্ড | অর্ডার | ক্রেতা | পণ্য | আরও |
+| Manager, Accountant, Sales staff | অর্ডার | ক্রেতা | পণ্য | কম মজুদ | আরও |
+
+Save toast: floats top-right on desktop (under the top bar on phones), white with a green border
+and text, and never pushes the page down.
+
+### 18.2 Signed-out screens
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│ [৳] SmartBiz BD                              ভাষা [বাংলা ▾]  │  ink bar
+├──────────────────────────────────────────────────────────────┤
+│                 ┌ card, max 440 px ──────────┐               │
+│                 │ সাইন ইন                     │               │
+│                 │ ইমেইল    [________________] │               │
+│                 │ পাসওয়ার্ড [________________] │               │
+│                 │ [      সাইন ইন করুন      ]  │ full width    │
+│                 └────────────────────────────┘               │
+└──────────────────────────────────────────────────────────────┘
+```
+Same for sign-up, recover, reset and accept-invite: no navigation, no tab bar; the one action
+spans the card.
+
+### 18.3 Lists — desktop table, phone cards
+
+```
+desktop                                            phone (< 720 px)
+┌──────┬───────────────┬────────┬────────┬───────┐ ┌──────────────────────────────┐
+│ #    │ ক্রেতা ও পণ্য  │ অবস্থা │ উৎস    │ মোট   │ │ ORD-1010             (নতুন) │
+├──────┼───────────────┼────────┼────────┼───────┤ │ ক্রেতা ও পণ্য                │
+│ORD-… │ জুবায়ের আহমেদ │ (নতুন) │ manual │ ৳১,৪১০│ │ জুবায়ের আহমেদ · টি-শার্ট      │
+│      │ টি-শার্ট        │        │        │ pills │ │ উৎস          মোট            │
+└──────┴───────────────┴────────┴────────┴───────┘ │ quick-add    ৳১,৪১০ (pills)  │
+                                                   │ [          খুলুন          ]  │
+                                                   └──────────────────────────────┘
+```
+Elements: on desktop a hairline table in a rounded box, quiet 12 px column heads, the key column
+heavier, row hover in pale green; on a phone each row is a white card: the key at top-left, a
+status or chip at top-right (`data-cell="corner"`), then each value under its column name
+(`data-label`), short values in two columns (`data-cell="half"`), and the row action full width.
+Applies to orders, customers, products, low stock, suppliers, staff (members, invitations) and the
+audit trail (`.table--stack`).
+
+Orders list extras: on a phone the three start-order links become one full-width "+ নতুন অর্ডার"
+over two half-width buttons; the three totals stack as rows, each with its pills; the filter is a
+2 × 2 grid (status, customer / from, to) with the button across the foot.
+
+### 18.4 Order detail
+
+```
+[← অর্ডারে ফিরুন]
+ORD-1010                    (নতুন) উৎস: quick-add
+┌ যোগাযোগ ───────────────┐
+│ জুবায়ের আহমেদ           │
+│ 01399001122             │
+└─────────────────────────┘
+পণ্যসমূহ
+┌───────────────────────────────────┐     phone: one row per line
+│ 1  টি-শার্ট                    × 3 │       1  টি-শার্ট           × 3
+│    ৳১,৩৫০ (pipeline)(partial)      │          ৳১,৩৫০ (pills)
+└───────────────────────────────────┘
+                 ┌ ছাড় / ডেলিভারি / মোট ─┐
+                 │ মোট     ৳১,৪১০ (pills) │
+                 └────────────────────────┘
+[⎙ ইনভয়েস ও স্লিপ প্রিন্ট]
+অবস্থা বদলান [নিশ্চিত] [বাতিল] [আংশিক]          [আবার অর্ডার করুন]
+```
+Elements: the print link is a quiet secondary button with a printer mark; the status moves are
+secondary buttons; "আবার অর্ডার করুন" is the one primary (full width on a phone).
+
+### 18.5 Daily card
+
+```
+┌ hero: deep emerald gradient ─────┐ ┌ white tile ─────────────────────┐
+│ আজকের অর্ডার                      │ │ আজকের আয় (হাতে এসেছে)            │
+│ ৳১৭,৯৭০.০০       (white, 32 px)   │ │ ৳৭,০৩০.০০                        │
+│ (pipeline)(complete)              │ │ (realized)(partial)              │
+│ ১০টি অর্ডার, বাতিল ও ফেরত বাদে মূল্য │ │ …                                │
+└───────────────────────────────────┘ └──────────────────────────────────┘
+┌ বকেয়া  —  এখনো রেকর্ড শুরু হয়নি ──┐ ┌ আজকের খরচ  —  … ─────────────────┐
+```
+Elements: the first tile is the hero (white figure, pale green labels on the gradient, both
+measured above 6:1); the rest are white tiles, one column on a phone; the not-recorded tiles still
+show a dash, never ৳০ (D17-1); loading tiles pulse gently (off under reduced motion).
+
+### 18.6 Forms
+
+Inputs are 46 px tall with 10 px corners and a green focus ring; groups (`fieldset`) are quiet
+rounded panels with a bold legend; radio choices sit side by side; manual order lines and
+paste-parsed items are cards (an incomplete item gets an amber edge); the primary submit spans the
+width on a phone.
+
+### 18.7 Screens added after §17 (product photo, insights, business, settings, invoice)
+
+- **Product detail:** the photo card shows the photo (hidden until it loads, so no broken image)
+  and a styled file picker; the variant table scrolls inside its box on a phone.
+- **Insights (Owner):** the period switch (৭ দিন / ৩০ দিন / ৯০ দিন / সব সময়) is a segmented
+  control, the chosen period raised in white; each section is a white panel.
+- **Business and Settings:** one white panel per group; the two-column field row stacks on a phone.
+- **Invoice and slip:** two white sheets on the canvas, the back link as a pill and "প্রিন্ট করুন"
+  as the primary button. In print only the sheets remain (sidebar, top bar, tab bar, drawer and
+  toast are all hidden) and the slip starts a new page.
+
+### 18.8 Acceptance checks for this section
+
+- No sideways scroll at 390 px on any of the 19 captured screens (`scrollWidth` = window width;
+  `scripts/browser-check.ts` keeps checking 360 px in the gate).
+- `tests/unit/stylesheet.test.ts`: no literal colour outside `tokens.css`; no fixed width above
+  360 px outside `.scroll-x`; one `:focus-visible` rule from the token.
+- `tests/unit/contrast.test.ts`: every colour token in at least one measured pair, all ≥ 4.5:1
+  for text (≥ 3:1 for the control border and focus outline).
+- `tests/unit/shell.test.tsx`: the sidebar links are exactly the given list; the tab bar picks the
+  first four by preference and marks "আরও" for other pages; the drawer opens from the menu and
+  "আরও" and closes on Escape, the scrim, a link and a route change.

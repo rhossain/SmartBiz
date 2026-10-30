@@ -190,7 +190,7 @@ export const StaffScreen = (props: StaffScreenProps): React.ReactElement => {
           </p>
         ) : null}
         <div className="scroll-x">
-          <table data-testid="staff-members" className="table">
+          <table data-testid="staff-members" className="table table--stack">
             <thead>
               <tr>
                 <th scope="col">{lookup("staff.col.email", locale)}</th>
@@ -203,8 +203,12 @@ export const StaffScreen = (props: StaffScreenProps): React.ReactElement => {
               {(list?.members ?? []).map((m) => (
                 <tr key={m.id} data-testid="staff-member" data-member-id={m.id}>
                   <td>{m.email}</td>
-                  <td>{roleLabel(m.role, locale)}</td>
-                  <td>{lookup(m.active ? "staff.active" : "staff.inactive", locale)}</td>
+                  <td data-cell="half" data-label={lookup("staff.col.role", locale)}>
+                    {roleLabel(m.role, locale)}
+                  </td>
+                  <td data-cell="half" data-label={lookup("staff.col.active", locale)}>
+                    {lookup(m.active ? "staff.active" : "staff.inactive", locale)}
+                  </td>
                   <td>
                     {m.canReset ? (
                       <button
@@ -226,7 +230,7 @@ export const StaffScreen = (props: StaffScreenProps): React.ReactElement => {
           <p data-testid="staff-no-invitations">{lookup("staff.no_invitations", locale)}</p>
         ) : (
           <div className="scroll-x">
-            <table data-testid="staff-invitations" className="table">
+            <table data-testid="staff-invitations" className="table table--stack">
               <thead>
                 <tr>
                   <th scope="col">{lookup("staff.col.email", locale)}</th>
@@ -238,8 +242,12 @@ export const StaffScreen = (props: StaffScreenProps): React.ReactElement => {
                 {(list?.invitations ?? []).map((i) => (
                   <tr key={i.id} data-testid="staff-invitation">
                     <td>{i.email}</td>
-                    <td>{roleLabel(i.role, locale)}</td>
-                    <td>{shownExpiry(i.expiresAt, locale)}</td>
+                    <td data-cell="half" data-label={lookup("staff.col.role", locale)}>
+                      {roleLabel(i.role, locale)}
+                    </td>
+                    <td data-cell="half" data-label={lookup("staff.col.expires", locale)}>
+                      {shownExpiry(i.expiresAt, locale)}
+                    </td>
                   </tr>
                 ))}
               </tbody>
