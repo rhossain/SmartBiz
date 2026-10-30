@@ -329,6 +329,21 @@ export const API_FIXTURES: Readonly<Record<string, ApiFixture>> = {
     request: { phone: "01711000000" },
     badRequest: { phone: 7 },
   },
+  // Product photos: the walk's product has no photo when the GET row runs (404, JSON).
+  "GET /api/products/:id/photo": {
+    status: 404,
+    body: { error: "not_found" },
+    schema: null,
+    badQuery: "size=big",
+  },
+  "PATCH /api/products/:id/photo": {
+    status: 200,
+    body: { photoUpdatedAt: "2026-10-30T08:00:00.000Z" },
+    schema: null,
+    // The smallest bytes that pass the PNG check: the 8-byte signature and 4 zero bytes.
+    request: { photo: { contentType: "image/png", data: "iVBORw0KGgoAAAAA" } },
+    badRequest: { photo: { contentType: "image/gif", data: "R0lG" } },
+  },
   "GET /api/insights": {
     status: 200,
     body: {

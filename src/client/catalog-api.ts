@@ -9,6 +9,7 @@
  * HTTP client (C1). Nothing is cached: every call goes to the server. The cost key of a
  * product body is optional in the schema because the server decides who gets it (BR9.2).
  */
+import { z } from "zod";
 import {
   CustomerDetailResponseSchema,
   CustomerListResponseSchema,
@@ -69,6 +70,11 @@ export interface CatalogApi {
     readonly create: (input: ProductCreate) => Promise<ApiResult<ProductWriteResponse>>;
     readonly update: (id: string, patch: ProductUpdate) => Promise<ApiResult<ProductWriteResponse>>;
     readonly setCost: (id: string, input: CostSet) => Promise<ApiResult<ProductWriteResponse>>;
+    /** Product photos: set (`photo`) or remove (`null`) the product's one photo. */
+    readonly setPhoto: (
+      id: string,
+      photo: PhotoUpload | null,
+    ) => Promise<ApiResult<{ readonly photoUpdatedAt: string | null }>>;
   };
   readonly variants: {
     readonly setStock: (id: string, input: StockSet) => Promise<ApiResult<VariantWriteResponse>>;
@@ -87,6 +93,14 @@ export interface CatalogApi {
 }
 
 const seg = (id: string): string => encodeURIComponent(id);
+
+/** Product photos: the shrunk image, base64, as the PATCH body carries it. */
+export interface PhotoUpload {
+  readonly contentType: "image/jpeg" | "image/png" | "image/webp";
+  readonly data: string;
+}
+
+const PhotoSetResponseSchema = z.object({ photoUpdatedAt: z.string().nullable() });
 
 export const createCatalogApi = (http: HttpClient): CatalogApi => ({
   customers: {
@@ -128,6 +142,11 @@ export const createCatalogApi = (http: HttpClient): CatalogApi => ({
       http.request("PATCH", `/api/products/${seg(id)}/cost`, {
         body: input,
         schema: ProductWriteResponseSchema,
+      }),
+    setPhoto: (id, photo) =>
+      http.request("PATCH", `/api/products/${seg(id)}/photo`, {
+        body: { photo },
+        schema: PhotoSetResponseSchema,
       }),
   },
   variants: {

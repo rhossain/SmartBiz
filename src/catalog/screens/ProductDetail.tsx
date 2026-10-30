@@ -25,6 +25,7 @@ import { Field } from "../../pres/Field.js";
 import { LowStockMark } from "../../pres/LowStockMark.js";
 import { PhoneText } from "../../pres/PhoneText.js";
 import { Screen } from "../../pres/Screen.js";
+import { shrinkImage, type ShrunkImage } from "../../pres/shrink-image.js";
 import { useSubmitGuard } from "../../pres/use-submit-guard.js";
 import { digits, taka, tr } from "../copy.js";
 import type { ProductResponse, VariantResponse } from "../schemas.js";
@@ -247,6 +248,105 @@ const Variants = ({
   );
 };
 
+/**
+ * Product photos: the product's one photo, shown when the server has one (a 404 hides it),
+ * and for Owner and Manager "add / change / remove". A picked image is shrunk in the browser
+ * (at most 800 px, JPEG) before it is sent; a refused upload names the problem and keeps the
+ * old photo. The image URL changes after every save so the new photo shows at once.
+ */
+/** The URL that shows a product's photo; `v` changes after a save so the image reloads. */
+export const productPhotoUrl = (id: string, version: number): string =>
+  `/api/products/${encodeURIComponent(id)}/photo?v=${version}`;
+
+const PhotoBlock = ({
+  state,
+  product,
+}: {
+  readonly state: CatalogRouteState;
+  readonly product: ProductResponse;
+}): React.ReactElement => {
+  const { locale, can } = state;
+  const [version, setVersion] = React.useState(0);
+  const [shown, setShown] = React.useState(false);
+  const [saving, setSaving] = React.useState(false);
+  const [failure, setFailure] = React.useState<ApiFailure | null>(null);
+  const [badFile, setBadFile] = React.useState(false);
+  const shrink = state.shrinkPhoto ?? shrinkImage;
+
+  const save = async (photo: ShrunkImage | null): Promise<void> => {
+    setSaving(true);
+    setFailure(null);
+    const r = await state.api.products.setPhoto(product.id, photo);
+    setSaving(false);
+    if (!r.ok) {
+      setFailure(r);
+      return;
+    }
+    if (photo === null) setShown(false);
+    setVersion((v) => v + 1);
+  };
+
+  const onPick = async (e: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setBadFile(false);
+    const shrunk = await shrink(file);
+    if (shrunk === null) {
+      setBadFile(true);
+      return;
+    }
+    await save(shrunk);
+  };
+
+  return (
+    <div className="cat-card" data-testid="product-photo-block">
+      <img
+        src={productPhotoUrl(product.id, version)}
+        alt={product.name}
+        data-testid="product-photo"
+        className="product-photo"
+        hidden={!shown}
+        onLoad={() => setShown(true)}
+        onError={() => setShown(false)}
+      />
+      {can.manage ? (
+        <div className="product-photo__actions">
+          <label>
+            {tr(shown ? "product.photo.change" : "product.photo.add", locale)}{" "}
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              data-testid="product-photo-input"
+              disabled={saving}
+              onChange={(e) => void onPick(e)}
+            />
+          </label>
+          {shown ? (
+            <button
+              type="button"
+              data-testid="product-photo-remove"
+              disabled={saving}
+              onClick={() => void save(null)}
+            >
+              {tr("product.photo.remove", locale)}
+            </button>
+          ) : null}
+          {saving ? <span role="status">{tr("product.photo.saving", locale)}</span> : null}
+          {badFile ? (
+            <p role="alert" data-testid="product-photo-bad-file">
+              {tr("product.photo.bad_file", locale)}
+            </p>
+          ) : null}
+          {failure ? (
+            <FormFailure failure={failure} locale={locale} testId="product-photo-failure" />
+          ) : null}
+        </div>
+      ) : null}
+    </div>
+  );
+};
+
 export const ProductDetail = ({
   state,
   id,
@@ -274,6 +374,7 @@ export const ProductDetail = ({
       >
         {product !== null ? (
           <>
+            <PhotoBlock state={state} product={product} />
             <div className="cat-card" data-testid="product-header">
               <div className="cat-facts">
                 <span className="mono" data-testid="product-sku">

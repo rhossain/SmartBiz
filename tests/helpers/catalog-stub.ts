@@ -524,6 +524,30 @@ const handleVariants = (text: string, params: ReadonlyArray<unknown>, state: Cat
       .filter((v) => v["business_id"] === businessId && ids.includes(String(v["id"])))
       .map((v) => variantWithProduct(state, v));
   }
+  // Product photos (src/catalog/product-photo.ts): which file is current, and its type.
+  if (
+    /^\s*SELECT photo_file, photo_type FROM products\s+WHERE id = \? AND business_id = \?( FOR UPDATE)?\s*$/i.test(
+      text,
+    )
+  ) {
+    const [id, businessId] = params;
+    return state.products
+      .filter((p) => p["id"] === id && p["business_id"] === businessId)
+      .map((p) => ({ photo_file: p["photo_file"] ?? null, photo_type: p["photo_type"] ?? null }));
+  }
+  if (
+    /^\s*UPDATE products SET photo_file = \?, photo_type = \?,\s+photo_updated_at = \?\s+WHERE id = \? AND business_id = \?\s*$/i.test(
+      text,
+    )
+  ) {
+    const [file, type, at, id, businessId] = params;
+    for (const p of state.products) {
+      if (p["id"] === id && p["business_id"] === businessId) {
+        Object.assign(p, { photo_file: file, photo_type: type, photo_updated_at: at });
+      }
+    }
+    return [];
+  }
   // Stock deduction on orders (src/catalog/order-stock.ts writeStock): the stock alone.
   if (
     /UPDATE variants SET stock = \?, updated_at = \?\s+WHERE id = \? AND business_id = \?/i.test(

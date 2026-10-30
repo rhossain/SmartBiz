@@ -198,6 +198,10 @@ export const API_ROWS: ReadonlyArray<ApiRow> = [
       ["GET", "/api/business", EVERY, "printable invoice and delivery slip"],
       ["PATCH", "/api/business", BUSINESS_EDITORS, "Business page (AC1.5.1, AC1.5.4)"],
       ["PATCH", "/api/me/locale", EVERY, "Settings: own language (AC1.5.2)"],
+      // Product photos: every role sees them; Owner and Manager set or remove them. The walk's
+      // product has no photo yet when the GET row runs, so its recorded answer is 404.
+      ["GET", "/api/products/:id/photo", EVERY, "product photos: see"],
+      ["PATCH", "/api/products/:id/photo", CATALOG_MANAGERS, "product photos: set or remove"],
       // Customer and product insights: money per customer, so the Owner only.
       ["GET", "/api/insights", BUSINESS_EDITORS, "insights: top customers, best sellers"],
     ] as const

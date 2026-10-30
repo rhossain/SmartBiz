@@ -237,13 +237,14 @@ describe("U1 migrations 0011–0015 (text)", () => {
    */
   const U5_FILE = "0023_link_orders_to_catalog.sql";
 
-  test("U5: 0023 runs right after 0022; only 0024 (stock) and 0025 (business contact) follow", () => {
+  test("U5: 0023 runs right after 0022; then only 0024 (stock), 0025 (business), 0026 (photos)", () => {
     const files = listMigrations();
     const at = files.indexOf("0022_create_variants.sql");
     expect(files.slice(at + 1)).toEqual([
       U5_FILE,
       "0024_orders_stock_deducted.sql",
       "0025_business_contact.sql",
+      "0026_product_photos.sql",
     ]);
     expect(read(U5_FILE).split("\n")[0]).toMatch(
       /^-- 0023 — OrdersComponent, U5 u5-orders-catalog/,

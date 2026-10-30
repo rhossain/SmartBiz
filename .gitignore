@@ -113,3 +113,6 @@ aidlc/diagnostics/
 
 # bun test --coverage output (regenerated each run)
 coverage/
+
+# Product photos (src/server/photo-store.ts): kept on this machine, backed up with the dump.
+data/

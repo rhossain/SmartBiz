@@ -155,6 +155,15 @@ ls -t backups/*.dump | tail -n +11 | xargs rm -f                       # keep th
 Take and verify a dump before every merge that adds a migration; never delete the pre-merge
 dump of the current Bolt.
 
+Product photos are files, not database rows: they live in `data/photos/` (or
+`SMARTBIZ_PHOTO_DIR`), which is gitignored. Back the folder up next to the dump, and restore it
+together with the dump so each product's photo name still points at its file:
+
+```bash
+tar -czf backups/photos-$(date +%Y%m%d-%H%M).tar.gz data/photos   # back up
+tar -xzf backups/<photos-file>.tar.gz                              # restore (server stopped)
+```
+
 Restore (stop the server first):
 
 ```bash
