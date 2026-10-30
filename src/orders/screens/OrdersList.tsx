@@ -368,7 +368,7 @@ export const OrdersList = (props: OrdersListProps): React.ReactElement => {
       ) : phase !== "ready" ? null : (
         // U2 (BR9.1): the wide table scrolls inside its own box, never the page.
         <div className="scroll-x">
-          <table data-testid="orders-table" className="table">
+          <table data-testid="orders-table" className="table table--stack">
             <thead>
               <tr>
                 <th>#</th>
@@ -389,7 +389,7 @@ export const OrdersList = (props: OrdersListProps): React.ReactElement => {
                   {...(o.id === flash ? { "data-new": "true", className: "row--new" } : {})}
                 >
                   <td>{o.orderNo}</td>
-                  <td data-testid="orders-row-who">
+                  <td data-testid="orders-row-who" data-label={tr("orders.customer_items", locale)}>
                     {o.customerName ? (
                       <span data-testid="orders-row-customer">{o.customerName}</span>
                     ) : null}
@@ -397,11 +397,17 @@ export const OrdersList = (props: OrdersListProps): React.ReactElement => {
                       <span data-testid="orders-row-items">{o.itemLabels.join(", ")}</span>
                     ) : null}
                   </td>
-                  <td>
+                  <td data-cell="corner">
                     <Pill kind={statusTone(o.status)} label={statusText(o.status, locale)} />
                   </td>
-                  <td data-testid="orders-row-source">{o.source}</td>
-                  <td>
+                  <td
+                    data-testid="orders-row-source"
+                    data-cell="half"
+                    data-label={tr("orders.source", locale)}
+                  >
+                    {o.source}
+                  </td>
+                  <td data-cell="half" data-label={tr("orders.total", locale)}>
                     <MoneyCell
                       figure={orderMoneyFigure(o)}
                       locale={locale}

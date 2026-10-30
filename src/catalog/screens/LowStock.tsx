@@ -40,7 +40,7 @@ export const LowStock = ({ state }: { readonly state: CatalogRouteState }): Reac
           <p data-testid="low-stock-truncated">{tr("cat.truncated", locale)}</p>
         ) : null}
         <div className="scroll-x">
-          <table className="table" data-testid="low-stock-table">
+          <table className="table table--stack" data-testid="low-stock-table">
             <thead>
               <tr>
                 <th scope="col">{tr("low.col.product", locale)}</th>
@@ -57,17 +57,17 @@ export const LowStock = ({ state }: { readonly state: CatalogRouteState }): Reac
                       {r.productName}
                     </a>
                   </td>
-                  <td>
+                  <td data-label={tr("low.col.variant", locale)}>
                     {r.axisValues.length === 0
                       ? tr("product.single", locale)
                       : r.axisValues.join(" · ")}
                     <br />
                     <span className="mono">{r.fullSku}</span>
                   </td>
-                  <td data-testid="low-stock-level">
+                  <td data-testid="low-stock-level" data-cell="corner">
                     {digits(r.stock, locale)} / {digits(r.minimumStock, locale)}
                   </td>
-                  <td>
+                  <td data-label={tr("low.col.supplier", locale)}>
                     {r.supplier !== null ? (
                       <>
                         {r.supplier.name}{" "}

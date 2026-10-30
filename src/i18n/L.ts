@@ -33,6 +33,10 @@ export const L_TABLE: Translations = Object.freeze({
   "nav.settings": L("সেটিংস", "Settings"),
   "nav.insights": L("বিশ্লেষণ", "Insights"),
   "nav.language": L("ভাষা", "Language"),
+  // Redesign (mockups §18): the phone menu, its "more" tab and the close control.
+  "nav.menu": L("মেনু", "Menu"),
+  "nav.more": L("আরও", "More"),
+  "nav.close": L("মেনু বন্ধ করুন", "Close menu"),
   "role.owner": L("মালিক", "Owner"),
   "role.manager": L("ম্যানেজার", "Manager"),
   "role.sales_staff": L("বিক্রয়কর্মী", "Sales staff"),

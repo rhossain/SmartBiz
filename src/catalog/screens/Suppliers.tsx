@@ -180,7 +180,7 @@ export const Suppliers = ({ state }: { readonly state: CatalogRouteState }): Rea
           <p data-testid="suppliers-empty">{tr("suppliers.empty", locale)}</p>
         ) : (
           <div className="scroll-x">
-            <table className="table" data-testid="suppliers-table">
+            <table className="table table--stack" data-testid="suppliers-table">
               <thead>
                 <tr>
                   <th scope="col">{tr("suppliers.col.name", locale)}</th>
@@ -193,10 +193,16 @@ export const Suppliers = ({ state }: { readonly state: CatalogRouteState }): Rea
                 {suppliers.map((s) => (
                   <tr key={s.id} data-testid="supplier-row" data-supplier-id={s.id}>
                     <td>{s.name}</td>
-                    <td>
+                    <td data-cell="half" data-label={tr("suppliers.col.phone", locale)}>
                       <PhoneText phone={s.phone} locale={locale} call testId="supplier-phone" />
                     </td>
-                    <td data-testid="supplier-product-count">{digits(s.productCount, locale)}</td>
+                    <td
+                      data-testid="supplier-product-count"
+                      data-cell="half"
+                      data-label={tr("suppliers.col.products", locale)}
+                    >
+                      {digits(s.productCount, locale)}
+                    </td>
                     {can.manage ? (
                       <td>
                         <button

@@ -7,6 +7,9 @@
  * business link; Owner: all five); no external font link is added to the page.
  * U2: the navigation is a prop built by App from the route map (F-01, S12), and the Shell
  * hosts the save toast (F-05).
+ * Redesign (mockups §18): below 960 px a bottom tab bar repeats up to four of the GIVEN links
+ * (daily card, orders, customers, products, low stock — in that order of preference) plus
+ * "আরও", which opens the header as a drawer; Escape, the scrim and a nav link close it.
  */
 import { afterEach, describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
@@ -18,7 +21,11 @@ import { setLocale } from "../../src/i18n/useTranslations.js";
 import { Shell } from "../../src/pres/Shell.js";
 import { homeFor, navFor } from "../../src/router/App.js";
 
-afterEach(() => cleanup());
+afterEach(() => {
+  cleanup();
+  // A clicked nav link moves the shared location hash; later router tests read it.
+  window.location.hash = "";
+});
 
 describe("Shell", () => {
   test("signed in: email, role and a sign-out that calls the handler", () => {
@@ -162,5 +169,108 @@ describe("Shell", () => {
       /^https?:/.test(l.getAttribute("href") ?? ""),
     );
     expect(external).toHaveLength(0);
+  });
+
+  test("tab bar: the first four given links by preference, then আরও; none signed out", () => {
+    const view = render(
+      <Shell
+        locale="bn"
+        onLocaleChange={() => undefined}
+        user={{ email: "x@y.zz", role: "owner" }}
+        nav={navFor("owner")}
+        currentPath="/orders/new"
+      />,
+    );
+    const tabs = [...view.getByTestId("shell-tabbar").querySelectorAll("a")];
+    expect(tabs.map((a) => a.getAttribute("href"))).toEqual([
+      "#/daily-card",
+      "#/orders",
+      "#/customers",
+      "#/products",
+    ]);
+    expect(tabs.map((a) => a.textContent)).toEqual(["দৈনিক কার্ড", "অর্ডার", "ক্রেতা", "পণ্য"]);
+    expect(view.getByTestId("tab-/orders").getAttribute("aria-current")).toBe("page");
+    expect(view.getByTestId("tab-more").textContent).toBe("আরও");
+    expect(view.getByTestId("tab-more").hasAttribute("data-current")).toBe(false);
+    cleanup();
+    // Sales staff has no daily card: the fourth tab is low stock. A page off the bar marks আরও.
+    const sales = render(
+      <Shell
+        locale="en"
+        onLocaleChange={() => undefined}
+        user={{ email: "x@y.zz", role: "sales_staff" }}
+        nav={navFor("sales_staff")}
+        currentPath="/settings"
+      />,
+    );
+    expect(
+      [...sales.getByTestId("shell-tabbar").querySelectorAll("a")].map((a) =>
+        a.getAttribute("href"),
+      ),
+    ).toEqual(["#/orders", "#/customers", "#/products", "#/low-stock"]);
+    expect(sales.getByTestId("tab-more").getAttribute("data-current")).toBe("true");
+    cleanup();
+    const out = render(<Shell locale="bn" onLocaleChange={() => undefined} user={null} />);
+    expect(out.queryByTestId("shell-tabbar")).toBeNull();
+    expect(out.queryByTestId("menu-toggle")).toBeNull();
+  });
+
+  test("the tab bar only repeats links it was given; an empty nav has no tab bar", () => {
+    const view = render(
+      <Shell
+        locale="bn"
+        onLocaleChange={() => undefined}
+        user={{ email: "x@y.zz", role: "accountant" }}
+        nav={[{ to: "/audit-trail", label: "nav.audit_trail" }]}
+      />,
+    );
+    expect(view.queryByTestId("shell-tabbar")).toBeNull();
+  });
+
+  test("menu drawer: the toggle and আরও open it; Escape, the scrim and a link close it", () => {
+    const view = render(
+      <Shell
+        locale="bn"
+        onLocaleChange={() => undefined}
+        user={{ email: "x@y.zz", role: "owner" }}
+        nav={navFor("owner")}
+        currentPath="/orders"
+      />,
+    );
+    const shell = view.getByTestId("shell");
+    const toggle = view.getByTestId("menu-toggle");
+    const open = (): string | null => shell.getAttribute("data-menu-open");
+    expect(open()).toBe("false");
+    expect(toggle.getAttribute("aria-expanded")).toBe("false");
+    expect(toggle.textContent).toBe("মেনু");
+    fireEvent.click(toggle);
+    expect(open()).toBe("true");
+    expect(toggle.getAttribute("aria-expanded")).toBe("true");
+    expect(toggle.textContent).toBe("মেনু বন্ধ করুন");
+    fireEvent.keyDown(window, { key: "Escape" });
+    expect(open()).toBe("false");
+    fireEvent.click(view.getByTestId("tab-more"));
+    expect(open()).toBe("true");
+    fireEvent.click(view.getByLabelText("মেনু বন্ধ করুন", { selector: ".shell__scrim" }));
+    expect(open()).toBe("false");
+    fireEvent.click(toggle);
+    fireEvent.keyDown(window, { key: "Enter" });
+    expect(open()).toBe("true");
+    fireEvent.click(view.getByTestId("nav-/customers"));
+    expect(open()).toBe("false");
+  });
+
+  test("a route change closes the drawer", () => {
+    const props = {
+      locale: "bn" as const,
+      onLocaleChange: () => undefined,
+      user: { email: "x@y.zz", role: "owner" as const },
+      nav: navFor("owner"),
+    };
+    const view = render(<Shell {...props} currentPath="/orders" />);
+    fireEvent.click(view.getByTestId("menu-toggle"));
+    expect(view.getByTestId("shell").getAttribute("data-menu-open")).toBe("true");
+    view.rerender(<Shell {...props} currentPath="/customers" />);
+    expect(view.getByTestId("shell").getAttribute("data-menu-open")).toBe("false");
   });
 });

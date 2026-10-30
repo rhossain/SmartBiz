@@ -137,7 +137,7 @@ export const CustomerList = ({
         empty={empty}
       >
         <div className="scroll-x">
-          <table className="table" data-testid="customers-table">
+          <table className="table table--stack" data-testid="customers-table">
             <thead>
               <tr>
                 <th scope="col">{tr("customers.col.name", locale)}</th>
@@ -153,10 +153,10 @@ export const CustomerList = ({
                       {c.name}
                     </a>
                   </td>
-                  <td>
+                  <td data-label={tr("customers.col.phone", locale)}>
                     <PhoneText phone={c.phone} locale={locale} testId="customer-phone" />
                   </td>
-                  <td>
+                  <td data-cell="corner">
                     <RiskChip level={c.riskLevel} locale={locale} />
                   </td>
                 </tr>

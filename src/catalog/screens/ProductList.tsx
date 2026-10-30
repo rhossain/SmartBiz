@@ -133,7 +133,7 @@ export const ProductList = ({
         empty={empty}
       >
         <div className="scroll-x">
-          <table className="table" data-testid="products-table">
+          <table className="table table--stack" data-testid="products-table">
             <thead>
               <tr>
                 <th scope="col">{tr("products.col.name", locale)}</th>
@@ -153,17 +153,41 @@ export const ProductList = ({
                       {p.name}
                     </a>
                   </td>
-                  <td className="mono">{p.sku}</td>
-                  <td data-testid="product-variant-count">{digits(p.variantCount, locale)}</td>
-                  <td data-testid="product-total-stock">{digits(p.totalStock, locale)}</td>
-                  <td>
+                  <td className="mono" data-cell="corner">
+                    {p.sku}
+                  </td>
+                  <td
+                    data-testid="product-variant-count"
+                    data-cell="half"
+                    data-label={tr("products.col.variants", locale)}
+                  >
+                    {digits(p.variantCount, locale)}
+                  </td>
+                  <td
+                    data-testid="product-total-stock"
+                    data-cell="half"
+                    data-label={tr("products.col.stock", locale)}
+                  >
+                    {digits(p.totalStock, locale)}
+                  </td>
+                  <td data-label={tr("products.col.low", locale)}>
                     {p.lowCount > 0 ? <LowStockMark locale={locale} count={p.lowCount} /> : null}
                   </td>
-                  <td data-testid="product-price" data-price="selling">
+                  <td
+                    data-testid="product-price"
+                    data-price="selling"
+                    data-cell="half"
+                    data-label={tr("product.price", locale)}
+                  >
                     {taka(p.sellingPricePaise, locale)}
                   </td>
                   {showCost ? (
-                    <td data-testid="product-cost" data-price="cost">
+                    <td
+                      data-testid="product-cost"
+                      data-price="cost"
+                      data-cell="half"
+                      data-label={tr("product.cost", locale)}
+                    >
                       {p.purchaseCostPaise === null || p.purchaseCostPaise === undefined
                         ? tr("product.cost_not_recorded", locale)
                         : taka(p.purchaseCostPaise, locale)}
