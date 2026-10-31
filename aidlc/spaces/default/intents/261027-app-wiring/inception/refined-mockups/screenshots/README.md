@@ -1,8 +1,9 @@
-# Screenshots — App Wiring, redesign as built (2026-10-30)
+# Screenshots — App Wiring, redesign v2 as built (2026-10-30)
 
-Real screenshots of the running app after the premium redesign: the visual companion to
-`../mockups.md` §18 (redesign), which supersedes the look recorded in §16 and §17. The 2026-10-28
-set (ink top bar, single-column phone tables) is replaced; it stays in git history.
+Real screenshots of the running app after redesign v2: the visual companion to `../mockups.md`
+§19 (open layout, one brand colour) on top of §18 (navigation and phone cards), which supersede
+the look recorded in §16 and §17. The earlier §18 set (one big screen card, blue links) and the
+2026-10-28 set are replaced; both stay in git history.
 
 - **Data:** a throwaway database seeded through the app's own API with the demo catalog
   (`seedDemoCatalog` from `scripts/seed-demo.ts`) and ten orders across every status. The business
@@ -12,18 +13,18 @@ set (ink top bar, single-column phone tables) is replaced; it stays in git histo
   reduced motion; the viewport is grown to the page height so the fixed sidebar and the phone tab
   bar are drawn where a person sees them.
 - **Desktop:** 1440 px wide. **Phone:** 390 px wide. Bangla (`-bn`).
-- Every capture was checked for sideways scroll: `scrollWidth` equals the window width on all 38.
+- Every capture was checked for sideways scroll: `scrollWidth` equals the window width on all 39.
 - Very long pages (audit trail, full orders list on a phone) are cut at 4 000 px.
 
 | # | Screen | Route | Mockup | Desktop | Phone |
 |---|--------|-------|--------|---------|-------|
-| 00 | Sign-in (signed out) | `/sign-in` | §18.2 | [bn](desktop/00-sign-in-bn.png) | [bn](phone/00-sign-in-bn.png) |
-| 01 | Orders list | `/orders` | §18.3 | [bn](desktop/01-orders-list-bn.png) | [bn](phone/01-orders-list-bn.png) |
+| 00 | Sign-in (signed out) | `/sign-in` | §18.2, §19.3 | [bn](desktop/00-sign-in-bn.png) | [bn](phone/00-sign-in-bn.png) |
+| 01 | Orders list | `/orders` | §18.3, §19.1–19.2 | [bn](desktop/01-orders-list-bn.png) | [bn](phone/01-orders-list-bn.png) |
 | 02 | Order detail | `/orders/:id` | §18.4 | [bn](desktop/02-order-detail-bn.png) | [bn](phone/02-order-detail-bn.png) |
 | 03 | New order | `/orders/new` | §16.4, §18.6 | [bn](desktop/03-new-order-bn.png) | [bn](phone/03-new-order-bn.png) |
 | 04 | Order from a message (after "পড়ুন") | `/orders/new/paste-parse` | §16.5, §18.6 | [bn](desktop/04-order-from-message-bn.png) | [bn](phone/04-order-from-message-bn.png) |
 | 05 | Repeat a past order | `/orders/new/repeat` | §16.7 | [bn](desktop/05-repeat-order-bn.png) | [bn](phone/05-repeat-order-bn.png) |
-| 06 | Daily card | `/daily-card` | §18.5 | [bn](desktop/06-daily-card-bn.png) | [bn](phone/06-daily-card-bn.png) |
+| 06 | Daily card | `/daily-card` | §18.5, §19.3 | [bn](desktop/06-daily-card-bn.png) | [bn](phone/06-daily-card-bn.png) |
 | 07 | Staff and invitations | `/staff` | §5, §18.3 | [bn](desktop/07-staff-bn.png) | [bn](phone/07-staff-bn.png) |
 | 08 | Audit trail | `/audit-trail` | §18.3 | [bn](desktop/08-audit-trail-bn.png) | [bn](phone/08-audit-trail-bn.png) |
 | 09 | Customers | `/customers` | §6, §18.3 | [bn](desktop/09-customers-bn.png) | [bn](phone/09-customers-bn.png) |

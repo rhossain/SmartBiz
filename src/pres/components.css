@@ -1,5 +1,5 @@
 /* src/pres/components.css — layout and component rules for the app shell and its screens
- * (U2: BR9.1, BR9.3, NFR9.6, NFR9.9; P14; redesign: mockups §18).
+ * (U2: BR9.1, BR9.3, NFR9.6, NFR9.9; P14; redesign: mockups §18, v2 §19).
  *
  * Rules, checked by tests/unit/stylesheet.test.ts:
  *   - every colour comes from a token in tokens.css (var(--…)); no literal colour here;
@@ -12,10 +12,13 @@
  * screen has a distinct layout (the orders summary, filter and quick-add rows, order detail,
  * the paste result, manual order lines).
  *
+ * v2 (§19): the screen is no longer one big card. The page sits open on the canvas and each
+ * section (stat cards, filter, table, form, panel) is its own white surface, one level deep.
+ *
  * Layout (§18.1): from 960 px the header is a fixed ink sidebar beside the content. Below
- * 960 px a slim top bar opens the same header as a drawer, and a bottom tab bar holds the
- * role's first four places plus "আরও". Below 720 px list tables marked `.table--stack` turn
- * into one card per row, each cell labelled from its `data-label`, so nothing is squeezed.
+ * 960 px a frosted top bar opens the same header as a drawer, and a frosted bottom tab bar
+ * holds the role's first four places plus "আরও". Below 720 px list tables marked
+ * `.table--stack` turn into one card per row, each cell labelled from its `data-label`.
  */
 
 *,
@@ -39,8 +42,12 @@ body {
 
 a {
   color: var(--color-link);
-  text-underline-offset: 3px;
   text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+a:hover {
+  color: var(--color-brand-dark);
 }
 
 /* `hidden` always wins over a component's own display rule (e.g. a photo not loaded yet). */
@@ -79,9 +86,9 @@ a {
   align-items: center;
   gap: var(--space-3);
   margin: 0;
-  font-size: 17px;
+  font-size: 16.5px;
   font-weight: 700;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
   color: var(--color-header-text);
   white-space: nowrap;
 }
@@ -98,8 +105,11 @@ a {
   font-size: 19px;
   font-weight: 700;
   color: var(--color-header-bg);
-  background: var(--color-accent);
-  box-shadow: inset 0 -2px 0 var(--color-accent-text);
+  background: linear-gradient(160deg, var(--glow-white), transparent 60%), var(--color-accent);
+  box-shadow:
+    inset 0 1px 0 var(--glow-white),
+    inset 0 -2px 0 var(--color-accent-text),
+    0 4px 12px -4px var(--glow-gold);
 }
 
 /* Navigation: icon + label rows; the current page has a lit row and a gold marker. */
@@ -114,16 +124,22 @@ a {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  min-height: 42px;
-  padding: 9px var(--space-3);
+  min-height: 40px;
+  padding: 8px var(--space-3);
   border-radius: var(--radius-sm);
-  font-size: 15px;
+  font-size: 14.5px;
   font-weight: 500;
   text-decoration: none;
   color: var(--color-header-muted);
   transition:
-    background 140ms var(--ease-out),
-    color 140ms var(--ease-out);
+    background 160ms var(--ease-out),
+    color 160ms var(--ease-out);
+}
+
+.shell__nav a .icon {
+  width: 19px;
+  height: 19px;
+  opacity: 0.9;
 }
 
 .shell__nav a:hover {
@@ -135,6 +151,7 @@ a {
   font-weight: 600;
   color: var(--color-header-text);
   background: var(--color-header-active);
+  box-shadow: inset 0 0 0 1px var(--hairline-on-dark);
 }
 
 .shell__nav a[aria-current="page"]::before {
@@ -145,10 +162,12 @@ a {
   width: 3px;
   border-radius: 0 3px 3px 0;
   background: var(--color-accent);
+  box-shadow: 0 0 12px var(--glow-gold);
 }
 
 .shell__nav a[aria-current="page"] .icon {
   color: var(--color-accent);
+  opacity: 1;
 }
 
 /* Account block: language, then the person and sign-out. */
@@ -156,6 +175,8 @@ a {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--hairline-on-dark);
 }
 
 .shell__locale {
@@ -167,14 +188,14 @@ a {
 }
 
 .shell__header label {
-  font-size: 13px;
+  font-size: 12.5px;
   color: var(--color-header-muted);
 }
 
 .shell__header select {
-  min-height: 34px;
+  min-height: 32px;
   padding: 4px var(--space-3);
-  border: 1px solid var(--color-header-active);
+  border: 1px solid var(--hairline-on-dark);
   border-radius: var(--radius-sm);
   font-size: 13px;
   color: var(--color-header-text);
@@ -187,8 +208,9 @@ a {
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-3);
-  border: 1px solid var(--color-header-active);
+  border: 1px solid var(--hairline-on-dark);
   border-radius: var(--radius-md);
+  background: var(--color-header-active);
 }
 
 .shell__avatar {
@@ -201,6 +223,9 @@ a {
   font-weight: 700;
   color: var(--color-header-bg);
   background: var(--color-accent);
+  box-shadow:
+    0 0 0 2px var(--color-header-active),
+    0 0 0 3px var(--glow-gold);
 }
 
 .shell__who {
@@ -227,33 +252,61 @@ a {
 .shell__header [data-testid="sign-out"] {
   grid-column: 1 / -1;
   width: 100%;
-  min-height: 36px;
-  border: 1px solid var(--color-header-active);
+  min-height: 34px;
+  border: 1px solid var(--hairline-on-dark);
   font-size: 13px;
+  font-weight: 600;
   color: var(--color-header-text);
   background: transparent;
   box-shadow: none;
 }
 
 .shell__header [data-testid="sign-out"]:hover:not(:disabled) {
-  border-color: var(--color-header-active);
-  background: var(--color-header-active);
+  border-color: var(--color-header-muted);
+  background: transparent;
 }
 
-/* Signed out: a slim ink bar with the brand and the language switch. */
+/* Signed out: a light page with a soft emerald glow, the brand and the language switch. */
+.shell--public {
+  background:
+    radial-gradient(90% 60% at 50% -10%, var(--glow-brand), transparent 70%),
+    radial-gradient(50% 40% at 100% 0, var(--glow-gold-soft), transparent 70%), var(--color-canvas);
+}
+
 .shell--public .shell__header {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
-  min-height: 64px;
-  padding: var(--space-3) var(--space-6);
-  background: var(--color-header-bg);
+  max-width: var(--content-max);
+  min-height: 72px;
+  margin: 0 auto;
+  padding: var(--space-4) var(--space-6);
+}
+
+.shell--public .shell__header h1 {
+  color: var(--color-text);
+}
+
+.shell--public .shell__account {
+  padding-top: 0;
+  border-top: 0;
 }
 
 .shell--public .shell__locale {
   justify-content: flex-end;
+}
+
+.shell--public .shell__header label {
+  color: var(--color-text-2);
+}
+
+.shell--public .shell__header select {
+  border-color: var(--color-line);
+  color: var(--color-text);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-xs);
 }
 
 /* Signed in, wide windows: a fixed sidebar, content to its right. */
@@ -268,7 +321,9 @@ a {
   width: var(--sidebar-width);
   padding: var(--space-6) var(--space-3) var(--space-4);
   overflow-y: auto;
-  background: var(--color-header-bg);
+  border-inline-end: 1px solid var(--hairline-on-dark);
+  background:
+    radial-gradient(120% 30% at 0 0, var(--glow-gold-soft), transparent 70%), var(--color-header-bg);
 }
 
 .shell--app .shell__header h1 {
@@ -292,15 +347,13 @@ a {
 /* ===== Main column ======================================================================== */
 
 .shell__main {
-  max-width: 1240px;
-  padding: var(--space-10) var(--space-10) 64px;
+  padding: var(--space-10) var(--space-12) 72px;
   /* BR9.1: a long unbroken string (an email, an id) breaks instead of widening the page. */
   overflow-wrap: anywhere;
 }
 
 .shell--public .shell__main {
-  max-width: none;
-  padding: var(--space-6) var(--space-4) 64px;
+  padding: var(--space-4) var(--space-4) 72px;
 }
 
 /* The save toast floats above the content, top right, and never moves the page. */
@@ -331,20 +384,21 @@ a {
   }
 }
 
-/* A screen is a white card on the canvas. */
+/* v2: the screen is open on the canvas, centred in the space beside the sidebar. */
 .shell__main [data-testid="screen"] {
-  padding: var(--space-8) var(--space-10) var(--space-10);
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius-lg);
-  background: var(--color-surface);
-  box-shadow: var(--shadow-card);
+  max-width: var(--content-max);
+  margin-inline: auto;
 }
 
-/* Signed out, the screen is a form: a narrow centred card under a short brand line. */
+/* Signed out, the screen is a form: a narrow centred card. */
 .shell--public .shell__main [data-testid="screen"] {
   max-width: 440px;
-  margin: 7vh auto 0;
-  padding: var(--space-8);
+  margin: 6vh auto 0;
+  padding: var(--space-8) var(--space-8) var(--space-6);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-float);
 }
 
 .shell__main h2 {
@@ -352,15 +406,20 @@ a {
   font-size: var(--font-size-display);
   font-weight: 700;
   line-height: 1.2;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
   color: var(--color-text);
+}
+
+.shell--public .shell__main h2 {
+  font-size: var(--font-size-xl);
 }
 
 .shell__main h3 {
   margin: var(--space-8) 0 var(--space-3);
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 650;
-  letter-spacing: -0.005em;
+  letter-spacing: -0.01em;
+  color: var(--color-text);
 }
 
 .shell__main p {
@@ -383,8 +442,8 @@ a {
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
-  margin-bottom: var(--space-4);
-  padding: 5px var(--space-3) 5px 10px;
+  margin-bottom: var(--space-3);
+  padding: 4px var(--space-3) 4px 10px;
   border: 1px solid var(--color-line);
   border-radius: var(--radius-pill);
   font-size: 13px;
@@ -392,21 +451,38 @@ a {
   text-decoration: none;
   color: var(--color-text-2);
   background: var(--color-surface);
+  box-shadow: var(--shadow-xs);
   transition:
-    background 140ms var(--ease-out),
-    border-color 140ms var(--ease-out);
+    color 160ms var(--ease-out),
+    border-color 160ms var(--ease-out);
 }
 
 .screen__back:hover {
   border-color: var(--color-control-border);
   color: var(--color-text);
-  background: var(--color-canvas);
 }
 
 .screen__intro {
   max-width: 64ch;
   margin: calc(-1 * var(--space-3)) 0 var(--space-6);
   color: var(--color-text-2);
+}
+
+/* ===== Surfaces: one white card per section, never a card inside a card ================== */
+
+.shell--app [data-testid="screen"] > form:not([data-testid^="orders-"]),
+.cat-card,
+.settings-panel,
+.status-strip,
+[data-testid="paste-result"],
+.paste-input,
+.shell__main [data-testid="order-detail-contact"],
+.shell__main [data-testid="order-detail-actions"],
+.lock {
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
 }
 
 /* ===== Forms ============================================================================= */
@@ -416,7 +492,13 @@ a {
   flex-direction: column;
   gap: var(--space-4);
   max-width: 560px;
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+/* A screen-level form is a card of its own. */
+.shell--app [data-testid="screen"] > form:not([data-testid^="orders-"]) {
+  max-width: 680px;
+  padding: var(--space-6) var(--space-8) var(--space-8);
 }
 
 .field {
@@ -466,17 +548,23 @@ input[type="radio"] {
 .shell__main select,
 .shell__main textarea {
   width: 100%;
-  min-height: 46px;
-  padding: 11px 14px;
+  min-height: 44px;
+  padding: 10px 14px;
   border: 1px solid var(--color-control-border);
   border-radius: var(--radius-sm);
   font-size: 15px;
   font-weight: 400;
   color: var(--color-text);
   background: var(--color-surface);
+  box-shadow: var(--shadow-xs);
   transition:
-    border-color 140ms var(--ease-out),
-    box-shadow 140ms var(--ease-out);
+    border-color 160ms var(--ease-out),
+    box-shadow 160ms var(--ease-out);
+}
+
+.shell__main input::placeholder,
+.shell__main textarea::placeholder {
+  color: var(--color-text-3);
 }
 
 .shell__main input:not([type="checkbox"]):not([type="radio"]):hover,
@@ -510,23 +598,35 @@ input[type="radio"] {
   border-color: var(--color-error);
 }
 
-/* A group of fields (the buyer, a language choice): a quiet rounded panel with its legend. */
+/* A group of fields (the buyer, a language choice): a titled section under a hairline. The
+ * legend is floated so it sits inside the group as its heading, not on the border. */
 .shell__main fieldset {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
   min-width: 0;
   margin: 0;
-  padding: var(--space-4) var(--space-5) var(--space-5);
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius-md);
-  background: var(--color-surface-2);
+  padding: var(--space-5) 0 0;
+  border: 0;
+  border-top: 1px solid var(--color-line);
+  border-radius: 0;
+  background: transparent;
+}
+
+.shell__main form > fieldset:first-child,
+.shell__main form > :is(h2, h3, p) + fieldset {
+  padding-top: 0;
+  border-top: 0;
 }
 
 .shell__main legend {
-  padding: 0 var(--space-2);
-  font-size: 13px;
+  float: left;
+  width: 100%;
+  margin: 0 0 var(--space-1);
+  padding: 0;
+  font-size: 14px;
   font-weight: 700;
+  letter-spacing: -0.005em;
   color: var(--color-text);
 }
 
@@ -562,8 +662,8 @@ button {
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
-  min-height: 42px;
-  padding: 9px 18px;
+  min-height: 40px;
+  padding: 8px 16px;
   border: 1px solid var(--color-line);
   border-radius: var(--radius-sm);
   font-size: 14px;
@@ -573,9 +673,9 @@ button {
   background: var(--color-surface);
   box-shadow: var(--shadow-raised);
   transition:
-    background 140ms var(--ease-out),
-    border-color 140ms var(--ease-out),
-    box-shadow 140ms var(--ease-out),
+    background 160ms var(--ease-out),
+    border-color 160ms var(--ease-out),
+    box-shadow 160ms var(--ease-out),
     transform 80ms var(--ease-out);
 }
 
@@ -599,11 +699,11 @@ button:active:not(:disabled) {
 .shell__main form > button:last-child,
 [data-testid="paste-parse"],
 [data-testid="paste-save"] {
-  min-height: 46px;
+  min-height: 44px;
   padding-inline: var(--space-6);
-  border-color: var(--color-brand);
+  border-color: var(--color-brand-dark);
   color: var(--color-on-primary);
-  background: var(--color-brand);
+  background: linear-gradient(180deg, var(--color-brand), var(--color-brand-dark));
   box-shadow: var(--shadow-button);
 }
 
@@ -611,7 +711,7 @@ button:active:not(:disabled) {
 .shell__main form > button:last-child:hover:not(:disabled),
 [data-testid="paste-parse"]:hover:not(:disabled),
 [data-testid="paste-save"]:hover:not(:disabled) {
-  border-color: var(--color-brand-dark);
+  border-color: var(--color-brand-deep);
   background: var(--color-brand-dark);
 }
 
@@ -620,9 +720,16 @@ button:active:not(:disabled) {
   align-self: stretch;
 }
 
-button:disabled {
+/* Disabled reads as "not yet", not as a faded primary: a quiet grey control. */
+button:disabled,
+.shell__main form button[type="submit"]:disabled,
+.shell__main form > button:last-child:disabled,
+[data-testid="paste-parse"]:disabled,
+[data-testid="paste-save"]:disabled {
   cursor: not-allowed;
-  opacity: 0.5;
+  border-color: var(--color-line);
+  color: var(--color-text-3);
+  background: var(--color-bg-neutral);
   box-shadow: none;
 }
 
@@ -631,12 +738,13 @@ button:disabled {
 [data-testid="pill"] {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 2px 10px;
+  gap: 5px;
+  padding: 1px 9px;
   border-radius: var(--radius-pill);
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 600;
-  line-height: 1.6;
+  line-height: 1.7;
+  letter-spacing: 0.01em;
   white-space: nowrap;
   color: var(--color-text-2);
   background: var(--color-bg-neutral);
@@ -645,8 +753,8 @@ button:disabled {
 /* A small dot in the pill's own colour. */
 [data-testid="pill"]::before {
   content: "";
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: currentColor;
 }
@@ -670,13 +778,15 @@ button:disabled {
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px var(--space-2);
+  gap: 6px;
 }
 
 .money-cell__amount {
+  margin-inline-end: 2px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.01em;
+  white-space: nowrap;
   color: var(--color-text);
 }
 
@@ -693,8 +803,8 @@ button:disabled {
 .shell__main nav[data-testid="orders-new-links"] a {
   display: inline-flex;
   align-items: center;
-  min-height: 42px;
-  padding: 9px 18px;
+  min-height: 40px;
+  padding: 8px 16px;
   border: 1px solid var(--color-line);
   border-radius: var(--radius-sm);
   font-size: 14px;
@@ -704,14 +814,14 @@ button:disabled {
   background: var(--color-surface);
   box-shadow: var(--shadow-raised);
   transition:
-    background 140ms var(--ease-out),
-    border-color 140ms var(--ease-out);
+    background 160ms var(--ease-out),
+    border-color 160ms var(--ease-out);
 }
 
 .shell__main nav[data-testid="orders-new-links"] a:first-child {
-  border-color: var(--color-brand);
+  border-color: var(--color-brand-dark);
   color: var(--color-on-primary);
-  background: var(--color-brand);
+  background: linear-gradient(180deg, var(--color-brand), var(--color-brand-dark));
   box-shadow: var(--shadow-button);
 }
 
@@ -719,6 +829,7 @@ button:disabled {
   content: "+";
   margin-inline-end: var(--space-2);
   font-size: 18px;
+  font-weight: 500;
   line-height: 1;
 }
 
@@ -728,45 +839,61 @@ button:disabled {
 }
 
 .shell__main nav[data-testid="orders-new-links"] a:first-child:hover {
-  border-color: var(--color-brand-dark);
+  border-color: var(--color-brand-deep);
   background: var(--color-brand-dark);
 }
 
-/* The summary: three stat tiles (label over figure), filled column by column. */
+/* The summary: one stat card per bucket, a coloured marker before each label. */
 .summary {
   display: grid;
-  grid-template-rows: auto auto;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(0, 1fr);
-  column-gap: 0;
-  row-gap: var(--space-2);
-  margin-bottom: var(--space-6);
-  padding: var(--space-5) 0;
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius-md);
-  background: var(--color-surface-2);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
 }
 
-.summary > span:not(.money-cell) {
-  padding: 0 var(--space-6);
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: var(--space-5) var(--space-6) var(--space-5);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.stat__label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
   font-size: 13px;
   font-weight: 600;
   color: var(--color-text-2);
 }
 
-.summary > .money-cell {
-  padding: 0 var(--space-6);
+.stat__label::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 3px;
+  background: var(--color-control-border);
 }
 
-.summary > :nth-child(n + 3) {
-  border-inline-start: 1px solid var(--color-line);
+.stat--earned .stat__label::before {
+  background: var(--color-accent);
+}
+
+.stat--realized .stat__label::before {
+  background: var(--color-brand);
 }
 
 .summary .money-cell__amount {
   flex-basis: 100%;
+  margin-bottom: 2px;
   font-size: 26px;
   line-height: 1.2;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
 }
 
 /* Filter and quick-add: labels on one row, their controls under them, side by side.
@@ -780,18 +907,19 @@ button:disabled {
   align-items: end;
   gap: 6px var(--space-3);
   max-width: none;
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-5);
   padding: var(--space-4) var(--space-5) var(--space-5);
   border: 1px solid var(--color-line);
-  border-radius: var(--radius-md);
-  background: var(--color-surface-2);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
 }
 
 .shell__main form[data-testid="orders-filter-form"] > :is(h2, h3, p),
 .shell__main form[data-testid="orders-quick-add"] > :is(h2, h3, p) {
   grid-row: 1;
   grid-column: 1 / span 5;
-  margin: var(--space-2) 0 var(--space-2);
+  margin: var(--space-1) 0 var(--space-2);
 }
 
 .shell__main form[data-testid="orders-filter-form"] > label,
@@ -803,6 +931,19 @@ button:disabled {
 .shell__main form[data-testid="orders-quick-add"] > :is(input, select, button) {
   grid-row: 3;
   align-self: stretch;
+}
+
+/* The filter's button is a quiet secondary action; the page's one primary is "new order". */
+.shell__main form[data-testid="orders-filter-form"] > button:last-child {
+  border-color: var(--color-control-border);
+  color: var(--color-text);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-raised);
+}
+
+.shell__main form[data-testid="orders-filter-form"] > button:last-child:hover:not(:disabled) {
+  border-color: var(--color-text-2);
+  background: var(--color-surface-2);
 }
 
 /* Quick add: the confirmation sits under the row it confirms, across the whole form. */
@@ -823,15 +964,22 @@ button:disabled {
 .scroll-x {
   max-width: 100%;
   overflow-x: auto;
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-5);
   border: 1px solid var(--color-line);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   background: var(--color-surface);
+  box-shadow: var(--shadow-card);
 }
 
 /* A table that scrolls (not a stacking list) keeps a readable width inside its box. */
 .scroll-x > .table:not(.table--stack) {
   min-width: 600px;
+}
+
+/* Inside a panel the table box is flat: the panel is already the surface. */
+.settings-panel .scroll-x,
+.cat-card .scroll-x {
+  box-shadow: none;
 }
 
 .table,
@@ -848,7 +996,7 @@ button:disabled {
 .settings-panel td,
 .shell__main table[data-testid="order-detail-items"] th,
 .shell__main table[data-testid="order-detail-items"] td {
-  padding: 14px var(--space-4);
+  padding: 14px var(--space-5);
   text-align: start;
   vertical-align: middle;
   border-bottom: 1px solid var(--color-line);
@@ -857,10 +1005,11 @@ button:disabled {
 .table th,
 .settings-panel th,
 .shell__main table[data-testid="order-detail-items"] th {
-  padding-block: 11px;
+  padding-block: 10px;
   font-size: 12px;
   font-weight: 600;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
   color: var(--color-text-3);
   background: var(--color-surface-2);
 }
@@ -875,13 +1024,19 @@ button:disabled {
 }
 
 .table tbody tr:hover td {
-  background: var(--color-brand-tint);
+  background: var(--color-surface-2);
 }
 
 /* The first column is the record's key (order number, email): set it a little heavier. */
 .table td:first-child {
   font-weight: 600;
   color: var(--color-text);
+}
+
+/* An order number is one token; it never breaks across lines. */
+[data-testid="orders-table"] td:first-child {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 
 /* A record's name links to it; in a table it reads as the row's title, not as body link text. */
@@ -896,20 +1051,52 @@ button:disabled {
   text-decoration: underline;
 }
 
-/* The row's action sits at the far end. */
+/* The row's action sits at the far end as a quiet text button with an arrow. */
 .table td:last-child:has(> button) {
   text-align: end;
+  white-space: nowrap;
 }
 
 .table td > button {
   min-height: 34px;
-  padding: 5px 14px;
+  padding: 5px 12px;
+  border-color: transparent;
   font-size: 13px;
+  color: var(--color-brand);
+  background: transparent;
+  box-shadow: none;
+}
+
+.table td:last-child > button:only-child::after {
+  content: "→";
+  font-weight: 500;
+  transition: transform 160ms var(--ease-out);
+}
+
+.table td > button:hover:not(:disabled) {
+  border-color: transparent;
+  background: var(--color-brand-tint);
+}
+
+.table td > button:hover:not(:disabled)::after {
+  transform: translateX(2px);
+}
+
+/* Inputs inside a table row are compact. */
+.shell__main .table input:not([type="checkbox"]):not([type="radio"]):not([type="file"]) {
+  min-height: 36px;
+  padding: 6px 10px;
+  font-size: 14px;
 }
 
 /* The customer and the items in one cell: name over a quieter item line. */
 [data-testid="orders-row-who"] > span {
   display: block;
+}
+
+[data-testid="orders-row-who"] > span:first-child {
+  font-weight: 600;
+  color: var(--color-text);
 }
 
 [data-testid="orders-row-items"] {
@@ -919,7 +1106,7 @@ button:disabled {
 
 .mono {
   font-family: var(--font-mono);
-  font-size: 13px;
+  font-size: 12.5px;
   color: var(--color-text-2);
 }
 
@@ -939,7 +1126,7 @@ button:disabled {
 }
 
 .table tbody tr.row--new td:first-child {
-  box-shadow: inset 4px 0 0 var(--color-brand);
+  box-shadow: inset 3px 0 0 var(--color-brand);
 }
 
 /* ===== Order detail ======================================================================= */
@@ -959,17 +1146,14 @@ button:disabled {
   gap: 2px;
   max-width: 480px;
   margin-bottom: var(--space-6);
-  padding: var(--space-4) var(--space-5);
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius-md);
-  background: var(--color-surface-2);
+  padding: var(--space-5) var(--space-6);
 }
 
 .shell__main [data-testid="order-detail-contact"] h3 {
   margin: 0 0 var(--space-2);
   font-size: 12px;
   font-weight: 600;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
   color: var(--color-text-3);
 }
 
@@ -979,16 +1163,19 @@ button:disabled {
 }
 
 .shell__main [data-testid="order-detail-contact"] p:first-of-type {
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 650;
 }
 
 .shell__main table[data-testid="order-detail-items"] {
   margin-bottom: var(--space-4);
   border: 1px solid var(--color-line);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   border-collapse: separate;
   border-spacing: 0;
   overflow: hidden;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
 }
 
 .shell__main table[data-testid="order-detail-items"] tr:last-child td {
@@ -1001,12 +1188,13 @@ button:disabled {
   grid-template-columns: 1fr auto;
   align-items: center;
   gap: var(--space-3) 0;
-  max-width: 420px;
-  margin: 0 0 var(--space-8) auto;
-  padding: var(--space-4) var(--space-5);
+  max-width: 440px;
+  margin: 0 0 var(--space-6) auto;
+  padding: var(--space-5) var(--space-6);
   border: 1px solid var(--color-line);
-  border-radius: var(--radius-md);
-  background: var(--color-surface-2);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
 }
 
 .shell__main table[data-testid="order-detail-items"] + div > span:not(.money-cell) {
@@ -1021,6 +1209,15 @@ button:disabled {
   color: var(--color-text);
 }
 
+.shell__main
+  table[data-testid="order-detail-items"]
+  + div
+  > .money-cell:last-child
+  .money-cell__amount {
+  font-size: 20px;
+  letter-spacing: -0.02em;
+}
+
 .shell__main table[data-testid="order-detail-items"] + div > .money-cell {
   justify-content: flex-end;
   padding-inline-start: var(--space-4);
@@ -1030,7 +1227,7 @@ button:disabled {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-5);
   padding: 8px 16px;
   border: 1px solid var(--color-line);
   border-radius: var(--radius-sm);
@@ -1058,33 +1255,32 @@ button:disabled {
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-2);
-  padding-top: var(--space-6);
-  border-top: 1px solid var(--color-line);
+  padding: var(--space-4) var(--space-5);
 }
 
 .shell__main [data-testid="order-detail-actions"] > span {
   margin-inline-end: var(--space-2);
   font-size: 12px;
   font-weight: 600;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
   color: var(--color-text-3);
 }
 
 /* Repeat sits apart from the status moves, as the one primary action. */
 .shell__main [data-testid="order-detail-repeat"] {
   margin-inline-start: auto;
-  border-color: var(--color-brand);
+  border-color: var(--color-brand-dark);
   color: var(--color-on-primary);
-  background: var(--color-brand);
+  background: linear-gradient(180deg, var(--color-brand), var(--color-brand-dark));
   box-shadow: var(--shadow-button);
 }
 
 .shell__main [data-testid="order-detail-repeat"]:hover:not(:disabled) {
-  border-color: var(--color-brand-dark);
+  border-color: var(--color-brand-deep);
   background: var(--color-brand-dark);
 }
 
-/* ===== New order (manual): each line is its own card with a two-column field grid ======= */
+/* ===== New order (manual): each line is an inset block with a two-column field grid ====== */
 
 .shell__main ol[data-testid="manual-lines"] {
   display: flex;
@@ -1106,7 +1302,7 @@ button:disabled {
   background: var(--color-surface-2);
 }
 
-/* The "Line n" heading, the description and the line total span the full card. */
+/* The "Line n" heading, the description and the line total span the full block. */
 .shell__main ol[data-testid="manual-lines"] > li > span:first-child {
   grid-column: 1 / -1;
   font-size: 12px;
@@ -1132,13 +1328,26 @@ button:disabled {
 
 /* ===== Order from a message =============================================================== */
 
+.paste-input {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  max-width: 680px;
+  padding: var(--space-6);
+}
+
+.paste-input > button {
+  align-self: flex-start;
+  margin-top: var(--space-2);
+}
+
 [data-testid="paste-result"] {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
-  margin-top: var(--space-6);
-  padding-top: var(--space-6);
-  border-top: 1px solid var(--color-line);
+  max-width: 680px;
+  margin-top: var(--space-5);
+  padding: var(--space-6);
 }
 
 [data-testid="paste-result"] > p[data-testid="paste-contact"] {
@@ -1173,8 +1382,7 @@ button:disabled {
   padding: var(--space-4) var(--space-5);
   border: 1px solid var(--color-line);
   border-radius: var(--radius-md);
-  background: var(--color-surface);
-  box-shadow: var(--shadow-raised);
+  background: var(--color-surface-2);
 }
 
 .shell__main ol[data-testid="paste-items"] > li[data-incomplete="true"] {
@@ -1182,7 +1390,7 @@ button:disabled {
   box-shadow: inset 3px 0 0 var(--color-warning);
 }
 
-/* The item's own words span the card. */
+/* The item's own words span the block. */
 .shell__main ol[data-testid="paste-items"] > li > input {
   grid-column: 1 / -1;
   font-weight: 600;
@@ -1205,7 +1413,7 @@ button:disabled {
   font-size: 13px;
   font-weight: 700;
   color: var(--color-text);
-  background: var(--color-surface-2);
+  background: var(--color-surface);
 }
 
 .fact__label {
@@ -1233,8 +1441,9 @@ button:disabled {
   align-items: center;
   gap: var(--space-2) var(--space-4);
   margin: 0;
-  padding: 14px var(--space-4);
+  padding: 14px var(--space-5);
   border-bottom: 1px solid var(--color-line);
+  transition: background 120ms var(--ease-out);
 }
 
 .shell__main ul:has(> li > button),
@@ -1243,9 +1452,10 @@ button:disabled {
   padding: 0;
   list-style: none;
   border: 1px solid var(--color-line);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   overflow: hidden;
   background: var(--color-surface);
+  box-shadow: var(--shadow-card);
 }
 
 .shell__main li:has(> button):last-child {
@@ -1253,7 +1463,7 @@ button:disabled {
 }
 
 .shell__main li:has(> button):hover {
-  background: var(--color-brand-tint);
+  background: var(--color-surface-2);
 }
 
 .shell__main li:has(> button) > button {
@@ -1266,7 +1476,7 @@ button:disabled {
   margin-bottom: var(--space-4);
   padding: var(--space-3) var(--space-4);
   border: 1px solid currentColor;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
 }
 
 .banner--error {
@@ -1316,10 +1526,10 @@ button:disabled {
 
 .lock {
   padding: var(--space-8);
-  border: 1px dashed var(--color-control-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface-2);
+  border-style: dashed;
+  border-color: var(--color-control-border);
   color: var(--color-text);
+  box-shadow: none;
 }
 
 /* U3 (BR9.2): the link sheet; the link field never makes the page wider than the window. */
@@ -1338,7 +1548,7 @@ button:disabled {
   font-size: 13px;
 }
 
-/* ===== Daily card (mockups §17.1, §18.4) ===================================================== */
+/* ===== Daily card (mockups §17.1, §18.5, §19) ================================================ */
 
 .day-head {
   display: flex;
@@ -1346,7 +1556,7 @@ button:disabled {
   align-items: center;
   justify-content: space-between;
   gap: var(--space-2) var(--space-4);
-  margin: calc(-1 * var(--space-3)) 0 var(--space-6);
+  margin: calc(-1 * var(--space-4)) 0 var(--space-6);
 }
 
 .day-head p {
@@ -1358,7 +1568,7 @@ button:disabled {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-4);
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-5);
 }
 
 .day-tile {
@@ -1366,20 +1576,23 @@ button:disabled {
   flex-direction: column;
   align-items: flex-start;
   gap: var(--space-2);
-  min-height: 156px;
+  min-height: 160px;
   padding: var(--space-6);
   border: 1px solid var(--color-line);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-xl);
   background: var(--color-surface);
-  box-shadow: var(--shadow-raised);
+  box-shadow: var(--shadow-card);
 }
 
-/* The first tile (today's orders) is the hero: deep emerald, white figure. */
+/* The first tile (today's orders) is the hero: deep emerald with a gold glow, white figure. */
 .day-tiles > .day-tile:first-child:not(.day-tile--skeleton) {
-  border-color: var(--color-brand-dark);
+  border-color: transparent;
   color: var(--color-on-primary);
-  background: linear-gradient(140deg, var(--color-brand-dark), var(--color-brand));
-  box-shadow: var(--shadow-card);
+  background:
+    radial-gradient(70% 90% at 100% 0, var(--glow-gold), transparent 60%),
+    radial-gradient(60% 80% at 0 100%, var(--glow-white), transparent 70%),
+    linear-gradient(140deg, var(--color-brand-deep), var(--color-brand));
+  box-shadow: var(--shadow-hero);
 }
 
 .shell__main .day-tiles > .day-tile:first-child .day-tile__label,
@@ -1402,11 +1615,11 @@ button:disabled {
 .day-tile .money-cell__amount,
 .day-tile__figure {
   flex-basis: 100%;
-  margin: 0;
-  font-size: 32px;
+  margin: var(--space-1) 0;
+  font-size: 34px;
   font-weight: 700;
-  line-height: 1.2;
-  letter-spacing: -0.02em;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
   color: var(--color-text);
 }
@@ -1442,10 +1655,7 @@ button:disabled {
 
 .status-strip {
   margin-bottom: var(--space-6);
-  padding: var(--space-4) var(--space-5);
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius-md);
-  background: var(--color-surface-2);
+  padding: var(--space-5) var(--space-6);
 }
 
 .shell__main .status-strip h3 {
@@ -1468,8 +1678,20 @@ button:disabled {
 }
 
 .day-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
   font-weight: 600;
   text-decoration: none;
+  color: var(--color-brand);
+  transition: background 160ms var(--ease-out);
+}
+
+.day-link:hover {
+  color: var(--color-brand-dark);
+  background: var(--color-brand-tint);
 }
 
 /* ===== Catalog (U4; mockups §6–§12) ======================================================== */
@@ -1477,10 +1699,11 @@ button:disabled {
 .risk-chip {
   display: inline-flex;
   align-items: center;
-  padding: 2px 10px;
+  padding: 1px 9px;
   border-radius: var(--radius-pill);
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 600;
+  line-height: 1.7;
   white-space: nowrap;
   color: var(--color-text-2);
   background: var(--color-bg-neutral);
@@ -1596,16 +1819,18 @@ button:disabled {
   align-items: center;
   min-height: 40px;
   padding: 8px 18px;
+  border: 1px solid var(--color-brand-dark);
   border-radius: var(--radius-sm);
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;
   color: var(--color-on-primary);
-  background: var(--color-brand);
+  background: linear-gradient(180deg, var(--color-brand), var(--color-brand-dark));
   box-shadow: var(--shadow-button);
 }
 
 .cat-head > a:hover {
+  color: var(--color-on-primary);
   background: var(--color-brand-dark);
 }
 
@@ -1621,11 +1846,7 @@ button:disabled {
 .cat-card,
 .settings-panel {
   margin-bottom: var(--space-5);
-  padding: var(--space-5) var(--space-6);
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
-  box-shadow: var(--shadow-raised);
+  padding: var(--space-6);
 }
 
 .settings-panel {
@@ -1657,6 +1878,12 @@ button:disabled {
   font-weight: 600;
 }
 
+/* A form inside a panel is flat; the panel is the card. */
+.settings-panel form,
+.cat-card form {
+  max-width: none;
+}
+
 .cat-facts {
   display: flex;
   flex-wrap: wrap;
@@ -1683,7 +1910,7 @@ button:disabled {
   margin-bottom: var(--space-3);
   padding: var(--space-3) var(--space-4);
   border: 1px solid var(--color-line);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   background: var(--color-surface-2);
 }
 
@@ -1723,7 +1950,8 @@ button:disabled {
   margin: 0 0 var(--space-4);
   padding: var(--space-3) var(--space-4);
   border: 1px solid var(--color-line);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-2);
 }
 
 .axis-editor {
@@ -1768,7 +1996,8 @@ button:disabled {
   font: inherit;
   font-weight: 600;
   color: var(--color-text);
-  background: var(--color-surface-2);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-raised);
   cursor: pointer;
 }
 
@@ -1787,18 +2016,25 @@ button:disabled {
   margin-bottom: var(--space-5);
   padding: 3px;
   border: 1px solid var(--color-line);
-  border-radius: var(--radius-sm);
-  background: var(--color-surface-2);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-neutral);
 }
 
 .insights__periods button {
-  min-height: 36px;
-  padding: 6px 14px;
+  min-height: 34px;
+  padding: 5px 14px;
   border-color: transparent;
+  border-radius: var(--radius-sm);
   font-weight: 500;
   color: var(--color-text-2);
   background: transparent;
   box-shadow: none;
+}
+
+.insights__periods button:hover:not(:disabled) {
+  border-color: transparent;
+  color: var(--color-text);
+  background: transparent;
 }
 
 .insights__periods button[aria-pressed="true"] {
@@ -1830,29 +2066,30 @@ button:disabled {
   text-decoration: none;
   color: var(--color-text-2);
   background: var(--color-surface);
+  box-shadow: var(--shadow-xs);
 }
 
 .print-order__actions > button {
-  border-color: var(--color-brand);
+  border-color: var(--color-brand-dark);
   color: var(--color-on-primary);
-  background: var(--color-brand);
+  background: linear-gradient(180deg, var(--color-brand), var(--color-brand-dark));
   box-shadow: var(--shadow-button);
 }
 
 .print-order__actions > button:hover:not(:disabled) {
-  border-color: var(--color-brand-dark);
+  border-color: var(--color-brand-deep);
   background: var(--color-brand-dark);
 }
 
 .print-doc {
   max-width: 800px;
   margin-bottom: var(--space-6);
-  padding: var(--space-8);
+  padding: var(--space-10);
   border: 1px solid var(--color-line);
   border-radius: var(--radius-md);
   color: var(--color-text);
   background: var(--color-surface);
-  box-shadow: var(--shadow-raised);
+  box-shadow: var(--shadow-card);
 }
 
 .print-doc__head {
@@ -1923,6 +2160,7 @@ button:disabled {
   }
 
   .shell__main [data-testid="screen"] {
+    max-width: none;
     padding: 0;
     border: 0;
     box-shadow: none;
@@ -1943,6 +2181,7 @@ button:disabled {
 /* ===== Medium windows: the sidebar becomes a drawer and a tab bar appears ================== */
 
 @media (max-width: 959px) {
+  /* A frosted light top bar: brand on the left, the menu button on the right. */
   .shell--app .shell__topbar {
     position: sticky;
     top: 0;
@@ -1952,22 +2191,26 @@ button:disabled {
     justify-content: space-between;
     height: var(--topbar-height);
     padding: 0 var(--space-2) 0 var(--space-4);
-    color: var(--color-header-text);
-    background: var(--color-header-bg);
+    border-bottom: 1px solid var(--glass-line);
+    color: var(--color-text);
+    background: var(--glass);
+    -webkit-backdrop-filter: saturate(180%) blur(16px);
+    backdrop-filter: saturate(180%) blur(16px);
   }
 
   .shell__topbar-brand {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-3);
+    gap: 10px;
     font-size: 16px;
     font-weight: 700;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.015em;
   }
 
   .shell__topbar-brand::before {
     width: 30px;
     height: 30px;
+    border-radius: 9px;
     font-size: 17px;
   }
 
@@ -1976,14 +2219,15 @@ button:disabled {
     min-height: 44px;
     padding: 0;
     border: 0;
-    color: var(--color-header-text);
+    border-radius: var(--radius-sm);
+    color: var(--color-text);
     background: transparent;
     box-shadow: none;
   }
 
   .shell__icon-button:hover:not(:disabled) {
     border: 0;
-    background: var(--color-header-active);
+    background: var(--color-bg-neutral);
   }
 
   .shell__icon-button .icon {
@@ -1996,18 +2240,19 @@ button:disabled {
     z-index: 50;
     width: min(86vw, 320px);
     padding-top: var(--space-5);
+    border-radius: 0 var(--radius-xl) var(--radius-xl) 0;
     box-shadow: var(--shadow-float);
     visibility: hidden;
     transform: translateX(-100%);
     transition:
-      transform 260ms var(--ease-out),
-      visibility 0s linear 260ms;
+      transform 280ms var(--ease-out),
+      visibility 0s linear 280ms;
   }
 
   .shell--app[data-menu-open="true"] .shell__header {
     visibility: visible;
     transform: none;
-    transition: transform 260ms var(--ease-out);
+    transition: transform 280ms var(--ease-out);
   }
 
   .shell--app[data-menu-open="true"] .shell__scrim {
@@ -2022,6 +2267,8 @@ button:disabled {
     border-radius: 0;
     background: var(--scrim);
     box-shadow: none;
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
     animation: scrim-in 200ms ease-out 1;
   }
 
@@ -2037,7 +2284,7 @@ button:disabled {
       calc(var(--tabbar-height) + var(--space-8) + env(safe-area-inset-bottom, 0px));
   }
 
-  /* The bottom tab bar: four places and "আরও", icon over label, thumb-sized. */
+  /* The bottom tab bar: four places and "আরও", icon over label, thumb-sized, frosted. */
   .shell--app .shell__tabbar {
     position: fixed;
     inset-inline: 0;
@@ -2047,9 +2294,10 @@ button:disabled {
     grid-auto-columns: minmax(0, 1fr);
     grid-auto-flow: column;
     padding: 6px var(--space-2) calc(6px + env(safe-area-inset-bottom, 0px));
-    border-top: 1px solid var(--color-line);
-    background: var(--color-surface);
-    box-shadow: 0 -8px 24px -16px var(--scrim);
+    border-top: 1px solid var(--glass-line);
+    background: var(--glass);
+    -webkit-backdrop-filter: saturate(180%) blur(16px);
+    backdrop-filter: saturate(180%) blur(16px);
   }
 
   .shell__tabbar a,
@@ -2089,6 +2337,7 @@ button:disabled {
   .shell__tabbar .icon {
     width: 22px;
     height: 22px;
+    transition: background 160ms var(--ease-out);
   }
 
   .shell__tabbar a[aria-current="page"],
@@ -2099,8 +2348,8 @@ button:disabled {
 
   .shell__tabbar a[aria-current="page"] .icon,
   .shell__tabbar button[data-current="true"] .icon {
-    padding: 2px 10px;
-    width: 44px;
+    padding: 3px 12px;
+    width: 46px;
     border-radius: var(--radius-pill);
     background: var(--color-bg-success);
     box-sizing: content-box;
@@ -2109,10 +2358,6 @@ button:disabled {
   .shell__toast {
     inset-block-start: calc(var(--topbar-height) + var(--space-3));
     inset-inline: var(--space-4);
-  }
-
-  .shell__main [data-testid="screen"] {
-    padding: var(--space-6);
   }
 }
 
@@ -2124,27 +2369,22 @@ button:disabled {
     padding-top: var(--space-5);
   }
 
-  /* On a phone the screen sits straight on the canvas; its parts carry their own surfaces. */
-  .shell--app .shell__main [data-testid="screen"] {
-    padding: 0;
-    border: 0;
-    border-radius: 0;
-    background: transparent;
-    box-shadow: none;
-  }
-
   .shell--public .shell__header {
     padding: var(--space-3) var(--space-4);
   }
 
   .shell--public .shell__main [data-testid="screen"] {
-    margin-top: var(--space-6);
+    margin-top: var(--space-4);
     padding: var(--space-6) var(--space-5);
   }
 
   .shell__main h2 {
     margin-bottom: var(--space-5);
-    font-size: var(--font-size-xl);
+    font-size: 26px;
+  }
+
+  .shell--app [data-testid="screen"] > form:not([data-testid^="orders-"]) {
+    padding: var(--space-5) var(--space-4) var(--space-5);
   }
 
   .shell__main nav[data-testid="orders-new-links"] {
@@ -2159,32 +2399,29 @@ button:disabled {
 
   .shell__main nav[data-testid="orders-new-links"] a:first-child {
     grid-column: 1 / -1;
+    min-height: 46px;
   }
 
-  /* The three totals stack as rows; every figure keeps its basis and completeness pills. */
+  /* The three totals: one card with a row per bucket; every figure keeps its pills. */
   .summary {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    padding: var(--space-2) var(--space-4) var(--space-4);
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-lg);
     background: var(--color-surface);
+    box-shadow: var(--shadow-card);
   }
 
-  .summary > span:not(.money-cell),
-  .summary > .money-cell {
-    padding: 0;
+  .stat {
+    gap: var(--space-1);
+    padding: var(--space-4);
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
   }
 
-  .summary > span:not(.money-cell) {
-    margin-top: var(--space-3);
-  }
-
-  .summary > :nth-child(n + 3) {
-    border-inline-start: 0;
-  }
-
-  .summary > span:not(.money-cell):nth-child(n + 3) {
-    padding-top: var(--space-3);
+  .stat + .stat {
     border-top: 1px solid var(--color-line);
   }
 
@@ -2197,7 +2434,6 @@ button:disabled {
     flex-direction: column;
     align-items: stretch;
     padding: var(--space-4);
-    background: var(--color-surface);
   }
 
   /* The filter: a compact 2 × 2 grid (status and customer, then the two dates), the button
@@ -2206,7 +2442,6 @@ button:disabled {
     grid-template-rows: repeat(4, auto);
     gap: 4px var(--space-3);
     padding: var(--space-4);
-    background: var(--color-surface);
   }
 
   .shell__main form[data-testid="orders-filter-form"] > label {
@@ -2217,13 +2452,20 @@ button:disabled {
   .shell__main form[data-testid="orders-filter-form"] > :is(input, select) {
     grid-row: auto;
     padding-inline: 10px;
-    font-size: 14px;
+    font-size: 16px;
   }
 
   .shell__main form[data-testid="orders-filter-form"] > button {
     grid-row: 5;
     grid-column: 1 / span 2;
     margin-top: var(--space-2);
+  }
+
+  /* 16 px inputs on a phone, so iOS does not zoom the page when a field gains focus. */
+  .shell__main input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+  .shell__main select,
+  .shell__main textarea {
+    font-size: 16px;
   }
 
   .shell__main form,
@@ -2238,7 +2480,10 @@ button:disabled {
   }
 
   .cat-card,
-  .settings-panel {
+  .settings-panel,
+  .status-strip,
+  .paste-input,
+  [data-testid="paste-result"] {
     padding: var(--space-4);
   }
 
@@ -2249,6 +2494,11 @@ button:disabled {
   .shell__main ol[data-testid="manual-lines"] > li,
   .shell__main ol[data-testid="paste-items"] > li {
     grid-template-columns: minmax(0, 1fr);
+    padding: var(--space-4);
+  }
+
+  .shell__main [data-testid="order-detail-contact"] {
+    max-width: none;
     padding: var(--space-4);
   }
 
@@ -2289,6 +2539,15 @@ button:disabled {
   .shell__main table[data-testid="order-detail-items"] + div {
     max-width: none;
     margin-inline-start: 0;
+    padding: var(--space-4);
+  }
+
+  .shell__main [data-testid="order-detail-actions"] {
+    padding: var(--space-4);
+  }
+
+  .shell__main [data-testid="order-detail-actions"] > span {
+    flex-basis: 100%;
   }
 
   .shell__main [data-testid="order-detail-actions"] > button {
@@ -2300,6 +2559,10 @@ button:disabled {
     margin-inline-start: 0;
   }
 
+  .day-head {
+    margin-top: calc(-1 * var(--space-3));
+  }
+
   .day-tiles {
     grid-template-columns: minmax(0, 1fr);
     gap: var(--space-3);
@@ -2308,18 +2571,26 @@ button:disabled {
   .day-tile {
     min-height: 0;
     padding: var(--space-5);
+    border-radius: var(--radius-lg);
+  }
+
+  .day-tile .money-cell__amount,
+  .day-tile__figure {
+    font-size: 30px;
   }
 
   .print-doc {
     padding: var(--space-5);
   }
 
-  /* List tables become one card per row; each cell shows its column name (data-label). */
+  /* List tables become one card per row; each cell shows its column name (data-label).
+   * Two equal columns, so a wide "half" cell never squeezes the key on the top line. */
   .scroll-x:has(> .table--stack) {
     overflow: visible;
     border: 0;
     border-radius: 0;
     background: transparent;
+    box-shadow: none;
   }
 
   .table--stack thead {
@@ -2343,13 +2614,13 @@ button:disabled {
 
   .table--stack tbody tr {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: var(--space-2) var(--space-3);
-    padding: var(--space-4);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3) var(--space-3);
+    padding: var(--space-4) var(--space-4) var(--space-2);
     border: 1px solid var(--color-line);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-lg);
     background: var(--color-surface);
-    box-shadow: var(--shadow-raised);
+    box-shadow: var(--shadow-card);
   }
 
   .table--stack tbody tr:hover td {
@@ -2359,6 +2630,7 @@ button:disabled {
   .table--stack td {
     display: block;
     grid-column: 1 / -1;
+    min-width: 0;
     padding: 0;
     border: 0;
     font-size: 14px;
@@ -2367,8 +2639,8 @@ button:disabled {
   .table--stack td[data-label]::before {
     content: attr(data-label);
     display: block;
-    margin-bottom: 1px;
-    font-size: 11.5px;
+    margin-bottom: 2px;
+    font-size: 11px;
     font-weight: 600;
     letter-spacing: 0.02em;
     color: var(--color-text-3);
@@ -2377,13 +2649,18 @@ button:disabled {
   /* The key (first cell) and a status cell share the card's top line. */
   .table--stack td:first-child {
     grid-column: 1;
-    font-size: 15px;
+    align-self: center;
+    font-size: 15.5px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
   }
 
   .table--stack td[data-cell="corner"] {
     grid-column: 2;
     grid-row: 1;
+    align-self: center;
     justify-self: end;
+    text-align: end;
   }
 
   .table--stack td[data-cell="corner"]::before,
@@ -2395,13 +2672,19 @@ button:disabled {
     grid-column: auto;
   }
 
+  /* The row action: a full-width quiet link-button under a hairline. */
   .table--stack td:last-child:has(> button) {
+    margin-inline: calc(-1 * var(--space-2));
+    padding-top: var(--space-1);
+    border-top: 1px solid var(--color-line);
     text-align: start;
   }
 
   .table--stack td > button {
+    justify-content: space-between;
     width: 100%;
     min-height: 40px;
+    padding-inline: var(--space-2);
   }
 
   .table--stack tbody tr.row--new {

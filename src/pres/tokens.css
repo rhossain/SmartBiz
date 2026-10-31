@@ -3,25 +3,25 @@
  * Tokens are CSS custom properties so the production bundle
  * owns the values (no third-party theme dependency).
  *
- * Redesign (2026-10-30, mockups §18): a quieter, more premium palette. Ink-green chrome, warm
- * ivory canvas, white surfaces with hairline borders and soft layered shadows, emerald for
- * money and primary actions, and a muted gold used only as an accent (brand mark, the current
- * page marker). Every token name the screens already use is kept; values changed.
+ * Redesign v2 (2026-10-30, mockups §19): open layout on a cool canvas, every section its own
+ * white surface with a hairline and a soft shadow; one brand colour (emerald) for links,
+ * primary actions and the focus ring; ink chrome with a gold mark on wide windows and frosted
+ * light bars on phones. Every token name the screens already use is kept; values changed.
  */
 
 :root {
   /* Colors — high-contrast against white. */
-  --color-text: #15201b; /* contrast 16.7:1 on #ffffff */
+  --color-text: #111a16; /* contrast 17.8:1 on #ffffff */
   --color-bg: #ffffff;
-  --color-bg-muted: #f3f2ed;
-  --color-link: #1457b2; /* 6.9:1 on #ffffff */
+  --color-bg-muted: #eef0ec;
+  --color-link: #0b6e52; /* 6.2:1 on #ffffff — links use the brand emerald */
   --color-error: #a4252b; /* 6.8:1 on #ffffff */
   --color-success: #1f6f3d; /* 5.4:1 on #ffffff */
   --color-border: #6b6b6b; /* 4.9:1 on #ffffff */
 
   /* Foreground variants on dark backgrounds. */
-  --color-on-dark: #ffffff; /* 16.7:1 on #15201b */
-  --color-on-primary: #ffffff; /* 8.1:1 on #0a5b44 */
+  --color-on-dark: #ffffff; /* 17.8:1 on #111a16 */
+  --color-on-primary: #ffffff; /* 6.2:1 on #0b6e52 */
   --color-on-error: #ffffff; /* 7.0:1 on #a4252b */
 
   /* Spacing — 4px scale. */
@@ -33,6 +33,7 @@
   --space-6: 24px;
   --space-8: 32px;
   --space-10: 40px;
+  --space-12: 48px;
 
   /* Typography. */
   /* Latin from the platform UI face; Bangla falls through to Hind Siliguri / Noto Sans Bengali
@@ -50,55 +51,71 @@
   --line-height: 1.55;
 
   /* Focus ring. U2 (BR9.3, NFR9.7): a visible outline in the link colour plus the soft halo. */
-  --focus-ring: 0 0 0 4px rgba(20, 87, 178, 0.18);
-  --focus-ring-outline: 2px solid var(--color-link); /* 6.9:1 on #ffffff */
+  --focus-ring: 0 0 0 4px rgba(11, 110, 82, 0.16);
+  --focus-ring-outline: 2px solid var(--color-link); /* 6.2:1 on #ffffff */
 
   /* U2 (NFR9.9): the error banner's tinted surface; error text on it stays above 4.5:1. */
-  --color-bg-error: #fbeaea; /* #a4252b on it: 6.27:1; #15201b on it: 14.4:1 */
+  --color-bg-error: #fbeaea; /* #a4252b on it: 6.27:1; #111a16 on it: 15.6:1 */
 
   /* U2 (BR9.1): the widest a fixed box may be; anything wider scrolls inside .scroll-x. */
   --width-max-fixed: 360px;
 
   /* Brand surface. Every text pair below is listed in tests/unit/contrast.test.ts. */
-  --color-canvas: #f4f3ee; /* #15201b on it: 15.1:1; #1457b2 on it: 6.2:1 */
+  --color-canvas: #f5f6f3; /* #111a16 on it: 16.4:1; #0b6e52 on it: 5.8:1 */
   --color-surface: #ffffff;
-  --color-surface-2: #faf9f6; /* quiet panel inside a card; #4b5752 on it: 7.2:1 */
-  --color-line: #e6e3da; /* decorative rule line; control borders keep --color-control-border */
-  --color-text-2: #4b5752; /* 7.5:1 on #ffffff; 6.8:1 on #f4f3ee */
-  --color-text-3: #66716c; /* captions only: 5.1:1 on #ffffff; 4.6:1 on #f4f3ee */
-  --color-header-bg: #0f1c17; /* the ink-green sidebar and top bar */
-  --color-header-text: #f1f4f2; /* 15.8:1 on #0f1c17 */
-  --color-header-muted: #a3b4ad; /* 8.1:1 on #0f1c17; 6.4:1 on #1d302a */
-  --color-header-active: #1d302a; /* #f1f4f2 on it: 12.6:1 */
-  --color-accent: #c8a35a; /* muted gold: brand mark and current-page bar; #0f1c17 on it: 7.4:1 */
-  --color-accent-text: #85621f; /* gold as text: 5.6:1 on #ffffff */
-  --color-brand: #0a5b44; /* #ffffff on it: 8.1:1 */
-  --color-brand-dark: #06382a; /* #ffffff on it: 12.0:1 (hover) */
-  --color-on-brand-muted: #c8e6d8; /* secondary text on the hero tile: 9.8:1 on #06382a, 6.1:1 on #0a5b44 */
-  --color-bg-success: #dcefe6; /* #0a5b44 on it: 6.8:1 */
-  --color-warning: #8f5c11;
-  --color-bg-warning: #f8ebd3; /* #8f5c11 on it: 4.8:1 */
-  --color-bg-neutral: #efede7; /* #4b5752 on it: 6.4:1 */
-  --color-control-border: #8c8272; /* 3.8:1 on #ffffff: bounds a control (WCAG 1.4.11) */
-  --color-brand-tint: #eef6f2; /* #0a5b44 on it: 7.4:1 */
+  --color-surface-2: #f9faf8; /* quiet inset inside a card; #4a5550 on it: 7.4:1 */
+  --color-line: #e5e8e4; /* decorative hairline; control borders keep --color-control-border */
+  --color-text-2: #4a5550; /* 7.6:1 on #ffffff; 7.2:1 on #f5f6f3 */
+  --color-text-3: #626d68; /* captions only: 5.4:1 on #ffffff; 5.0:1 on #f5f6f3 */
+  --color-header-bg: #0c1613; /* the ink sidebar */
+  --color-header-text: #eaf0ed; /* 16.0:1 on #0c1613 */
+  --color-header-muted: #9db0a8; /* 8.1:1 on #0c1613; 7.1:1 on #16241f */
+  --color-header-active: #16241f; /* #eaf0ed on it: 13.9:1 */
+  --color-accent: #d6b36a; /* gold: brand mark and current-page marker; #0c1613 on it: 9.2:1 */
+  --color-accent-text: #8a6420; /* gold as text: 5.4:1 on #ffffff */
+  --color-brand: #0b6e52; /* #ffffff on it: 6.2:1 */
+  --color-brand-dark: #085a43; /* #ffffff on it: 8.2:1 (hover) */
+  --color-brand-deep: #06382a; /* hero gradient start; #ffffff on it: 12.0:1 */
+  --color-on-brand-muted: #cfe9dd; /* secondary text on the hero: 10.2:1 on #06382a, 4.9:1 on #0b6e52 */
+  --color-bg-success: #e4f2eb; /* #0b6e52 on it: 5.4:1 */
+  --color-warning: #9a5f0c;
+  --color-bg-warning: #fbefd9; /* #9a5f0c on it: 4.6:1 */
+  --color-bg-neutral: #eef0ec; /* #4a5550 on it: 6.8:1 */
+  --color-control-border: #8a938f; /* 3.2:1 on #ffffff: bounds a control (WCAG 1.4.11) */
+  --color-brand-tint: #eff7f3; /* #0b6e52 on it: 5.7:1 */
+
+  /* Translucent layers (not text colours): frosted bars, scrims, hero glows. */
+  --glass: rgba(255, 255, 255, 0.86);
+  --glass-line: rgba(17, 26, 22, 0.08);
+  --glow-gold: rgba(214, 179, 106, 0.28);
+  --glow-white: rgba(255, 255, 255, 0.1);
+  --glow-gold-soft: rgba(214, 179, 106, 0.1);
+  --glow-brand: rgba(11, 110, 82, 0.1);
+  --hairline-on-dark: rgba(234, 240, 237, 0.08);
+  --scrim: rgba(12, 22, 19, 0.5);
 
   --radius-xs: 6px;
   --radius-sm: 10px;
   --radius-md: 14px;
-  --radius-lg: 20px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
   --radius-pill: 999px;
-  --shadow-card: 0 1px 2px rgba(15, 28, 23, 0.04), 0 12px 32px -12px rgba(15, 28, 23, 0.12);
-  --shadow-raised: 0 1px 2px rgba(15, 28, 23, 0.06), 0 4px 12px -4px rgba(15, 28, 23, 0.08);
-  --shadow-float: 0 2px 6px rgba(15, 28, 23, 0.08), 0 24px 48px -12px rgba(15, 28, 23, 0.28);
-  --shadow-button: 0 1px 2px rgba(6, 56, 42, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.14);
-  --ring-brand: 0 0 0 4px rgba(10, 91, 68, 0.14);
-  --scrim: rgba(15, 28, 23, 0.48);
+  --shadow-xs: 0 1px 2px rgba(17, 26, 22, 0.05);
+  --shadow-card: 0 1px 2px rgba(17, 26, 22, 0.04), 0 8px 24px -12px rgba(17, 26, 22, 0.1);
+  --shadow-raised: 0 1px 2px rgba(17, 26, 22, 0.06), 0 2px 6px -2px rgba(17, 26, 22, 0.06);
+  --shadow-float: 0 2px 6px rgba(17, 26, 22, 0.08), 0 24px 48px -12px rgba(17, 26, 22, 0.28);
+  --shadow-button:
+    0 1px 2px rgba(6, 56, 42, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    inset 0 -1px 0 rgba(6, 56, 42, 0.3);
+  --shadow-hero: 0 2px 4px rgba(6, 56, 42, 0.12), 0 20px 40px -16px rgba(6, 56, 42, 0.45);
+  --ring-brand: 0 0 0 4px rgba(11, 110, 82, 0.14);
   --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
 
   /* Layout. */
-  --sidebar-width: 264px;
+  --sidebar-width: 256px;
   --topbar-height: 56px;
   --tabbar-height: 64px;
+  --content-max: 1180px;
 }
 
 /* Body baseline. */

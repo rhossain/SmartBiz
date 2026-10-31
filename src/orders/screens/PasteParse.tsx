@@ -409,27 +409,30 @@ export const PasteParse = ({
       title={tr("paste.title", locale)}
       back={{ href: "#/orders", label: tr("orders.back", locale) }}
     >
-      <label htmlFor="paste-box">{tr("paste.box", locale)}</label>
-      <textarea
-        id="paste-box"
-        data-testid="paste-box"
-        rows={7}
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-      />
-      {index?.raw.truncated ? (
-        <p role="status" className="picker__note" data-testid="paste-truncated">
-          {tr("paste.truncated", locale)}
-        </p>
-      ) : null}
-      <button
-        type="button"
-        data-testid="paste-parse"
-        data-catalog={index === null ? "none" : "ready"}
-        onClick={read}
-      >
-        {tr("paste.parse", locale)}
-      </button>
+      {/* The message and its read button share one surface, above the result (§19). */}
+      <div className="paste-input">
+        <label htmlFor="paste-box">{tr("paste.box", locale)}</label>
+        <textarea
+          id="paste-box"
+          data-testid="paste-box"
+          rows={7}
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+        />
+        {index?.raw.truncated ? (
+          <p role="status" className="picker__note" data-testid="paste-truncated">
+            {tr("paste.truncated", locale)}
+          </p>
+        ) : null}
+        <button
+          type="button"
+          data-testid="paste-parse"
+          data-catalog={index === null ? "none" : "ready"}
+          onClick={read}
+        >
+          {tr("paste.parse", locale)}
+        </button>
+      </div>
       {failure !== null ? <Toast message={tr(reasonKey(failure), locale)} tone="warn" /> : null}
       {edits !== null ? (
         <div data-testid="paste-result">
