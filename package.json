@@ -10,6 +10,7 @@
     "start": "bun scripts/start.ts",
     "seed:demo": "bun scripts/seed-demo.ts",
     "seed:demo:catalog": "bun scripts/seed-demo-catalog.ts",
+    "seed:demo:more": "bun --env-file=.env.migrate scripts/seed-demo-more.ts",
     "migrate": "bun --env-file=.env.migrate src/db/migrate.ts",
     "test": "bun test tests/unit tests/integration tests/import-all.test.ts",
     "test:realdb": "bun test tests/realdb",
